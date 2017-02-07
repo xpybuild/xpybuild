@@ -412,6 +412,7 @@ class BuildInitializationContext(BaseContext):
 		isRealBuild -- True if this is going to be a real build, not just listing available targets etc
 		"""
 		self.__isRealBuild = isRealBuild
+		if os.path.isdir(buildFile): buildFile = os.path.join(buildFile, 'root.xpybuild.py')
 		sys.path.append(os.path.dirname(buildFile))
 		startTime = time.time()
 		log.debug("Loading build file ...")
