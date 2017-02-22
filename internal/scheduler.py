@@ -291,14 +291,10 @@ class BuildScheduler(object):
 						self._updatePriority(target)
 						target.increment()
 						
-						
-						if not isDirPath(dname):
-							target.filedep(dname) # might have an already built target dependency which is still newer
-						else:
-							# special case directory target deps - must use stamp file not dir, to avoid re-walking 
-							# the directory needlessly, and possibly making a wrong decision if the dir pathset is 
-							# from a filtered pathset
-							target.filedep(self.targets[dname].stampfile)						
+						# special case directory target deps - must use stamp file not dir, to avoid re-walking 
+						# the directory needlessly, and possibly making a wrong decision if the dir pathset is 
+						# from a filtered pathset
+						target.filedep(self.targets[dname].getStampFile(target))
 					
 						with self.lock:
 							if not dname in self.pending:
@@ -383,7 +379,7 @@ class BuildScheduler(object):
 					errors.extend(self._run_target(target)) # run the actual target rule
 				# make sure we rebuild rdeps
 				for rd in target.rdeps():
-					if not rd.dirty():
+					if not rd.dirty(target):
 						log.info("Up-to-date check: %s must be rebuilt due to change in dependency %s", rd.name, target)
 				with self.lock:
 					self.built = self.built + 1

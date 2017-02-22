@@ -151,6 +151,32 @@ class BaseTarget(Composable):
 		if not self.__dependencies: return []
 		return self.__dependencies._resolveUnderlyingDependencies(context)
 
+	def _activateDependency(self, dep):
+		""" Internal method for activating anything which depends on this target
+		after this target has been built.
+
+		Return True if dep should be activated and False if it should not.
+
+		Default implementation (and safest) is to always return True
+		"""
+		return True
+
+	def _getStampFile(self, dep):
+		""" Internal method for returning the file that should be used for timestamp checks.
+
+		Default implementation (and safest) is to return the file (if a file) or implicityInputs file if a dir
+		"""
+		if isDirPath(self.name):
+			return self._getImplicitInputsFile()
+		else:
+			return self.path
+
+	def _getImplicitInputsFile(self):
+		""" Internal method. Do not override """
+		x = self.workDir.replace('\\','/').split('/')
+		# relies on basetarget._resolveTargetPath having been called
+		return '/'.join(x[:-1])+'/implicit-inputs/'+x[-1]+'.txt' # since workDir is already unique (but don't contaminate work dir by putting this inside it)
+
 	def run(self, context):
 		""" Build this target. 
 		

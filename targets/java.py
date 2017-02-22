@@ -24,7 +24,7 @@ from basetarget import BaseTarget, targetNameToUniqueId
 from propertysupport import defineOption
 from pathsets import PathSet, FilteredPathSet, BasePathSet
 from utils.fileutils import mkdir, deleteDir, openForWrite, normLongPath
-from utils.java import jar, javac, create_manifest, javadoc, signjar
+from utils.java import jar, javac, create_manifest, javadoc, signjar, dumpApi
 from utils.flatten import flatten
 from utils.outputhandler import ProcessOutputHandler
 from buildexceptions import BuildException
@@ -197,6 +197,7 @@ class Jar(BaseTarget):
 	classpath = None
 	package = None
 	manifest = None
+	apiChange = False
 	def __init__(self, jar, compile, classpath, manifest, options=None, package=None, preserveManifestFormatting=False):
 		""" 
 		jar -- path to jar to create
@@ -286,6 +287,21 @@ class Jar(BaseTarget):
 						d.write(s.read())
 
 		# create the jar
+		newapi = dumpApi(classes, options=options)
+		newapi = [l.strip() for l in newapi]
+		apifile = self.workDir+"_api.txt"
+		if os.path.exists(apifile):
+			oldapi = []
+			with open(apifile) as f:
+				oldapi = [l.strip() for l in f]
+			self.apiChange = newapi != oldapi				
+		else:
+			self.apiChange = True
+
+		if self.apiChange:
+			with openForWrite(apifile, "wb") as f:
+				f.writelines([x+os.linesep for x in newapi])
+		
 		jar(self.path, manifest, classes, options=options, preserveManifestFormatting=self.preserveManifestFormatting, 
 			outputHandler=ProcessOutputHandler('jar', treatStdErrAsErrors=False,options=options))
 
@@ -298,6 +314,12 @@ class Jar(BaseTarget):
 			'classpath = '+context.expandPropertyValues(str(self.classpath)), # because classpath destinations affect manifest
 			]+sorted(['option: %s = "%s"'%(k,v) for (k,v) in context.mergeOptions(self).items() 
 				if v and (k.startswith('javac.') or k.startswith('jar.') or k == 'java.home')])
+
+	def _activateDependency(self, dep):
+		return not isinstance(dep, Jar) or self.apiChange
+	def _getStampFile(self, dep):
+		return self.path if not isinstance(dep, Jar) else self.workDir+"_api.txt"
+
 
 class Javadoc(BaseTarget):
 	""" Creates javadoc from a set of input files

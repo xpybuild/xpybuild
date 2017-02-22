@@ -65,21 +65,16 @@ class BuildTarget(object):
 		if name == 'location': return self.target.location
 		if name == 'priority': return -self.target.getPriority()
 		if name == '_implicitInputsFile': return self.__getImplicitInputsFile()
-		if name == 'stampfile': 
-			if isDirPath(self.target.name):
-				return self.__getImplicitInputsFile() # might as well re-use this for dirs
-			else:
-				return self.target.path
 				
 		raise AttributeError('Unknown attribute %s' % name)
 	
+	def getStampFile(self, target=None):
+		return self.target._getStampFile(target.target if target else None)
 	def setPriority(self, pri):
 		self.target.priority(-pri)
 	
 	def __getImplicitInputsFile(self):
-		x = self.target.workDir.replace('\\','/').split('/')
-		# relies on basetarget._resolveTargetPath having been called
-		return '/'.join(x[:-1])+'/implicit-inputs/'+x[-1]+'.txt' # since workDir is already unique (but don't contaminate work dir by putting this inside it)
+		return self.target._getImplicitInputsFile()
 	
 	def __getImplicitInputs(self, context):
 		# this is typically called in either uptodate or run, but never during dependency resolution 
@@ -139,17 +134,20 @@ class BuildTarget(object):
 			self.depcount = self.depcount - 1
 			depcount = self.depcount
 		return depcount
-	def dirty(self):
+	def dirty(self, source=None):
 		"""
 			Marks the object as explicitly dirty to avoid doing uptodate checks
 			Holds the object lock
 			
 			Returns the previous value of isdirty, i.e. True if this was a no-op. 
 		"""
-		with self.lock:
-			r = self.isdirty
-			self.isdirty = True
-			return r
+		if None == source or source.target._activateDependency(self.target):
+			with self.lock:
+				r = self.isdirty
+				self.isdirty = True
+				return r
+		else:
+			return False
 			
 	def rdep(self, target):
 		"""
@@ -195,9 +193,9 @@ class BuildTarget(object):
 			
 			if ignoreDeps: return True
 			
-			if not isfile(self.stampfile): # this is really an existence check, but if we have a dir it's an error so ignore
+			if not isfile(self.getStampFile()): # this is really an existence check, but if we have a dir it's an error so ignore
 				# for directory targets
-				log.info('Up-to-date check: %s must be rebuilt because stamp file does not exist: "%s"', self.name, self.stampfile)
+				log.info('Up-to-date check: %s must be rebuilt because stamp file does not exist: "%s"', self.name, self.getStampFile())
 				return False
 			
 			# assume that by this point our explicit dependencies at least exist, so it's safe to call getHashableImplicitDependencies
@@ -231,15 +229,15 @@ class BuildTarget(object):
 			
 			# NB: there shouldn't be any file system errors here since we've checked for the existence of deps 
 			# already in _expand_deps; if this happens it's probably a build system bug
-			stampmodtime = getmtime(self.stampfile)
+			stampmodtime = getmtime(self.getStampFile())
 
 			def isNewer(path):
 				pathmodtime = getmtime(normLongPath(path))
 				if pathmodtime <= stampmodtime: return False
 				if pathmodtime-stampmodtime < 1: # such a small time gap seems dodgy
-					log.warn('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" by just %0.1f seconds', self.name, path, self.stampfile, pathmodtime-stampmodtime)
+					log.warn('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" by just %0.1f seconds', self.name, path, self.getStampFile(), pathmodtime-stampmodtime)
 				else:
-					log.info('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" (by %0.1f seconds)', self.name, path, self.stampfile, pathmodtime-stampmodtime)
+					log.info('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" (by %0.1f seconds)', self.name, path, self.getStampFile(), pathmodtime-stampmodtime)
 				return True
 
 			for f in self.fdeps:

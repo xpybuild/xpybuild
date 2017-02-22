@@ -37,6 +37,30 @@ defineOption('java.home', None)
 # Options for creating manifests
 defineOption('jar.manifest.defaults', {})
 
+def dumpApi(path, options):
+	""" Returns the javap API output for all the classes in path """
+	
+	if options['java.home']:
+		javappath = os.path.join(options['java.home'], "bin/javap")
+	else:
+		javappath = "javap" # just get it from the path
+
+	classes = []
+	log = logging.getLogger("dumpApi")
+	for (root, dirs, files) in os.walk(path):
+		root = root.replace(path, "")
+		for f in files:
+			classes.append((root.replace("/", ".").replace("\\", ".")+"."+f.replace(".class", "")).strip("."))
+	args = [javappath, "-package", "-constants", "-classpath", path]+classes
+	data = list(classes)
+	class JavapOutputHandler(ProcessOutputHandler):
+		def __init__(self, **kwargs):
+			ProcessOutputHandler.__init__(self, 'javap', **kwargs)
+		def handleLine(self, l, isstderr=False):
+			data.append(l)
+	call(args, timeout=options['process.timeout'], outputHandler=JavapOutputHandler(options=options))
+	return data
+
 def create_manifest(path, properties, options):
 	""" Create a manifest file in path from the map properties.
 
