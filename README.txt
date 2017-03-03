@@ -18,4 +18,4 @@ Documentation
 =============
 
 	* api-doc/ - epydoc generated API documentation
-	* changelog - the commit history for xpybuild
+	* doc/changelog.md - the change log for xpybuild

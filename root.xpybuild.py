@@ -18,7 +18,7 @@
 # Requires: Python 2.7
 
 
-# xpybuild release build file. Creates pydoc API docs, changelog and versionned zip file for releases.
+# xpybuild release build file. Creates pydoc API docs and versioned zip file for releases.
 
 from propertysupport import *
 from buildcommon import *
