@@ -27,6 +27,7 @@ from basetarget import BaseTarget
 from utils.fileutils import mkdir, deleteDir, normLongPath
 from utils.antglob import antGlobMatch
 from utils.flatten import flatten
+from buildexceptions import BuildException
 
 class Zip(BaseTarget):
 	""" A target that creates a zip archive from a set of input files.
@@ -44,8 +45,14 @@ class Zip(BaseTarget):
 
 	def run(self, context):
 		mkdir(os.path.dirname(self.path))
+		alreadyDone = set()
 		with zipfile.ZipFile(normLongPath(self.path), 'w') as output:
 			for (f, o) in self.inputs.resolveWithDestinations(context):
+				# if we don't check for duplicate entries we'll end up creating an invalid zip
+				if o in alreadyDone:
+					dupsrc = ['"%s"'%src for (src, dest) in self.inputs.resolveWithDestinations(context) if dest == o]
+					raise BuildException('Duplicate zip entry "%s" from: %s'%(o, ', '.join(dupsrc)))
+				alreadyDone.add(o)
 				# can't compress directory entries! (it messes up Java)
 				output.write(normLongPath(f), o, zipfile.ZIP_STORED if isDirPath(f) else zipfile.ZIP_DEFLATED) 
 
