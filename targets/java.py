@@ -268,11 +268,11 @@ class Jar(BaseTarget):
 			if "Class-path" not in manifest_entries: # assuming it wasn't hardcoded, set it here
 				for src, dest in self.classpath.resolveWithDestinations(context):
 					classpath_entries.append(dest)
-				assert isinstance(options['jar.manifest.classpathAppend'], list) # must not be a string
+				assert isinstance(options['jar.manifest.classpathAppend'], list), options['jar.manifest.classpathAppend'] # must not be a string
 				classpath_entries.extend(options['jar.manifest.classpathAppend'] or [])
 				
 				# need to always use / not \ for these to be valid
-				classpath_entries = [p.replace(os.path.sep, '/').replace('\\', '/') for p in classpath_entries]
+				classpath_entries = [p.replace(os.path.sep, '/').replace('\\', '/') for p in classpath_entries if p]
 				
 				if classpath_entries:
 					manifest_entries["Class-path"] = " ".join(classpath_entries) # include the classpath from here
