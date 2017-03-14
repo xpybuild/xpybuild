@@ -212,7 +212,13 @@ class Jar(BaseTarget):
 		options -- generic target options map
 
 		package -- PathSet (or list) of other files to include in the jar; 
-			destination mapping indicates where they will appear in the kar
+			destination mapping indicates where they will appear in the jar
+		
+		preserveManifestFormatting -- an advanced option that prevents the jar tool from 
+			reformatting the specified manifest file to comply with Java conventions 
+			(also prevents manifest merging if jar already exists)
+
+		
 		"""
 		self.compile = FilteredPathSet(_isJavaFile, PathSet(compile)) if compile else None
 			
@@ -264,10 +270,16 @@ class Jar(BaseTarget):
 					classpath_entries.append(dest)
 				assert isinstance(options['jar.manifest.classpathAppend'], list) # must not be a string
 				classpath_entries.extend(options['jar.manifest.classpathAppend'] or [])
+				
+				# need to always use / not \ for these to be valid
+				classpath_entries = [p.replace(os.path.sep, '/').replace('\\', '/') for p in classpath_entries]
+				
 				if classpath_entries:
 					manifest_entries["Class-path"] = " ".join(classpath_entries) # include the classpath from here
 			if not manifest_entries.get('Class-path'): # suppress this element entirely if not needed, otherwise there would be no way to have an empty classpath
 				manifest_entries.pop('Class-path','')
+			
+			logging.getLogger('ben').critical('classpath=%s', classpath_entries)
 	
 			# create the manifest file
 			create_manifest(manifest, manifest_entries, options=options)
@@ -296,7 +308,8 @@ class Jar(BaseTarget):
 		return super(Jar, self).getHashableImplicitInputs(context) + [
 			'manifest = '+context.expandPropertyValues(str(self.manifest)),
 			'classpath = '+context.expandPropertyValues(str(self.classpath)), # because classpath destinations affect manifest
-			]+sorted(['option: %s = "%s"'%(k,v) for (k,v) in context.mergeOptions(self).items() 
+			]+(['preserveManifestFormatting = true'] if self.preserveManifestFormatting else [])\
+			+sorted(['option: %s = "%s"'%(k,v) for (k,v) in context.mergeOptions(self).items() 
 				if v and (k.startswith('javac.') or k.startswith('jar.') or k == 'java.home')])
 
 class Javadoc(BaseTarget):

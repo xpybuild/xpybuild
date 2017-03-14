@@ -60,7 +60,7 @@ class BasePathSet(object):
 	
 	def resolve(self, context):
 		""" Use the specified context to resolve the contents of this pathset 
-		to a list of normalized absolute paths. 
+		to a list of normalized absolute paths (using OS-dependent slashes). 
 		
 		All directory paths must end with "/" or "\". 
 		
@@ -76,12 +76,14 @@ class BasePathSet(object):
 	def resolveWithDestinations(self, context):
 		""" Use the specified context to resolve the contents of this pathset 
 		to a list of (srcabs, destrel) pairs specifying the absolute and 
-		normalized path of each source path, and a relative '/'-delimited path 
-		indicating the destination of that path (interpreted in a 
-		target-specific way by certain targets 
+		normalized path of each source path, 
+		and a relative normalized delimited path indicating the destination of that 
+		path (interpreted in a target-specific way by certain targets 
 		such as copy and zip). 
 		
-		All directory paths must end with "/" or "\". 
+		All paths use OS-dependent slash characters (os.path.sep), 
+		and all directory paths must end with a slash to avoid confusion with 
+		file paths. 
 		
 		Some PathSet implementations will cache the results of resolve, if 
 		expensive (e.g. file system globbing); in such case it is essential to 
