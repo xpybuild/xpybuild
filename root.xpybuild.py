@@ -58,7 +58,7 @@ CustomCommand('${OUTPUT_DIR}/doc/api/',
 Zip('${OUTPUT_DIR}/xpybuild_${VERSION}.zip', [
 		AddDestPrefix('doc/api/', FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/doc/api/'))),
 		AddDestPrefix('doc/', MapDest(markdownToTxt, FindPaths('doc/', includes=['*.md']))),
-		FindPaths('./', includes='**/*.py', excludes='tests/**'),
+		FindPaths('./', includes='**/*.py', excludes=['tests/**', 'root.xpybuild.py']),
 		'release.properties',
 		MapDest(markdownToTxt, 'README.md'),
 		'LICENSE.txt',
