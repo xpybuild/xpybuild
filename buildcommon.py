@@ -31,14 +31,17 @@ import logging
 from utils.flatten import flatten
 from utils.fileutils import parsePropertiesFile
 
-try:
-	with open(os.path.join(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))), "release.properties")) as f:
-		_RELEASE_PROPERTIES=parsePropertiesFile(f)
+def __getXpybuildVersion():
 
-	_XPYBUILD_VERSION = [value for (key, value, line) in _RELEASE_PROPERTIES if key == "VERSION"][0]
-except:
-	raise
-	_XPYBUILD_VERSION = "<unknown>"
+	try:
+		with open(os.path.join(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))), "release.properties")) as f:
+			_RELEASE_PROPERTIES=parsePropertiesFile(f)
+	
+		return [value for (key, value, line) in _RELEASE_PROPERTIES if key == "VERSION"][0]
+	except Exception:
+		raise
+		return "<unknown>"
+_XPYBUILD_VERSION = __getXpybuildVersion()
 
 
 
