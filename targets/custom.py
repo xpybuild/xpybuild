@@ -87,11 +87,19 @@ class ResolvePath(object):
 		""" Resolves the path using the specified context and baseDir """
 		return context.getFullPath(self.path, defaultDir=baseDir)
 
+
 class CustomCommand(BaseTarget):
 	"""
 	A custom target that builds a single file or directory of content by running a 
 	specified command line process. 
 	"""
+
+	class __CustomCommandSentinel(object): 
+		def __init__(self, name): self.name = name
+		def __str__(self): return name
+	
+	TARGET = __CustomCommandSentinel('TARGET')
+	DEPENDENCIES = __CustomCommandSentinel('DEPENDENCIES')
 	
 	def __init__(self, target, command, dependencies, cwd=None, redirectStdOutToTarget=False, env=None, stdout=None, stderr=None):
 		"""
@@ -112,6 +120,10 @@ class CustomCommand(BaseTarget):
 			* a property functor such as joinPaths (useful for constructing 
 				Java classpaths), basename, etc
 			* an arbitrary function taking a single context argument
+			* CustomCommand.TARGET - a special value that is resolved to the 
+			output path of this target
+			* CustomCommand.DEPENDENCIES - a special value that is resolved to 
+			a list of this target's dependencies
 			* [deprecated] a ResolvePath(path) object, indicating a path that should be 
 				resolved and resolved at execution time (this is equivalent 
 				to using a PathSet, which is probably a better approach). 
@@ -129,8 +141,8 @@ class CustomCommand(BaseTarget):
 			left blank, meaning use output dir)
 		
 		env -- a dictionary of environment overrides, or a function that 
-			returns one given a context. Variables in the dictionary will 
-			be expanded. 
+			returns one given a context. Values in the dictionary will 
+			be expanded using the same rules as for the command (see above). 
 		
 		redirectStdOutToTarget -- usually, any stdout is treated as logging 
 			and the command is assumed to create the target file itself, but 
@@ -155,24 +167,25 @@ class CustomCommand(BaseTarget):
 		if stdout and redirectStdOutToTarget:
 			raise BuildException('Cannot set both redirectStdOutToTarget and stdout')
 
+	def _resolveItem(self, x, context):
+		if x == self.DEPENDENCIES: return self.deps.resolve(context)
+		if x == self.TARGET: x = self.path
+		if isinstance(x, basestring): return context.expandPropertyValues(x)
+		if hasattr(x, 'resolveToString'): return x.resolveToString(context) # supports Composables too
+		if isinstance(x, BasePathSet): 
+			result = x.resolve(context)
+			if len(result) != 1:
+				raise BuildException('PathSet for custom command must resolve to exactly one path not %d (or use joinPaths): %s'%(len(result), x))
+			return result[0]
+		if isinstance(x, ResolvePath): return x.resolve(context, self.baseDir)
+		raise Exception('Unknown custom command input type %s: %s'%(x.__class__.__name__, x))
 		
 	def _resolveCommand(self, context):
 		if callable(self.command):
 			self.command = self.command(self.path, self.deps.resolve(context), context)
 		assert not isinstance(self.command, basestring) # must be a list of strings, not a string
-		
-		def resolveItem(x):
-			if isinstance(x, basestring): return context.expandPropertyValues(x)
-			if hasattr(x, 'resolveToString'): return x.resolveToString(context) # supports Composables too
-			if isinstance(x, BasePathSet): 
-				result = x.resolve(context)
-				if len(result) != 1:
-					raise BuildException('PathSet for custom command must resolve to exactly one path not %d (or use joinPaths): %s'%(len(result), x))
-				return result[0]
-			if isinstance(x, ResolvePath): return x.resolve(context, self.baseDir)
-			raise Exception('Unknown command line element type %s: %s'%(x.__class__.__name__, x))
-		
-		self.command = [resolveItem(x) for x in self.command]
+			
+		self.command = flatten([self._resolveItem(x, context) for x in self.command])
 		self.command[0] = os.path.normpath(self.command[0])
 		return self.command
 	
@@ -205,7 +218,7 @@ class CustomCommand(BaseTarget):
 			if callable(env):
 				env = env(context)
 			else:
-				env = {k: context.expandPropertyValues(env[k]) for k in env}
+				env = {k: self._resolveItem(env[k], context) for k in env}
 			self.log.info('Environment overrides for %s are: %s', self.name, ''.join(['\n\t"%s=%s"'%(k, env[k]) for k in env]))
 			for k in os.environ:
 				if k not in env: env[k] = os.getenv(k)
@@ -286,7 +299,7 @@ class CustomCommandWithCopy(CustomCommand, Copy):
 	in-place modifications on a directory. 
 	"""
 	
-	def __init__(self, target, command, dependencies, copySrc, cwd=None, redirectStdOutToTarget=False, env=None):
+	def __init__(self, target, command, dependencies, copySrc, cwd=None, redirectStdOutToTarget=False, env=None, **kwargs):
 		"""
 		target -- the target
 		command -- see CustomCommand for details
@@ -297,7 +310,7 @@ class CustomCommandWithCopy(CustomCommand, Copy):
 		"""
 		assert isDirPath(target), 'This target can only be used for directories (ending in /)'
 		copySrc = PathSet(copySrc)
-		CustomCommand.__init__(self, target, command, dependencies=[dependencies, copySrc], cwd=cwd, redirectStdOutToTarget=redirectStdOutToTarget, env=env)
+		CustomCommand.__init__(self, target, command, dependencies=[dependencies, copySrc], cwd=cwd, redirectStdOutToTarget=redirectStdOutToTarget, env=env, **kwargs)
 		# can't call Copy.__init__ without introducing a duplicate target
 		# but use the same name used by Copy so we can call run successfully later
 		self.src = copySrc
