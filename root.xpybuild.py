@@ -47,7 +47,7 @@ CustomCommand('${OUTPUT_DIR}/doc/api/',
 		'--no-private', 
 		'-v', 
 		'--name', 'xpybuild v${VERSION}', 
-		#'--fail-on-docstring-warning',
+		'--fail-on-docstring-warning',
 		CustomCommand.DEPENDENCIES 
 	], 
 	dependencies=FindPaths('./', includes='**/*.py', excludes=['**/root.xpybuild.py', 'tests/**', 'internal/**', 'xpybuild.py']),
