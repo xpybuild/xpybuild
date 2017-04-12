@@ -30,7 +30,7 @@ from targets.custom import CustomCommand
 
 from utils.process import call
 
-requireXpyBuildVersion('1.2')
+requireXpyBuildVersion('1.12')
 
 # Need the caller to provide the path to epydoc
 definePathProperty('EPYDOC_ROOT', None, mustExist=True) # parent of the /lib directory

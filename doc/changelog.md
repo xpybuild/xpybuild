@@ -1,4 +1,4 @@
-# 1.2
+# 1.12
 
 This is the first official public release of xpybuild
 
