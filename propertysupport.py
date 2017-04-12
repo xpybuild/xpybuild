@@ -198,39 +198,41 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 		f = open(propertiesFile, 'r') 
 	except Exception, e:
 		raise BuildException('Failed to open properties file "%s"'%(propertiesFile), causedBy=True)
-		
 	missingKeysFound = set()
-	
-	for key,value,lineNo in parsePropertiesFile(f, excludeLines=excludeLines):
-		__log.debug('definePropertiesFromFile: expanding %s=%s', key, value)
+	try:
 		
-		if '<' in key:
-			c = re.search('<([^.]+)>', key)
-			if not c:
-				raise BuildException('Error processing properties file, malformed <condition> line at %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
-			key = key.replace('<'+c.group(1)+'>', '')
-			if '<' in key: raise BuildException('Error processing properties file, malformed line with multiple <condition> items at %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
-			matches = True if conditions else False
-			if matches:
-				for cond in c.group(1).split(','):
-					if cond.strip() not in conditions:
-						matches = False
-						break
-			if not matches:
-				__log.debug('definePropertiesFromFile ignoring line that does not match condition: %s'%key)
-				missingKeysFound.add(key)
-				continue
-			else:
-				missingKeysFound.discard(key) # optimization to keep this list small
-		
-		if prefix: key = prefix+key 
-		# TODO: make this work better by allowing props to be expanded using a local set of props from this file in addition to build props
-		
-		try:
-			value = context.expandPropertyValues(value)
-			context.defineProperty(key, value, debug=True)
-		except BuildException, e:
-			raise BuildException('Error processing properties file %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
+		for key,value,lineNo in parsePropertiesFile(f, excludeLines=excludeLines):
+			__log.debug('definePropertiesFromFile: expanding %s=%s', key, value)
+			
+			if '<' in key:
+				c = re.search('<([^.]+)>', key)
+				if not c:
+					raise BuildException('Error processing properties file, malformed <condition> line at %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
+				key = key.replace('<'+c.group(1)+'>', '')
+				if '<' in key: raise BuildException('Error processing properties file, malformed line with multiple <condition> items at %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
+				matches = True if conditions else False
+				if matches:
+					for cond in c.group(1).split(','):
+						if cond.strip() not in conditions:
+							matches = False
+							break
+				if not matches:
+					__log.debug('definePropertiesFromFile ignoring line that does not match condition: %s'%key)
+					missingKeysFound.add(key)
+					continue
+				else:
+					missingKeysFound.discard(key) # optimization to keep this list small
+			
+			if prefix: key = prefix+key 
+			# TODO: make this work better by allowing props to be expanded using a local set of props from this file in addition to build props
+			
+			try:
+				value = context.expandPropertyValues(value)
+				context.defineProperty(key, value, debug=True)
+			except BuildException, e:
+				raise BuildException('Error processing properties file %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
+	finally:
+		f.close()
 	
 	# ensure there the same set of properties is always defined regardless of conditions - 
 	# otherwise it's easy for typos or latent bugs to creep in
