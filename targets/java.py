@@ -279,8 +279,6 @@ class Jar(BaseTarget):
 			if not manifest_entries.get('Class-path'): # suppress this element entirely if not needed, otherwise there would be no way to have an empty classpath
 				manifest_entries.pop('Class-path','')
 			
-			logging.getLogger('ben').critical('classpath=%s', classpath_entries)
-	
 			# create the manifest file
 			create_manifest(manifest, manifest_entries, options=options)
 
