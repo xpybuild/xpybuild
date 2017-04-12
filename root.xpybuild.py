@@ -27,13 +27,8 @@ from pathsets import *
 from targets.zip import Zip
 from targets.copy import Copy
 from targets.custom import Custom
-from targets.markdown_compiler import Markdown
 
 from utils.process import call
-from utils.fileutils import openForWrite
-from utils.outputhandler import ProcessOutputHandler
-
-import xml.etree.ElementTree as ET
 
 requireXpyBuildVersion('1.2')
 
@@ -51,14 +46,12 @@ def createdoc(path, deps, context):
 	call(command, env=environs, timeout=context.mergeOptions()['process.timeout'])
 
 Custom('${OUTPUT_DIR}/api-doc/', FindPaths('./', includes='**/*.py', excludes='**/root.xpybuild.py'), createdoc)
-Markdown('${OUTPUT_DIR}/doc/html/', FindPaths('doc/', includes='**/*.md'))
 Copy('${OUTPUT_DIR}/doc/txt/', MapDest(lambda x: x.replace('.md', '.txt'), FindPaths('doc/', includes='**/*.md')))
 
 
 # Zip all the distributables into a release zip file.
 Zip('${OUTPUT_DIR}/xpybuild_${VERSION}.zip', [
 		AddDestPrefix('api-doc/', FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/api-doc/'))),
-		AddDestPrefix('doc/html/', FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/doc/html/'))),
 		AddDestPrefix('doc/txt/', FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/doc/txt/'))),
 		FindPaths('./', includes='**/*.py'),
 		'release.properties',
