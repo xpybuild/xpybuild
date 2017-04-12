@@ -247,8 +247,9 @@ class BuildTarget(object):
 						for name in files:
 							if isNewer(os.path.join(path, name)): return False
 					log.debug('uptodate: done walking dependency directory %s', f)
-				else:
+				elif isfile(normLongPath(f)):
 					if isNewer(f): return False
+				else: return True # the dep doesn't exist yet. If it's a target, that will notify us to be rebuilt, so don't need to here
 		return True
 		
 	def run(self, context):

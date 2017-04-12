@@ -194,7 +194,7 @@ class BuildScheduler(object):
 					# down the error; and definitely don't want to nuke the work dir which often 
 					# contains invaluable log files - so don't actually call clean here
 					try:
-						deleteFile(target.stampfile)
+						deleteFile(target.getStampFile())
 					except Exception:
 						# hopefully won't happen ever
 						errors.extend(self._handle_error(target.target, prefix='ERROR deleting target stampfile after target failure'))
