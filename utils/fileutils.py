@@ -59,9 +59,9 @@ else:
 def mkdir(newdir):
 	""" Recursively create the specified directory if it doesn't already exist. 
 	
-		If it does, exit without error. 
+	If it does, exit without error. 
 
-		newdir -- The path to create.
+	@param newdir: The path to create.
 	"""
 	newdir=normLongPath(newdir)
 	if os.path.isdir(newdir): # already exists
@@ -85,10 +85,10 @@ def deleteDir(path, allowRetry=True):
 	
 	Contains magic hacks so it works even on paths that exceed the Windows MAX_PATH 260 character length. 
 
-	path -- the path to delete.
+	@param path: the path to delete.
 
-	allowRetry -- set to False to disable automatic retry of the deletion after a few seconds (in case the error was 
-		transient)
+	@param allowRetry: set to False to disable automatic retry of the deletion after a few seconds (in case the error was 
+	transient)
 	
 	"""
 
@@ -186,9 +186,9 @@ def deleteFile(path, allowRetry=True):
 	
 	Contains magic hacks so it works even on paths that exceed the Windows MAX_PATH 260 character length. 
 
-	path -- The path to delete.
+	@param path: The path to delete.
 
-	allowRetry -- If true, wait for a bit and retry the removal if it fails (default: true)
+	@param allowRetry: If true, wait for a bit and retry the removal if it fails (default: true)
 	
 	"""
 	path = normLongPath(path)
@@ -224,9 +224,9 @@ def parsePropertiesFile(lines, excludeLines=None):
 	Parse the contents of the specified properties file or line list, and return an ordered list 
 	of (key,value,lineno) pairs.
 	
-	lines -- an open file handle or a sequence that can be iterated over to get each line in the file.
+	@param lines: an open file handle or a sequence that can be iterated over to get each line in the file.
 
-	excludeLines -- a string of list of strings to search for, any KEY containing these strings will be ignored
+	@param excludeLines: a string of list of strings to search for, any KEY containing these strings will be ignored
 	
 	>>> parsePropertiesFile(['a','b=c',' z  =  x', 'a=d #foo', '#g=h'])
 	[('b', 'c', 2), ('z', 'x', 3), ('a', 'd', 4)]
@@ -268,8 +268,8 @@ def normLongPath(path):
 	Normalizes and absolutizes a path (os.path.abspath), and on windows adds 
 	the \\?\ prefix needed to force correct handling of long (>256 chars) paths. 
 	
-	path -- the absolute path to be converted should be a unicode string where possible, as specifying a byte 
-		string will not work if the path contains non-ascii characters. 
+	@param path: the absolute path to be converted should be a unicode string where possible, as specifying a byte 
+	string will not work if the path contains non-ascii characters. 
 	"""
 	if not path: return path
 	if _isWindows() and path and path.startswith('\\\\?\\'):

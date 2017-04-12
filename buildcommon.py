@@ -46,7 +46,7 @@ def include(file):
 	""" Parse and register the targets and properties in in the specified 
 	xpybuild.py file. 
 	
-	file -- a path relative to the directory containing this file. 
+	file: a path relative to the directory containing this file. 
 	"""
 
 	from buildcontext import getBuildInitializationContext

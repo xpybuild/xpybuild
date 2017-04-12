@@ -32,7 +32,7 @@ class dirname(Composable):
 	"""
 	def __init__(self, path):
 		""" 
-			path -- The input path, possibly containing unreplaced properties.
+		@param path: The input path, possibly containing unreplaced properties.
 		"""
 		# the input path may be composable
 		self.arg = path
@@ -40,7 +40,7 @@ class dirname(Composable):
 	def resolveToString(self, context):
 		""" Perform the expansion and dirname on the argument path.
 
-			context -- a BuildContext
+		@param context: a BuildContext
 
 		>>> str(dirname("path/"))
 		'dirname()'
@@ -82,7 +82,7 @@ class basename(Composable):
 	"""
 	def __init__(self, path):
 		""" 
-			path -- The input path, possibly containing unreplaced properties.
+		@param path: The input path, possibly containing unreplaced properties.
 		"""
 		# the input path may be composable
 		self.arg = path
@@ -90,7 +90,7 @@ class basename(Composable):
 	def resolveToString(self, context):
 		""" Perform the expansion and basename on the argument path.
 
-			context -- a BuildContext
+		@param context: a BuildContext
 
 		>>> str(basename("path/"))
 		'basename(path)'
@@ -135,11 +135,11 @@ class sub(Composable):
 	"""
 	def __init__(self, pat, rep, arg):
 		"""
-			pat -- the regex pattern to match
+		@param pat: the regex pattern to match
 
-			rep -- the replacement string
+		@param rep: the replacement string
 
-			arg -- the input
+		@param arg: the input
 		"""
 		self.pat = pat
 		self.rep = rep
@@ -147,7 +147,7 @@ class sub(Composable):
 	def resolveToString(self, context):
 		""" Do property expansion on the inputs and then perform the regex 
 	
-			 context -- a BuildContext
+		@param context: a BuildContext
 
 		>>> str(sub('a','b','aa'))
 		'sub(a,b,aa)'
@@ -177,7 +177,7 @@ class joinPaths(Composable):
 	def resolveToString(self, context):
 		""" Do property expansion on the inputs and then perform the regex 
 	
-			 context -- a BuildContext
+		@param context: a BuildContext
 		"""
 		return self.pathsep.join(self.pathset.resolve(context))
 	def __str__(self):
@@ -185,23 +185,23 @@ class joinPaths(Composable):
 
 def make_functor(fn, name=None):
 	""" Take an arbitrary function and return a functor that cna take arbitrary 
-		arguments and that can in turn be curried into
-		 a composable object for use in property contexts.
+	arguments and that can in turn be curried into
+	a composable object for use in property contexts.
 
-	   fn -- a function of the form fn(context, *args)
+	Example::
 
-		Example:
+		def fn(context, input):
+			... # do something
+			return input
 
-			def fn(context, input):
-				... # do something
-				return input
+		myfn = make_functor(fn)
 
-			myfn = make_functor(fn)
+		target = "${OUTPUT_DIR}/" + myfn("${MYVAR}")
 
-			target = "${OUTPUT_DIR}/" + myfn("${MYVAR}")
+	This will execute fn(context, "${MYVAR}") at property expansion time and then
+	prepend the expanded "${OUTPUT_DIR}/".
 
-		This will execute fn(context, "${MYVAR}") at property expansion time and then
-		prepend the expanded "${OUTPUT_DIR}/".
+	@param fn: a function of the form fn(context, *args)
 
 	>>> str(make_functor(lambda context, x: context.expandPropertyValues(x))('${INPUT}'))
 	'<lambda>(${INPUT})'

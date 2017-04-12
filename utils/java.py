@@ -40,11 +40,11 @@ defineOption('jar.manifest.defaults', {})
 def create_manifest(path, properties, options):
 	""" Create a manifest file in path from the map properties.
 
-	path -- The path in which to create a manifest file
+	path: The path in which to create a manifest file
 
-	properties -- A map of manifest keys to values
+	properties: A map of manifest keys to values
 
-	options -- The options to use for creating the manifest (prefix: jar.manifest)
+	options: The options to use for creating the manifest (prefix: jar.manifest)
 
 	>>> create_manifest(None, {"Class-path":"foo.jar", "Implementation-name":"Progress Apama"}, {'jar.manifest.defaults':[]}).replace('\\r\\n','\\n')
 	'Class-path: foo.jar\\nImplementation-name: Progress Apama\\n'
@@ -226,21 +226,22 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 def javac(output, inputs, classpath, options, logbasename, targetname):
 	""" Compile some java files to class files.
 
-		output -- path to a directory in which to put the class files (will be created)
+	Will raise BuildException if compilation fails.
 
-		inputs -- list of paths (.java files) to be compiled
+	@param output: path to a directory in which to put the class files (will be created)
 
-		classpath -- classpath to compile with, as a string
+	@param inputs: list of paths (.java files) to be compiled
 
-		options -- options map. javac.options is a list of additional arguments, javac.source is the source version, 
-			javac.target is the target version
+	@param classpath: classpath to compile with, as a string
 
-		logbasename -- absolute, expanded, path to a directory and filename prefix 
-			to use for files such as .err, .out, etc files
+	@param options: options map. javac.options is a list of additional arguments, javac.source is the source version, 
+	javac.target is the target version
 
-		targetname -- to log appropriate error messages
+	@param logbasename: absolute, expanded, path to a directory and filename prefix 
+		to use for files such as .err, .out, etc files
 
-		Will raise BuildException if compilation fails.
+	@param targetname: to log appropriate error messages
+
 	"""
 
 	assert logbasename and '$' not in logbasename
@@ -308,18 +309,18 @@ defineOption('jar.options', [])
 def jar(path, manifest, sourcedir, options, preserveManifestFormatting=False, update=False, outputHandler=None):
 	""" Create a jar file containing a manifest and some other files
 
-		path -- jar file to create. Typically this file does not already exist, but if it does 
-			then the specified files or manifest will be merged into it. 
-		
-		manifest -- path to the manifest.mf file (or None to disable manifest entirely)
+	@param path: jar file to create. Typically this file does not already exist, but if it does 
+	then the specified files or manifest will be merged into it. 
+	
+	@param manifest: path to the manifest.mf file (or None to disable manifest entirely)
 
-		sourcedir -- the directory to pack everything from (this method may add extra files to this dir)
+	@param sourcedir: the directory to pack everything from (this method may add extra files to this dir)
 
-		options -- options map. jar.options is a list of additional arguments
+	@param options: options map. jar.options is a list of additional arguments
 
-		preserveManifestFormatting -- an advanced option that prevents that jar executable from 
-			reformatting the specified manifest file to comply with Java conventions 
-			(also prevents manifest merging if jar already exists)
+	@param preserveManifestFormatting: an advanced option that prevents that jar executable from 
+	reformatting the specified manifest file to comply with Java conventions 
+	(also prevents manifest merging if jar already exists)
 	"""
 	# work out if we need to create a parent directory
 	dir = os.path.dirname(path)
@@ -363,19 +364,17 @@ defineOption('jarsigner.options', [])
 def signjar(path, keystore, options, alias=None, storepass=None, outputHandler=None):
 	""" Signs an existing jar.
 
-	path -- Jar file to sign
+	@param path: Jar file to sign
 
-	keystore -- The keystore with which to sign it
+	@param keystore: The keystore with which to sign it
 
-	options -- The current set of options to be used
+	@param options: The current set of options to be used
 
-	alias -- An alias for the key (optional)
+	@param alias: An alias for the key (optional)
 
-	storepass -- The password for the keystore (optional)
+	@param storepass: The password for the keystore (optional)
 
-	stdout -- a stdout logging functor (optional)
-
-	stderr -- a stderr logging functor (optional)
+	@param outputHandler: the output handler (optional)
 	"""
 	if options['java.home']:
 		binary = os.path.join(options['java.home'], "bin/jarsigner")
@@ -398,17 +397,15 @@ defineOption('javadoc.access', "public")
 def javadoc(path, sources, classpath, options, outputHandler):
 	""" Create javadoc from sources and a set of options
 
-	path -- The directory under which to create the javadoc
+	@param path: The directory under which to create the javadoc
 
-	sources -- a list of source files
+	@param sources: a list of source files
 
-	classpath -- a list of jars for the classpath
+	@param classpath: a list of jars for the classpath
 
-	options -- the current set of options to use
+	@param options: the current set of options to use
 
-	stdout -- a stdout logging functor (optional)
-
-	stderr -- a stderr logging functor (optional)
+	@param outputHandler: the output handler (optional)
 	"""
 	deleteDir(path)
 	mkdir(path)

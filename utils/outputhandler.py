@@ -45,14 +45,14 @@ class ProcessOutputHandler(object):
 	called to get further information if desired. 
 	
 	Subclasses may often wish to do some of the following:
-	- override the logic for deciding what consistutes an error/warning 
-		(see _decideLogLevel)
-	- use a regex to get the filename and number from error messages to 
-		support IDE jump-to integration (see _parseLocationFromLine)
-	- strip timestamp/threadid prefixes from lines (see _preprocessLine) 
-	- support warnings-as-errors behaviour by putting the first warning into 
-		the final error message if the only error is that there are warnings 
-		(by overriding handleEnd)
+		- override the logic for deciding what consistutes an error/warning 
+			(see _decideLogLevel)
+		- use a regex to get the filename and number from error messages to 
+			support IDE jump-to integration (see _parseLocationFromLine)
+		- strip timestamp/threadid prefixes from lines (see _preprocessLine) 
+		- support warnings-as-errors behaviour by putting the first warning into 
+			the final error message if the only error is that there are warnings 
+			(by overriding handleEnd)
 	
 	This class is not thread-safe, so locking should be provided by the caller 
 	if multiple threads are in use (e.g. for reading stdout+err in parallel). 
@@ -64,15 +64,17 @@ class ProcessOutputHandler(object):
 		always pass **kwargs down to the super constructor to allow for new 
 		functionality to be added
 		
-		name -- a short display name for this process or target, used as a 
-			prefix for log lines. 
-		treatStdErrAsErrors -- controls where all content on stderr 
-			(rather than stdout) is treated as an error by default. The correct 
-			setting depends on how the process being invoked uses stdout/err. 
-		options -- a dictionary of resolved option values, in case aspects 
-			of this handler are customizable. Available to implementastions as 
-			self.options (if None is passed, self.options will be an empty 
-			dictionary)
+		@param name: a short display name for this process or target, used as a 
+		prefix for log lines. 
+		
+		@param treatStdErrAsErrors: controls where all content on stderr 
+		(rather than stdout) is treated as an error by default. The correct 
+		setting depends on how the process being invoked uses stdout/err. 
+		
+		@keyword options: a dictionary of resolved option values, in case aspects 
+		of this handler are customizable. Available to implementastions as 
+		self.options (if None is passed, self.options will be an empty 
+		dictionary)
 		"""
 		self._name = name
 		self._errors = []
@@ -95,8 +97,8 @@ class ProcessOutputHandler(object):
 		on the line before stashing errors/warnings, and passing the 
 		pre-processed line to _log for logging at the specified level. 
 		
-		isstderr -- if stdout/err are segregated then this can be used as a 
-			hint to indicate the source of the line. 
+		@param isstderr: if stdout/err are segregated then this can be used as a 
+		hint to indicate the source of the line. 
 		"""
 		level = self._decideLogLevel(line, isstderr)
 		if not level: return
@@ -189,7 +191,8 @@ class ProcessOutputHandler(object):
 		self._logger.handle(r)
 
 	def _preprocessLine(self, line): 
-		""" Performs any necessary transformations on the line before it is 
+		""" 
+		Performs any necessary transformations on the line before it is 
 		logged or stored. By default it strips() whitespace. 
 		
 		This can be overridden to add support for stripping 
@@ -203,7 +206,8 @@ class ProcessOutputHandler(object):
 class StdoutRedirector(ProcessOutputHandler):
 	""" Redirects stdout to a file verbatim and reports errors on stderr """
 	def __init__(self, name, fd, **kwargs):
-		""" fd is a binary-mode writable file descriptor """
+		""" 
+		fd is a binary-mode writable file descriptor """
 		ProcessOutputHandler.__init__(self, name, True, **kwargs)
 		self.fd = fd
 	

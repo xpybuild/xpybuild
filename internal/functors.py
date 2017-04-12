@@ -43,15 +43,15 @@ class Compose(Composable):
 	""" A functor that composes other functors or strings """
 	def __init__(self, left, right):
 		"""
-			left -- The left object to compose
-			right -- The right object to compose
+			left: The left object to compose
+			right: The right object to compose
 		"""
 		self.left = left
 		self.right = right
 	def resolveToString(self, context):
 		""" Compose the two objects. Strings as literals, other objects are invoked with context argument.
 
-			context -- a BuildContext
+			context: a BuildContext
 
 		>>> Compose('a', 'b').resolveToString(None)
 		'ab'
@@ -80,9 +80,9 @@ class ComposableFn(Composable):
 	""" A functor wrapping an arbitrary function and arguments that can be composed """
 	def __init__(self, fn, *args, **kwargs):
 		"""
-			fn -- The function to wrap. Must have the format fn(context, *args)
-			*args -- Arguments to the function
-			name -- optional display name for the functor
+			fn: The function to wrap. Must have the format fn(context, *args)
+			*args: Arguments to the function
+			name: optional display name for the functor
 		"""
 		self.fn = fn
 		self.args = args
@@ -91,7 +91,7 @@ class ComposableFn(Composable):
 	def resolveToString(self, context):
 		""" Execute the function with the context and arguments as arguments,
 
-			context -- a BuildContext
+			context: a BuildContext
 
 		>>> ComposableFn(lambda context, a, b: a+b, 'a', 'b').resolveToString(None)
 		'ab'
@@ -108,7 +108,7 @@ class ComposableWrapper:
 	""" A functor which wraps a function and can be curried into a ComposableFunction """
 	def __init__(self, fn, name=None):
 		""" 
-			fn -- a function of the form fn(context, *args)
+			fn: a function of the form fn(context, *args)
 		"""
 		self.fn = fn
 		self.name=name

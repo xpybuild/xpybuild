@@ -74,21 +74,21 @@ class Unpack(BaseTarget):
 	
 	def __init__(self, dest, archives): 
 		"""
-		dest -- the output directory (ending with a "/"). Never 
-			specify a dest directory that is also written to by another 
-			target (e.g. do not specify a build 'output' directory here). 
+		@param dest: the output directory (ending with a "/"). Never 
+		specify a dest directory that is also written to by another 
+		target (e.g. do not specify a build 'output' directory here). 
 			
-		archives -- the input archives to be unpacked, which may be any 
-			combination of strings, PathSets, FilteredArchiveContents and lists of these. 
-			If these PathSets include mapping information, this 
-			will be used to define where (under the dest directory) each 
-			file from within that archive is copied (but cannot be used to 
-			change the archive-relative path of each item). 
-			
-			For advanced cases, FilteredArchiveContents can be used to provide 
-			customized mapping and filtering of the archive contents, 
-			including manipulation of the destinations encoded within the 
-			archive itself. 
+		@param archives: the input archives to be unpacked, which may be any 
+		combination of strings, PathSets, FilteredArchiveContents and lists of these. 
+		If these PathSets include mapping information, this 
+		will be used to define where (under the dest directory) each 
+		file from within that archive is copied (but cannot be used to 
+		change the archive-relative path of each item). 
+		
+		For advanced cases, FilteredArchiveContents can be used to provide 
+		customized mapping and filtering of the archive contents, 
+		including manipulation of the destinations encoded within the 
+		archive itself. 
 		
 		"""
 		if not dest.endswith('/'): raise BuildException('Unpack target destination must be a directory (ending with "/"), not: "%s"'%dest)
@@ -199,17 +199,17 @@ class FilteredArchiveContents(object):
 	
 	def __init__(self, archivePath, includes=None, excludes=None, destMapper=None):
 		"""
-		archivePath -- The archive to unpack; either a string or a singleton PathSet
+		@param archivePath: The archive to unpack; either a string or a singleton PathSet
 
-		destMapper -- A functor that takes a (context, destPath) where destPath 
-			is an archive-relative path (guaranteed to contain / not \\), and 
-			returns the desired destination relative path string. 
-			The functor should have a deterministic and 
-			user-friendly __str__ implementation. 
+		@param destMapper: A functor that takes a (context, destPath) where destPath 
+		is an archive-relative path (guaranteed to contain / not \\), and 
+		returns the desired destination relative path string. 
+		The functor should have a deterministic and 
+		user-friendly __str__ implementation. 
 
-		includes -- a list of include patterns (if provided excludes all non-matching files)
+		@param includes: a list of include patterns (if provided excludes all non-matching files)
 
-		excludes -- a list of exclude patterns (processed after includes)
+		@param excludes: a list of exclude patterns (processed after includes)
 		"""
 		self.__path = PathSet(archivePath)
 		self.__destMapper = destMapper
@@ -234,7 +234,7 @@ class FilteredArchiveContents(object):
 		""" Decides whether the specified path within the archive should be 
 		unpacked, based on the include/exclude filters
 		
-		path -- a relative path within the archive
+		@param path: a relative path within the archive
 		"""
 		if not self.__excludes and not self.__includes: return True
 		if not self.__isResolved:

@@ -29,7 +29,7 @@ class Touch(BaseTarget):
 	
 	def __init__(self, name):
 		"""
-		name -- the output filename
+		name: the output filename
 		"""
 		BaseTarget.__init__(self, name, [])
 	

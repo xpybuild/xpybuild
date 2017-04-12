@@ -124,11 +124,11 @@ class PathSet(BasePathSet):
 		"""
 		Construct a PathSet from the specified strings and other pathsets. 
 		
-		inputs -- contains strings, targets and PathSet objects, nested as deeply as 
-			you like within lists and tuples. The strings must be absolute  
-			paths or paths relative to the build file where this PathSet is 
-			defined, and may not contain the '*' character. Directory 
-			paths must end with '/'. 
+		@param inputs: contains strings, targets and PathSet objects, nested as deeply as 
+		you like within lists and tuples. The strings must be absolute  
+		paths or paths relative to the build file where this PathSet is 
+		defined, and may not contain the '*' character. Directory 
+		paths must end with '/'. 
 			
 		>>> str(PathSet('a', [('b/', PathSet('1/2/3/', '4/5/6/'), ['d/e'])], 'e/f/${x}').resolveWithDestinations(BaseContext({'x':'X/'}))).replace('\\\\\\\\','/')
 		"[('BUILD_DIR/a', 'a'), ('BUILD_DIR/b/', 'b/'), ('BUILD_DIR/1/2/3/', '3/'), ('BUILD_DIR/4/5/6/', '6/'), ('BUILD_DIR/d/e', 'e'), ('BUILD_DIR/e/f/X/', 'X/')]"
@@ -250,14 +250,15 @@ class DirBasedPathSet(BasePathSet):
 	"""
 	def __init__(self, dir, *children):
 		"""
-		dir -- the base directory, which may include substitution variables.
-			When fully expanded, it is essential that dir ends with a '/'. 
-			May be a string or a DirGeneratedByTarget.
-		children -- strings defining the child files or dirs, which may 
-			include ${...} variables but not '*' expansions. Can be specified 
-			nested inside tuples or lists if desired. If any of the child 
-			strings contains a ${...[]} variable, it will be expanded 
-			early and split around the ',' character. 
+		@param dir: the base directory, which may include substitution variables.
+		When fully expanded, it is essential that dir ends with a '/'. 
+		May be a string or a DirGeneratedByTarget.
+
+		@param children: strings defining the child files or dirs, which may 
+		include ${...} variables but not '*' expansions. Can be specified 
+		nested inside tuples or lists if desired. If any of the child 
+		strings contains a ${...[]} variable, it will be expanded 
+		early and split around the ',' character. 
 		"""
 		self.__dir = dir
 		
@@ -326,8 +327,8 @@ class FindPaths(BasePathSet):
 	Destination paths (where needed) are generated from the path underneath the
 	base dir.
 	
-	dir -- May be a simple string, or a DirGeneratedByTarget to glob under a 
-		directory generated as part of the build. 
+	@param dir: May be a simple string, or a DirGeneratedByTarget to glob under a 
+	directory generated as part of the build. 
 
 	>>> str(FindPaths('a/b/c', includes=['*.x', 'y/**/z/foo.*'], excludes=['xx', '**/y']))
 	'FindPaths("a/b/c", includes=["*.x", "y/**/z/foo.*"], excludes=["xx", "**/y"])'
@@ -348,13 +349,13 @@ class FindPaths(BasePathSet):
 	"""
 	def __init__(self, dir, excludes=None, includes=None):
 		"""
-		dir -- base directory to search (relative or absolute, may contain ${...} variables). 
-			May be a simple string, or a DirGeneratedByTarget to glob under a 
-			directory generated as part of the build. 
+		@param dir: base directory to search (relative or absolute, may contain ${...} variables). 
+		May be a simple string, or a DirGeneratedByTarget to glob under a 
+		directory generated as part of the build. 
 
-		includes -- a list of glob patterns for the files to include (excluding all others)
+		@param includes: a list of glob patterns for the files to include (excluding all others)
 
-		excludes -- a list of glob patterns to exclude after processing any includes.
+		@param excludes: a list of glob patterns to exclude after processing any includes.
 		"""
 		self.__dir = dir
 		self.includes = flatten(includes)
@@ -491,12 +492,14 @@ class TargetsWithTag(BasePathSet):
 	"""
 	def __init__(self, targetTag, allowDirectories=False, walkDirectories=False):
 		"""
-		targetTag -- the tag name
-		allowDirectories -- set this to True to allow directories to be specified 
-			(by default this is False to avoid errors where a directory is 
-			used in a Copy without FindPaths, and therefore ends up empty)
-		walkDirectories -- implies allowDirectories. Recursively enumerate the 
-			contents of the directory at build time.
+		@param targetTag: the tag name
+		
+		@param allowDirectories: set this to True to allow directories to be specified 
+		(by default this is False to avoid errors where a directory is 
+		used in a Copy without FindPaths, and therefore ends up empty)
+		
+		@param walkDirectories: implies allowDirectories. Recursively enumerate the 
+		contents of the directory at build time.
 		"""
 		self.__targetTag = targetTag
 		self.__location = BuildFileLocation()
@@ -575,10 +578,11 @@ class FilteredPathSet(_DerivedPathSet):
 		Construct a PathSet that filters its input, e.g. allows only 
 		directories or only files. 
 		
-		includeDecider -- a function that takes an absolute resolved path and 
-			returns True if it should be included
-		delayFiltration -- don't filter for dependencies, only for the set used
-			at build time
+		@param includeDecider: a function that takes an absolute resolved path and 
+		returns True if it should be included
+		
+		@param delayFiltration: don't filter for dependencies, only for the set used
+		at build time
 		"""
 		_DerivedPathSet.__init__(self, pathSet)
 		self.__includeDecider = includeDecider
@@ -625,11 +629,11 @@ class AddDestPrefix(_DerivedPathSet):
 	def __init__(self, prefix, pathSet):
 		""" Construct an AddDestPrefix from a PathSet, path or list of paths/path sets.
 
-		prefix -- a string that should be added to the beginning of each dest 
-			path. Usually this will end with a slash '/'. 
+		@param prefix: a string that should be added to the beginning of each dest 
+		path. Usually this will end with a slash '/'. 
 
-		pathSet -- either a PathSet object of some type or something from which a
-			path set can be constructed.
+		@param pathSet: either a PathSet object of some type or something from which a
+		path set can be constructed.
 		"""
 		if not isinstance(pathSet, BasePathSet): pathSet = PathSet(pathSet)
 		_DerivedPathSet.__init__(self, pathSet)
@@ -666,8 +670,8 @@ class MapDest(_DerivedPathSet):
 	"""
 	def __init__(self, fn, pathSet):
 		"""
-		fn -- a function that takes a resolved dest path (using forward slashes 
-			not backslashes) as input, and returns a potentially different dest path
+		@param fn: a function that takes a resolved dest path (using forward slashes 
+		not backslashes) as input, and returns a potentially different dest path
 		"""
 		if not isinstance(pathSet, BasePathSet): pathSet = PathSet(pathSet)
 		_DerivedPathSet.__init__(self, pathSet)
@@ -691,8 +695,8 @@ class MapSrc(_DerivedPathSet):
 	"""
 	def __init__(self, fn, pathSet):
 		"""
-		fn -- a function that takes a resolved dest path (using forward slashes 
-			not backslashes) as input, and returns a potentially different dest path
+		@param fn: a function that takes a resolved dest path (using forward slashes 
+		not backslashes) as input, and returns a potentially different dest path
 		"""
 		if not isinstance(pathSet, BasePathSet): pathSet = PathSet(pathSet)
 		_DerivedPathSet.__init__(self, pathSet)
@@ -716,7 +720,7 @@ class FlattenDest(_DerivedPathSet):
 	"""
 	def __init__(self, pathSet):
 		"""
-		pathSet -- The input PathSet, path or list of path/PathSets.
+		@param pathSet: The input PathSet, path or list of path/PathSets.
 		"""
 		_DerivedPathSet.__init__(self, pathSet)
 	
@@ -757,10 +761,10 @@ class RemoveDestParents(_DerivedPathSet):
 	def __init__(self, dirsToRemove, pathSet):
 		""" Construct an RemoveDestParents from a PathSet, path or list of paths/path sets.
 
-		dirsToRemove -- the number of parent directory elements to remove
+		@param dirsToRemove: the number of parent directory elements to remove
 
-		pathSet -- either a PathSet object of some type or something from which a
-			path set can be constructed.
+		@param pathSet: either a PathSet object of some type or something from which a
+		path set can be constructed.
 		"""
 		assert dirsToRemove > 0
 		if not isinstance(pathSet, BasePathSet): pathSet = PathSet(pathSet)
@@ -803,9 +807,9 @@ class SingletonDestRenameMapper(_DerivedPathSet):
 	"""
 	def __init__(self, newDestRelPath, pathSet):
 		"""
-		newDestRelPath -- Replacement destination path (including file name)
+		@param newDestRelPath: Replacement destination path (including file name)
 
-		pathSet -- The input path or PathSet, which must contain a single file.
+		@param pathSet: The input path or PathSet, which must contain a single file.
 		"""
 		if not isinstance(pathSet, BasePathSet): pathSet = PathSet(pathSet)
 		_DerivedPathSet.__init__(self, pathSet)
@@ -834,8 +838,6 @@ class DirGeneratedByTarget(BasePathSet):
 	a relative path to a DirGeneratedByTarget (which will be converted to the 
 	equivalent DirBasedPathSet expression). 
 
-	dir -- The directory, which is assumed to be a valid target generated by this build; must end with a slash. 
-
 	>>> str(DirGeneratedByTarget('4/5/6/'))
 	'DirGeneratedByTarget("4/5/6/")'
 
@@ -845,7 +847,7 @@ class DirGeneratedByTarget(BasePathSet):
 	"""
 	def __init__(self, dirTargetName):
 		"""
-		dirTargetName -- The directory that another target will generate.
+		@param dirTargetName: The directory that another target will generate.
 		"""
 		BasePathSet.__init__(self)
 		assert isinstance(dirTargetName, basestring)

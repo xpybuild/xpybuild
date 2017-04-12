@@ -40,9 +40,9 @@ def defineOption(name, default):
 	rather as used for (optionally inheritably) settings that affect the 
 	behaviour of one or more targets. 
 	
-	name -- The option name
+	@param name: The option name
 
-	default -- The default value of the option
+	@param default: The default value of the option
 	"""
 	init = getBuildInitializationContext()
 	if init:
@@ -54,10 +54,10 @@ def defineStringProperty(name, default):
 	Do not use this generic function for any properties representing a file 
 	system path, or a boolean/enumeration. 
 	
-	name -- The property name
+	@param name: The property name
 
-	default -- The default value of the propert (can contain other ${...} variables)
-		If set to None, the property must be set on the command line each time
+	@param default: The default value of the propert (can contain other ${...} variables)
+	If set to None, the property must be set on the command line each time
 	"""
 	init = getBuildInitializationContext()
 	if init: init.defineProperty(name, default, lambda v: getBuildInitializationContext().expandPropertyValues(v))
@@ -73,15 +73,15 @@ def definePathProperty(name, default, mustExist=False):
 	For paths which represent output directories of this build, call 
 	registerOutputDirProperties afterwards. 
 
-	name -- The name of the property
+	@param name: The name of the property
 
-	default -- The default path value of the property (can contain other ${...} variables). 
-		If a relative path, will be resolved relative to the build file in 
-		which it is defined. 
-		If set to None, the property must be set on the command line each time
+	@param default: The default path value of the property (can contain other ${...} variables). 
+	If a relative path, will be resolved relative to the build file in 
+	which it is defined. 
+	If set to None, the property must be set on the command line each time
 
-	mustExist -- True if it's an error to specify a directory that doesn't
-		exist (will raise a BuildException)
+	@param mustExist: True if it's an error to specify a directory that doesn't
+	exist (will raise a BuildException)
 	
 	"""
 
@@ -129,12 +129,12 @@ def registerOutputDirProperties(*propertyNames):
 def defineEnumerationProperty(name, default, enumValues):
 	""" Defines a property that must take one of the specified values.
 
-	name -- The name of the property
+	@param name: The name of the property
 
-	default -- The default value of the property (can contain other ${...} variables)
-		If set to None, the property must be set on the command line each time
+	@param default: The default value of the property (can contain other ${...} variables)
+	If set to None, the property must be set on the command line each time
 
-	enumValues -- A list of valid values for this property (can contain other ${...} variables)
+	@param enumValues: A list of valid values for this property (can contain other ${...} variables)
 	"""
 
 	# Expands properties, then checks that it's one of the acceptible values
@@ -156,10 +156,10 @@ def defineEnumerationProperty(name, default, enumValues):
 def defineBooleanProperty(name, default=False):
 	""" Defines a boolean property that will have a True or False value. 
 	
-	name -- The property name
+	@param name: The property name
 
-	default -- The default value (default = False)
-		If set to None, the property must be set on the command line each time
+	@param default: The default value (default = False)
+	If set to None, the property must be set on the command line each time
 	"""
 
 	# Expands property values, then converts to a boolean
@@ -179,15 +179,15 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 	"""
 	Defines a set of properties from a .properties file
 	
-	propertiesFile -- The file to include properties from (can include ${...} variables)
+	@param propertiesFile: The file to include properties from (can include ${...} variables)
 
-	prefix -- if specified, this prefix will be added to the start of all property names from this file
+	@param prefix: if specified, this prefix will be added to the start of all property names from this file
 
-	excludeLines -- a string of list of strings to search for, any KEY containing these strings will be ignored
+	@param excludeLines: a string of list of strings to search for, any KEY containing these strings will be ignored
 	
-	conditions -- an optional list of string conditions that can appear in property 
-		keys e.g. "FOO<condition>=bar" where lines with no condition in this list 
-		are ignored. Conditions are typically lowercase. 
+	@param conditions: an optional list of string conditions that can appear in property 
+	keys e.g. "FOO<condition>=bar" where lines with no condition in this list 
+	are ignored. Conditions are typically lowercase. 
 	"""
 	if conditions: assert not isinstance(conditions,basestring), 'conditions parameter must be a list'
 	__log.info('Defining properties from file: %s', propertiesFile)
@@ -267,7 +267,7 @@ def expandListProperty(propertyName):
 	This is useful for quickly defining multiple targets (e.g. file copies) 
 	based on a list defined as a property. 
 	
-	propertyName -- must end with [] e.g. 'MY_JARS[]'
+	@param propertyName: must end with [] e.g. 'MY_JARS[]'
 	
 	"""
 	assert not propertyName.startswith('$')
@@ -299,15 +299,15 @@ def enableEnvironmentPropertyOverrides(prefix):
 	vars, which in turn take precedence over the defaults specified when 
 	properties are defined. 
 	
-	prefix -- The prefix added to the start of a build property name to form 
-		the name of the environment variable; the prefix is stripped from the 
-		env var name before it is compared with properties defined by the build. This is mandatory (cannot be 
-		empty) and should be set to a build-specific string (e.g. "XYZ_") in 
-		order to ensure that there is no chance of build properties being 
-		accidentally overridden. (e.g. many users have JAVA_HOME in their env 
-		but also in their build, however it may be important for them to 
-		have different values, and subtle bugs could result if the build 
-		property was able to be set implicitly from the environment).
+	@param prefix: The prefix added to the start of a build property name to form 
+	the name of the environment variable; the prefix is stripped from the 
+	env var name before it is compared with properties defined by the build. This is mandatory (cannot be 
+	empty) and should be set to a build-specific string (e.g. "XYZ_") in 
+	order to ensure that there is no chance of build properties being 
+	accidentally overridden. (e.g. many users have JAVA_HOME in their env 
+	but also in their build, however it may be important for them to 
+	have different values, and subtle bugs could result if the build 
+	property was able to be set implicitly from the environment).
 	"""
 	init = getBuildInitializationContext()
 	if init:

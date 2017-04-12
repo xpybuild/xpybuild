@@ -56,13 +56,13 @@ class CompilerMakeDependsPathSet(BasePathSet):
 	"""
 	def __init__(self, target, src, flags=None, includes=None):
 		"""
-		target -- the BaseTarget object for which this path set is being caculated
+		@param target: the BaseTarget object for which this path set is being caculated
 
-		src -- a PathSet of source file paths
+		@param src: a PathSet of source file paths
 
-		flags -- additional compiler flags
+		@param flags: additional compiler flags
 
-		includes -- a list of include directory paths
+		@param includes: a list of include directory paths
 		"""
 		self.target = target
 		self.sources = src
@@ -137,11 +137,11 @@ class Cpp(BaseTarget):
 	
 	def __init__(self, object, source, includes=None, flags=None, dependencies=None, options=None):
 		"""
-		object -- the object file to generate
-		source -- a (list of) source files
-		includes -- a (list of) include directories
-		flags -- a list of additional compiler flags
-		dependencies -- a list of additional dependencies that need to be built 
+		@param object: the object file to generate
+		@param source: a (list of) source files
+		@param includes: a (list of) include directories
+		@param flags: a list of additional compiler flags
+		@param dependencies: a list of additional dependencies that need to be built 
 		before this target
 		"""
 		self.source = PathSet(source)
@@ -177,11 +177,11 @@ class C(BaseTarget):
 	
 	def __init__(self, object, source, includes=None, flags=None, options=None, dependencies=None):
 		"""
-		object -- the object file to generate
-		source -- a (list of) source files
-		includes -- a (list of) include directories
-		flags -- a list of additional compiler flags
-		dependencies -- a list of additional dependencies that need to be built 
+		@param object: the object file to generate
+		@param source: a (list of) source files
+		@param includes: a (list of) include directories
+		@param flags: a list of additional compiler flags
+		@param dependencies: a list of additional dependencies that need to be built 
 		before this target
 		"""
 		self.source = PathSet(source)
@@ -221,22 +221,22 @@ class Link(BaseTarget):
 	
 	def __init__(self, bin, objects, libs=None, libpaths=None, shared=False, options=None, flags=None, dependencies=None):
 		"""
-		bin -- the output binary
+		@param bin: the output binary
 
-		objects -- a (list of) input object
+		@param objects: a (list of) input object
 
-		libs -- a (list of) libraries linked against (optional) in platform-neutral format. 
-			Can include list properties like '${FOO_LIB_NAMES[]}'. 
+		@param libs: a (list of) libraries linked against (optional) in platform-neutral format. 
+		Can include list properties like '${FOO_LIB_NAMES[]}'. 
 
-		libpaths -- a (list of) additional library search directories (optional)
+		@param libpaths: a (list of) additional library search directories (optional)
 
-		shared -- if true compiles to a shared object (.dll or .so) (optional, defaults to false)
+		@param shared: if true compiles to a shared object (.dll or .so) (optional, defaults to false)
 
-		flags -- a list of additional linker flags
+		@param flags: a list of additional linker flags
 
-		options -- a map of options to the underlying operation specific to this target (optional)
+		@param options: a map of options to the underlying operation specific to this target (optional)
 
-		dependencies -- a list of additional dependencies (targets or files)
+		@param dependencies: a list of additional dependencies (targets or files)
 		"""
 		self.objects = PathSet(objects)
 		self.libs = libs or []
@@ -276,9 +276,9 @@ class Ar(BaseTarget):
 	
 	def __init__(self, bin, objects):
 		"""
-		bin -- the output library
+		@param bin: the output library
 
-		objects -- a (list of) input objects
+		@param objects: a (list of) input objects
 
 		"""
 		self.objects = PathSet(objects)

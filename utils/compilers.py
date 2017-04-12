@@ -75,15 +75,15 @@ class Compiler(Process):
 		Process.__init__(self, environs=environs)
 	def compile(self, context, output, src, options, flags=None, includes=None): 
 		"""
-		output -- The object file to create
+		output: The object file to create
 
-		src -- A list of source file paths
+		src: A list of source file paths
 
-		options -- an options dictionary to override global options
+		options: an options dictionary to override global options
 
-		flags -- additional flags to pass to the compiler
+		flags: additional flags to pass to the compiler
 
-		includes -- a list of include directory paths
+		includes: a list of include directory paths
 		"""
 		assert False
 
@@ -95,13 +95,13 @@ class Depends(Process):
 		Process.__init__(self, environs=environs)
 	def depends(self, context, src, options, flags=None, includes=None): 
 		"""
-		src -- A list of source file paths
+		src: A list of source file paths
 
-		options -- an options dictionary to override global options
+		options: an options dictionary to override global options
 
-		flags -- additional flags to pass to the compiler
+		flags: additional flags to pass to the compiler
 
-		includes -- a list of include directory paths
+		includes: a list of include directory paths
 		"""
 		assert False
 
@@ -113,17 +113,17 @@ class Linker(Process):
 		Process.__init__(self, environs=environs)
 	def link(self, context, output, src, options, shared=False, flags=None, libs=None, libdirs=None):
 		"""
-		output -- The library/executable to create
+		output: The library/executable to create
 
-		src -- A list of object file paths
+		src: A list of object file paths
 
-		options -- an options dictionary to override global options
+		options: an options dictionary to override global options
 
-		flags -- additional flags to pass to the compiler
+		flags: additional flags to pass to the compiler
 
-		libs -- A list of libraries to link against
+		libs: A list of libraries to link against
 
-		libdirs -- A list of paths to directories that contain libraries
+		libdirs: A list of paths to directories that contain libraries
 		"""
 		assert False
 
@@ -136,11 +136,11 @@ class Archiver(Process):
 		Process.__init__(self, environs=environs)
 	def archive(self, context, output, src, options): 
 		"""
-		output -- The archive file path to create
+		output: The archive file path to create
 
-		src -- A list of source object file paths
+		src: A list of source object file paths
 
-		options -- an options dictionary to override global options
+		options: an options dictionary to override global options
 		"""
 		assert False
 
@@ -150,15 +150,15 @@ class ToolChain(object):
 	"""
 	def __init__(self, depends, ccompiler, cxxcompiler, linker, archiver):
 		"""
-		depends -- A Depends object to get a list of dependencies from a list of source files
+		depends: A Depends object to get a list of dependencies from a list of source files
 
-		ccompiler -- A Compiler object for compiling C files
+		ccompiler: A Compiler object for compiling C files
 
-		cxxcompiler -- A Compiler object for compiling C++ files
+		cxxcompiler: A Compiler object for compiling C++ files
 
-		linker -- A Linker object for linking object files to a shared library or executable
+		linker: A Linker object for linking object files to a shared library or executable
 
-		archiver -- An Archiver object for making static-link archives
+		archiver: An Archiver object for making static-link archives
 		"""
 		assert isinstance(depends, Depends) or depends == None
 		self.dependencies = depends
@@ -177,9 +177,9 @@ class UnixCompiler(Compiler):
 	"""
 	def __init__(self, command, outputHandler=None, environs=None):
 		"""
-		command -- The path to the compiler
+		command: The path to the compiler
 		
-		outputHandler -- a ProcessOutputHandler to parse the output of the compiler
+		outputHandler: a ProcessOutputHandler to parse the output of the compiler
 		"""
 		Compiler.__init__(self, environs=environs)
 		self.compiler_command = command
@@ -203,9 +203,9 @@ class UnixLinker(Linker):
 	"""
 	def __init__(self, command, outputHandler=None, environs=None):
 		"""
-		command -- The path to the linker
+		command: The path to the linker
 		
-		outputHandler -- a ProcessOutputHandler to parse the output of the linker
+		outputHandler: a ProcessOutputHandler to parse the output of the linker
 		"""
 		Linker.__init__(self, environs=environs)
 		self.linker_command = command
@@ -235,9 +235,9 @@ class UnixArchiver(Archiver):
 	"""
 	def __init__(self, command, outputHandler=None, environs=None):
 		"""
-		command -- The path to the archiver
+		command: The path to the archiver
 		
-		outputHandler -- a ProcessOutputHandler to parse the output of the archiver
+		outputHandler: a ProcessOutputHandler to parse the output of the archiver
 		"""
 		Archiver.__init__(self, environs=environs)
 		self.ar_command = command

@@ -35,9 +35,9 @@ class Zip(BaseTarget):
 
 	def __init__(self, archive, inputs):
 		"""
-		archive -- the archive to be created
+		archive: the archive to be created
 
-		inputs -- the files (usually pathsets) to be included in the archive.
+		inputs: the files (usually pathsets) to be included in the archive.
 
 		"""
 		self.inputs = PathSet(inputs)

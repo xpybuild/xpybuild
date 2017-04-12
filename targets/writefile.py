@@ -31,32 +31,37 @@ class WriteFile(BaseTarget):
 	
 	def __init__(self, name, getContents, dependencies=None, mode=None, executable=False, args=None, kwargs=None):
 		"""
-		name -- the output filename
-		getContents -- a string (which will be subject to expansion) or 
-			a function that accepts a context as input 
-			followed optionally by any specified 'args') and returns 
-			the string that should be written to the file. 	
-			
-			The file is written in binary mode, but any occurrences of \n in 
-			the provided string will be replaced automatically with the 
-			OS-specific line separator. 
-			
-			The function will be evaluated during the dependency resolution 
-			phase. 
-			
-		mode -- unix permissions to set with chmod on the destination files. 
-			If not specified, default mode is used. 
-			Ignored on Windows platforms. 
-		executable -- set to True to add Unix executable permissions (simpler 
-			alternative to setting using mode)
-
-		args -- optional tuple containing arguments that should be passed to 
-			the getContents function, after the context argument (first arg)
-		kwargs -- optional dictionary containing kwargs that should be passed 
-			to the getContents function. 
+		Constructor. 
 		
-		dependencies -- any targets which need to be built in order to run this
-			target
+		@param name: the output filename
+		
+		@param getContents: a string (which will be subject to expansion) or 
+		a function that accepts a context as input 
+		followed optionally by any specified 'args') and returns 
+		the string that should be written to the file.
+		
+		The file is written in binary mode, but any occurrences of the newline character \\n in 
+		the provided string will be replaced automatically with the 
+		OS-specific line separator. 
+		
+		The function will be evaluated during the dependency resolution 
+		phase. 
+			
+		@param mode: unix permissions to set with chmod on the destination files. 
+		If not specified, default mode is used. 
+		Ignored on Windows platforms. 
+		
+		@param executable: set to True to add Unix executable permissions (simpler 
+		alternative to setting using mode)
+
+		@param args: optional tuple containing arguments that should be passed to 
+		the getContents function, after the context argument (first arg)
+		
+		@param kwargs: optional dictionary containing kwargs that should be passed 
+		to the getContents function. 
+		
+		@param dependencies: any targets which need to be built in order to run this
+		target
 		"""
 		BaseTarget.__init__(self, name, dependencies or [])
 		self.getContents = getContents

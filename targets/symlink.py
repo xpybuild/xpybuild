@@ -30,8 +30,8 @@ class SymLink(BaseTarget):
 	
 	def __init__(self, dest, src, relative=True):
 		"""
-		dest -- the link to be created
-		src -- what it points at
+		dest: the link to be created
+		src: what it points at
 		"""
 		if isinstance(dest, basestring) and dest.endswith('/'): raise BuildException('SymLink target can only be used for files, not directories') # for now
 		if not hasattr(os, 'symlink'): raise BuildException('SymLink target is not supported on this platform')

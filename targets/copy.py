@@ -35,36 +35,36 @@ class Copy(BaseTarget):
 	
 	def __init__(self, dest, src, mode=None, implicitDependencies=None):
 		"""
-		dest - the output directory (ending with a "/") or file. Never 
-			specify a dest directory that is also written to by another 
-			target (e.g. do not specify an output directory here). If you need 
-			to write multiple files to a directory, use separate Copy 
-			targets for each, with file (rather than directory) target dest 
-			names. 
+		@param dest: the output directory (ending with a "/") or file. Never 
+		specify a dest directory that is also written to by another 
+		target (e.g. do not specify an output directory here). If you need 
+		to write multiple files to a directory, use separate Copy 
+		targets for each, with file (rather than directory) target dest 
+		names. 
 			
-		src - the input, which may be any combination of strings, PathSets and 
-			lists of these. If these PathSets include mapping information, this 
-			will be used to define where (under the dest directory) each 
-			file is copied. 
-			
-			Note that only src files will be copied, any directory in the 
-			src list will be created but its contents will not be copied 
-			across - the only way to copy a directory is to use a FindPaths
-			(or FindPaths(DirGeneratedByTarget('...'))) 
-			for the src, which has the ability to find its contents on disk 
-			(this is necessary to prevent complex race conditions and 
-			build errors arising from implicit directory walking during 
-			the execution phase - if all dir walking happens during 
-			dependency resolution then such errors can be easily detected 
-			before they cause a problem). 
+		@param src: the input, which may be any combination of strings, PathSets and 
+		lists of these. If these PathSets include mapping information, this 
+		will be used to define where (under the dest directory) each 
+		file is copied. 
 		
-		mode -- unix permissions to set with chmod on the destination files. 
-			If not specified, mode is simply copied from source file. 
+		Note that only src files will be copied, any directory in the 
+		src list will be created but its contents will not be copied 
+		across - the only way to copy a directory is to use a FindPaths
+		(or FindPaths(DirGeneratedByTarget('...'))) 
+		for the src, which has the ability to find its contents on disk 
+		(this is necessary to prevent complex race conditions and 
+		build errors arising from implicit directory walking during 
+		the execution phase - if all dir walking happens during 
+		dependency resolution then such errors can be easily detected 
+		before they cause a problem). 
 		
-		implicitDependencies -- provides a way to add additional implicit 
-			dependencies that will not be part of src but may affect the 
-			copy process (e.g. filtering in); this is intended for 
-			use by subclasses, do not set this explicitly. 
+		@param mode: unix permissions to set with chmod on the destination files. 
+		If not specified, mode is simply copied from source file. 
+		
+		@param implicitDependencies: provides a way to add additional implicit 
+		dependencies that will not be part of src but may affect the 
+		copy process (e.g. filtering in); this is intended for 
+		use by subclasses, do not set this explicitly. 
 		"""
 		if mode: raise Exception(dest)
 		src = PathSet(src)
@@ -147,8 +147,9 @@ class Copy(BaseTarget):
 		return r
 
 class FilteredCopy(Copy):
-	""" A target that copies input text file(s) to an output file or directory, 
-		filtering each line through the specified line mappers. 
+	"""
+	A target that copies input text file(s) to an output file or directory, 
+	filtering each line through the specified line mappers. 
 	
 	The parent directory will be created if it doesn't exist already. 
 
@@ -156,29 +157,29 @@ class FilteredCopy(Copy):
 	
 	def __init__(self, dest, src, *mappers):
 		"""
-		dest - the output directory (ending with a "/") or file. Never 
-			specify a dest directory that is also written to by another 
-			target (e.g. do not specify an output directory here). If you need 
-			to write multiple files to the output directory, use separate Copy 
-			targets for each. 
+		@param dest: the output directory (ending with a "/") or file. Never 
+		specify a dest directory that is also written to by another 
+		target (e.g. do not specify an output directory here). If you need 
+		to write multiple files to the output directory, use separate Copy 
+		targets for each. 
 			
-		src - the input, which may be any combination of strings, PathSets and 
-			lists of these. 
+		@param src: the input, which may be any combination of strings, PathSets and 
+		lists of these. 
 		
-		mappers -- a list of mapper objects that will be used to transform 
-			the file, line by line. To avoid build files that accumulate unused 
-			cruft or are hard to understand, it is an error to include a mapper 
-			in this list that is not used, i.e. that does not in any way 
-			change the output. 
-			
-			For simple @TOKEN@ replacement see createReplaceDictLineMappers. 
-			In addition to per-line changes, it is also possible to specify 
-			mappers that add header/footer content to the file. 
-			
-			Note that files are read and written in binary mode, so mappers 
-			will be dealing directly with platform-specific \n and \r 
-			characters; python's os.linesep should be used where a 
-			platform-neutral newline is required. 
+		@param mappers: a list of mapper objects that will be used to transform 
+		the file, line by line. To avoid build files that accumulate unused 
+		cruft or are hard to understand, it is an error to include a mapper 
+		in this list that is not used, i.e. that does not in any way 
+		change the output. 
+		
+		For simple @TOKEN@ replacement see createReplaceDictLineMappers. 
+		In addition to per-line changes, it is also possible to specify 
+		mappers that add header/footer content to the file. 
+		
+		Note that files are read and written in binary mode, so mappers 
+		will be dealing directly with platform-specific \\n and \\r 
+		characters; python's os.linesep should be used where a 
+		platform-neutral newline is required. 
 		
 		"""
 		assert mappers
@@ -233,7 +234,7 @@ class FileContentsMapper(object):
 	""" A base class for mappers that take part in text file transformation for use with FilteredCopy
 	
 	Note that files are read and written in binary mode, so mappers 
-	will be dealing directly with platform-specific \n and \r 
+	will be dealing directly with platform-specific \\n and \\r 
 	characters; python's os.linesep should be used where a 
 	platform-netural new line character is required. 
 
@@ -293,7 +294,7 @@ class RegexLineMapper(FileContentsMapper):
 	the replacement string will be expanded, but not in the regex string. 
 	
 	Note that files are written in binary mode, so rather than hardcoding 
-	"\n", python's os.linesep should be used where a platform-neutral newline 
+	the newline character "\\n", python's os.linesep should be used where a platform-neutral newline 
 	is required. 
 
 	"""
@@ -320,24 +321,26 @@ class InsertFileContentsLineMapper(FileContentsMapper):
 	def getDependencies(self): return [self.filepath]
 
 def createReplaceDictLineMappers(replaceDict, replaceMarker='@'):
-	""" Create a list of line mappers based on the contents of the specified replaceDict, where 
+	"""
+	Create a list of line mappers based on the contents of the specified replaceDict, where 
 	values containing ${...} properties will be expanded out. 
 
-	replaceDict -- The dictionary of keys and values
+	@param replaceDict: The dictionary of keys and values
 
-	replaceMarker -- the delimiter for keys (default=@), e.g. @KEY@ will be replaced with VALUE
+	@param replaceMarker: the delimiter for keys (default=@), e.g. @KEY@ will be replaced with VALUE
 	"""
 	return [StringReplaceLineMapper(replaceMarker+k+replaceMarker, replaceDict[k]) for k in replaceDict]
 
 class AddFileHeader(FileContentsMapper):
-	""" Add the specified string as a header at the 
+	"""
+	Add the specified string as a header at the 
 	start of the file. Note that if a trailing newline is required before 
 	the rest of the file's contents it should be included as part of the header. 
 
 	Property substitution will be performed on the specified string. 
 
 	Note that files are written in binary mode, so rather than hardcoding 
-	"\n", python's os.linesep should be used where a platform-neutral newline 
+	the newline character "\\n", python's os.linesep should be used where a platform-neutral newline 
 	is required. 
 
 	"""
@@ -347,16 +350,17 @@ class AddFileHeader(FileContentsMapper):
 	def getDescription(self, context): return 'AddFileHeader("%s")'%(self.s.replace('\r','\\r').replace('\n','\\n'))
 
 class AddFileFooter(FileContentsMapper):
-	""" Add the specified string as a footer at the 
+	"""
+	Add the specified string as a footer at the 
 	end of the file. Note that if a trailing newline is required at the end 
 	of the file it should be included as part of the footer. 
-
+	
 	Property substitution will be performed on the specified string. 
-
+	
 	Note that files are written in binary mode, so rather than hardcoding 
-	"\n", python's os.linesep should be used where a platform-neutral newline 
+	the newline character "\\n", python's os.linesep should be used where a platform-neutral newline 
 	is required. 
-
+	
 	"""
 	def __init__(self, string): self.s = string
 	def mapLine(self, context, line): return line

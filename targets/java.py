@@ -43,19 +43,19 @@ class SignJars(BaseTarget):
 	"""
 	def __init__(self, output, jars, keystore, alias=None, storepass=None, manifestDefaults=None):
 		""" 
-		output -- The output directory in which to put the signed jars
+		@param output: The output directory in which to put the signed jars
 
-		jars -- The list (or PathSet) of input jars to copy and sign
+		@param jars: The list (or PathSet) of input jars to copy and sign
 
-		keystore -- The path to the keystore
+		@param keystore: The path to the keystore
 
-		alias -- The alias for the keystore (optional)
+		@param alias: The alias for the keystore (optional)
 
-		storepass -- The password for the store file (optional)
+		@param storepass: The password for the store file (optional)
 
-		manifestDefaults -- a dictionary of manifest entries to add to the existing manifest.mf file
-			of each jar before signing.  Entries in this dictionary will be ignored if the same entry
-			is found in the original manifest.mf file already.
+		@param manifestDefaults: a dictionary of manifest entries to add to the existing manifest.mf file
+		of each jar before signing.  Entries in this dictionary will be ignored if the same entry
+		is found in the original manifest.mf file already.
 		"""
 		self.jars = PathSet(jars)
 		self.keystore = keystore
@@ -152,14 +152,14 @@ class Javac(BaseTarget):
 	classpath = None
 	def __init__(self, output, compile, classpath, options=None):
 		""" 
-		output -- output dir for class files
+		@param output: output dir for class files
 
-		compile -- PathSet (or list)  of things to compile
+		@param compile: PathSet (or list)  of things to compile
 
-		classpath -- PathSet (or list) of things to be on the classpath; 
+		@param classpath: PathSet (or list) of things to be on the classpath; 
 
-		options -- generic target options map for passing options to the 
-			underlying operation (optional)
+		@param options: generic target options map for passing options to the 
+		underlying operation (optional)
 		"""
 		self.compile = FilteredPathSet(_isJavaFile, PathSet(compile))
 			
@@ -199,22 +199,22 @@ class Jar(BaseTarget):
 	manifest = None
 	def __init__(self, jar, compile, classpath, manifest, options=None, package=None, preserveManifestFormatting=False):
 		""" 
-		jar -- path to jar to create
+		@param jar: path to jar to create
 
-		compile -- PathSet (or list)  of things to compile
+		@param compile: PathSet (or list)  of things to compile
 
-		classpath -- PathSet (or list) of things to be on the classpath; 
-			destination mapping indicates how they will appear in the manifest
+		@param classpath: PathSet (or list) of things to be on the classpath; 
+		destination mapping indicates how they will appear in the manifest
 
-		manifest -- map of manifest entries, OR a string with the filename to use 
-			OR None to disable manifest generation and just produce a normal zip
+		@param manifest: map of manifest entries, OR a string with the filename to use 
+		OR None to disable manifest generation and just produce a normal zip
 
-		options -- generic target options map
+		@param options: generic target options map
 
-		package -- PathSet (or list) of other files to include in the jar; 
+		@param package: PathSet (or list) of other files to include in the jar; 
 			destination mapping indicates where they will appear in the jar
 		
-		preserveManifestFormatting -- an advanced option that prevents the jar tool from 
+		@param preserveManifestFormatting: an advanced option that prevents the jar tool from 
 			reformatting the specified manifest file to comply with Java conventions 
 			(also prevents manifest merging if jar already exists)
 
@@ -315,13 +315,13 @@ class Javadoc(BaseTarget):
 	"""
 	def __init__(self, destdir, source, classpath, options):
 		"""
-			destdir -- directory to create docs in
+		@param destdir: directory to create docs in
 
-			source -- a set of files to build from
+		@param source: a set of files to build from
 
-			classpath -- a list of jars needed for the classpath
+		@param classpath: a list of jars needed for the classpath
 
-			options -- javadoc.-prefixed options map
+		@param options: javadoc.-prefixed options map
 		"""
 		self.sources = PathSet(source)
 		self.classpath = PathSet(classpath)

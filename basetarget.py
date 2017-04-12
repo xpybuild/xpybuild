@@ -41,9 +41,9 @@ class BaseTarget(Composable):
 			temporary/working files)
 	
 	The methods that may be overridden by subclasses are:
-	- run
-	- clean
-	- getHashableImplicitInputs
+		- run
+		- clean
+		- getHashableImplicitInputs
 	
 	"""
 
@@ -62,12 +62,12 @@ class BaseTarget(Composable):
 	def __init__(self, name, dependencies):
 		""" Normal constructor, should only be called from sub-classes since this is a stub.
 
-		name -- a unique name for this target (may contain unexpanded ${...}
-			variables). Should correspond to the file or directory which is created
-			as a result of running this target.
-		depenencies -- a list of dependencies, which may need to be 
-			flattened/expanded by the build system; may be any combination of 
-			strings, PathSets and lists and may also contain unexpanded variables.
+		@param name: a unique name for this target (may contain unexpanded ${...}
+		variables). Should correspond to the file or directory which is created
+		as a result of running this target.
+		@param dependencies: a list of dependencies, which may need to be 
+		flattened/expanded by the build system; may be any combination of 
+		strings, PathSets and lists and may also contain unexpanded variables.
 		"""
 		if isinstance(name, basestring):
 			if '//' in name:
@@ -235,7 +235,7 @@ class BaseTarget(Composable):
 		These tags can be supplied on the command line to build associated groups of targets, 
 		or just provide a shorter, well-known, name.
 
-		tags -- the tag, tags or list of tags to add to the target.
+		@param tags: the tag, tags or list of tags to add to the target.
 		
 		>>> BaseTarget('a',[]).tags('abc').getTags()
 		<using test initialization context> <using test initialization context>
@@ -259,8 +259,8 @@ class BaseTarget(Composable):
 		Set the priority of this target it encourage it (and its deps) to be 
 		built earlier in the process. The default priority is 0.0
 
-		pri -- a float representing the priority. Higher numbers will be built
-			first where possible.
+		@param pri: a float representing the priority. Higher numbers will be built
+		first where possible.
 		"""
 		self.__priority = pri
 		return self

@@ -28,15 +28,15 @@ class VisualStudioHandler(LogHandler):
 	"""
 	An alternative log handler than adds some VS-format output messages.
 
-	Required Format:
+	Required Format::
 
-	<location>: <category> <number>: <description>
+		<location>: <category> <number>: <description>
 
 	Where:
-		category = warning or error
-		number = specific error or warning number
-		location = <string> or <path>(line) or <path>(line-line) or <path>(line,col) or <path>(line,col-col)
-		description = free-form string
+		- category = warning or error
+		- number = specific error or warning number
+		- location = <string> or <path>(line) or <path>(line-line) or <path>(line,col) or <path>(line,col-col)
+		- description = free-form string
 
 	"""
 	output = None

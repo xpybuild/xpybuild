@@ -59,9 +59,9 @@ class BaseContext(object):
 	
 	def __init__(self, initialProperties=None):
 		""" Initializes a BaseContext object. 
-		   
-		   initialProperties -- a dictionary of initial property values; 
-		      used by doc tests. 
+		
+		@param initialProperties: a dictionary of initial property values; 
+		used by doc tests. 
 		"""
 		
 		self._globalOptions = {} # global options in build file (must be in _definedOptions)
@@ -70,9 +70,9 @@ class BaseContext(object):
 	def getPropertyValue(self, name):
 		""" Get the value of the specified property or raise a BuildException if it doesn't exist.
 
-		name -- the property name (without ${...}) to retrieve. Must be a string.
+		@param name: the property name (without ${...}) to retrieve. Must be a string.
 		
-		For Boolean properties this will be a python Boolean, for everything else it will be a string. 
+		@return: For Boolean properties this will be a python Boolean, for everything else it will be a string. 
 		
 		>>> BaseContext({'A':'b','BUILD_MODE':'release'}).getPropertyValue('BUILD_MODE')
 		'release'
@@ -132,11 +132,11 @@ class BaseContext(object):
 
 		Returns the expanded string, or raises BuildException if expansion fails.
 
-		string -- The string with unexpanded properties in ${...} to expand.
-			May alternatively be a Composable object which will be later 
-			evaluated using its resolveToString method.
+		@param string: The string with unexpanded properties in ${...} to expand.
+		May alternatively be a Composable object which will be later 
+		evaluated using its resolveToString method.
 
-		expandList -- return a list not a string and expand exactly one ${VAR[]} to multiple list items.
+		@param expandList: return a list not a string and expand exactly one ${VAR[]} to multiple list items.
 		
 		>>> BaseContext({'A':'b'}).expandPropertyValues(None)
 		>>> BaseContext({'A':'b'}).expandPropertyValues('')
@@ -219,10 +219,10 @@ class BaseContext(object):
 
 	def expandListPropertyValue(self, propertyName):
 		""" Get the list represented by the specified property or raise a 
-			BuildException if it doesn't exist.
+		BuildException if it doesn't exist.
 
-		name -- the property name (without ${...}) to retrieve. Must be a string 
-			and end with "[]".
+		@param propertyName: the property name (without ${...}) to retrieve. Must be a string 
+		and end with "[]".
 		"""
 		assert not propertyName.startswith('$'), propertyName
 		assert propertyName.endswith('[]'), propertyName
@@ -293,12 +293,12 @@ class BaseContext(object):
 		will take priority, followed by anything overridden globally, finally anything left is taken
 		from the option defaults.
 
-		target -- the target from which to take default options. If target is set then the map will
+		@param target: the target from which to take default options. If target is set then the map will
 			also contain a 'tmpdir' option pointing at the target-specific work directory.
 
-		options = options to override directly
+		@param options: options to override directly
 
-		Returns a map of the merged options and their correct values.
+		@return: Returns a map of the merged options and their correct values.
 		"""
 		if target: 
 			fulloptions = { 'tmpdir' : target.workDir }
@@ -319,11 +319,11 @@ class BaseContext(object):
 		""" Expands any properties in the specified path, then removes trailing path separators, normalizes it for this 
 		platform and then makes it an absolute path if necessary, using the specified default directory. 
 		
-		path -- a string representing a relative or absolute path. May be a string or a Composable
+		@param path: a string representing a relative or absolute path. May be a string or a Composable
 			
-		defaultDir -- the default parent directory to use if this is a relative path
+		@param defaultDir: the default parent directory to use if this is a relative path
 
-		expandList -- passed to expandPropertyValues
+		@param expandList: passed to expandPropertyValues
 
 		>>> BaseContext({'DEF':'output', 'EL':'element'}).getFullPath('path/${EL}', '${DEF}').replace('\\\\','/')
 		'output/path/element'
@@ -379,8 +379,8 @@ class BuildInitializationContext(BaseContext):
 
 		Should only be called from within xpybuild, not from build files.
 		   
-		propertyOverrides -- property override values specified by the user on the command line; all values must be 
-			of type string. 
+		@param propertyOverrides: property override values specified by the user on the command line; all values must be 
+		of type string. 
 		"""
 		
 		BaseContext.__init__(self)
@@ -408,8 +408,8 @@ class BuildInitializationContext(BaseContext):
 		per-target file system operations (e.g. dependency checking, globbing, etc) happens 
 		later, to ensure the targets can be enumerated as fast as possible. 
 		
-		buildFile -- The path to the build file to load.
-		isRealBuild -- True if this is going to be a real build, not just listing available targets etc
+		@param buildFile: The path to the build file to load.
+		@param isRealBuild: True if this is going to be a real build, not just listing available targets etc
 		"""
 		self.__isRealBuild = isRealBuild
 		if os.path.isdir(buildFile): buildFile = os.path.join(buildFile, 'root.xpybuild.py')
@@ -476,12 +476,12 @@ class BuildInitializationContext(BaseContext):
 		Build files should probably not use this directly, but instead call L{propertysupport.defineStringProperty}
 		et al. Will raise an exception if called after the build files have been parsed.
 		
-		name -- must be UPPER_CASE
-		default -- No substitution is performed on this value (see propertysupport.py if you need that).
-			If set to None, the property must be set on the command line each time
-		coerceToValidValue -- None, or a function to validate and/or convert the input string to a value of the right 
-		  type
-		debug -- if True log at DEBUG else log at INFO
+		@param name: must be UPPER_CASE
+		@param default: No substitution is performed on this value (see propertysupport.py if you need that).
+		If set to None, the property must be set on the command line each time
+		@param coerceToValidValue: None, or a function to validate and/or convert the input string to a value of the right 
+		type
+		@param debug: if True log at DEBUG else log at INFO
 		"""
 		self._initializationCheck()
 		
@@ -523,7 +523,7 @@ class BuildInitializationContext(BaseContext):
 		""" Registers that the specified directory should be created before the 
 		build starts.
 						 
-		Build files should use L{propertysupport.registerOutputDirProperty} 
+		Build files should use L{propertysupport.defineOutputDirProperty} 
 		instead of calling this function directly.
 		Will raise an exception if called after the build files have been parsed.
 		"""
@@ -688,7 +688,7 @@ class BuildContext(BaseContext):
 		""" Returns true if the specified target is known. Not intended for use 
 		by build authors
 		
-		target -- a target object, composeable, or string which may be the name or resolved path
+		@param target: a target object, composeable, or string which may be the name or resolved path
 		"""
 		# nb: this exists because we deliberately don't want to expose targets 
 		# in the build context, it shouldn't really be needed

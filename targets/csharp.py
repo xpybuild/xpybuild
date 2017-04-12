@@ -60,15 +60,15 @@ class CSharp(BaseTarget):
 	libs = None
 	def __init__(self, output, compile, main=None, libs=None, flags=None, dependencies=None, resources=None):
 		""" 
-		output -- the resulting .exe or .dll
+		@param output: the resulting .exe or .dll
 		
-		compile -- the input PathSet, path or list of .cs file(s)
+		@param compile: the input PathSet, path or list of .cs file(s)
 		
-		main -- The main class to execute if an exe is to be built.
-			If this is set then an executable will be created.
-			Otherwise this target will build a library.
+		@param main: The main class to execute if an exe is to be built.
+		If this is set then an executable will be created.
+		Otherwise this target will build a library.
 
-		libs -- a list of input libraries (or a PathSet)
+		@param libs: a list of input libraries (or a PathSet)
 		"""
 		self.compile = FilteredPathSet(_isDotNetFile, PathSet(compile))
 		self.main = main

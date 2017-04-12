@@ -113,28 +113,28 @@ def _wait_with_timeout(process, displayName, timeout, read):
 
 def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, timeout=600, displayName=None):
 	"""
-		Call a process with the specified args, logging stderr and stdout to the specified 
-		output handler which will throw an exception if the exit code or output 
-		of the process indicates an error. 
-		
-		NB: Consider using the CustomCommand target instead of invoking this directly whenever possible.
-		
-		args -- The command and arguments to invoke (a list, the first element of which is the executable). 
-			None items in this list will be ignored. 
+	Call a process with the specified args, logging stderr and stdout to the specified 
+	output handler which will throw an exception if the exit code or output 
+	of the process indicates an error. 
+	
+	NB: Consider using the CustomCommand target instead of invoking this directly whenever possible.
+	
+	@param args: The command and arguments to invoke (a list, the first element of which is the executable). 
+		None items in this list will be ignored. 
 
-		outputHandler -- a ProcessOutputHandler instance
+	@param outputHandler: a ProcessOutputHandler instance
 
-		env -- Override the environment the process is started in (defaults to the parent environment)
+	@param env: Override the environment the process is started in (defaults to the parent environment)
 
-		cwd -- Change the working directory the process is started in (defaults to the parent cwd)
-		
-		outputEncoding -- name of the character encoding the process generates. Assumed to be 
-			getStdoutEncoding (e.g. what the terminal is using, or else UTF-8) if not specified. 
+	@param cwd: Change the working directory the process is started in (defaults to the parent cwd)
+	
+	@param outputEncoding: name of the character encoding the process generates. Assumed to be 
+		getStdoutEncoding (e.g. what the terminal is using, or else UTF-8) if not specified. 
 
-		timeout -- maximum time a process is allowed to run. This should ALWAYS be set to a value 
-			from an option and not defaulted, typically options['process.timeout']
-		
-		displayName -- human-friendly description of the process for use in error messages, including the target name if possible
+	@param timeout: maximum time a process is allowed to run. This should ALWAYS be set to a value 
+		from an option and not defaulted, typically options['process.timeout']
+	
+	@param displayName: human-friendly description of the process for use in error messages, including the target name if possible
 	"""
 	processName = os.path.basename(args[0])
 	#if not timeout: # too many things don't set it at present

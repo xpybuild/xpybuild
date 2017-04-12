@@ -37,10 +37,10 @@ class BuildException(Exception):
 		
 		The location can optionally be specified explicitly (e.g. for pathsets with delayed evaluation). 
 	
-		message -- the error cause (does not need to include the target name)
-		location -- usually None, or else a BuildFileLocation object for the source line that caused the problem
-		causedBy -- if True, takes the exception currently on the stack as the caused of this exception, and 
-			adds it to the build exception message
+		@param message: the error cause (does not need to include the target name)
+		@param location: usually None, or else a BuildFileLocation object for the source line that caused the problem
+		@param causedBy: if True, takes the exception currently on the stack as the caused of this exception, and 
+		adds it to the build exception message
 		"""
 		assert message
 		self.__msg = message.strip()
@@ -63,7 +63,7 @@ class BuildException(Exception):
 		Returns a dict suitable for passing as extra= in a logger call, to set 
 		filename/lineno location information if available. 
 		
-		target -- optionally used to find location if not available in this exception
+		@param target: optionally used to find location if not available in this exception
 		"""
 		if self.__location.buildFile:
 			return {'xpybuild_filename':self.__location.buildFile, 'xpybuild_line':self.__location.lineNumber }
@@ -84,7 +84,7 @@ class BuildException(Exception):
 
 		Includes the build file location of the failed target if called with a target.
 
-		target -- The target causing the exception.
+		@param target: The target causing the exception.
 		"""
 		# should be called with a target if possible
 		result = self.__msg
@@ -99,8 +99,8 @@ class BuildException(Exception):
 
 		Includes the build file location of the failed target if called with a target.
 
-		target -- The target causing the exception.
-		includeStack -- If true, also includes the stack trace of the exception.
+		@param target: The target causing the exception.
+		@param includeStack: If true, also includes the stack trace of the exception.
 		"""
 		# should be called with a target if possible
 		result = self.__msg

@@ -22,7 +22,7 @@ from internal.functors import Composable
 def flatten(input):
 	"""Return the input flattened to an array.
 	
-	input -- any variable composed of lists, strings, lambda functions or other 
+	input: any variable composed of lists, strings, lambda functions or other 
 	objects, nested arbitrarily.
 	
 	Returns a list of strings or other objects depth 1. 
