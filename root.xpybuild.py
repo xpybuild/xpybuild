@@ -26,36 +26,42 @@ from pathsets import *
 
 from targets.zip import Zip
 from targets.copy import Copy
-from targets.custom import Custom
+from targets.custom import CustomCommand
 
 from utils.process import call
 
 requireXpyBuildVersion('1.2')
 
 # Need the caller to provide the path to epydoc
-definePathProperty('EPYDOC_ROOT', None, mustExist=True) # points to the /lib directory
-defineOutputDirProperty('OUTPUT_DIR', 'release')
+definePathProperty('EPYDOC_ROOT', None, mustExist=True) # parent of the /lib directory
+defineOutputDirProperty('OUTPUT_DIR', 'release-output')
 definePropertiesFromFile('release.properties')
 
-# Custom function to call epydoc to create the release API docs
-def createdoc(path, deps, context):
-	log = logging.getLogger('pydoc')
-	command = [ sys.executable, '-m', 'epydoc.cli', '-o', path, '--no-private' ]
-	command.extend(deps)
-	environs = { 'PYTHONPATH' : context.expandPropertyValues('${EPYDOC_ROOT}') }
-	call(command, env=environs, timeout=context.mergeOptions()['process.timeout'])
+def markdownToTxt(f): return f.replace('.md', '.txt')
 
-Custom('${OUTPUT_DIR}/api-doc/', FindPaths('./', includes='**/*.py', excludes='**/root.xpybuild.py'), createdoc)
-Copy('${OUTPUT_DIR}/doc/txt/', MapDest(lambda x: x.replace('.md', '.txt'), FindPaths('doc/', includes='**/*.md')))
-
+CustomCommand('${OUTPUT_DIR}/doc/api/', 
+	command=[ 
+		sys.executable, 
+		'-m', 'epydoc.cli', 
+		'-o', CustomCommand.TARGET, 
+		'--no-private', 
+		'-v', 
+		'--name', 'xpybuild v${VERSION}', 
+		#'--fail-on-docstring-warning',
+		CustomCommand.DEPENDENCIES 
+	], 
+	dependencies=FindPaths('./', includes='**/*.py', excludes=['**/root.xpybuild.py', 'tests/**', 'internal/**', 'xpybuild.py']),
+	env={'PYTHONPATH' : PathSet('${EPYDOC_ROOT}/lib')}
+	)
 
 # Zip all the distributables into a release zip file.
 Zip('${OUTPUT_DIR}/xpybuild_${VERSION}.zip', [
-		AddDestPrefix('api-doc/', FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/api-doc/'))),
-		AddDestPrefix('doc/txt/', FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/doc/txt/'))),
-		FindPaths('./', includes='**/*.py'),
+		AddDestPrefix('doc/api/', FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/doc/api/'))),
+		AddDestPrefix('doc/', MapDest(markdownToTxt, FindPaths('doc/', includes=['*.md']))),
+		FindPaths('./', includes='**/*.py', excludes='tests/**'),
 		'release.properties',
-		'README.txt',
+		MapDest(markdownToTxt, 'README.md'),
+		'LICENSE.txt',
 		])
 
 
