@@ -21,7 +21,7 @@
 
 # ##teamcity[progressMessage '(%d/%d) %s']
 
-import logging, re, os, time
+import logging, re, os, time, traceback
 
 from buildcommon import *
 
@@ -52,8 +52,8 @@ class ProgressBarConsoleFormatter(ConsoleFormatter):
 		(self.width, height) = getTerminalSize()
 		self.width = self.width - len("Progress: [] (xxx/xxx)  ")
 		try:
-			self.timethreshold = int(os.environ.get("XPYBUILD_PROGRESS_RATE", 0.0))
-		except:
+			self.timethreshold = int(os.environ.get("XPYBUILD_PROGRESS_RATE", 0))
+		except Exception:
 			pass
 
 	def getSymbol(self):
@@ -84,14 +84,15 @@ class ProgressBarConsoleFormatter(ConsoleFormatter):
 				if self.state == "OK": self.state = "WARN"
 			elif record.levelno == logging.ERROR:
 				self.state = "ERROR"
-			elif record.levelno == logging.CRITICAL and re.match("^\\*\\*\\* *[0-9]*/[0-9]* ", record.getMessage()):
+			elif record.levelno == logging.CRITICAL and re.match("^\\*\\*\\* *([0-9]+)/ *([0-9]+) ", record.getMessage()):
 				self.progress = True
 				try:
 					if time.time()-self.time < self.timethreshold: return
 				
-					current = int(re.sub('([0-9]*)/([0-9]*) .*', '\\1', record.getMessage()[3:]))
-					total = int(re.sub('([0-9]*)/([0-9]*) .*', '\\2', record.getMessage()[3:]))
-
+					m = re.match("^\\*\\*\\* *([0-9]+)/ *([0-9]+) ", record.getMessage())
+				
+					current = int(m.group(1))
+					total = int(m.group(2))
 
 					self.output.write("\r")
 					self.output.write("Progress: [")
@@ -105,8 +106,8 @@ class ProgressBarConsoleFormatter(ConsoleFormatter):
 						self.progress = False
 						self.spinning = False
 					self.time = time.time()
-				except Exception as e:
-					self.output.write("\r%s\n" % e)
+				except Exception as e: # should not happen
+					self.output.write("\r%s\n" % (traceback.format_exc()))
 				self.output.flush()
 			elif record.levelno == logging.CRITICAL and re.match("^\\*\\*\\* XPYBUILD", record.getMessage()):
 				self.progress = False
@@ -125,8 +126,8 @@ class ProgressBarConsoleFormatter(ConsoleFormatter):
 					self.output.write("Progress: ["+self.getNextSpinner()+"]")
 					for i in range(0, self.width+len(" (xxx/xxx)")):
 						self.output.write(" ")
-				except Exception as e:
-					self.output.write("\r%s\n" % e)
+				except Exception as e: # should not happen
+					self.output.write("\r%s\n" % traceback.format_exc())
 				self.output.flush()
 			else:
 				if not self.progress and not self.spinning:
@@ -168,8 +169,8 @@ class VT100ProgressBarConsoleFormatter(ConsoleFormatter):
 		(self.fullwidth, height) = getTerminalSize()
 		self.width = self.fullwidth - len("Progress B-00: [] (xxx/xxx)  ")
 		try:
-			self.timethreshold = int(os.environ.get("XPYBUILD_PROGRESS_RATE", 0.0))
-		except:
+			self.timethreshold = int(os.environ.get("XPYBUILD_PROGRESS_RATE", 0))
+		except Exception:
 			pass
 
 	def getNoColour(self):
@@ -226,11 +227,12 @@ class VT100ProgressBarConsoleFormatter(ConsoleFormatter):
 				if self.state == "OK": self.state = "WARN"
 			elif record.levelno == logging.ERROR:
 				self.state = "ERROR"
-			elif record.levelno == logging.CRITICAL and re.match("^\\*\\*\\* *[0-9]*/[0-9]* ", record.getMessage()):
+			elif record.levelno == logging.CRITICAL and re.match("^\\*\\*\\* *([0-9]+)/ ([0-9]+) ", record.getMessage()):
 				self.progress = True
 				try:
-					current = int(re.sub('([0-9]*)/([0-9]*) .*', '\\1', record.getMessage()[3:]))
-					total = int(re.sub('([0-9]*)/([0-9]*) .*', '\\2', record.getMessage()[3:]))
+					m = re.match("^\\*\\*\\* *([0-9]+)/ ([0-9]+) ", record.getMessage())
+					current = int(m.group(1))
+					total = int(m.group(2))
 
 					try: 
 						line = int(record.threadName[2:])
@@ -252,8 +254,8 @@ class VT100ProgressBarConsoleFormatter(ConsoleFormatter):
 						self.progress = False
 						self.spinning = False
 					self.time = time.time()
-				except Exception as e:
-					self.output.write("\r%s\n" % e)
+				except Exception as e: # should not happen
+					self.output.write("\r%s\n" % traceback.format_exc())
 				self.cursorUp(line)
 				self.output.flush()
 			elif record.levelno == logging.CRITICAL and re.match("^\\*\\*\\* XPYBUILD", record.getMessage()):
@@ -282,7 +284,7 @@ class VT100ProgressBarConsoleFormatter(ConsoleFormatter):
 					self.output.write("Progress %s: [%s]" % (record.threadName, msg))
 					self.cursorUp(line)
 				except Exception as e:
-					self.output.write("\r%s\n" % e)
+					self.output.write("\r%s\n" % traceback.format_exc())
 				self.output.flush()
 			else:
 				if not self.progress and not self.spinning:
