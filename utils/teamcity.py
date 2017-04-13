@@ -26,6 +26,9 @@ import logging, re, os
 from utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter, publishArtifact
 
 def _publishArtifact(path):
+	"""
+	@deprecated: Use L{utils.consoleformatter.publishArtifact} instead
+	"""
 	# legacy implementation for compatibility with xpybuild scripts before 1.12
 	publishArtifact('<artifact>', path)
 
