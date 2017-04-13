@@ -26,7 +26,7 @@ from buildcontext import getBuildInitializationContext
 import utils.fileutils as fileutils
 from utils.flatten import flatten, getStringList
 from utils.buildfilelocation import BuildFileLocation
-from internal.functors import Composable
+from utils.functors import Composable
 from buildexceptions import BuildException
 import logging
 
