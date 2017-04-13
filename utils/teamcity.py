@@ -72,7 +72,7 @@ class TeamcityHandler(ConsoleFormatter):
 	
 	def publishArtifact(self, logger, displayName, path):
 		# displayName is ignored for teamcity
- 		logger.critical("##teamcity[publishArtifacts '%s']" % _teamcityEscape(path))
+		logger.critical("##teamcity[publishArtifacts '%s']" % _teamcityEscape(path))
 
 	
 registerConsoleFormatter("teamcity", TeamcityHandler)
