@@ -72,7 +72,7 @@ class ProcessOutputHandler(object):
 		setting depends on how the process being invoked uses stdout/err. 
 		
 		@keyword options: a dictionary of resolved option values, in case aspects 
-		of this handler are customizable. Available to implementastions as 
+		of this handler are customizable. Available to implementations as 
 		self.options (if None is passed, self.options will be an empty 
 		dictionary)
 		"""
