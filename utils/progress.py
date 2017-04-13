@@ -227,10 +227,10 @@ class VT100ProgressBarConsoleFormatter(ConsoleFormatter):
 				if self.state == "OK": self.state = "WARN"
 			elif record.levelno == logging.ERROR:
 				self.state = "ERROR"
-			elif record.levelno == logging.CRITICAL and re.match("^\\*\\*\\* *([0-9]+)/ ([0-9]+) ", record.getMessage()):
+			elif record.levelno == logging.CRITICAL and re.match("^\\*\\*\\* *([0-9]+)/ *([0-9]+) ", record.getMessage()):
 				self.progress = True
 				try:
-					m = re.match("^\\*\\*\\* *([0-9]+)/ ([0-9]+) ", record.getMessage())
+					m = re.match("^\\*\\*\\* *([0-9]+)/ *([0-9]+) ", record.getMessage())
 					current = int(m.group(1))
 					total = int(m.group(2))
 
