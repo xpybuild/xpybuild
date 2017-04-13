@@ -25,11 +25,11 @@ import logging, re, os, time
 
 from buildcommon import *
 
-from utils.loghandlers import registerHandler, LogHandler
+from utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
 from threading import Lock
 from utils.terminal import getTerminalSize
 
-class ProgressBarHandler(LogHandler):
+class ProgressBarConsoleFormatter(ConsoleFormatter):
 	"""
 	An alternative log handler that outputs as a non-coloured progress bar 
 	for systems without cursor movement support
@@ -45,6 +45,8 @@ class ProgressBarHandler(LogHandler):
 	timethreshold = 0
 
 	def __init__(self, output, buildOptions):
+		ConsoleFormatter.__init__(self)
+		
 		self.output = output
 		self.bufferingDisabled = True # buffering isn't helpful in progress mode
 		(self.width, height) = getTerminalSize()
@@ -134,7 +136,7 @@ class ProgressBarHandler(LogHandler):
 					self.output.write('\n')
 					self.output.flush()
 
-class VT100ProgressBarHandler(LogHandler):
+class VT100ProgressBarConsoleFormatter(ConsoleFormatter):
 	"""
 	An alternative log handler that outputs as a coloured progress bar
 	"""
@@ -150,6 +152,9 @@ class VT100ProgressBarHandler(LogHandler):
 	timethreshold = 0
 
 	def __init__(self, output, buildOptions):
+		
+		ConsoleFormatter.__init__(self)
+		
 		self.output = output
 		self.bufferingDisabled = True # buffering isn't helpful in progress mode
 		self.workers = buildOptions['workers']
@@ -299,7 +304,7 @@ class VT100ProgressBarHandler(LogHandler):
 					self.output.flush()
 
 if isWindows():
-	registerHandler("progress", ProgressBarHandler)
+	registerConsoleFormatter("progress", ProgressBarConsoleFormatter)
 else:
-	registerHandler("progress", VT100ProgressBarHandler)
+	registerConsoleFormatter("progress", VT100ProgressBarConsoleFormatter)
 

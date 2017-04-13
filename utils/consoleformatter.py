@@ -1,6 +1,6 @@
 # xpyBuild - eXtensible Python-based Build System
 #
-# log formatting handlers
+# Handlers for formatting stdout
 #
 # Copyright (c) 2015 - 2017 Software AG, Darmstadt, Germany and/or its licensors
 #
@@ -16,7 +16,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-# $Id: loghandlers.py 301527 2017-02-06 15:31:43Z matj $
+# $Id: ConsoleFormatters.py 301527 2017-02-06 15:31:43Z matj $
 #
 
 import logging, os
@@ -63,13 +63,20 @@ def publishArtifact(displayName, path):
 	for f in _outputFormattersInUse:
 		f.publishArtifact(_artifactsLog, displayName, path)
 
-class LogHandler(object):
+class ConsoleFormatter(object):
 	"""
-	An xpybuild-specific base class for customizing log output for specific 
-	formats e.g. teamcity, visual studio IDE, etc
+	An xpybuild-specific base class for customizing how log output is formatted 
+	for output to the command console/stdout. 
+	
+	This allows to output to be customized for the tool that is executing 
+	xpybuild, for example e.g. teamcity, visual studio IDE, etc. 
 	
 	Use self.fmt.format(record) to format the message including (multi-line) python 
 	exception traces.
+
+	This class is only used for stdout, it does not affect the format used 
+	to write messages to the on-disk xpybuild log file. 
+
 	"""
 
 	level = logging.ERROR
@@ -103,26 +110,26 @@ class LogHandler(object):
 		pass
 		
 
-class XpybuildHandler(LogHandler):
+class DefaultConsoleFormatter(ConsoleFormatter):
 	"""
 	The default text output formatter for xpybuild. 
 	"""
 	def __init__(self, stream, buildOptions):
-		LogHandler.__init__(self)
+		ConsoleFormatter.__init__(self)
 		self.delegate = logging.StreamHandler(stream)
 		self.delegate.setFormatter(logging.Formatter('[%(threadName)4s] %(message)s', None))
 	def handle(self, record):
 		self.delegate.handle(record)
 	def setLevel(self, level):
-		LogHandler.setLevel(self, level)
+		ConsoleFormatter.setLevel(self, level)
 		self.delegate.setLevel(level)
 
-_handlers = {}
+_registeredConsoleFormatters = {}
 
-def registerHandler(name, handler):
+def registerConsoleFormatter(name, handler):
 	"""
-	Called to make a custom output formatter class available for use by xpybuild. 
+	Called to make a custom console formatter class available for use by xpybuild. 
 	"""
-	_handlers[name] = handler
+	_registeredConsoleFormatters[name] = handler
 
-registerHandler("xpybuild", XpybuildHandler)
+registerConsoleFormatter("default", DefaultConsoleFormatter)

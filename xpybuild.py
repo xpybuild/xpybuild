@@ -65,11 +65,13 @@ from utils.fileutils import mkdir, deleteDir
 from propertysupport import defineOption, parsePropertiesFile
 from internal.stacktrace import listen_for_stack_signal
 from buildexceptions import BuildException
-from utils.loghandlers import _handlers, publishArtifact
+from utils.consoleformatter import _registeredConsoleFormatters, publishArtifact
+
 import utils.teamcity # to get handler registered
 import utils.visualstudio # needed to create the entry in _handlers
 import utils.make # needed to create the entry in _handlers
 import utils.progress # needed to create the entry in _handlers
+
 import utils.platformutils 
 from internal.outputbuffering import OutputBufferingStreamWrapper, outputBufferingManager
 
@@ -155,9 +157,8 @@ def main(args):
 '   -F --format               Message output format.',
 '                             Options:',
 ] + [
-'                                - '+ h for h in _handlers
+'                                - '+ h for h in _registeredConsoleFormatters
 ] + [
-'                             (default: xpybuild)', 
 
 ]
 		if reduce(max, map(len, usage)) > 80:
@@ -173,7 +174,7 @@ def main(args):
 		logLevel = None
 		logFile = None
 		findTargetsPattern = None
-		format = "xpybuild"
+		format = "default"
 
 		opts,targets = getopt.gnu_getopt(args, "knJh?x:j:l:L:f:F:", 
 			["help","exclude=","parallel","workers=","keep-going",
@@ -222,11 +223,12 @@ def main(args):
 				logFile = a
 			elif o in ['F', 'format']:
 				format = None
-				for h in _handlers:
+				if a =='xpybuild': a = 'default' # for compatibility
+				for h in _registeredConsoleFormatters:
 					if h.upper() == a.upper():
 						format = h
 				if not format:
-					print 'invalid format "%s"; valid formatters are: %s'%(a, ', '.join(_handlers.keys()))
+					print 'invalid format "%s"; valid formatters are: %s'%(a, ', '.join(_registeredConsoleFormatters.keys()))
 					print '\n'.join(usage)
 					return 1
 			elif o in ['clean']:
@@ -278,7 +280,7 @@ def main(args):
 	outputBufferingDisabled = buildOptions['workers']==1
 
 	# initialize logging to stdout - minimal output to avoid clutter, but indicate progress
-	hdlr = _handlers.get(format, None)
+	hdlr = _registeredConsoleFormatters.get(format, None)
 	assert hdlr # shouldn't happen
 	wrapper = OutputBufferingStreamWrapper(sys.stdout, bufferingDisabled=outputBufferingDisabled)
 	# actually instantiate it

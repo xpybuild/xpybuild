@@ -25,7 +25,7 @@ from utils.flatten import flatten
 from utils.buildfilelocation import BuildFileLocation
 from buildexceptions import BuildException
 from utils.functors import Composable, Compose
-from utils.loghandlers import publishArtifact
+from utils.consoleformatter import publishArtifact
 import traceback
 
 import logging
@@ -75,7 +75,7 @@ class BaseContext(object):
 		For example this can be used to publish log and error output if a target 
 		fails. 
 
-		Equivalent to calling L{utils.loghandlers.publishArtifact}
+		Equivalent to calling L{utils.consoleformatter.publishArtifact}
 		"""
 		# this is a convenience method
 		publishArtifact(displayName, path)

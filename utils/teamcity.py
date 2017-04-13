@@ -23,7 +23,7 @@
 
 import logging, re, os
 
-from utils.loghandlers import registerHandler, LogHandler
+from utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
 
 def _teamcityEscape(s):
 	# to be on the safe side, remove all non-ascii chars and convert to bit string
@@ -41,13 +41,13 @@ def _teamcityEscape(s):
 	return s
 
 
-class TeamcityHandler(LogHandler):
+class TeamcityHandler(ConsoleFormatter):
 	"""
 	An alternative log handler than adds some teamcity-format output messages.
 	"""
 	output = None
 	def __init__(self, output, buildOptions):
-		LogHandler.__init__(self)
+		ConsoleFormatter.__init__(self)
 		self.output = output
 		
 		self.bufferingDisabled = True # useful to let teamcity know as soon as there is an error
@@ -68,4 +68,4 @@ class TeamcityHandler(LogHandler):
  		logger.critical("##teamcity[publishArtifacts '%s']" % _teamcityEscape(path))
 
 	
-registerHandler("teamcity", TeamcityHandler)
+registerConsoleFormatter("teamcity", TeamcityHandler)

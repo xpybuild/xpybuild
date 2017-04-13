@@ -6,6 +6,7 @@ This is the first official public release of xpybuild
 - Zip: Changed Zip target to fail with an error if duplicate entries are added to the zip, previously the target would create a zip with duplicate entries which would cause problems for some tools
 - Moved internal.functors to utils.functors
 - teamcity._publishArtifact: Remove teamcity._publishArtifact and replace with a general-purpose BuildContext.publishArtifact method that can be handled in a custom way by each output formatter
+- utils.loghandler.LogHandler: Remove utils.loghandler.LogHandler to utils.consoleformatter.ConsoleFormatter (also renamed all known subclasses)
 
 ## Fixes
 - Jar: Jar generation now always uses platform-neutral / separators instead of OS-specific slashes in manifest.mf files, which is required for Java to read them correctly

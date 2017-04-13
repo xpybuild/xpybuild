@@ -22,9 +22,9 @@
 # ##teamcity[progressMessage '(%d/%d) %s']
 
 import logging, re, os
-from utils.loghandlers import registerHandler, LogHandler
+from utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
 
-class VisualStudioHandler(LogHandler):
+class VisualStudioConsoleFormatter(ConsoleFormatter):
 	"""
 	An alternative log handler than adds some VS-format output messages.
 
@@ -41,7 +41,7 @@ class VisualStudioHandler(LogHandler):
 	"""
 	output = None
 	def __init__(self, output, buildOptions):
-		LogHandler.__init__(self)
+		ConsoleFormatter.__init__(self)
 		self.output = output
 		self.fmt = logging.Formatter()
 	def handle(self, record):
@@ -77,4 +77,4 @@ class VisualStudioHandler(LogHandler):
 		self.output.flush()
 
 
-registerHandler("visualstudio", VisualStudioHandler)
+registerConsoleFormatter("visualstudio", VisualStudioConsoleFormatter)

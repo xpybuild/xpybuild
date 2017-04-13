@@ -22,11 +22,11 @@
 # ##teamcity[progressMessage '(%d/%d) %s']
 
 import logging, re, os
-from utils.loghandlers import registerHandler, LogHandler
+from utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
 
-class MakeHandler(LogHandler):
+class MakeConsoleFormatter(ConsoleFormatter):
 	"""
-	An alternative log handler that logs in a format that matches GNU Make
+	A formatter that logs in a format that matches GNU Make. 
 
 	Required Format:
 
@@ -35,7 +35,7 @@ class MakeHandler(LogHandler):
 	"""
 	output = None
 	def __init__(self, output, buildOptions):
-		LogHandler.__init__(self)
+		ConsoleFormatter.__init__(self)
 		self.output = output
 	def handle(self, record):
 		if record.levelno == logging.ERROR:
@@ -60,4 +60,4 @@ class MakeHandler(LogHandler):
 		self.output.flush()
 
 
-registerHandler("make", MakeHandler)
+registerConsoleFormatter("make", MakeConsoleFormatter)

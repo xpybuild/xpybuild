@@ -24,7 +24,7 @@ from utils.process import call
 from utils.outputhandler import ProcessOutputHandler
 from utils.flatten import getStringList
 from fileutils import deleteDir, mkdir, deleteFile, openForWrite, normLongPath
-from loghandlers import publishArtifact
+from utils.consoleformatter import publishArtifact
 
 from buildexceptions import BuildException
 

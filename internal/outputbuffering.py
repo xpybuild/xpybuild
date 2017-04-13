@@ -25,7 +25,7 @@ import threading, re, os, time
 
 from buildcommon import *
 
-from utils.loghandlers import registerHandler, LogHandler
+from utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
 from threading import Lock
 from utils.terminal import getTerminalSize
 
