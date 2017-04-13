@@ -24,7 +24,7 @@ from utils.process import call
 from utils.outputhandler import ProcessOutputHandler
 from utils.flatten import getStringList
 from fileutils import deleteDir, mkdir, deleteFile, openForWrite, normLongPath
-from utils.teamcity import _publishArtifact
+from loghandlers import publishArtifact
 
 from buildexceptions import BuildException
 
@@ -187,7 +187,7 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 					print >> fo
 			self._log(logging.ERROR, '%d javac ERRORS in %s - see %s'%(sum([len(x[1]) for x in errs]), self._targetName, self._logbasename+'-errors.txt'), 
 				self._logbasename+'-errors.txt')
-			_publishArtifact(self._logbasename+'-errors.txt')
+			publishArtifact('javac %s errors'%self._targetName, self._logbasename+'-errors.txt')
 			
 		if warns:
 			self._log(logging.WARNING, '%d javac WARNINGS in %s - see %s'%(sum([len(x[1]) for x in warns]), self._targetName, self._logbasename+'-warnings.txt'), 
@@ -199,7 +199,7 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 						if len(warns)>1:
 							errmsg = 'Failed due to %d warnings, first is: %s'%(len(warns), errmsg)
 						# it IS worth publishing warnings if they caused a failure
-						_publishArtifact(self._logbasename+'-warnings.txt')
+						publishArtifact('javac %s warnings'%self._targetName, self._logbasename+'-warnings.txt')
 					print >>fo, '- '+x[0]
 					print >>fo
 					for x2 in x[1]:
@@ -218,7 +218,7 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 			assert not errs
 			return
 		
-		_publishArtifact(self._logbasename+'.out')
+		publishArtifact('javac %s output'%self._targetName, self._logbasename+'.out')
 		
 		raise BuildException(msg)
 

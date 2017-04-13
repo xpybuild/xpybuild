@@ -26,7 +26,6 @@ from utils.process import _wait_with_timeout
 from pathsets import PathSet, BasePathSet
 from buildexceptions import BuildException
 from targets.copy import Copy
-from utils.teamcity import _publishArtifact
 
 class Custom(BaseTarget): # deprecated because error handling/logging is poor and it promotes bad practices like not using options (e.g process timeout)
 	""" DEPRECATED - use CustomCommand instead, or a dedicated BaseTarget subclass
@@ -250,9 +249,8 @@ class CustomCommand(BaseTarget):
 
 						options = context.mergeOptions(self) # get the merged options
 						rc = _wait_with_timeout(process, '%s(%s)'%(self.name, os.path.basename(cmd[0])), options['process.timeout'], False)
-						if rc != 0: success = False
-
-				success = True
+						success = rc == 0
+				
 			finally:
 				try:
 					if os.path.getsize(stderrPath) == 0 and not self.stderr: deleteFile(stderrPath, allowRetry=True)
@@ -271,12 +269,12 @@ class CustomCommand(BaseTarget):
 					if os.path.getsize(stdoutPath) < 15*1024:
 						logMethod('Output from %s stdout is: \n%s', self.name, open(stdoutPath, 'r').read().replace('\n', '\n\t'))
 					mainlog = stdoutPath
-					_publishArtifact(stdoutPath)
+					if not success: context.publishArtifact('%s stdout'%self, stdoutPath)
 				if os.path.isfile(stderrPath) and os.path.getsize(stderrPath) > 0:
 					if os.path.getsize(stderrPath) < 15*1024:
 						logMethod('Output from %s stderr is: \n%s', self.name, open(stderrPath, 'r').read().replace('\n', '\n\t'))
 					mainlog = stderrPath # take precedence over stdout
-					_publishArtifact(stderrPath)
+					if not success: context.publishArtifact('%s stderr'%self, stderrPath)
 			
 			if rc != None and rc != 0:
 				raise BuildException('%s command failed with error code %s; see output at "%s"'%(os.path.basename(cmd[0]), rc, mainlog), location=self.location)

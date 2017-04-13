@@ -63,10 +63,10 @@ from buildcontext import *
 from internal.scheduler import BuildScheduler, logTargetTimes
 from utils.fileutils import mkdir, deleteDir
 from propertysupport import defineOption, parsePropertiesFile
-from utils.teamcity import _teamcityEscape
 from internal.stacktrace import listen_for_stack_signal
 from buildexceptions import BuildException
-from utils.loghandlers import _handlers
+from utils.loghandlers import _handlers, publishArtifact
+import utils.teamcity # to get handler registered
 import utils.visualstudio # needed to create the entry in _handlers
 import utils.make # needed to create the entry in _handlers
 import utils.progress # needed to create the entry in _handlers
@@ -226,7 +226,7 @@ def main(args):
 					if h.upper() == a.upper():
 						format = h
 				if not format:
-					print 'invalid format: '+a
+					print 'invalid format "%s"; valid formatters are: %s'%(a, ', '.join(_handlers.keys()))
 					print '\n'.join(usage)
 					return 1
 			elif o in ['clean']:
@@ -524,8 +524,7 @@ def main(args):
 					log.critical('*** XPYBUILD SUCCEEDED: %s built (%d up-to-date)', targetsBuilt if targetsBuilt else '<NO TARGETS>', (totalTargets-targetsBuilt))
 					return 0
 			finally:
-				if 'teamcity' == format and logFile:
-					log.critical("##teamcity[publishArtifacts '%s']" % _teamcityEscape(logFile))
+				publishArtifact('XPyBuild logfile', logFile)
 		else:
 			raise Exception('Task type not implemented yet - '+task) # should not happen
 		

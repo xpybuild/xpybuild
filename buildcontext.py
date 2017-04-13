@@ -25,6 +25,7 @@ from utils.flatten import flatten
 from utils.buildfilelocation import BuildFileLocation
 from buildexceptions import BuildException
 from utils.functors import Composable, Compose
+from utils.loghandlers import publishArtifact
 import traceback
 
 import logging
@@ -66,6 +67,18 @@ class BaseContext(object):
 		
 		self._globalOptions = {} # global options in build file (must be in _definedOptions)
 		self._properties = dict(initialProperties or {})
+
+	def publishArtifact(self, displayName, path):
+		""" Publishes the specified local path as an artifact, 
+		if supported by the configured output format. 
+		
+		For example this can be used to publish log and error output if a target 
+		fails. 
+
+		Equivalent to calling L{utils.loghandlers.publishArtifact}
+		"""
+		# this is a convenience method
+		publishArtifact(displayName, path)
 
 	def getPropertyValue(self, name):
 		""" Get the value of the specified property or raise a BuildException if it doesn't exist.

@@ -41,14 +41,6 @@ def _teamcityEscape(s):
 	return s
 
 
-def _publishArtifact(path):
-	# TODO: move this to a global xpybuild artifact printing mechanism
-	if not os.path.isabs(path):
-		raise Exception('Cannot publish artifact path "%s" because only absolute paths are supported'%path)
-	if not os.path.exists(path):
-		logging.getLogger('teamcity.artifacts').warning("Cannot find path for teamcity artifact publishing: \"%s\"", path)
-	logging.getLogger('teamcity.artifacts').critical("##teamcity[publishArtifacts '%s']" % _teamcityEscape(path))
-
 class TeamcityHandler(LogHandler):
 	"""
 	An alternative log handler than adds some teamcity-format output messages.
@@ -70,5 +62,10 @@ class TeamcityHandler(LogHandler):
 		else:
 			self.output.write("##teamcity[message text='%s']\n" % _teamcityEscape(record.getMessage()))
 		self.output.flush()
+	
+	def publishArtifact(self, logger, displayName, path):
+		# displayName is ignored for teamcity
+ 		logger.critical("##teamcity[publishArtifacts '%s']" % _teamcityEscape(path))
+
 	
 registerHandler("teamcity", TeamcityHandler)
