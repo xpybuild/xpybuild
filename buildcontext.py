@@ -24,7 +24,7 @@ from buildcommon import *
 from utils.flatten import flatten
 from utils.buildfilelocation import BuildFileLocation
 from buildexceptions import BuildException
-from internal.functors import Composable, Compose
+from utils.functors import Composable, Compose
 import traceback
 
 import logging

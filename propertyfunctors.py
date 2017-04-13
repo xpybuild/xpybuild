@@ -21,7 +21,7 @@
 
 import os, re
 
-from internal.functors import *
+from utils.functors import *
 
 from buildcontext import BaseContext
 from pathsets import PathSet, BasePathSet

@@ -17,7 +17,7 @@
 # $Id: flatten.py 301527 2017-02-06 15:31:43Z matj $
 #
 
-from internal.functors import Composable
+from utils.functors import Composable
 
 def flatten(input):
 	"""Return the input flattened to an array.

@@ -4,6 +4,7 @@ This is the first official public release of xpybuild
 
 ## Breaking changes
 - Zip: Changed Zip target to fail with an error if duplicate entries are added to the zip, previously the target would create a zip with duplicate entries which would cause problems for some tools
+- Moved internal.functors to utils.functors
 
 ## Fixes
 - Jar: Jar generation now always uses platform-neutral / separators instead of OS-specific slashes in manifest.mf files, which is required for Java to read them correctly
