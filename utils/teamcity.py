@@ -23,7 +23,11 @@
 
 import logging, re, os
 
-from utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
+from utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter, publishArtifact
+
+def _publishArtifact(path):
+	# legacy implementation for compatibility with xpybuild scripts before 1.12
+	publishArtifact('<artifact>', path)
 
 def _teamcityEscape(s):
 	# to be on the safe side, remove all non-ascii chars and convert to bit string
