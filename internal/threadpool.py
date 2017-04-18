@@ -183,10 +183,10 @@ class ThreadPool(object):
 				target = None
 				# With the lock held wait for a non-empty queue and get an item from it
 				with self.lock:
-					log.debug("Checking queue contents")
+					#log.debug("Checking queue contents")
 					while self.queue.empty():
 						if self.running:
-							log.debug("Wait for queue to become full")
+							#log.debug("Wait for queue to become full")
 							self.condition.wait()
 						else:
 							return
