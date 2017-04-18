@@ -177,6 +177,7 @@ def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, time
 	out = unicode(out, outputEncoding, errors='replace')
 	err = unicode(err, outputEncoding, errors='replace')
 	
+	hasfailed = True
 	try:
 		for l in out.splitlines():
 			outputHandler.handleLine(l, False)
@@ -187,7 +188,9 @@ def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, time
 			raise BuildException('Terminating process %s after hitting %d second timout' % (processName, timeout))
 			
 		outputHandler.handleEnd(process.returncode) # will throw on error
+		hasfailed = False
 		return outputHandler
 	finally:
 		# easy-read format
-		log.debug('Arguments of failed process are: %s' % '\n   '.join(['"%s"'%s if ' ' in s else s for s in args]))
+		if hasfailed:
+			log.debug('Arguments of failed process are: %s' % '\n   '.join(['"%s"'%s if ' ' in s else s for s in args]))
