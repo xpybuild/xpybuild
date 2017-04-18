@@ -273,6 +273,11 @@ def expandListProperty(propertyName):
 	assert not propertyName.startswith('$')
 	assert propertyName.endswith('[]')
 	context = getBuildInitializationContext()
+
+	# although this isn't a valid return value, it's best to avoid triggering the assertion 
+	# below to support doc-testing custom xpybuild files that happen to use this method
+	if (not context) and 'doctest' in sys.argv[0]: return ['${%s}'%propertyName]
+
 	assert context, 'expandListProperty utility can only be used during build file initialization phase'
 	return context.expandListPropertyValue(propertyName)
 
