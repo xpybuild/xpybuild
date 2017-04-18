@@ -8,7 +8,7 @@ This is the first official public release of xpybuild
 - teamcity._publishArtifact: Deprecate teamcity._publishArtifact and replace with a general-purpose BuildContext.publishArtifact method that can be handled in a custom way by each output formatter
 - utils.loghandler.LogHandler: Remove utils.loghandler.LogHandler to utils.consoleformatter.ConsoleFormatter (also renamed all known subclasses)
 
-## Deprecated
+## Deprecation
 - teamcity._publishArtifact: replaced with a general-purpose BuildContext.publishArtifact method
 
 ## Fixes
