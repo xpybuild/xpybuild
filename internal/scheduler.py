@@ -266,7 +266,7 @@ class BuildScheduler(object):
 			# order to ensure we never rebuild a target at the same time as 
 			# a target that depends on it. We're essentially deleting the entire 
 			# dependency subtree for all nodes that exist already
-			log.debug('Scheduler is treating existing target %s as a leaf and will not rebuild it: %s', target)
+			log.debug('Scheduler is treating existing target as a leaf and will not rebuild it: %s', target)
 			self.leaves.append(target)
 		elif not (self.options['ignore-deps'] and self.options['clean']): 
 			try:
