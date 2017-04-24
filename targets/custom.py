@@ -136,7 +136,7 @@ class CustomCommand(BaseTarget):
 		
 		Command lines MUST NOT depend 
 		in any way on the current source or output directory, always use 
-		the ResolvePath wrapper around such paths. 
+		a PathSet wrapper around such paths. 
 			
 		@param cwd: the working directory to run it from (almost always this should be 
 		left blank, meaning use output dir)
@@ -144,6 +144,8 @@ class CustomCommand(BaseTarget):
 		@param env: a dictionary of environment overrides, or a function that 
 		returns one given a context. Values in the dictionary will 
 		be expanded using the same rules as for the command (see above). 
+		Consider using propertyfunctors.joinPaths for environment variables 
+		containing a list of paths. 
 		
 		@param redirectStdOutToTarget: usually, any stdout is treated as logging 
 		and the command is assumed to create the target file itself, but 
