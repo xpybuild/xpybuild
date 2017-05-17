@@ -99,7 +99,7 @@ class Unpack(BaseTarget):
 		# affect what happens when they contain the same files and must 
 		# overwrite each other
 		
-		archives = [PathSet(a) if isinstance(a, basestring) else a for a in flatten(archives)]
+		archives = [a if (isinstance(a, BasePathSet) or isinstance(a, FilteredArchiveContents)) else PathSet(a) for a in flatten(archives)]
 		
 		BaseTarget.__init__(self, dest, [
 			(a.getDependency() if isinstance(a, FilteredArchiveContents) else a)
