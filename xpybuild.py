@@ -17,7 +17,7 @@
 #   limitations under the License.
 #
 #
-# $Id: xpybuild.py 301527 2017-02-06 15:31:43Z matj $
+# $Id: xpybuild.py 305815 2017-04-13 17:20:20Z bsp $
 # Requires: Python 2.7
 #
 # Goals:
@@ -261,12 +261,8 @@ def main(args):
 				else:
 					includedTargets.append(arg)
 			
-		# sanitize target lists
-		for l in [includedTargets]:
-			if '' in l: l.remove('')
-		if 'all' in includedTargets:
-			includedTargets = ['all']
-		if not includedTargets:
+		# default is all
+		if (not includedTargets) or includedTargets==['']:
 			includedTargets = ['all']
 		
 	except getopt.error, msg:
@@ -300,7 +296,7 @@ def main(args):
 
 	listen_for_stack_signal() # make USR1 print a python stack trace
 
-	allTargets = (includedTargets==['all']) and not excludedTargets
+	allTargets = ('all' in includedTargets) and not excludedTargets
 
 	try:
 		def loadBuildFile():

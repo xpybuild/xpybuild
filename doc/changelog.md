@@ -1,3 +1,17 @@
+# 1.13
+
+## Breaking changes
+None
+
+## Deprecation
+None
+
+## Fixes
+- A target or tag that is disabled in the full build will now be included in the build if specified explicitly even when "all" is also specified in the same invocation of xpybuild.py
+
+## Enhancements
+None
+
 # 1.12
 
 This is the first official public release of xpybuild
