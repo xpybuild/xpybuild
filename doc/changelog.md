@@ -10,7 +10,7 @@ None
 - A target or tag that is disabled in the full build will now be included in the build if specified explicitly even when "all" is also specified in the same invocation of xpybuild.py
 
 ## Enhancements
-None
+- Add ProcessOutputHandler.getLastOutputLine() method and use it to improve the default handleEnd() message if there is a non-zero error code but no errors or warnings
 
 # 1.12
 

@@ -79,6 +79,7 @@ class ProcessOutputHandler(object):
 		self._name = name
 		self._errors = []
 		self._warnings = []
+		self._lastLine = ''
 		
 		self._logger = logging.getLogger('process.%s'%name)
 		self._treatStdErrAsErrors = treatStdErrAsErrors
@@ -100,6 +101,8 @@ class ProcessOutputHandler(object):
 		@param isstderr: if stdout/err are segregated then this can be used as a 
 		hint to indicate the source of the line. 
 		"""
+		self._lastLine = line # in case it helps us give an error message
+		
 		level = self._decideLogLevel(line, isstderr)
 		if not level: return
 		
@@ -127,7 +130,13 @@ class ProcessOutputHandler(object):
 		elif returnCode:
 			msg = '%s failed with return code %s'%(self._name, returnCode)
 			# in case it's relevant, since the return code doesn't provide much to go on
-			if self._warnings: msg += '; no errors reported, first warning was: %s'%self._warnings[0]
+			if self._warnings: 
+				msg += '; no errors reported, first warning was: %s'%self._warnings[0]
+			elif self.getLastOutputLine():
+				# last-ditch attempt to be useful
+				msg += '; no errors reported, last line was: %s'%self.getLastOutputLine()
+			else:
+				msg += ' and no output generated'
 		else:
 			return
 		raise BuildException(msg)
@@ -202,6 +211,7 @@ class ProcessOutputHandler(object):
 	
 	def getErrors(self): return self._errors
 	def getWarnings(self): return self._warnings
+	def getLastOutputLine(self): return self._preprocessLine(self._lastLine)
 	
 class StdoutRedirector(ProcessOutputHandler):
 	""" Redirects stdout to a file verbatim and reports errors on stderr """
