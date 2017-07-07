@@ -11,6 +11,7 @@ None
 
 ## Enhancements
 - Add ProcessOutputHandler.getLastOutputLine() method and use it to improve the default handleEnd() message if there is a non-zero error code but no errors or warnings
+- Cpp/C: Improve clarity of error messages from C/C++ dependency checking by including the source file in the message (if there is only one - which is the common case)
 
 # 1.12
 

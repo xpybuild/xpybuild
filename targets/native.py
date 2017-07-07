@@ -120,7 +120,12 @@ class CompilerMakeDependsPathSet(BasePathSet):
 		# generate them again
 		startt = time.time()
 		log.info("*** Generating native dependencies for %s" % self.target)
-		deplist = options['native.compilers'].dependencies.depends(context=context, src=testsources, options=options, flags=flatten(options['native.cxx.flags']+[context.expandPropertyValues(x).split(' ') for x in self.flags]), includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']]))
+		try:
+			deplist = options['native.compilers'].dependencies.depends(context=context, src=testsources, options=options, flags=flatten(options['native.cxx.flags']+[context.expandPropertyValues(x).split(' ') for x in self.flags]), includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']]))
+		except BuildException, e:
+			if len(testsources)==1 and testsources[0] not in str(e):
+				raise BuildException('Dependency resolution failed for %s: %s'%(testsources[0], e))
+			raise
 		deplist += depsources
 		mkdir(os.path.dirname(dfile))
 		with openForWrite(dfile, 'wb') as f:
