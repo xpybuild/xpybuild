@@ -50,7 +50,10 @@ class __ProcessMonitor(object):
 			self._global_process_list.add(process)
 	def remove(self,process):
 		with self._global_process_lock:
-			self._global_process_list.remove(process)
+			try:
+				self._global_process_list.remove(process)
+			except KeyError:
+				pass # during Ctrl+C this can be called more than once
 
 # used by threadpool to force cleanup of children during shutdown
 _processCleanupMonitor = __ProcessMonitor()
