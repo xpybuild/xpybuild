@@ -230,7 +230,7 @@ class BuildScheduler(object):
 		pool.wait()
 
 		pool.stop()
-		assert self.total == self.index, (self.total, self.index)
+		#assert (not pool.errors) or (self.total == self.index), (self.total, self.index) #disabled because assertion triggers during ctrl+c
 		return pool.errors
 
 	def _updatePriority(self, target):
