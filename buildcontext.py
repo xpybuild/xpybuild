@@ -432,7 +432,9 @@ class BuildInitializationContext(BaseContext):
 		_setBuildInitializationContext(self)
 		self._rootDir = os.path.abspath(os.path.dirname(buildFile))
 		try:
+			BuildFileLocation._currentBuildFile = [buildFile]
 			execfile(buildFile, {})
+			BuildFileLocation._currentBuildFile = []
 		except BuildException, e:
 			log.error('Failed to load build file: %s', e.toSingleLineString(None), extra=e.getLoggerExtraArgDict())
 			log.debug('Failed to load build file: %s', traceback.format_exc())

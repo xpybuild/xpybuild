@@ -24,7 +24,11 @@ from utils.buildfilelocation import BuildFileLocation
 
 class BuildException(Exception):
 	""" A BuildException represents an error caused by an incorrect build or a runtime build problem. i.e. anything 
-	that isn't an internal xpybuild error.
+	that isn't an internal xpybuild error. 
+	
+	Typically a BuildException will not result in a python stack trace being 
+	printed whereas other exception types will, so only raise one if you're 
+	sure the message includes all required diagnostic information already. 
 	
 	""" 
 	
@@ -35,28 +39,49 @@ class BuildException(Exception):
 		(dep resolution, execution, cleaning) will have information about that target added by xpybuild 
 		when it is logged, so there is usually no reason to explicitly add the target name into the message. 
 		
+		To avoid losing essential diagnostic information, do not catch arbitrary 
+		non-BuildException classes and wrap in a BuildException. 
+		
 		The location can optionally be specified explicitly (e.g. for pathsets with delayed evaluation). 
 	
 		@param message: the error cause (does not need to include the target name)
-		@param location: usually None, or else a BuildFileLocation object for the source line that caused the problem
+		
+		@param location: usually None, or else a BuildFileLocation object for the source line that caused the problem. 
+		This is useful if the build file location associated with the exception is 
+		something other than a target, e.g. a PathSet. 
+		
 		@param causedBy: if True, takes the exception currently on the stack as the caused of this exception, and 
-		adds it to the build exception message
+		adds it to the build exception message. If the cause is not a BuildException, then its stack 
+		trace will be captured if this is True. 
 		"""
 		assert message
 		self.__msg = message.strip()
 		
-		if not location: location = BuildFileLocation(raiseOnError=False)
-		self.__location = location
-		
-		if causedBy == True:
+		if causedBy:
 			causedBy = sys.exc_info()
+			causedByExc = causedBy[1]
 			
-			causedByMsg = causedBy[1].__msg if isinstance(causedBy[1], BuildException) else '%s'%(causedBy[1])
+			if isinstance(causedByExc, BuildException):
+				causedByMsg = causedByExc.__msg
+				if not location: location = causedByExc.__location
+				self.__causedByTraceback = None # tracebacks not needed for BuildException, by definition
+			else:
+				causedByMsg = '%s'%causedByExc
+				self.__causedByTraceback = traceback.format_exc(causedBy)
+				
 			if (causedByMsg not in self.__msg): self.__msg += (': %s'%causedByMsg)
-			self.__causedByTraceback = traceback.format_exc(causedBy)
+			
 		else: 
 			assert causedBy==False
 			self.__causedByTraceback = None
+
+		# keep things simple by using None instead of an empty BuildFileLocation object
+		if not location or not location.buildFile: 
+			location = BuildFileLocation(raiseOnError=False)
+			if not location.buildFile: location = None
+		self.__location = location
+		
+		Exception.__init__(self, self.__msg)
 	
 	def getLoggerExtraArgDict(self, target=None):
 		"""
@@ -65,7 +90,7 @@ class BuildException(Exception):
 		
 		@param target: optionally used to find location if not available in this exception
 		"""
-		if self.__location.buildFile:
+		if self.__location:
 			return {'xpybuild_filename':self.__location.buildFile, 'xpybuild_line':self.__location.lineNumber }
 		if target and target.location.buildFile:
 			return {'xpybuild_filename':target.location.buildFile, 'xpybuild_line':target.location.lineNumber }
@@ -82,22 +107,28 @@ class BuildException(Exception):
 	def toSingleLineString(self, target):
 		""" Return the exception message formatted to be a single line.
 
-		Includes the build file location of the failed target if called with a target.
+		Includes the name of the failed target if called with a target.
 
 		@param target: The target causing the exception.
 		"""
 		# should be called with a target if possible
 		result = self.__msg
+		
+		# if we have a valid location, always display that (unless it's already in a nested exception)
+		if self.__location and not str(self.__location) in result: 
+			result = '%s : %s'%(self.__location, result)
+		
+		# if we have a target, always include it in the error
 		if target:
 			result = '%s : %s'%(target, result)
-		elif self.__location.buildFile and not str(self.__location) in result: # if we have a valid location, display that instead (unless it's already in a nested exception)
-			result = '%s : %s'%(self.__location, result)
+			
 		return result
 
 	def toMultiLineString(self, target, includeStack=False):
-		""" Return the exception message, on multiple lines if neccessary, possibly including the stack trace.
+		""" Return the exception message, on multiple lines if necessary, possibly including the stack trace.
 
-		Includes the build file location of the failed target if called with a target.
+		If possible, includes the build file location associated with the 
+		exception or with the failed target.
 
 		@param target: The target causing the exception.
 		@param includeStack: If true, also includes the stack trace of the exception.
@@ -108,8 +139,8 @@ class BuildException(Exception):
 			result = '%s : %s'%(target, result)
 		
 		location = self.__location
-		if target and not self.__location.buildFile: location = target.location
-		if location.buildFile:
+		if target and not self.__location: location = target.location
+		if location:
 			result += '\n  %s'%location.getLineString()
 			
 		if self.__causedByTraceback and includeStack:

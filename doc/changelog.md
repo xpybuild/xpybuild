@@ -10,6 +10,7 @@ None
 - A target or tag that is disabled in the full build will now be included in the build if specified explicitly even when "all" is also specified in the same invocation of xpybuild.py
 
 ## Enhancements
+- Improve build file location and exception handling: only attach build file location information to an exception if it is obtained during the parsing phase, and only from the include(...) file currently being processed, to avoid unuseful locations from common utility classes; except where an error results from an item with its own location such as a PathSet, set location to None and use the location of the target being built/dependency-checked. Allow including both location (e.g. from a pathset) and target name in an exception message if both are available. 
 - Add ProcessOutputHandler.getLastOutputLine() method and use it to improve the default handleEnd() message if there is a non-zero error code but no errors or warnings
 - Cpp/C: Improve clarity of error messages from C/C++ dependency checking by including the source file in the message (if there is only one - which is the common case)
 
