@@ -17,7 +17,7 @@
 # $Id: compilers.py 301527 2017-02-06 15:31:43Z matj $
 #
 
-import os, re, logging, time
+import os, re, logging, time, traceback
 
 from buildcommon import *
 from buildexceptions import BuildException
@@ -58,8 +58,9 @@ class Process(object):
 				outputHandlerInstance = outputHandler(os.path.basename(args[0]))
 			
 			call(args, outputHandler=outputHandlerInstance, cwd=cwd, env=self.getExpandedEnvirons(context, environs), timeout=options['process.timeout'])
-		except Exception as e:
-			raise BuildException("%s failed: %s" % (os.path.basename(args[0]), e), causedBy=True)
+		except BuildException as e:
+			# causedBy is not useful here
+			raise BuildException("%s process failed" % (os.path.basename(args[0])), causedBy=True)
 
 _logger = logging.getLogger('compilers')
 def _checkDirExists(dirpath, message):
