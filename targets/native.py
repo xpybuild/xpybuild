@@ -64,10 +64,12 @@ class CompilerMakeDependsPathSet(BasePathSet):
 
 		@param includes: a list of include directory paths
 		"""
+		BasePathSet.__init__(self)
 		self.target = target
 		self.sources = src
 		self.flags = flatten([flags]) or []
 		self.includes = includes or []
+		
 	def __repr__(self):
 		return "MakeDepend(%s, %s)" % (self.sources, self.flags)
 	def resolveWithDestinations(self, context):
