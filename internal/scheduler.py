@@ -417,12 +417,14 @@ class BuildScheduler(object):
 		built = 0
 		total = 0
 		completed = 0
+		log.info('Starting dependency resolution phase')
 		deperrors = self._expand_deps()
 		if self.options.get("depGraphFile", None):
 			createDepGraph(self.options["depGraphFile"], self, self.context)
 			return deperrors+builderrors, built, completed, total
 			
 		if not deperrors or self.options["keep-going"]:
+			log.info('Starting %s phase'%('clean' if options['clean']  else 'build'))
 			builderrors, built, completed, total = self._build()
 
 		if not deperrors and not builderrors and self.index != self.total:
