@@ -45,6 +45,7 @@ class BuildScheduler(object):
 		and a set requested on the command line along with the options and
 		kicks them all off.
 	"""
+	
 	def __init__(self, init, targets, options):
 		"""
 			Create a BuildScheduler.
@@ -61,9 +62,6 @@ class BuildScheduler(object):
 		self.lock = None
 		self.built = 0
 		self.completed = 0 # include built plus any deemed to be up to date
-		self.total = 0
-		self.index = 0
-
 
 		resetStatCache() # at this point reread the stats of files, rather than using potentially stale cached ones
 
@@ -213,9 +211,11 @@ class BuildScheduler(object):
 	def _expand_deps(self):
 		"""
 			Run over the list of targets to build, expanding it with all the dependencies and processing them
-			for replacements and expansions. Also builds up the initial leaf set and all the rdepends of each
-			target, along with the total number of dependencies each target has.
+			for replacements and expansions. Also builds up the initial leaf set self.leaves and all the rdepends of each
+			target (self.pending), along with the total number of dependencies each target has.
 		"""
+		self.index = 0 # identifies thread pool item n out of total=len(self.pending)
+		self.total = len(self.pending) # can increase during this phase
 		pending = Queue.Queue()
 		for i in self.pending:
 			pending.put_nowait((0, i))
@@ -227,7 +227,7 @@ class BuildScheduler(object):
 		pool.wait()
 
 		pool.stop()
-
+		assert self.total == self.index, (self.total, self.index)
 		return pool.errors
 
 	def _updatePriority(self, target):
@@ -248,9 +248,16 @@ class BuildScheduler(object):
 			tname - this is the canonical PATH of the target, not the name
 		"""
 		errors = []
-		pending = []
+		pending = [] # list of new jobs to done as part of dependency resolution
 		log.debug("Inspecting dependencies of target %s", tname)			
 		target = self.targets.get(tname, None)
+
+		# only log dependency status periodically since usually its very quick
+		# and not worthwhile
+		with self.lock:
+			self.index += 1
+			log.critical("*** %2d/%2d Resolving dependencies for %s", self.index, self.total, target)
+
 		if not target:
 			assert False # I'm not sure how we can get here, think it should actually be impossible
 			if not exists(tname):
@@ -272,7 +279,6 @@ class BuildScheduler(object):
 			self.leaves.append(target)
 		elif not (self.options['ignore-deps'] and self.options['clean']): 
 			try:
-					
 				deps = target.resolveDependencies(self.context)
 				if deps: log.debug('%s has %d dependencies', target.target, len(deps))
 				
@@ -331,6 +337,11 @@ class BuildScheduler(object):
 		else:
 			# For clean ignoring deps we want to be as light-weight as possible
 			self.leaves.append(target)
+		
+		if pending:
+			# if we're adding some new jobs
+			with self.lock:
+				self.total += len(pending)
 			
 		# NB: the keep-going option does NOT apply to dependency failures 
 		return (pending, errors, 0 == len(errors))
@@ -343,6 +354,7 @@ class BuildScheduler(object):
 		"""
 
 		self.total = len(self.pending)
+		self.index = 0 # identifies thread pool item n out of total, protected by lock
 
 		leaves = self.leaves
 		self.leaves = Queue.PriorityQueue()
@@ -419,14 +431,14 @@ class BuildScheduler(object):
 		built = 0
 		total = 0
 		completed = 0
-		log.info('Starting dependency resolution phase')
+		log.critical('Starting dependency resolution phase')
 		deperrors = self._expand_deps()
 		if self.options.get("depGraphFile", None):
 			createDepGraph(self.options["depGraphFile"], self, self.context)
 			return deperrors+builderrors, built, completed, total
 			
 		if not deperrors or self.options["keep-going"]:
-			log.info('Starting %s phase'%('clean' if options['clean']  else 'build'))
+			log.critical('Starting %s execution phase'%('clean' if self.options['clean'] else 'build'))
 			builderrors, built, completed, total = self._build()
 
 		if not deperrors and not builderrors and self.index != self.total:

@@ -19,7 +19,7 @@
 # $Id: ConsoleFormatters.py 301527 2017-02-06 15:31:43Z matj $
 #
 
-import logging, os
+import logging, os, time
 
 _artifactsLog = logging.getLogger('xpybuild.artifacts')
 # keep track of formatters that have been instantiated to allow us to publish artifacts to them
@@ -118,7 +118,18 @@ class DefaultConsoleFormatter(ConsoleFormatter):
 		ConsoleFormatter.__init__(self)
 		self.delegate = logging.StreamHandler(stream)
 		self.delegate.setFormatter(logging.Formatter('[%(threadName)4s] %(message)s', None))
+		self.lastDepTime = time.time()
 	def handle(self, record):
+		# since dependency resolution is usually quick, throttle logging to 
+		# once per second
+		if record.levelno == logging.CRITICAL:
+			msg = record.getMessage()
+			if msg.startswith('***') and 'Resolving dependencies for' in msg:
+				if self.lastDepTime and time.time()>self.lastDepTime+1:
+					self.lastDepTime = time.time()
+				else:
+					return # no-op
+
 		self.delegate.handle(record)
 	def setLevel(self, level):
 		ConsoleFormatter.setLevel(self, level)
