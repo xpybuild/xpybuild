@@ -423,7 +423,7 @@ class FindPaths(BasePathSet):
 			matches = []
 			try:
 				if not os.path.isdir(resolveddir):
-					raise BuildException('FindPaths root directory does not exist: "%s"'%os.path.normpath(resolveddir))
+					raise BuildException('FindPaths root directory does not exist: "%s"'%os.path.normpath(resolveddir), location=self.location)
 				startt = time.time()
 				usedIncludes = set() # give an error if any are not used
 				longdir = normLongPath(resolveddir)
