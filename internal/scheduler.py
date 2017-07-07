@@ -45,17 +45,6 @@ class BuildScheduler(object):
 		and a set requested on the command line along with the options and
 		kicks them all off.
 	"""
-	targetTimes = {} # map of {name : (path, seconds)}
-	targets = None # map of targetPath:BuildTarget where targetPath is the canonical resolved path (from getFullPath)
-	context = None
-	pending = None # list of targetPaths
-	options = None
-	leaves = None
-	lock = None
-	built = 0
-	completed = 0 # include built plus any deemed to be up to date
-	total = 0
-	index = 0
 	def __init__(self, init, targets, options):
 		"""
 			Create a BuildScheduler.
@@ -63,6 +52,19 @@ class BuildScheduler(object):
 			targets - the selected targets to build this run (list of target objects)
 			options - the options for the build (map of string:variable)
 		"""
+		self.targetTimes = {} # map of {name : (path, seconds)}
+		self.targets = None # map of targetPath:BuildTarget where targetPath is the canonical resolved path (from getFullPath)
+		self.context = None
+		self.pending = None # list of targetPaths
+		self.options = None
+		self.leaves = None
+		self.lock = None
+		self.built = 0
+		self.completed = 0 # include built plus any deemed to be up to date
+		self.total = 0
+		self.index = 0
+
+
 		resetStatCache() # at this point reread the stats of files, rather than using potentially stale cached ones
 
 		self.targets = {}
