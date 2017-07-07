@@ -460,7 +460,7 @@ class FindPaths(BasePathSet):
 
 				log.info('FindPaths in "%s" found %d path(s) for %s after visiting %s directories; %s', resolveddir, len(matches), self, visited, self.location)
 				if time.time()-startt > 5: # this should usually be pretty quick, so may indicate a real build file mistake
-					log.warn('FindPaths took a long time: %0.1f s to evaluate %s', time.time()-startt, self)
+					log.warn('FindPaths took a long time: %0.1f s to evaluate %s; see %s', time.time()-startt, self, self.location)
 				
 				if not matches:
 					raise BuildException('No matching files found', location=self.location)
