@@ -68,6 +68,9 @@ class BuildScheduler(object):
 		self.targets = {}
 		caseInsensitivePaths = set()
 		
+		self.progressFormat = str(len(str(len(init.targets()))))
+		self.progressFormat = '*** %'+self.progressFormat+'d/%'+self.progressFormat+'d '
+		
 		for t in init.targets().values():
 			try:
 				# this is also a good place to resolve target names into paths
@@ -256,7 +259,7 @@ class BuildScheduler(object):
 		# and not worthwhile
 		with self.lock:
 			self.index += 1
-			log.critical("*** %2d/%2d Resolving dependencies for %s", self.index, self.total, target)
+			log.critical(self.progressFormat+"Resolving dependencies for %s", self.index, self.total, target)
 
 		if not target:
 			assert False # I'm not sure how we can get here, think it should actually be impossible
@@ -390,9 +393,9 @@ class BuildScheduler(object):
 				total = self.total
 			if self.options["clean"] or not target.uptodate(self.context, self.options['ignore-deps']):
 				if self.options["clean"]:
-					log.critical("*** %2d/%2d Cleaning %s", index, total, target)
+					log.critical(self.progressFormat+"Cleaning %s", index, total, target)
 				else:
-					log.critical("*** %2d/%2d Building %s", index, total, target)
+					log.critical(self.progressFormat+"Building %s", index, total, target)
 				if not self.options["dry-run"]:
 					errors.extend(self._run_target(target)) # run the actual target rule
 				# make sure we rebuild rdeps
@@ -404,12 +407,12 @@ class BuildScheduler(object):
 					self.completed = self.completed + 1
 			else:
 				if self.options['ignore-deps']:
-					log.critical("*** %2d/%2d Target is not checked for up-to-dateness due to ignore-deps option: %s", index, total, target)
+					log.critical(self.progressFormat+"Target is not checked for up-to-dateness due to ignore-deps option: %s", index, total, target)
 				else:
 					if total < 25:
-						log.critical("*** %2d/%2d Target is already up-to-date: %s", index, total, target)
+						log.critical(self.progressFormat+"Target is already up-to-date: %s", index, total, target)
 					else:
-						log.info("*** %2d/%2d Target is already up-to-date: %s", index, total, target)
+						log.info(self.progressFormat+"Target is already up-to-date: %s", index, total, target)
 				with self.lock:
 					self.completed = self.completed+1
 			# look at our rdeps to see if we can build any of them now
