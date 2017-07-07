@@ -59,7 +59,7 @@ class Process(object):
 			
 			call(args, outputHandler=outputHandlerInstance, cwd=cwd, env=self.getExpandedEnvirons(context, environs), timeout=options['process.timeout'])
 		except Exception as e:
-			raise BuildException("%s failed: %s" % (os.path.basename(args[0]), e))
+			raise BuildException("%s failed: %s" % (os.path.basename(args[0]), e), causedBy=True)
 
 _logger = logging.getLogger('compilers')
 def _checkDirExists(dirpath, message):
@@ -334,7 +334,7 @@ class GCC(ToolChain, UnixCompiler, UnixLinker, Depends):
 			self.call(context, args, outputHandler=GccDependsHandler, options=options)
 		except Exception, e:
 			# occasionally we see SIGABRT (=6) for no reason (e.g. on ARM), so do a retry
-			if 'return code -6' not in str(e): raise e
+			if 'return code -6' not in str(e): raise
 			_logger.warn('g++ dependency checking failed, may be transient so will retry: %s', e)
 			time.sleep(15)
 			del deplist[:]
