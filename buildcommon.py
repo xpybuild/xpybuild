@@ -62,8 +62,7 @@ def include(file):
 
 	assert file.endswith('.xpybuild.py') # enforce recommended naming convention
 	
-	# maybe use getFullPath here?
-	filepath = os.path.abspath(os.path.dirname(BuildFileLocation._currentBuildFile[-1])+'/'+file)
+	filepath = getBuildInitializationContext().getFullPath(file, os.path.dirname(BuildFileLocation._currentBuildFile[-1]))
 	
 	BuildFileLocation._currentBuildFile.append(filepath) # add to stack of files being parsed
 	
