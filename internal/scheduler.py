@@ -127,8 +127,9 @@ class BuildScheduler(object):
 			if not isinstance(e, (EnvironmentError)):
 				# most problems should be wrapped as BuildException already; let's make sure we always
 				# get an ERROR-level message for things like syntax errors etc
-				log.exception('%s: unexpected (non-build) exception in %s'%(prefix, target))
-				logged = True
+				#log.exception('%s: unexpected (non-build) exception in %s'%(prefix, target))
+				#logged = True
+				pass # this duplicates the stack trace we get at ERROR level from toMultiLineString
 				
 			e = BuildException('%s due to %s'%(prefix, e.__class__.__name__), causedBy=True)
 	
