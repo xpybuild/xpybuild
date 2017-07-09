@@ -434,7 +434,7 @@ class FindPaths(BasePathSet):
 				visited = 0
 				for root, dirs, files in os.walk(longdir):
 					visited += 1 
-					root = root.replace(longdir, '').replace('\\','/').lstrip('/')
+					root = root.replace(longdir, '').replace('\\','/').lstrip('/').rstrip('/')
 					#log.debug('visiting: "%s"'%root)
 					
 					# optimization: if this doesn't require walking down the dir tree, don't do any!

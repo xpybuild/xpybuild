@@ -2,6 +2,7 @@
 
 ## Breaking changes
 - It is now an error to use a relative path in a PathSet that is instantiated after the end of the parsing phase (e.g. while building or dependency checking a target) or from a python "import" statement. This is because it is impossible to guarantee a correct location can be found and better to fail early and clearly than in a subtle way. Either ensure PathSets are instantiated as top-level items in build files referenced from an include(...) statement, or use an absolute path if this is not possible. 
+- normLongPath now returns paths including a trailing slash if the input contains a trailing slash (indicating a directory), whereas before the trailing slash would be stripped off. The provides consistency with normpath. 
 
 ## Deprecation
 None
