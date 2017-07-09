@@ -455,7 +455,7 @@ class BuildInitializationContext(BaseContext):
 			log.debug('Failed to load build file: %s', traceback.format_exc())
 			raise
 		except SyntaxError, e:
-			log.error('Failed to load build file: %s'%e, extra={'xpybuild_filename':e.filename, 'xpybuild_line':e.lineno, 'xpybuild_col':e.offset})
+			log.exception('Failed to load build file: ', extra={'xpybuild_filename':e.filename, 'xpybuild_line':e.lineno, 'xpybuild_col':e.offset})
 			# wrap in buildexception to avoid printing same stack trace twice
 			raise BuildException('Failed to load build file', causedBy=True)
 		except Exception, e:
