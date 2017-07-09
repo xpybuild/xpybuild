@@ -334,9 +334,16 @@ class BaseContext(object):
 		
 		@param path: a string representing a relative or absolute path. May be a string or a Composable
 			
-		@param defaultDir: the default parent directory to use if this is a relative path
+		@param defaultDir: the default parent directory to use if this is a 
+		relative path; it is invalid to pass None for this parameter. 
+		It is permitted to pass a BuildFileLocation for the defaultDir instead 
+		of a string, in which case an exception will be thrown if it is an 
+		empty location object and the path is relative; 
+		this is primarily used for objects like PathSets that capture location 
+		when they are instantiated.
 
-		@param expandList: passed to expandPropertyValues
+		@param expandList: passed to expandPropertyValues, returns a list of 
+		paths instead of a single path. 
 
 		>>> BaseContext({'DEF':'output', 'EL':'element'}).getFullPath('path/${EL}', '${DEF}').replace('\\\\','/')
 		'output/path/element'
@@ -347,15 +354,25 @@ class BaseContext(object):
 		>>> BaseContext({'DEF':'output/', 'EL':'element'}).getFullPath('path/../path/${EL}', '${DEF}').replace('\\\\','/')
 		'output/path/element'
 		"""
-		assert defaultDir
+		assert defaultDir # non-empty string or BuildFileLocation
+		
+		def makeabs(p, defaultDir=defaultDir):
+			if os.path.isabs(p): return p
+			if isinstance(defaultDir, BuildFileLocation):
+				defaultDir = defaultDir.buildDir
+				# raise a non-build exception since this should not happen and 
+				# we want a python stack trace
+				if not defaultDir: raise Exception(
+					'Cannot resolve relative path \'%s\' because the build file location is not available at this point; please either use an absolute path or ensure the associated object (e.g. PathSet) is instantiated while loading build files not while building targets'%p)
+			defaultDir = self.expandPropertyValues(defaultDir)
+			return os.path.join(self.expandPropertyValues(defaultDir), p)
+		
 		if expandList:
 			path = self.expandPropertyValues(path, expandList=expandList)
 			rv = []
 			for p in path:
 				isdir = isDirPath(p)
-				if not os.path.isabs(p):
-					p = os.path.join(self.expandPropertyValues(defaultDir), p)
-			
+				p = makeabs(p)
 				p = normpath(p.rstrip('\\/'))
 						
 				if isdir and not p.endswith(os.path.sep): p = p+os.path.sep
@@ -365,9 +382,7 @@ class BaseContext(object):
 		else:
 			path = self.expandPropertyValues(path)
 			isdir = isDirPath(path)
-			if not os.path.isabs(path):
-				path = os.path.join(self.expandPropertyValues(defaultDir), path)
-		
+			path = makeabs(path)
 			path = normpath(path.rstrip('\\/'))
 					
 			if isdir and not path.endswith(os.path.sep): path = path+os.path.sep

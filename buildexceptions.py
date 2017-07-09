@@ -76,7 +76,9 @@ class BuildException(Exception):
 			self.__causedByTraceback = None
 
 		# keep things simple by using None instead of an empty BuildFileLocation object
-		if not location or not location.buildFile: 
+		if (not location or not location.buildFile) and BuildFileLocation._currentBuildFile:
+			# only do this if we're parsing build files at the moment, otherwise it's 
+			# more reliable to keep it blank and let the scheduler use the target's location
 			location = BuildFileLocation(raiseOnError=False)
 			if not location.buildFile: location = None
 		self.__location = location

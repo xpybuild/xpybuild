@@ -21,7 +21,7 @@
 import traceback, inspect, os, sys
 
 class BuildFileLocation(object):
-	""" Represents information about a location in the user's build file. 	
+	""" Represents information about a location in the user's build file.
 	"""
 	buildFile = None
 	buildDir = None
@@ -34,6 +34,10 @@ class BuildFileLocation(object):
 		"""
 		Constructs a new instance by inspecting the stack to find what part 
 		of the build file we're currently processing. 
+		
+		This should only be used during the parsing phase, an empty location 
+		will be returned if this is called while building or dependency 
+		checking a target. 
 		
 		@param raiseOnError: if False, creates a BuildFileLocation with None for 
 		the buildFile/buildDir if we are not currently parsing any included 
