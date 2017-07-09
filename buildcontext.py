@@ -364,8 +364,9 @@ class BaseContext(object):
 				# we want a python stack trace
 				if not defaultDir: raise Exception(
 					'Cannot resolve relative path \'%s\' because the build file location is not available at this point; please either use an absolute path or ensure the associated object (e.g. PathSet) is instantiated while loading build files not while building targets'%p)
-			defaultDir = self.expandPropertyValues(defaultDir)
-			return os.path.join(self.expandPropertyValues(defaultDir), p)
+			else:
+				defaultDir = self.expandPropertyValues(defaultDir)
+			return os.path.join(defaultDir, p)
 		
 		if expandList:
 			path = self.expandPropertyValues(path, expandList=expandList)
