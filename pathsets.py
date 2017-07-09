@@ -159,7 +159,7 @@ class PathSet(BasePathSet):
 			if not (isinstance(x, basestring) or isinstance(x, BasePathSet) or hasattr(x, 'resolveToString')):
 				raise BuildException('PathSet may contain only strings, PathSets, Composables, targets and lists - cannot accept %s (%s)'%(x, x.__class__))
 		
-		self.__location = BuildFileLocation(raiseOnError=True) # may need this to resolve relative paths
+		self.__location = BuildFileLocation()
 		
 	def __repr__(self):
 		""" Return a string including this class name and the paths from which it was created. """
@@ -267,7 +267,7 @@ class DirBasedPathSet(BasePathSet):
 		self.__dir = dir
 		
 		self.__children = flatten(children)
-		self.__location = BuildFileLocation(raiseOnError=True)
+		self.__location = BuildFileLocation()
 	
 	def __repr__(self):
 		""" Return a string including this class name and the basedir and child paths from which it was created. """
@@ -371,7 +371,7 @@ class FindPaths(BasePathSet):
 		if isinstance(dir, basestring) and '\\' in dir: # avoid silly mistakes, and enforce consistency
 			raise BuildException('Invalid base directory for FindPaths - must not contain \\ (always use forward slashes)')
 		
-		self.location = BuildFileLocation(raiseOnError=True)
+		self.location = BuildFileLocation()
 		self.__lock = threading.Lock()
 		self.__cached = None
 	
@@ -506,7 +506,7 @@ class TargetsWithTag(BasePathSet):
 		contents of the directory at build time.
 		"""
 		self.__targetTag = targetTag
-		self.__location = BuildFileLocation(raiseOnError=True)
+		self.__location = BuildFileLocation()
 		self.__allowDirectories = allowDirectories or walkDirectories
 		self.__walkDirectories = walkDirectories
 	
@@ -857,7 +857,7 @@ class DirGeneratedByTarget(BasePathSet):
 		assert isinstance(dirTargetName, basestring)
 		assert dirTargetName.endswith('/')
 		self.__target = dirTargetName
-		self.__location = BuildFileLocation(raiseOnError=True)
+		self.__location = BuildFileLocation()
 		
 		if '\\' in dirTargetName: # avoid silly mistakes, and enforce consistency
 			raise BuildException('Invalid directory target - must not contain \\ (always use forward slashes)')
