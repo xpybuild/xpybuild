@@ -25,6 +25,8 @@ def flatten(input):
 	input: any variable composed of lists, strings, lambda functions or other 
 	objects, nested arbitrarily.
 	
+	Empty strings and None items are removed. 
+	
 	Returns a list of strings or other objects depth 1. 
 
 	>>> flatten('hi')
