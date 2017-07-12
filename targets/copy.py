@@ -155,7 +155,7 @@ class FilteredCopy(Copy):
 
 	"""
 	
-	def __init__(self, dest, src, *mappers):
+	def __init__(self, dest, src, *mappers, **kwargs):
 		"""
 		@param dest: the output directory (ending with a "/") or file. Never 
 		specify a dest directory that is also written to by another 
@@ -167,10 +167,8 @@ class FilteredCopy(Copy):
 		lists of these. 
 		
 		@param mappers: a list of mapper objects that will be used to transform 
-		the file, line by line. To avoid build files that accumulate unused 
-		cruft or are hard to understand, it is an error to include a mapper 
-		in this list that is not used, i.e. that does not in any way 
-		change the output. 
+		the file, line by line. Can be empty in which case this behaves the same 
+		as a normal Copy target. 
 		
 		For simple @TOKEN@ replacement see createReplaceDictLineMappers. 
 		In addition to per-line changes, it is also possible to specify 
@@ -181,16 +179,26 @@ class FilteredCopy(Copy):
 		characters; python's os.linesep should be used where a 
 		platform-neutral newline is required. 
 		
+		@param allowUnusedMappers: To avoid build files that accumulate unused 
+		cruft or are hard to understand, it by default an an error to include a 
+		mapper in this list that is not used, i.e. that does not in any way 
+		change the output for any file. We recommend using conditionalization 
+		to avoid passing in such mappers e.g. 
+		FilteredCopy(target, src, [StringReplaceLineMapper(os.linesep,'\n') if isWindows() else None]). 
+		If this is not practical, set allowUnusedMappers=True to prevent this 
+		check. 
+		
 		"""
-		assert mappers
 		self.mappers = [m.getInstance() for m in flatten(mappers)]
+		self.allowUnusedMappers = kwargs.pop('allowUnusedMappers', False)
+		assert not kwargs, 'unknown keyword arg(s): %s'%kwargs
 		super(FilteredCopy, self).__init__(dest, src, implicitDependencies=[m.getDependencies() for m in self.mappers])
 	
 	def run(self, context):
 		self.__unusedMappers = set(self.mappers)
 		super(FilteredCopy, self).run(context)
 		
-		if self.__unusedMappers:
+		if self.__unusedMappers and not self.allowUnusedMappers:
 			# a useful sanity check, to ensure we're replacing what we think we're replacing, and also that we don't have unused clutter in the build files
 			raise BuildException('Some of the specified mappers did not get used at all during the copy (to avoid confusion, mappers that do not change the output in any way are not permitted): %s'%(', '.join( [m.getDescription(context) for m in self.__unusedMappers] )))
 			
