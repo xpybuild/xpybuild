@@ -46,7 +46,7 @@ class Tarball(BaseTarget):
 		mkdir(os.path.dirname(self.path))
 		with tarfile.open(normLongPath(self.path), 'w:gz') as output:
 			for (f, o) in self.inputs.resolveWithDestinations(context):
-				output.add(normLongPath(f), o)
+				output.add(normLongPath(f).rstrip('/\\'), o)
 
 	def getHashableImplicitInputs(self, context):
 		# TODO: move to BaseTarget

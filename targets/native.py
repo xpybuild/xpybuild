@@ -64,10 +64,12 @@ class CompilerMakeDependsPathSet(BasePathSet):
 
 		@param includes: a list of include directory paths
 		"""
+		BasePathSet.__init__(self)
 		self.target = target
 		self.sources = src
 		self.flags = flatten([flags]) or []
 		self.includes = includes or []
+		
 	def __repr__(self):
 		return "MakeDepend(%s, %s)" % (self.sources, self.flags)
 	def resolveWithDestinations(self, context):
@@ -117,8 +119,13 @@ class CompilerMakeDependsPathSet(BasePathSet):
 
 		# generate them again
 		startt = time.time()
-		log.critical("*** Generating dependencies for %s" % self.target)
-		deplist = options['native.compilers'].dependencies.depends(context=context, src=testsources, options=options, flags=flatten(options['native.cxx.flags']+[context.expandPropertyValues(x).split(' ') for x in self.flags]), includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']]))
+		log.info("*** Generating native dependencies for %s" % self.target)
+		try:
+			deplist = options['native.compilers'].dependencies.depends(context=context, src=testsources, options=options, flags=flatten(options['native.cxx.flags']+[context.expandPropertyValues(x).split(' ') for x in self.flags]), includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']]))
+		except BuildException, e:
+			if len(testsources)==1 and testsources[0] not in str(e):
+				raise BuildException('Dependency resolution failed for %s: %s'%(testsources[0], e))
+			raise
 		deplist += depsources
 		mkdir(os.path.dirname(dfile))
 		with openForWrite(dfile, 'wb') as f:

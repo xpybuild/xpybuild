@@ -45,17 +45,7 @@ class BuildScheduler(object):
 		and a set requested on the command line along with the options and
 		kicks them all off.
 	"""
-	targetTimes = {} # map of {name : (path, seconds)}
-	targets = None # map of targetPath:BuildTarget where targetPath is the canonical resolved path (from getFullPath)
-	context = None
-	pending = None # list of targetPaths
-	options = None
-	leaves = None
-	lock = None
-	built = 0
-	completed = 0 # include built plus any deemed to be up to date
-	total = 0
-	index = 0
+	
 	def __init__(self, init, targets, options):
 		"""
 			Create a BuildScheduler.
@@ -63,10 +53,23 @@ class BuildScheduler(object):
 			targets - the selected targets to build this run (list of target objects)
 			options - the options for the build (map of string:variable)
 		"""
+		self.targetTimes = {} # map of {name : (path, seconds)}
+		self.targets = None # map of targetPath:BuildTarget where targetPath is the canonical resolved path (from getFullPath)
+		self.context = None
+		self.pending = None # list of targetPaths
+		self.options = None
+		self.leaves = None
+		self.lock = None
+		self.built = 0
+		self.completed = 0 # include built plus any deemed to be up to date
+
 		resetStatCache() # at this point reread the stats of files, rather than using potentially stale cached ones
 
 		self.targets = {}
 		caseInsensitivePaths = set()
+		
+		self.progressFormat = str(len(str(len(init.targets()))))
+		self.progressFormat = '*** %'+self.progressFormat+'d/%'+self.progressFormat+'d '
 		
 		for t in init.targets().values():
 			try:
@@ -124,8 +127,9 @@ class BuildScheduler(object):
 			if not isinstance(e, (EnvironmentError)):
 				# most problems should be wrapped as BuildException already; let's make sure we always
 				# get an ERROR-level message for things like syntax errors etc
-				log.exception('%s: unexpected (non-build) exception in %s'%(prefix, target))
-				logged = True
+				#log.exception('%s: unexpected (non-build) exception in %s'%(prefix, target))
+				#logged = True
+				pass # this duplicates the stack trace we get at ERROR level from toMultiLineString
 				
 			e = BuildException('%s due to %s'%(prefix, e.__class__.__name__), causedBy=True)
 	
@@ -211,9 +215,11 @@ class BuildScheduler(object):
 	def _expand_deps(self):
 		"""
 			Run over the list of targets to build, expanding it with all the dependencies and processing them
-			for replacements and expansions. Also builds up the initial leaf set and all the rdepends of each
-			target, along with the total number of dependencies each target has.
+			for replacements and expansions. Also builds up the initial leaf set self.leaves and all the rdepends of each
+			target (self.pending), along with the total number of dependencies each target has.
 		"""
+		self.index = 0 # identifies thread pool item n out of total=len(self.pending)
+		self.total = len(self.pending) # can increase during this phase
 		pending = Queue.Queue()
 		for i in self.pending:
 			pending.put_nowait((0, i))
@@ -225,7 +231,7 @@ class BuildScheduler(object):
 		pool.wait()
 
 		pool.stop()
-
+		#assert (not pool.errors) or (self.total == self.index), (self.total, self.index) #disabled because assertion triggers during ctrl+c
 		return pool.errors
 
 	def _updatePriority(self, target):
@@ -246,9 +252,16 @@ class BuildScheduler(object):
 			tname - this is the canonical PATH of the target, not the name
 		"""
 		errors = []
-		pending = []
+		pending = [] # list of new jobs to done as part of dependency resolution
 		log.debug("Inspecting dependencies of target %s", tname)			
 		target = self.targets.get(tname, None)
+
+		# only log dependency status periodically since usually its very quick
+		# and not worthwhile
+		with self.lock:
+			self.index += 1
+			log.critical(self.progressFormat+"Resolving dependencies for %s", self.index, self.total, target)
+
 		if not target:
 			assert False # I'm not sure how we can get here, think it should actually be impossible
 			if not exists(tname):
@@ -270,7 +283,6 @@ class BuildScheduler(object):
 			self.leaves.append(target)
 		elif not (self.options['ignore-deps'] and self.options['clean']): 
 			try:
-					
 				deps = target.resolveDependencies(self.context)
 				if deps: log.debug('%s has %d dependencies', target.target, len(deps))
 				
@@ -329,6 +341,11 @@ class BuildScheduler(object):
 		else:
 			# For clean ignoring deps we want to be as light-weight as possible
 			self.leaves.append(target)
+		
+		if pending:
+			# if we're adding some new jobs
+			with self.lock:
+				self.total += len(pending)
 			
 		# NB: the keep-going option does NOT apply to dependency failures 
 		return (pending, errors, 0 == len(errors))
@@ -341,6 +358,7 @@ class BuildScheduler(object):
 		"""
 
 		self.total = len(self.pending)
+		self.index = 0 # identifies thread pool item n out of total, protected by lock
 
 		leaves = self.leaves
 		self.leaves = Queue.PriorityQueue()
@@ -376,9 +394,9 @@ class BuildScheduler(object):
 				total = self.total
 			if self.options["clean"] or not target.uptodate(self.context, self.options['ignore-deps']):
 				if self.options["clean"]:
-					log.critical("*** %2d/%2d Cleaning %s", index, total, target)
+					log.critical(self.progressFormat+"Cleaning %s", index, total, target)
 				else:
-					log.critical("*** %2d/%2d Building %s", index, total, target)
+					log.critical(self.progressFormat+"Building %s", index, total, target)
 				if not self.options["dry-run"]:
 					errors.extend(self._run_target(target)) # run the actual target rule
 				# make sure we rebuild rdeps
@@ -390,12 +408,12 @@ class BuildScheduler(object):
 					self.completed = self.completed + 1
 			else:
 				if self.options['ignore-deps']:
-					log.critical("*** %2d/%2d Target is not checked for up-to-dateness due to ignore-deps option: %s", index, total, target)
+					log.critical(self.progressFormat+"Target is not checked for up-to-dateness due to ignore-deps option: %s", index, total, target)
 				else:
 					if total < 25:
-						log.critical("*** %2d/%2d Target is already up-to-date: %s", index, total, target)
+						log.critical(self.progressFormat+"Target is already up-to-date: %s", index, total, target)
 					else:
-						log.info("*** %2d/%2d Target is already up-to-date: %s", index, total, target)
+						log.info(self.progressFormat+"Target is already up-to-date: %s", index, total, target)
 				with self.lock:
 					self.completed = self.completed+1
 			# look at our rdeps to see if we can build any of them now
@@ -417,12 +435,14 @@ class BuildScheduler(object):
 		built = 0
 		total = 0
 		completed = 0
+		log.critical('Starting dependency resolution phase')
 		deperrors = self._expand_deps()
 		if self.options.get("depGraphFile", None):
 			createDepGraph(self.options["depGraphFile"], self, self.context)
 			return deperrors+builderrors, built, completed, total
 			
 		if not deperrors or self.options["keep-going"]:
+			log.critical('Starting %s execution phase'%('clean' if self.options['clean'] else 'build'))
 			builderrors, built, completed, total = self._build()
 
 		if not deperrors and not builderrors and self.index != self.total:

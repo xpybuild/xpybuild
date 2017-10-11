@@ -177,11 +177,11 @@ class VT100ProgressBarConsoleFormatter(ConsoleFormatter):
 		return '\033[0m'
 	def getColour(self):
 		if self.state == "OK":
-			return '\033[1;32m'
+			return '\033[1;32m' # green
 		elif self.state == "WARN":
-			return '\033[1;33m'
+			return '\033[1;33m' # yellow
 		elif self.state == "ERROR":
-			return '\033[1;31m'
+			return '\033[1;31m' # red
 		else:
 			return self.getNoColour()
 	def getSymbol(self):

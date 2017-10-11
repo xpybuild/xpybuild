@@ -163,7 +163,7 @@ class Unpack(BaseTarget):
 							if isinstance(a, FilteredArchiveContents):
 								m = a.mapDestPath(context, m).rstrip('/')
 
-							m = path+'/'+m
+							m = path.rstrip('/\\')+'/'+m
 							if isWindows(): m = m.replace('/', '\\')
 							mkdir(m)
 							

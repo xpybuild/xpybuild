@@ -125,10 +125,14 @@ class PathSet(BasePathSet):
 		Construct a PathSet from the specified strings and other pathsets. 
 		
 		@param inputs: contains strings, targets and PathSet objects, nested as deeply as 
-		you like within lists and tuples. The strings must be absolute  
-		paths or paths relative to the build file where this PathSet is 
-		defined, and may not contain the '*' character. Directory 
-		paths must end with '/'. 
+		you like within lists and tuples. 
+		The strings must be absolute paths, or paths relative to the build file 
+		where this PathSet is defined, in which case the PathSet must be 
+		instantiated during the build file parsing phase (relative paths cannot 
+		be used in a PathSet that is instantiated while building or resolving 
+		dependencies for a target). 
+		Paths may not contain the '*' character, and directory 
+		paths must end with an explicit '/'. 
 			
 		>>> str(PathSet('a', [('b/', PathSet('1/2/3/', '4/5/6/'), ['d/e'])], 'e/f/${x}').resolveWithDestinations(BaseContext({'x':'X/'}))).replace('\\\\\\\\','/')
 		"[('BUILD_DIR/a', 'a'), ('BUILD_DIR/b/', 'b/'), ('BUILD_DIR/1/2/3/', '3/'), ('BUILD_DIR/4/5/6/', '6/'), ('BUILD_DIR/d/e', 'e'), ('BUILD_DIR/e/f/X/', 'X/')]"
@@ -165,7 +169,7 @@ class PathSet(BasePathSet):
 		if hasattr(p, 'resolveToString'):
 			p = p.resolveToString(context)
 		
-		p = context.getFullPath(p, self.__location.buildDir, expandList=True)
+		p = context.getFullPath(p, defaultDir=self.__location, expandList=True)
 
 		for x in p:
 			if '*' in x: # sanity check
@@ -222,7 +226,7 @@ def _resolveDirPath(dir, context, location):
 		if len(dir) != 1: raise BuildException('This PathSet requires exactly one base directory but %d were provided: %s'%(len(dir), dir), location=location) 
 		dir = dir[0]
 	else:
-		dir = context.getFullPath(dir, location.buildDir)
+		dir = context.getFullPath(dir, defaultDir=location)
 	if not isDirPath(dir):
 		raise BuildException('Directory paths must end with an explicit / slash: "%s"'%dir, location=location)
 	return dir
@@ -423,14 +427,14 @@ class FindPaths(BasePathSet):
 			matches = []
 			try:
 				if not os.path.isdir(resolveddir):
-					raise BuildException('FindPaths root directory does not exist: "%s"'%os.path.normpath(resolveddir))
+					raise BuildException('FindPaths root directory does not exist: "%s"'%os.path.normpath(resolveddir), location=self.location)
 				startt = time.time()
 				usedIncludes = set() # give an error if any are not used
 				longdir = normLongPath(resolveddir)
 				visited = 0
 				for root, dirs, files in os.walk(longdir):
 					visited += 1 
-					root = root.replace(longdir, '').replace('\\','/').lstrip('/')
+					root = root.replace(longdir, '').replace('\\','/').lstrip('/').rstrip('/')
 					#log.debug('visiting: "%s"'%root)
 					
 					# optimization: if this doesn't require walking down the dir tree, don't do any!
@@ -460,7 +464,7 @@ class FindPaths(BasePathSet):
 
 				log.info('FindPaths in "%s" found %d path(s) for %s after visiting %s directories; %s', resolveddir, len(matches), self, visited, self.location)
 				if time.time()-startt > 5: # this should usually be pretty quick, so may indicate a real build file mistake
-					log.warn('FindPaths took a long time: %0.1f s to evaluate %s', time.time()-startt, self)
+					log.warn('FindPaths took a long time: %0.1f s to evaluate %s; see %s', time.time()-startt, self, self.location)
 				
 				if not matches:
 					raise BuildException('No matching files found', location=self.location)
@@ -874,7 +878,7 @@ class DirGeneratedByTarget(BasePathSet):
 		return self.resolve(context)
 
 	def resolveWithDestinations(self, context):
-		t = context.getFullPath(self.__target, self.__location.buildDir)
+		t = context.getFullPath(self.__target, defaultDir=self.__location)
 		return [(t, os.path.basename(t.strip('/\\'))+(os.path.sep if isDirPath(t) else '') )]
 
 	def __add__(self, suffix):

@@ -54,7 +54,7 @@ class Zip(BaseTarget):
 					raise BuildException('Duplicate zip entry "%s" from: %s'%(o, ', '.join(dupsrc)))
 				alreadyDone.add(o)
 				# can't compress directory entries! (it messes up Java)
-				output.write(normLongPath(f), o, zipfile.ZIP_STORED if isDirPath(f) else zipfile.ZIP_DEFLATED) 
+				output.write(normLongPath(f).rstrip('/\\'), o, zipfile.ZIP_STORED if isDirPath(f) else zipfile.ZIP_DEFLATED) 
 
 	def getHashableImplicitInputs(self, context):
 		# TODO: move to BaseTarget

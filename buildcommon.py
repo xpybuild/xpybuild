@@ -49,7 +49,10 @@ def include(file):
 	""" Parse and register the targets and properties in in the specified 
 	xpybuild.py file. 
 	
-	file: a path relative to the directory containing this file. 
+	Targets should only be defined in files included using this method, 
+	not using python import statements. 
+	
+	@param file: a path relative to the directory containing this file. 
 	"""
 
 	from buildcontext import getBuildInitializationContext
@@ -59,11 +62,15 @@ def include(file):
 
 	assert file.endswith('.xpybuild.py') # enforce recommended naming convention
 	
-	# maybe use getFullPath here?
-	filepath = os.path.abspath(os.path.join(BuildFileLocation(raiseOnError=True).buildDir, file))
+	filepath = getBuildInitializationContext().getFullPath(file, os.path.dirname(BuildFileLocation._currentBuildFile[-1]))
+	
+	BuildFileLocation._currentBuildFile.append(filepath) # add to stack of files being parsed
 	
 	namespace = {}
 	execfile(filepath, namespace, namespace)
+	
+	del BuildFileLocation._currentBuildFile[-1]
+	
 	return namespace
 
 def _compareVersion(version, ref):

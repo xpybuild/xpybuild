@@ -263,6 +263,10 @@ def parsePropertiesFile(lines, excludeLines=None):
 		result.append((key,value, lineNo))
 	return result
 
+def isDirPath(path):
+	""" Returns true if the path is a directory (ends with / or \\). """
+	return path and (path.endswith('/') or path.endswith('\\'))
+
 def normLongPath(path):
 	"""
 	Normalizes and absolutizes a path (os.path.abspath), and on windows adds 
@@ -272,9 +276,20 @@ def normLongPath(path):
 	string will not work if the path contains non-ascii characters. 
 	"""
 	if not path: return path
+	
+	# currently there is some duplication between this and buildcommon.normpath which we ought to fix at some point
+	
+	# normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case 
+	# for drive letters (more so than directory names), with different cmd prompts frequently using different 
+	# capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts
+	if len(path)>2 and _isWindows() and path[1] == ':': 
+		path = path[0].lower()+path[1:]
+		
 	if _isWindows() and path and path.startswith('\\\\?\\'):
 		return path.replace('/', '\\')
-	path = os.path.abspath(path) # also normalizes slashes
+	# abspath also normalizes slashes
+	path = os.path.abspath(path)+(os.path.sep if isDirPath(path) else '')
+	
 	if _isWindows() and path and not path.startswith('\\\\?\\'):
 		try:
 			if path.startswith('\\\\'): 

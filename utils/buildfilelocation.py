@@ -21,19 +21,36 @@
 import traceback, inspect, os, sys
 
 class BuildFileLocation(object):
-	""" Represents information about a location in the user's build file. 	
+	""" Represents information about a location in the user's build file.
 	"""
 	buildFile = None
 	buildDir = None
 	lineNumber = None
 	#sourceLine = None
 	
+	_currentBuildFile = [] # for internal use only; last item indicates the file currently being parsed
+	
 	def __init__(self, raiseOnError=False):
 		"""
 		Constructs a new instance by inspecting the stack to find what part 
 		of the build file we're currently processing. 
+		
+		This should only be used during the parsing phase, an empty location 
+		will be returned if this is called while building or dependency 
+		checking a target. 
+		
+		@param raiseOnError: if False, creates a BuildFileLocation with None for 
+		the buildFile/buildDir if we are not currently parsing any included 
+		build files. 
 		"""
-		x = self._getCorrectFrame()
+		if BuildFileLocation._currentBuildFile:
+			x = self._getCorrectFrame() 
+		else:
+			# do not even try to get location if not doing parsing, since in 
+			# almost all cases the location of the current thread's target 
+			# is more useful
+			x = None 
+		
 		if x != None:
 			filename, lineno = x
 			self.buildFile = filename
@@ -63,8 +80,11 @@ class BuildFileLocation(object):
 		while frame:
 			filename = inspect.getfile(frame)
 			assert filename
-			if filename.endswith('.xpybuild.py') or filename.endswith('.xpybuild.pyc'):
-				if filename.endswith('.pyc'): filename = filename[:-3]+'.py'
+			if filename.endswith('.pyc'): filename = filename[:-3]+'.py'
+				
+			# perform some cross-OS but low cost (no disk access) canonicalization
+			# of the paths
+			if filename.lower().replace('\\','/') == BuildFileLocation._currentBuildFile[-1].lower().replace('\\','/'):
 				lineno = inspect.getlineno(frame)
 				return filename, lineno
 				
