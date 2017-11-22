@@ -99,7 +99,7 @@ class Copy(BaseTarget):
 				# there should not be any directories here only files from pathsets
 				if '..' in destRel:
 					# to avoid people abusing this to copy files outside the dest directory!
-					raise Exception('Cannot use ".." relative path expressions in a Copy target')
+					raise Exception('This target does not permit destination paths to contain ".." relative path expressions')
 				if isDirPath(srcAbs): # allows creating of empty directories. 
 					mkdir(self.path+destRel)
 				else:
@@ -148,7 +148,7 @@ class Copy(BaseTarget):
 
 class FilteredCopy(Copy):
 	"""
-	A target that copies input text file(s) to an output file or directory, 
+	A target that copies one or more input text file(s) to an output file or directory, 
 	filtering each line through the specified line mappers. 
 	
 	The parent directory will be created if it doesn't exist already. 

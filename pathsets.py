@@ -395,6 +395,11 @@ class FindPaths(BasePathSet):
 
 		This method will cache its result after being called the first time. 
 		
+		Note that it is possible the destinations may contain "../" elements - 
+		targets for which that could be a problem should check for and disallow 
+		such destinations (e.g. for copy we would not want to allow copying to 
+		destinations outside the specified root directory). 
+		
 		"""
 		log = logging.getLogger('FindPaths')
 		log.debug('FindPaths resolve starting for: %s', self)
@@ -642,8 +647,6 @@ class AddDestPrefix(_DerivedPathSet):
 		if not isinstance(pathSet, BasePathSet): pathSet = PathSet(pathSet)
 		_DerivedPathSet.__init__(self, pathSet)
 		self.__prefix = prefix.lstrip('\\/')
-		if '..' in self.__prefix:
-			raise BuildException('Cannot use ".." in a dest prefix: %s'%self)
 	
 	def __repr__(self):
 		""" Return a string including this class name, the prefix to add and the pathset 

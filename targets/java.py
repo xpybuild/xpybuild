@@ -70,6 +70,10 @@ class SignJars(BaseTarget):
 
 		mkdir(self.path)
 		for src, dest in self.jars.resolveWithDestinations(context):
+			if '..' in dest:
+					# to avoid people abusing this to copy files outside the dest directory!
+					raise Exception('This target does not permit destination paths to contain ".." relative path expressions')
+
 			try:
 				with open(src, 'rb') as s:
 					with openForWrite(os.path.join(self.path, dest), 'wb') as d:
@@ -267,6 +271,7 @@ class Jar(BaseTarget):
 			
 			if "Class-path" not in manifest_entries: # assuming it wasn't hardcoded, set it here
 				for src, dest in self.classpath.resolveWithDestinations(context):
+					# we definitely do want to support use of ".." in destinations here, it can be very useful
 					classpath_entries.append(dest)
 				assert isinstance(options['jar.manifest.classpathAppend'], list), options['jar.manifest.classpathAppend'] # must not be a string
 				classpath_entries.extend(options['jar.manifest.classpathAppend'] or [])
@@ -284,6 +289,7 @@ class Jar(BaseTarget):
 
 		# copy in the additional things to include
 		for (src, dest) in self.package.resolveWithDestinations(context):
+			if '..' in dest: raise Exception('This target does not permit packaged destination paths to contain ".." relative path expressions')
 			mkdir(os.path.dirname(os.path.join(classes, dest)))
 			destpath = normLongPath(classes+'/'+dest)
 			srcpath = normLongPath(src)

@@ -126,6 +126,7 @@ class Unpack(BaseTarget):
 				items = a.resolveWithDestinations(context)
 			for (srcAbs, destRel) in items:
 				if destRel and not isDirPath(destRel): destRel = os.path.dirname(destRel) # strip off the zip filename
+				if '..' in destRel: raise Exception('This target does not permit destination paths to contain ".." relative path expressions')
 					
 				try:
 					filesize = os.path.getsize(srcAbs)

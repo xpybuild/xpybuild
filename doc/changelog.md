@@ -17,6 +17,7 @@ None
 - Add ProcessOutputHandler.getLastOutputLine() method and use it to improve the default handleEnd() message if there is a non-zero error code but no errors or warnings
 - Include regualar progress messages during dependency resolution, and log a message when starting each build phase
 - Add PySys-based framework for proper automated testing of xpybuild
+- PathSets, Jar: previously use of ".." in destination paths was disallowed by AddDestPrefix and most other mappers, now it is permitted which allows use of AddDestPrefix to add parent-relative paths to the classpath in .jar manifests. Targets that use the destinations to write to the local file system are required to check for and disallow ".." to avoid accidentally writing to locations outside their specified target directory. 
 
 # 1.12
 
