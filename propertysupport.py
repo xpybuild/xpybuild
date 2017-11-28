@@ -34,7 +34,9 @@ from buildexceptions import BuildException
 # All the public methods that build authors are expected to use to interact with properties and options
 
 def defineOption(name, default):
-	""" Define an option with a default (can be overridden globally or on targets).
+	""" Define an option with a default (can be overridden globally using setGlobalOption() or on individual targets).
+	
+	This method is typically used only when implementing a new kind of target. 
 	
 	Options are not available for ${...} expansion (like properties), but 
 	rather as used for (optionally inheritably) settings that affect the 
