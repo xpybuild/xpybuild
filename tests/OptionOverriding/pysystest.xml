@@ -1,0 +1,23 @@
+<?xml version="1.0" standalone="yes"?>
+<pysystest type="auto" state="runnable">
+    
+  <description> 
+    <title>Options - Overriding options using self.options/.option()/setGlobalOption</title>
+    <purpose><![CDATA[
+To check for the correct precedence of option overriding. 
+]]>
+    </purpose>
+  </description>
+
+  <classification>
+  </classification>
+
+  <data>
+    <class name="PySysTest" module="run"/>
+  </data>
+  
+  <traceability>
+    <requirements>    
+    </requirements>
+  </traceability>
+</pysystest>
