@@ -249,8 +249,7 @@ class CustomCommand(BaseTarget):
 							cwd=cwd, 
 							env=env)
 
-						options = context.mergeOptions(self) # get the merged options
-						rc = _wait_with_timeout(process, '%s(%s)'%(self.name, os.path.basename(cmd[0])), options['process.timeout'], False)
+						rc = _wait_with_timeout(process, '%s(%s)'%(self.name, os.path.basename(cmd[0])), self.options['process.timeout'], False)
 						success = rc == 0
 				
 			finally:

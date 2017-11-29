@@ -35,21 +35,19 @@ class BaseTarget(Composable):
 	a single name which is a file or a directory (ending with '/'). 
 	
 	Has public read-only attributes: 
-		- name
-		- path (resolved name with variables expanded etc)
-		- workDir (a unique dedicated directory where this target can write 
-			temporary/working files)
+	- name: the unresolved canonical name for the target (containing unsubstituted properties etc).
+	- path: the resolved name with variables expanded etc. Can only be used once target is running or checking up-to-dateness but not during initialization phase.
+	- options: a dict of the resolved options for this target. Can only be used once target is running or checking up-to-dateness but not during initialization phase. See also L{getOption()}.
+	- workDir (a unique dedicated directory where this target can write 
+	temporary/working files).
 	
 	The methods that may be overridden by subclasses are:
-		- run
-		- clean
-		- getHashableImplicitInputs
+	- L{run}
+	- L{clean}
+	- L{getHashableImplicitInputs}
 	
 	"""
 
-	location = None
-	__options = {}
-	
 	# to allow targets to be used in sets, override hash to ensure its deterministic
 	# no need to override eq/ne, they use object identity which is already correct
 	def __hash__(self): 
@@ -69,6 +67,10 @@ class BaseTarget(Composable):
 		flattened/expanded by the build system; may be any combination of 
 		strings, PathSets and lists and may also contain unexpanded variables.
 		"""
+		
+		self._optionsTargetOverridesUnresolved = {} # for target-specific option overrides. for internal use (by buildcontext), do not use
+		self.__optionsResolved = None # gets assigned during end of initialization phase
+
 		if isinstance(name, basestring):
 			if '//' in name:
 				raise BuildException('Invalid target name: double slashes are not permitted: %s'%name)
@@ -94,13 +96,37 @@ class BaseTarget(Composable):
 		self.__path = None # set by _resolveTargetPath
 		self.__workDir = None
 
+	def __setattr__(self, name, value):
+		# this is a hack to retain backwards compat for a few classes that rely on explicitly assigning to self.options
+
+		if name == 'options':
+			# make this a WARN at some point
+			self.log.debug('Target class "%s" assigns to self.options which is deprecated - instead call .option(...) to set target options'%self.__class__.__name__)
+			if value:
+				self._optionsTargetOverridesUnresolved.update(value)
+		else:
+			object.__setattr__(self, name, value)
+
 	def __getattr__(self, name):
 		""" Getter for read-only attributes """
+		# nb this is not called for fields that have been set explicitly using self.X = ...
+		
 		if name == 'path': 
 			if not self.__path: raise Exception('Target path has not yet been resolved by this phase of the build process: %s'%self)
 			return self.__path
 		if name == 'name': return self.__name
-		if name == 'options': return self.__options
+			
+		if name == 'options': 
+			# the 
+			# don't return self.options here, since a) that has the unresolved/unmerged options and b) setting it is 
+			# dodgy and something that must work for compat reasons but which we want to discourage
+			
+			if self.__optionsResolved == None:
+				# probably no-one is using this, but in case they are give a clear message
+				# instead, should be setting the .option(...) method, and getting
+				raise Exception("Cannot read the value of basetarget.targetOptions during the initialization phase of the build as the resolved option values are not yet available")
+			return self.__optionsResolved
+		
 		if name == 'workDir': return self.__workDir
 		if name == 'type': return self.__class__.__name__
 		if name == 'baseDir': return self.location.buildDir
@@ -134,11 +160,16 @@ class BaseTarget(Composable):
 		required expansion etc. 
 		
 		Do not override this method.
+		
+		@param context: The initialization context, with all properties and options fully defined. 
 		"""
 		self.resolveToString(context)
 
 		# do this early (before deps resolution) so it can be used for clean
 		self.__workDir = os.path.normpath(context.getPropertyValue("BUILD_WORK_DIR")+'/targets/'+targetNameToUniqueId(self.name))
+		
+		# take the opportunity to provide a merged set of options
+		self.__optionsResolved = context.mergeOptions(target=self)
 
 	def _resolveUnderlyingDependencies(self, context):
 		""" Internal method for resolving dependencies needed by this target, 
@@ -183,7 +214,7 @@ class BaseTarget(Composable):
 		implicit inputs of this target that cannot be detected using normal 
 		timestamp up-to-date checking.
 												
-		This can include property values (e.g. changes in build number,
+		This can include options, property values (e.g. changes in build number,
 		release/debug mode) and glob results (e.g. addition or removal of a
 		file should trigger a rebuild). 
 		
@@ -195,9 +226,8 @@ class BaseTarget(Composable):
 		resolved paths of any pathsets in the dependency list will be used. 
 		
 		Some targets should override this to append additional information, 
-		such as relevant property values. 
+		such as relevant property or option values. 
 		"""
-		
 		return []
 	
 	def getTags(self): 
@@ -221,11 +251,26 @@ class BaseTarget(Composable):
 		init.registerTags(self, self.__tags)
 		return self
 
+	def getOption(self, key, errorIfNone=True, errorIfEmptyString=True):
+		"""
+		Gets the resolved value of a specified option for this target, with optional 
+		checking to give a friendly error message if the value is an empty string or None. 
+		"""
+		if key not in self.options: raise Exception('Target tried to access an option key that does not exist: %s'%key)
+		v = self.options[key]
+		if (errorIfNone and v == None) or (errorIfEmptyString and v == ''):
+			raise BuildException('This target requires a value to be specified for option "%s" (see basetarget.option or setGlobalOption)'%key)
+		return v
+
 	def option(self, key, value):
 		"""
-		Set an option on this target,
+		Set an option on this target, overriding any default value provided by setGlobalOption. 
+		If the value contains any property values these will be expanded before the option value is 
+		passed to the target. 
+		
+		Use self.options or L{getOption} to get resolved option values. 
 		"""
-		self.__options[key] = value
+		self._optionsTargetOverridesUnresolved[key] = value
 		return self
 	
 	def tags(self, *tags):

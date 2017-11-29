@@ -1,4 +1,3 @@
-targetOverride.txt self.options testoption.targetOverride=expectedval
 targetOverride.txt mergeOptions testoption.default=expectedval
 targetOverride.txt mergeOptions testoption.globalOverride=expectedval
 targetOverride.txt mergeOptions testoption.legacyTargetOverride=defaultval

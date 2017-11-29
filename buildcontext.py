@@ -300,7 +300,9 @@ class BaseContext(object):
 		return dict(_definedOptions)
 
 	def mergeOptions(self, target=None, options=None): 
-		""" Merges together the default options, the globally overridden options and any set on the target.
+		""" [DEPRECATED] Merges together the default options, the globally overridden options and any set on the target.
+		
+		DEPRECATED: Use the target's self.options to get the resolved dictionary of options instead of this method. 
 
 		This is usually called from within a target run() method. Any options provided on the target 
 		will take priority, followed by anything overridden globally, finally anything left is taken
@@ -309,16 +311,17 @@ class BaseContext(object):
 		@param target: the target from which to take default options. If target is set then the map will
 			also contain a 'tmpdir' option pointing at the target-specific work directory.
 
-		@param options: options to override directly
+		@param options: options to override directly - this is retained for backwards compatibility only and should not be used. 
 
 		@return: Returns a map of the merged options and their correct values.
 		"""
+		# maybe this should move into basetarget eventually
 		if target: 
 			fulloptions = { 'tmpdir' : target.workDir }
 		else:
 			fulloptions = {}
 		# search defaults, then replace if in globals, then replace if in target.options
-		for source in [_definedOptions, self._globalOptions, target and target.options or {}, options if options else {}]:
+		for source in [_definedOptions, self._globalOptions, target and target._optionsTargetOverridesUnresolved or {}, options if options else {}]:
 			if source:
 				for key in source:
 					try:

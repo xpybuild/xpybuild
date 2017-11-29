@@ -40,15 +40,26 @@ def defineOption(name, default):
 	
 	Options are not available for ${...} expansion (like properties), but 
 	rather as used for (optionally inheritably) settings that affect the 
-	behaviour of one or more targets. 
+	behaviour of one or more targets. They are accessed using self.options 
+	in any target instance. 
 	
-	@param name: The option name
+	@param name: The option name, which should be in lowercase, and contain a prefix specific
+	to this target or group of targets, e.g. "java.home"
 
 	@param default: The default value of the option
 	"""
 	init = getBuildInitializationContext()
 	if init:
 		init._defineOption(name, default)
+
+def setGlobalOption(key, value):
+	"""
+		Globally override the default for an option
+	"""
+	init = getBuildInitializationContext()
+	if init:
+		init.setGlobalOption(key, value)
+
 
 def defineStringProperty(name, default):
 	""" Define a string property which can be used in ${...} substitution. 
@@ -282,14 +293,6 @@ def expandListProperty(propertyName):
 
 	assert context, 'expandListProperty utility can only be used during build file initialization phase'
 	return context.expandListPropertyValue(propertyName)
-
-def setGlobalOption(key, value):
-	"""
-		Globally override the default for an option
-	"""
-	init = getBuildInitializationContext()
-	if init:
-		init.setGlobalOption(key, value)
 
 def enableEnvironmentPropertyOverrides(prefix):
 	"""

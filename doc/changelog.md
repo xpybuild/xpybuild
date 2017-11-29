@@ -5,12 +5,17 @@
 - normLongPath now returns paths including a trailing slash if the input contains a trailing slash (indicating a directory), whereas before the trailing slash would be stripped off. The provides consistency with normpath. 
 
 ## Deprecation
-None
+- Assigning to self.options (e.g. from a target's constructor) is deprecated; it will continue to be permitted for now, but due to various edge cases this pattern is strongly discouraged. Best practice is to call .option(...) on the target after the constructor has returned to specify any target-specific options. 
+
+## Breaking changes
+- The semantics of reading self.options from a target have changed in order to fix some edge cases and provide better usability. Previously reading self.options was permitted at any point in the build lifecycle but would usually return unresolved target-specific overrides and sometimes inconsistent results. Now reading self.options will return a dictionary containing fully resolved options in force for this target, including global option values and target-specific overrides. It is no longer permitted to read the self.options from a target's constructor i.e. during the build initialization phase (as the resolved option values are not yet available); this will now produce an exception. 
 
 ## Fixes
 - A target or tag that is disabled in the full build will now be included in the build if specified explicitly even when "all" is also specified in the same invocation of xpybuild.py
+- Target options specified using .options(...) were being applied on a per-class basis, leading to the options set on the final target of a given class taking effect for all targets of that class. This is now fixed. 
 
 ## Enhancements
+- Options framework: a target-specific dictionary of resovled options is now available directly from basetarget.options so there is no longer any need to use buildcontext.mergeOptions. There is also a new method basetarget.getOption() for getting an option value with automatic checking for None/empty string values. 
 - Cpp/C: Improve clarity of error messages from C/C++ dependency checking by including the source file in the message (if there is only one - which is the common case)
 - FilteredCopy: permit an empty list of mappers to make it easier to specify replacements that only apply to one platform (e.g. line endings), add best practice info in target doc and add allowUnusedMappers property for when all else fails
 - Improve build file location and exception handling: only attach build file location information to an exception if it is obtained during the parsing phase, and only from the include(...) file currently being processed, to avoid unuseful locations from common utility classes. Except for where an error results from an item with its own location such as a PathSet, set location to None and use the location of the target being built/dependency-checked. Allow including both location (e.g. from a pathset) and target name in an exception message if both are available. 

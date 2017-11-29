@@ -54,15 +54,14 @@ class Docker(BaseTarget):
 
 	def clean(self, context):
 		BaseTarget.clean(self, context)
-		options = context.mergeOptions(self)
 		args = [ options['docker.path'] ]
-		environs = { 'DOCKER_HOST' : options['docker.host'] } if options['docker.host'] else {}
+		environs = { 'DOCKER_HOST' : self.options['docker.host'] } if self.options['docker.host'] else {}
 		args.extend(['rmi', context.expandPropertyValues(self.imagename)])
-		call(args, outputHandler=options['docker.processoutputhandler']('docker-rmi', False, options=options), timeout=options['process.timeout'], env=environs)
+		call(args, outputHandler=self.getOption('docker.processoutputhandler')('docker-rmi', False, options=self.options), timeout=self.options['process.timeout'], env=environs)
 	
 	def run(self, context):
-		options = context.mergeOptions(self)
-		args = [ options['docker.path'] ]
+		options = self.options
+		args = [ self.getOption('docker.path') ]
 		environs = { 'DOCKER_HOST' : options['docker.host'] } if options['docker.host'] else {}
 		if self.mode == Docker.BUILD:
 			dargs = list(args)

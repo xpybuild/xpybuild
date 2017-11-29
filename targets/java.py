@@ -66,7 +66,7 @@ class SignJars(BaseTarget):
 
 	def run(self, context):
 		self.keystore = context.expandPropertyValues(self.keystore)
-		options = context.mergeOptions(self) # get the merged options
+		options = self.options
 
 		mkdir(self.path)
 		for src, dest in self.jars.resolveWithDestinations(context):
@@ -137,6 +137,7 @@ class SignJars(BaseTarget):
 					mkdir(self.workDir)
 					manifest = os.path.join(self.workDir, "MANIFEST.MF") # manifest file
 
+					options = dict(options)
 					options['jar.manifest.defaults'] = {}
 					create_manifest(manifest, manifest_entries, options)
 	
@@ -162,19 +163,16 @@ class Javac(BaseTarget):
 
 		@param classpath: PathSet (or list) of things to be on the classpath; 
 
-		@param options: generic target options map for passing options to the 
-		underlying operation (optional)
+		@param options: [DEPRECATED - use .option() instead]
 		"""
 		self.compile = FilteredPathSet(_isJavaFile, PathSet(compile))
 			
 		self.classpath = PathSet(classpath)
 		
 		BaseTarget.__init__(self, output, [self.compile,self.classpath])
-		self.options = options
+		for k,v in (options or {}).items(): self.option(k, v)
 
 	def run(self, context):
-		options = context.mergeOptions(self) # get the merged options
-
 		# make sure outputdir exists
 		mkdir(self.path)
 
@@ -183,15 +181,15 @@ class Javac(BaseTarget):
 		classpath = os.pathsep.join(self.classpath.resolve(context)) 
 
 		# compile everything
-		mkdir(options.get('javac.logs'))
-		javac(self.path, self.compile.resolve(context), classpath, options=options, logbasename=options.get('javac.logs')+'/'+targetNameToUniqueId(self.name), targetname=self.name)
+		mkdir(self.getOption('javac.logs'))
+		javac(self.path, self.compile.resolve(context), classpath, options=self.options, logbasename=self.options['javac.logs']+'/'+targetNameToUniqueId(self.name), targetname=self.name)
 
 	def getHashableImplicitInputs(self, context):
 		# changes in the manifest text should cause a rebuild
 		# for now, don't bother factoring global jar.manifest.defaults option 
 		# in here (it'll almost never change anyway)
 		return super(Javac, self).getHashableImplicitInputs(context) + sorted([
-			'option: %s = "%s"'%(k,v) for (k,v) in context.mergeOptions(self).items() 
+			'option: %s = "%s"'%(k,v) for (k,v) in self.options.items() 
 				if v and (k.startswith('javac.') or k == 'java.home')])
 
 class Jar(BaseTarget):
@@ -213,7 +211,7 @@ class Jar(BaseTarget):
 		@param manifest: map of manifest entries, OR a string with the filename to use 
 		OR None to disable manifest generation and just produce a normal zip
 
-		@param options: generic target options map
+		@param options: [DEPRECATED - use .option() instead]
 
 		@param package: PathSet (or list) of other files to include in the jar; 
 			destination mapping indicates where they will appear in the jar
@@ -233,11 +231,11 @@ class Jar(BaseTarget):
 		BaseTarget.__init__(self, jar, [self.compile,self.classpath,self.package, 
 			manifest if isinstance(manifest, basestring) else None])
 			
-		self.options = options
+		for k,v in (options or {}).items(): self.option(k, v)
 		self.preserveManifestFormatting = preserveManifestFormatting
 
 	def run(self, context):
-		options = context.mergeOptions(self) # get the merged options
+		options = self.options
 
 		# make sure temp dir exists
 		mkdir(self.workDir)
@@ -251,7 +249,7 @@ class Jar(BaseTarget):
 		# compile everything
 		mkdir(classes) # (need this for assembling other files to package later on, even if we don't do any javac)
 		if self.compile:
-			mkdir(options.get('javac.logs'))
+			mkdir(self.getOption('javac.logs'))
 			javac(classes, self.compile.resolve(context), classpath, options=options, logbasename=options.get('javac.logs')+'/'+targetNameToUniqueId(self.name), targetname=self.name)
 
 		manifest = os.path.join(self.workDir, "MANIFEST.MF") # manifest file
@@ -313,7 +311,7 @@ class Jar(BaseTarget):
 			'manifest = '+context.expandPropertyValues(str(self.manifest)),
 			'classpath = '+context.expandPropertyValues(str(self.classpath)), # because classpath destinations affect manifest
 			]+(['preserveManifestFormatting = true'] if self.preserveManifestFormatting else [])\
-			+sorted(['option: %s = "%s"'%(k,v) for (k,v) in context.mergeOptions(self).items() 
+			+sorted(['option: %s = "%s"'%(k,v) for (k,v) in self.options.items() 
 				if v and (k.startswith('javac.') or k.startswith('jar.') or k == 'java.home')])
 
 class Javadoc(BaseTarget):
@@ -327,15 +325,15 @@ class Javadoc(BaseTarget):
 
 		@param classpath: a list of jars needed for the classpath
 
-		@param options: javadoc.-prefixed options map
+		@param options: [DEPRECATED - use .option() instead]
 		"""
 		self.sources = PathSet(source)
 		self.classpath = PathSet(classpath)
 		BaseTarget.__init__(self, destdir, [self.sources, self.classpath])
-		self.options = options
+		for k,v in (options or {}).items(): self.option(k, v)
 
 	def run(self, context):
-		options = context.mergeOptions(self) # get the merged options
+		options = self.options
 		classpath = os.pathsep.join(self.classpath.resolve(context))
 		javadoc(self.path, self.sources.resolve(context), classpath, options, 
 			outputHandler=ProcessOutputHandler('javadoc', treatStdErrAsErrors=False, options=options))
@@ -345,6 +343,6 @@ class Javadoc(BaseTarget):
 		# for now, don't bother factoring global jar.manifest.defaults option 
 		# in here (it'll almost never change anyway)
 		return super(Javadoc, self).getHashableImplicitInputs(context) + \
-			sorted(['option: %s = "%s"'%(k,v) for (k,v) in context.mergeOptions(self).items() 
+			sorted(['option: %s = "%s"'%(k,v) for (k,v) in self.options.items() 
 				if k and k.startswith('javadoc.')])
 				

@@ -82,13 +82,12 @@ class CSharp(BaseTarget):
 		return super(CSharp, self).getHashableImplicitInputs(context) + (['main = %s'%context.expandPropertyValues(('%s'%self.main))] if self.main else [])
 
 	def run(self, context):
-		options = context.mergeOptions(self) # get the merged options
 		libs = self.libs.resolve(context)
 		libnames = map(lambda x:os.path.basename(x), libs)
 		libpaths = map(lambda x:os.path.dirname(x), libs)
 		flags = [context.expandPropertyValues(x) for x in self.flags]
 
-		args = [options['csharp.compiler'], "-out:"+self.path]
+		args = [self.getOption('csharp.compiler'), "-out:"+self.path]
 		if libnames: args.extend(["-reference:"+",".join(libnames), "-lib:"+",".join(libpaths)])
 		if self.main:
 			args.extend(["-target:exe", "-main:"+self.main])
@@ -96,9 +95,9 @@ class CSharp(BaseTarget):
 			args.append("-target:library")
 		for (file, id) in self.resources:
 			args.append('-resource:%s,%s' % (context.expandPropertyValues(file), context.expandPropertyValues(id)))
-		args.extend(options['csharp.options'])
+		args.extend(self.options['csharp.options'])
 		args.extend(flags)
 		args.extend(self.compile.resolve(context))
 
 		mkdir(os.path.dirname(self.path))
-		call(args, outputHandler=options['csharp.processoutputhandler']('csc', False, options=options), timeout=options['process.timeout'])
+		call(args, outputHandler=self.getOption('csharp.processoutputhandler')('csc', False, options=self.options), timeout=self.options['process.timeout'])

@@ -80,7 +80,7 @@ class CompilerMakeDependsPathSet(BasePathSet):
 		deleteFile(dfile)
 	def _resolveUnderlyingDependencies(self, context):
 		deplist = None
-		options = context.mergeOptions(self.target) # get the merged options
+		options = self.target.options # get the merged options
 		log = logging.getLogger('MakeDepend')
 
 		dfile = normLongPath(self.target.workDir+'.makedepend')
@@ -150,17 +150,19 @@ class Cpp(BaseTarget):
 		@param flags: a list of additional compiler flags
 		@param dependencies: a list of additional dependencies that need to be built 
 		before this target
+		@param options: [DEPRECATED - use .option() instead]
 		"""
 		self.source = PathSet(source)
 		self.includes = PathSet(includes or []) 
 		self.flags = flatten([flags]) or []
-		self.options = options or {}
 		self.makedepend = CompilerMakeDependsPathSet(self, self.source, flags=self.flags, includes=self.includes)
 		BaseTarget.__init__(self, object, [dependencies or [], self.source, self.makedepend])
+		
+		for k,v in (options or {}).items(): self.option(k, v)
 		self.tags('native')
 	
 	def run(self, context):
-		options = context.mergeOptions(self) # get the merged options
+		options = self.options
 
 		mkdir(os.path.dirname(self.path))
 		options['native.compilers'].cxxcompiler.compile(context, output=self.path, options=options, flags=flatten(options['native.cxx.flags']+[context.expandPropertyValues(x).split(' ') for x in self.flags]), src=self.source.resolve(context), includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']]))
@@ -190,17 +192,19 @@ class C(BaseTarget):
 		@param flags: a list of additional compiler flags
 		@param dependencies: a list of additional dependencies that need to be built 
 		before this target
+		@param options: [DEPRECATED - use .option() instead]
+
 		"""
 		self.source = PathSet(source)
 		self.includes = PathSet(includes or []) 
 		self.flags = flags or []
 		self.makedepend = CompilerMakeDependsPathSet(self, self.source, flags=self.flags, includes=self.includes)
 		BaseTarget.__init__(self, object, [dependencies or [], self.makedepend])
-		self.options = options or {}
+		for k,v in (options or {}).items(): self.option(k, v)
 		self.tags('native')
 	
 	def run(self, context):
-		options = context.mergeOptions(self) # get the merged options
+		options = self.options
 
 		mkdir(os.path.dirname(self.path))
 		options['native.compilers'].ccompiler.compile(context, output=self.path,
@@ -241,7 +245,7 @@ class Link(BaseTarget):
 
 		@param flags: a list of additional linker flags
 
-		@param options: a map of options to the underlying operation specific to this target (optional)
+		@param options: [DEPRECATED - use .option() instead]
 
 		@param dependencies: a list of additional dependencies (targets or files)
 		"""
@@ -249,13 +253,14 @@ class Link(BaseTarget):
 		self.libs = libs or []
 		self.libpaths = PathSet(libpaths or [])
 		self.shared=shared
-		self.options = options
 		self.flags = flags or []
 		BaseTarget.__init__(self, bin, PathSet(self.objects, (dependencies or [])))
+		for k,v in (options or {}).items(): self.option(k, v)
+		
 		self.tags('native')
 	
 	def run(self, context):
-		options = context.mergeOptions(self) # get the merged options
+		options = self.options
 
 		mkdir(os.path.dirname(self.path))
 		options['native.compilers'].linker.link(context, output=self.path,
@@ -269,7 +274,7 @@ class Link(BaseTarget):
 	def getHashableImplicitInputs(self, context):
 		r = super(Link, self).getHashableImplicitInputs(context)
 		
-		options = context.mergeOptions(self)
+		options = self.options
 		r.append('libs: '+context.expandPropertyValues(str(self.libs+options['native.libs'])))
 		r.append('libpaths: '+context.expandPropertyValues(str(self.libpaths)))
 		r.append('native.libpaths: %s'%options['native.libpaths'])
@@ -293,7 +298,7 @@ class Ar(BaseTarget):
 		self.tags('native')
 	
 	def run(self, context):
-		options = context.mergeOptions(self) # get the merged options
+		options = self.options
 
 		mkdir(os.path.dirname(self.path))
 		options['native.compilers'].archiver.archive(context, output=self.path,
