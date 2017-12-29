@@ -32,19 +32,16 @@ defineOption('docker.path', 'docker')
 defineOption('docker.host', None)
 defineOption('docker.processoutputhandler', ProcessOutputHandler) 
 
-class Docker(BaseTarget):
+class DockerBase(BaseTarget):
 	""" A target that runs commands in docker, using stamp files for up-to-dateness
 	"""
-	BUILD = 1
-	PUSHTAG = 2
 	
-	def __init__(self, imagename, mode, inputs, depimage=None, dockerfile=None, buildArgs=None):
+	def __init__(self, imagename, inputs, depimage=None, dockerfile=None, buildArgs=None):
 		"""
 		imagename: the name/tag of the image to build
 		"""
 		self.imagename = imagename
 		self.depimage = depimage
-		self.mode = mode
 		self.dockerfile = dockerfile
 		self.buildArgs = buildArgs
 		self.stampfile = '${BUILD_WORK_DIR}/targets/docker/.%s' % re.sub(r'[\\/]', '_', imagename)
@@ -54,42 +51,69 @@ class Docker(BaseTarget):
 
 	def clean(self, context):
 		BaseTarget.clean(self, context)
+		options = self.options
 		args = [ options['docker.path'] ]
 		environs = { 'DOCKER_HOST' : self.options['docker.host'] } if self.options['docker.host'] else {}
 		args.extend(['rmi', context.expandPropertyValues(self.imagename)])
-		call(args, outputHandler=self.getOption('docker.processoutputhandler')('docker-rmi', False, options=self.options), timeout=self.options['process.timeout'], env=environs)
+		try:
+			call(args, outputHandler=self.getOption('docker.processoutputhandler')('docker-rmi', False, options=self.options), timeout=self.options['process.timeout'], env=environs)
+		except Exception as e:
+			logger = logging.getLogger('DockerBase')
+			logger.info('Exception cleaning Docker target: %s' % e)
 	
 	def run(self, context):
 		options = self.options
 		args = [ self.getOption('docker.path') ]
 		environs = { 'DOCKER_HOST' : options['docker.host'] } if options['docker.host'] else {}
-		if self.mode == Docker.BUILD:
-			dargs = list(args)
-			dargs.extend([
-					'build', '--rm=true', '-t', context.expandPropertyValues(self.imagename),
-				])
-			if self.buildArgs: dargs.extend(["--build-arg=%s" % [context.expandPropertyValues(x) for x in self.buildArgs]])
-			if self.dockerfile: dargs.extend(["-f", context.expandPropertyValues(self.dockerfile)])
-			inputs = self.inputs.resolve(context)
-			if len(inputs) != 1: raise BuildException("Must specify a single input for Docker.BUILD", location = self.location)
-			dargs.append(inputs[0])
-			cwd = os.path.dirname(inputs[0])
-			call(dargs, outputHandler=options['docker.processoutputhandler']('docker-build', False, options=options), timeout=options['process.timeout'], env=environs, cwd=cwd)
-		elif self.mode == Docker.PUSHTAG:
-			inputs = self.inputs.resolve(context)
-			if len(inputs) != 0: raise BuildException("Must not specify inputs for Docker.PUSHTAG", location = self.location)
-			dargs = list(args)
-			dargs.extend([
-					'tag', context.expandPropertyValues(self.depimage), context.expandPropertyValues(self.imagename),
-				])
-			call(dargs, outputHandler=options['docker.processoutputhandler']('docker-tag', False, options=options), timeout=options['process.timeout'], env=environs)
-			dargs = list(args)
-			dargs.extend([
-					'push', context.expandPropertyValues(self.imagename),
-				])
-			call(dargs, outputHandler=options['docker.processoutputhandler']('docker-push', False, options=options), timeout=options['process.timeout'], env=environs)
-		else:
-			raise BuildException('Unknown Docker mode. Must be Docker.BUILD or Docker.PUSHTAG', location = self.location)
+
+class DockerBuild(DockerBase):
+	def __init__(self, imagename, inputs, depimage=None, dockerfile=None, buildArgs=None):
+		DockerBase.__init__(self, imagename, inputs, depimage, dockerfile, buildArgs)
+
+	def run(self, context):
+		options = self.options
+		args = [ self.getOption('docker.path') ]
+		environs = { 'DOCKER_HOST' : options['docker.host'] } if options['docker.host'] else {}
+
+		dargs = list(args)
+		dargs.extend([
+				'build', '--rm=true', '-t', context.expandPropertyValues(self.imagename),
+			])
+		if self.buildArgs: dargs.extend(["--build-arg=%s" % [context.expandPropertyValues(x) for x in self.buildArgs]])
+		if self.dockerfile: dargs.extend(["-f", context.expandPropertyValues(self.dockerfile)])
+		inputs = self.inputs.resolve(context)
+		if len(inputs) != 1: raise BuildException("Must specify a single input for Docker.BUILD", location = self.location)
+		dargs.append(inputs[0])
+		cwd = os.path.dirname(inputs[0])
+		call(dargs, outputHandler=options['docker.processoutputhandler']('docker-build', False, options=options), timeout=options['process.timeout'], env=environs, cwd=cwd)
+	
+		# update the stamp file
+		path = normLongPath(self.path)
+		mkdir(os.path.dirname(path))
+		with openForWrite(path, 'wb') as f:
+			pass
+
+class DockerPushTag(DockerBase):
+	def __init__(self, imagename, fromimage):
+		DockerBase.__init__(self, imagename, [], depimage=fromimage)
+
+	def run(self, context):
+		options = self.options
+		args = [ self.getOption('docker.path') ]
+		environs = { 'DOCKER_HOST' : options['docker.host'] } if options['docker.host'] else {}
+
+		inputs = self.inputs.resolve(context)
+		if len(inputs) != 0: raise BuildException("Must not specify inputs for Docker.PUSHTAG", location = self.location)
+		dargs = list(args)
+		dargs.extend([
+				'tag', context.expandPropertyValues(self.depimage), context.expandPropertyValues(self.imagename),
+			])
+		call(dargs, outputHandler=options['docker.processoutputhandler']('docker-tag', False, options=options), timeout=options['process.timeout'], env=environs)
+		dargs = list(args)
+		dargs.extend([
+				'push', context.expandPropertyValues(self.imagename),
+			])
+		call(dargs, outputHandler=options['docker.processoutputhandler']('docker-push', False, options=options), timeout=options['process.timeout'], env=environs)
 		
 		# update the stamp file
 		path = normLongPath(self.path)

@@ -17,7 +17,7 @@ from propertysupport import *
 from buildcommon import *
 from pathsets import *
 
-from targets.docker import Docker
+from targets.docker import DockerBuild, DockerPushTag
 
 definePathProperty('DOCKER_PATH', None)
 defineStringProperty('DOCKER_HOST', None)
@@ -26,5 +26,5 @@ defineStringProperty('DOCKER_USER', None)
 setGlobalOption('docker.path', '${DOCKER_PATH}/docker')
 setGlobalOption('docker.host', '${DOCKER_HOST}')
 
-Docker('testbase:latest', Docker.BUILD, ['./'])
-Docker('${DOCKER_REPO}/${DOCKER_USER}/testbase:latest', Docker.PUSHTAG, [], 'testbase:latest')
+DockerBuild('testbase:latest', ['./'])
+#DockerPushTag('${DOCKER_REPO}/${DOCKER_USER}/testbase:latest', 'testbase:latest')
