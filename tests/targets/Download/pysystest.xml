@@ -2,9 +2,9 @@
 <pysystest type="auto" state="runnable">
     
   <description> 
-    <title>Docker - functionality of docker targets</title>
+    <title>Download - functionality of download targets</title>
     <purpose><![CDATA[
-To check the functionality of the Docker target
+To check the functionality of the Download target
 ]]>
     </purpose>
   </description>
