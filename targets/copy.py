@@ -158,35 +158,36 @@ class FilteredCopy(Copy):
 	def __init__(self, dest, src, *mappers, **kwargs):
 		"""
 		@param dest: the output directory (ending with a "/") or file. Never 
-		specify a dest directory that is also written to by another 
-		target (e.g. do not specify an output directory here). If you need 
-		to write multiple files to the output directory, use separate Copy 
-		targets for each. 
+		   specify a dest directory that is also written to by another 
+		   target (e.g. do not specify an output directory here). If you need 
+		   to write multiple files to the output directory, use separate Copy 
+		   targets for each. 
 			
 		@param src: the input, which may be any combination of strings, PathSets and 
-		lists of these. 
+		   lists of these. 
 		
 		@param mappers: a list of mapper objects that will be used to transform 
-		the file, line by line. Can be empty in which case this behaves the same 
-		as a normal Copy target. 
+		   the file, line by line. Can be empty in which case this behaves the same 
+		   as a normal Copy target. 
+			
+		   For simple @TOKEN@ replacement see createReplaceDictLineMappers. 
+		   In addition to per-line changes, it is also possible to specify 
+		   mappers that add header/footer content to the file. 
+			
+		   Note that files are read and written in binary mode, so mappers 
+		   will be dealing directly with platform-specific \\n and \\r 
+		   characters; python's os.linesep should be used where a 
+		   platform-neutral newline is required. 
 		
-		For simple @TOKEN@ replacement see createReplaceDictLineMappers. 
-		In addition to per-line changes, it is also possible to specify 
-		mappers that add header/footer content to the file. 
-		
-		Note that files are read and written in binary mode, so mappers 
-		will be dealing directly with platform-specific \\n and \\r 
-		characters; python's os.linesep should be used where a 
-		platform-neutral newline is required. 
-		
-		@param allowUnusedMappers: To avoid build files that accumulate unused 
-		cruft or are hard to understand, it by default an an error to include a 
-		mapper in this list that is not used, i.e. that does not in any way 
-		change the output for any file. We recommend using conditionalization 
-		to avoid passing in such mappers e.g. 
-		FilteredCopy(target, src, [StringReplaceLineMapper(os.linesep,'\n') if isWindows() else None]). 
-		If this is not practical, set allowUnusedMappers=True to prevent this 
-		check. 
+		@param kwargs: Additional parameter: allowUnusedMappers:
+		   To avoid build files that accumulate unused 
+		   cruft or are hard to understand, it by default an an error to include a 
+		   mapper in this list that is not used, i.e. that does not in any way 
+		   change the output for any file. We recommend using conditionalization 
+		   to avoid passing in such mappers e.g. 
+		   FilteredCopy(target, src, [StringReplaceLineMapper(os.linesep,'\\n') if isWindows() else None]). 
+		   If this is not practical, set allowUnusedMappers=True to prevent this 
+		   check. 
 		
 		"""
 		self.mappers = [m.getInstance() for m in flatten(mappers)]

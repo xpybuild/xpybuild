@@ -36,16 +36,16 @@ class BaseTarget(Composable):
 	a single name which is a file or a directory (ending with '/'). 
 	
 	Has public read-only attributes: 
-	- name: the unresolved canonical name for the target (containing unsubstituted properties etc).
-	- path: the resolved name with variables expanded etc. Can only be used once target is running or checking up-to-dateness but not during initialization phase.
-	- options: a dict of the resolved options for this target. Can only be used once target is running or checking up-to-dateness but not during initialization phase. See also L{getOption()}.
-	- workDir (a unique dedicated directory where this target can write 
+	 - name: the unresolved canonical name for the target (containing unsubstituted properties etc).
+	 - path: the resolved name with variables expanded etc. Can only be used once target is running or checking up-to-dateness but not during initialization phase.
+	 - options: a dict of the resolved options for this target. Can only be used once target is running or checking up-to-dateness but not during initialization phase. See also L{getOption()}.
+	 - workDir (a unique dedicated directory where this target can write 
 	temporary/working files).
 	
 	The methods that may be overridden by subclasses are:
-	- L{run}
-	- L{clean}
-	- L{getHashableImplicitInputs}
+	 - L{run}
+	 - L{clean}
+	 - L{getHashableImplicitInputs}
 	
 	"""
 
