@@ -25,12 +25,14 @@ class XpybuildBaseTest(BaseTest):
 					'--logfile', os.path.join(self.output, stdout.replace('.out', '')+'.log'), 
 					'-J', # might as well run in parallel to speed things up and help find race conditions
 					'OUTPUT_DIR=%s'%self.output+'/build-output']+args, 
-					environs=None, stdout=stdout, stderr=stderr, displayName=('xpybuild %s'%' '.join(args)).strip(), 
+					# python doesn't seem to launch on linux without PYTHONHOME being set
+					environs={'PYTHONHOME':os.path.dirname(os.path.dirname(sys.executable)), 'PYTHONPATH':''}, 
+					stdout=stdout, stderr=stderr, displayName=('xpybuild %s'%' '.join(args)).strip(), 
 					abortOnError=True, ignoreExitStatus=shouldFail)
 				if shouldFail and result != 0: raise Exception('Build failed as expected')
 			finally:
-				self.logFileContents(stdout, tail=True)
-			
+				self.logFileContents(stdout, tail=True) or self.logFileContents(stderr, tail=True)
+		
 		except Exception, e:
 			m = None
 			try:
@@ -41,6 +43,7 @@ class XpybuildBaseTest(BaseTest):
 			except Exception, e2:
 				if shouldFail: raise e2 # this is fatal if we need the error message
 				self.log.exception('Error handling block failed: ')
+			if not m: log.warning('Caught exception running build: %s', e)
 			m = m or '<unknown failure>'
 
 			if shouldFail: 
