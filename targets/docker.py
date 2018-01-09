@@ -51,41 +51,38 @@ class DockerBase(BaseTarget):
 
 	def clean(self, context):
 		BaseTarget.clean(self, context)
-		options = self.options
-		args = [ options['docker.path'] ]
-		environs = { 'DOCKER_HOST' : self.options['docker.host'] } if self.options['docker.host'] else {}
+		args = [ self.getOption('docker.path') ]
+		environs = { 'DOCKER_HOST' : self.getOption('docker.host') } if self.getOption('docker.host') else {}
 		args.extend(['rmi', context.expandPropertyValues(self.imagename)])
 		try:
-			call(args, outputHandler=self.getOption('docker.processoutputhandler')('docker-rmi', False, options=self.options), timeout=self.options['process.timeout'], env=environs)
+			call(args, outputHandler=self.getOption('docker.processoutputhandler')('docker-rmi', False, options=self.options), timeout=self.getOption('process.timeout'), env=environs)
 		except Exception as e:
 			logger = logging.getLogger('DockerBase')
 			logger.info('Exception cleaning Docker target: %s' % e)
 	
 	def run(self, context):
-		options = self.options
 		args = [ self.getOption('docker.path') ]
-		environs = { 'DOCKER_HOST' : options['docker.host'] } if options['docker.host'] else {}
+		environs = { 'DOCKER_HOST' : self.getOption('docker.host') } if self.getOption('docker.host') else {}
 
 class DockerBuild(DockerBase):
 	def __init__(self, imagename, inputs, depimage=None, dockerfile=None, buildArgs=None):
 		DockerBase.__init__(self, imagename, inputs, depimage, dockerfile, buildArgs)
 
 	def run(self, context):
-		options = self.options
 		args = [ self.getOption('docker.path') ]
-		environs = { 'DOCKER_HOST' : options['docker.host'] } if options['docker.host'] else {}
+		environs = { 'DOCKER_HOST' : self.getOption('docker.host') } if self.getOption('docker.host') else {}
 
 		dargs = list(args)
 		dargs.extend([
 				'build', '--rm=true', '-t', context.expandPropertyValues(self.imagename),
 			])
-		if self.buildArgs: dargs.extend(["--build-arg=%s" % [context.expandPropertyValues(x) for x in self.buildArgs]])
+		if self.buildArgs: dargs.extend(["--build-arg=%s" % context.expandPropertyValues(x) for x in self.buildArgs])
 		if self.dockerfile: dargs.extend(["-f", context.expandPropertyValues(self.dockerfile)])
 		inputs = self.inputs.resolve(context)
 		if len(inputs) != 1: raise BuildException("Must specify a single input for Docker.BUILD", location = self.location)
 		dargs.append(inputs[0])
 		cwd = os.path.dirname(inputs[0])
-		call(dargs, outputHandler=options['docker.processoutputhandler']('docker-build', False, options=options), timeout=options['process.timeout'], env=environs, cwd=cwd)
+		call(dargs, outputHandler=self.getOption('docker.processoutputhandler')('docker-build', False, options=self.options), timeout=self.getOption('process.timeout'), env=environs, cwd=cwd)
 	
 		# update the stamp file
 		path = normLongPath(self.path)
@@ -98,9 +95,8 @@ class DockerPushTag(DockerBase):
 		DockerBase.__init__(self, imagename, [], depimage=fromimage)
 
 	def run(self, context):
-		options = self.options
 		args = [ self.getOption('docker.path') ]
-		environs = { 'DOCKER_HOST' : options['docker.host'] } if options['docker.host'] else {}
+		environs = { 'DOCKER_HOST' : self.getOption('docker.host') } if self.getOption('docker.host') else {}
 
 		inputs = self.inputs.resolve(context)
 		if len(inputs) != 0: raise BuildException("Must not specify inputs for Docker.PUSHTAG", location = self.location)
@@ -108,12 +104,12 @@ class DockerPushTag(DockerBase):
 		dargs.extend([
 				'tag', context.expandPropertyValues(self.depimage), context.expandPropertyValues(self.imagename),
 			])
-		call(dargs, outputHandler=options['docker.processoutputhandler']('docker-tag', False, options=options), timeout=options['process.timeout'], env=environs)
+		call(dargs, outputHandler=self.getOption('docker.processoutputhandler')('docker-tag', False, options=self.options), timeout=self.getOption('process.timeout'), env=environs)
 		dargs = list(args)
 		dargs.extend([
 				'push', context.expandPropertyValues(self.imagename),
 			])
-		call(dargs, outputHandler=options['docker.processoutputhandler']('docker-push', False, options=options), timeout=options['process.timeout'], env=environs)
+		call(dargs, outputHandler=self.getOption('docker.processoutputhandler')('docker-push', False, options=self.options), timeout=self.getOption('process.timeout'), env=environs)
 		
 		# update the stamp file
 		path = normLongPath(self.path)
