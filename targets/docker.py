@@ -85,10 +85,7 @@ class DockerBuild(DockerBase):
 		call(dargs, outputHandler=self.getOption('docker.processoutputhandler')('docker-build', False, options=self.options), timeout=self.getOption('process.timeout'), env=environs, cwd=cwd)
 	
 		# update the stamp file
-		path = normLongPath(self.path)
-		mkdir(os.path.dirname(path))
-		with openForWrite(path, 'wb') as f:
-			pass
+		self.updateStampFile()
 
 class DockerPushTag(DockerBase):
 	def __init__(self, imagename, fromimage):
@@ -112,9 +109,6 @@ class DockerPushTag(DockerBase):
 		call(dargs, outputHandler=self.getOption('docker.processoutputhandler')('docker-push', False, options=self.options), timeout=self.getOption('process.timeout'), env=environs)
 		
 		# update the stamp file
-		path = normLongPath(self.path)
-		mkdir(os.path.dirname(path))
-		with openForWrite(path, 'wb') as f:
-			pass
+		self.updateStampFile()
 
 

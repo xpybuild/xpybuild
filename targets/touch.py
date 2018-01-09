@@ -21,7 +21,6 @@ import os, inspect
 
 from buildcommon import *
 from basetarget import BaseTarget
-from utils.fileutils import openForWrite, normLongPath, mkdir
 
 class Touch(BaseTarget):
 	""" A target that creates an empty file
@@ -35,8 +34,4 @@ class Touch(BaseTarget):
 	
 	def run(self, context):
 		self.log.info("Touching %s", self.path)
-		mkdir(os.path.dirname(self.path))
-		path = normLongPath(self.path)
-
-		with openForWrite(path, "wb") as f:
-			pass
+		self.updateStampFile()

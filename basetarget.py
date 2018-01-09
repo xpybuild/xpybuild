@@ -28,6 +28,7 @@ from utils.flatten import flatten, getStringList
 from utils.buildfilelocation import BuildFileLocation
 from utils.functors import Composable
 from buildexceptions import BuildException
+from utils.fileutils import openForWrite, normLongPath, mkdir
 import logging
 
 class BaseTarget(Composable):
@@ -309,6 +310,14 @@ class BaseTarget(Composable):
 		"""
 		self.__priority = pri
 		return self
+
+	def updateStampFile(self):
+		""" Assumes self.path is a stamp file that just needs creating / timestamp updating and does so """
+		path = normLongPath(self.path)
+		mkdir(os.path.dirname(path))
+		with openForWrite(path, 'wb') as f:
+			pass
+
 	
 	def getPriority(self):
 		""" Return the current priority of this target """
