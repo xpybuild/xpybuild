@@ -23,6 +23,9 @@
 - Include regualar progress messages during dependency resolution, and log a message when starting each build phase
 - Add PySys-based framework for proper automated testing of xpybuild
 - PathSets, Jar: previously use of ".." in destination paths was disallowed by AddDestPrefix and most other mappers, now it is permitted which allows use of AddDestPrefix to add parent-relative paths to the classpath in .jar manifests. Targets that use the destinations to write to the local file system are required to check for and disallow ".." to avoid accidentally writing to locations outside their specified target directory. 
+- Add Download target for retrieving HTTP/FTP URLs
+- Add DockerBuild and DockerTagUpload targets for building docker images and pushing them to repositories
+- BaseTarget: add updateStampFile() method for targets which use an artificial output file to maintain up-to-dateness
 
 # 1.12
 
