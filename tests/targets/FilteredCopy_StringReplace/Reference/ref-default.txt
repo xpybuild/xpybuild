@@ -1,0 +1,2 @@
+aa a${PROP}a${ cc
+dd A<propval>A ff

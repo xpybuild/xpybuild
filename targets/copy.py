@@ -293,10 +293,16 @@ class StringReplaceLineMapper(FileContentsMapper):
 	Any ${...} xpybuild properties in the old and new strings will be expanded. 
 
 	Usually will be created from a dictionary of tokens and replacements by L{createReplaceDictLineMappers}
+	
+	@param disablePropertyExpansion: set to True to disable expansion of ${...} properties in the 
+	old and new strings.
 	"""
-	def __init__(self, old, new): self.old, self.new = old, new
-	def mapLine(self, context, line): return line.replace(context.expandPropertyValues(self.old), context.expandPropertyValues(self.new))
-	def getDescription(self, context): return 'StringReplaceLineMapper("%s" -> "%s")'%(context.expandPropertyValues(self.old), context.expandPropertyValues(self.new))
+	def __init__(self, old, new, disablePropertyExpansion=False): self.old, self.new, self.disablePropertyExpansion = old, new, disablePropertyExpansion
+	def _getOldNew(self, context): 
+		if self.disablePropertyExpansion: return self.old, self.new
+		return context.expandPropertyValues(self.old), context.expandPropertyValues(self.new)
+	def mapLine(self, context, line): return line.replace(*self._getOldNew(context))
+	def getDescription(self, context): return 'StringReplaceLineMapper("%s" -> "%s")'%self._getOldNew(context)
 
 class RegexLineMapper(FileContentsMapper):
 	""" Performs a regex substitution ; any ${...} xpybuild properties in 

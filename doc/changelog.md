@@ -1,3 +1,16 @@
+# 1.14
+
+## Breaking changes
+
+## Deprecation
+
+## Breaking changes
+
+## Fixes
+
+## Enhancements
+- StringReplaceLineMapper now has an optional parameter disablePropertyExpansion which can be used to disable ${...} expansion
+
 # 1.13
 
 ## Breaking changes
