@@ -201,6 +201,9 @@ class Jar(BaseTarget):
 	manifest = None
 	def __init__(self, jar, compile, classpath, manifest, options=None, package=None, preserveManifestFormatting=False):
 		""" 
+		To add additional entries to the manifest's classpath which are needed at runtime 
+		but not during compilation, use .option('jar.manifest.classpathAppend', [...])
+		
 		@param jar: path to jar to create
 
 		@param compile: PathSet (or list)  of things to compile
