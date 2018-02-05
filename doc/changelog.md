@@ -7,6 +7,7 @@
 ## Breaking changes
 
 ## Fixes
+- "Unknown option tmpdir" regression introduced 1.13 when calling mergeOptions(options=self.options) is now fixed; though it's recommended to just use self.options and avoid mergeOptions now. 
 
 ## Enhancements
 - StringReplaceLineMapper now has an optional parameter disablePropertyExpansion which can be used to disable ${...} expansion

@@ -325,7 +325,7 @@ class BaseContext(object):
 			if source:
 				for key in source:
 					try:
-						if not key in _definedOptions: raise BuildException("Unknown option %s" % key)
+						if not key in _definedOptions+['tmpdir']: raise BuildException("Unknown option %s" % key)
 						fulloptions[key] = self._recursiveExpandProperties(source[key])
 					except BuildException, e:
 						raise BuildException('Failed to resolve option "%s"'%key, location=target.location if target else None, causedBy=True)
