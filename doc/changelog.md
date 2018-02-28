@@ -8,6 +8,7 @@
 
 ## Fixes
 - "Unknown option tmpdir" regression introduced 1.13 when calling mergeOptions(options=self.options) is now fixed; though it's recommended to just use self.options and avoid mergeOptions now. 
+- CustomCommand was only passing environment variables from the parent process/shell to the new process when env overrides were specified but not when an empty env dictionary was specified. Now these are passed in all cases. 
 
 ## Enhancements
 - StringReplaceLineMapper now has an optional parameter disablePropertyExpansion which can be used to disable ${...} expansion

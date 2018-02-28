@@ -217,16 +217,15 @@ class CustomCommand(BaseTarget):
 
 		self.log.info('Building %s by executing command line: %s', self.name, ''.join(['\n\t"%s"'%x for x in cmd]))
 		if self.cwd: self.log.info('Building %s from working directory: %s', self.name, self.cwd) # only print if overridden
-		env = self.env
+		env = self.env or {}
 		if env:
 			if callable(env):
 				env = env(context)
 			else:
 				env = {k: self._resolveItem(env[k], context) for k in env}
 			self.log.info('Environment overrides for %s are: %s', self.name, ''.join(['\n\t"%s=%s"'%(k, env[k]) for k in env]))
-			for k in os.environ:
-				if k not in env: env[k] = os.getenv(k)
-		
+		for k in os.environ:
+			if k not in env: env[k] = os.getenv(k)
 		self.log.info('Output from %s will be written to "%s" and "%s"', self.name, 
 			stdoutPath, 
 			stderrPath)
