@@ -269,6 +269,8 @@ def isDirPath(path):
 	""" Returns true if the path is a directory (ends with / or \\). """
 	return path and (path.endswith('/') or path.endswith('\\'))
 
+__longPathCache = {} # GIL protects integrity of dict, no need for extra locking as it's only a cache
+	
 def normLongPath(path):
 	"""
 	Normalizes and absolutizes a path (os.path.abspath), and on windows adds 
@@ -279,31 +281,37 @@ def normLongPath(path):
 	"""
 	if not path: return path
 	
+	# profiling shows normLongPath is surprisingly costly; caching results reduces dep checking by 2-3x
+	if path in __longPathCache:
+		return __longPathCache[path]
+	inputpath = path
 	# currently there is some duplication between this and buildcommon.normpath which we ought to fix at some point
 	
 	# normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case 
 	# for drive letters (more so than directory names), with different cmd prompts frequently using different 
 	# capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts
-	if len(path)>2 and __isWindows and path[1] == ':': 
+	if __isWindows and len(path)>2 and path[1] == ':' and path[0] >= 'A' and path[0] <= 'Z': 
 		path = path[0].lower()+path[1:]
 		
 	if __isWindows and path and path.startswith('\\\\?\\'):
-		return path.replace('/', '\\')
-	# abspath also normalizes slashes
-	path = os.path.abspath(path)+(os.path.sep if isDirPath(path) else '')
-	
-	if __isWindows and path and not path.startswith('\\\\?\\'):
-		try:
-			if path.startswith('\\\\'): 
-				return u'\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
-			else:
-				return u'\\\\?\\'+path
-		except Exception:
-			# can throw an exception if path is a bytestring containing non-ascii characters
-			# to be safe, fallback to original string, just hoping it isn't both 
-			# international AND long
-			# could try converting using a default encoding, but slightly error-prone
-			pass 
+		path = path.replace('/', '\\')
+	else:
+		# abspath also normalizes slashes
+		path = os.path.abspath(path)+(os.path.sep if isDirPath(path) else '')
+		
+		if __isWindows and path and not path.startswith('\\\\?\\'):
+			try:
+				if path.startswith('\\\\'): 
+					path = u'\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
+				else:
+					path = u'\\\\?\\'+path
+			except Exception:
+				# can throw an exception if path is a bytestring containing non-ascii characters
+				# to be safe, fallback to original string, just hoping it isn't both 
+				# international AND long
+				# could try converting using a default encoding, but slightly error-prone
+				pass 
+	__longPathCache[inputpath] = path
 	return path
 	
 __statcache = {}
