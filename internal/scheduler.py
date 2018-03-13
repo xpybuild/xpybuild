@@ -89,6 +89,8 @@ class BuildScheduler(object):
 						
 				self.targets[t.path] = BuildTarget(t)
 			except Exception, e:
+				if not isinstance(e, IOError):
+					log.exception('FAILED to prepare target %s: '%t) # include python stack trace in case it's an xpybuild bug
 				# ensure all exceptions from here are annotated with the location and target name
 				raise BuildException('FAILED to prepare target %s'%t, causedBy=True, location=t.location)
 		
