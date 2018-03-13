@@ -307,8 +307,21 @@ def main(args):
 			init._defineOption("build.workers", buildOptions["workers"])
 			init.initializeFromBuildFile(buildFile, isRealBuild=isRealBuild)
 			return init
+
+		if buildOptions['profile']:
+			import cProfile, pstats
+			profiler = cProfile.Profile()
+			profiler.enable()
+
 		init = loadBuildFile()
 
+		if buildOptions['profile']:
+			profilepath = 'xpybuild-profile-%s.txt'%'parsing'
+			with open(profilepath, 'w') as f:
+				p = pstats.Stats(profiler, stream=f)
+				p.sort_stats('cumtime').print_stats(f)
+				p.dump_stats(profilepath.replace('.txt', '')) # also in binary format
+				log.critical('=== Wrote Python profiling output to: %s', profilepath)
 
 		def lookupTarget(s):
 			tfound = init.targets().get(s,None)

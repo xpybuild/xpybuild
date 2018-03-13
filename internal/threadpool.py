@@ -124,6 +124,7 @@ class ThreadPool(object):
 		self._errors = []
 		self.__threads = []
 		self.profile = profile
+		self.threadProfiles = []
 	def __getattr__(self, name):
 		"""
 			errors is a read-only attribute that contains the list of errors returned by the jobs
@@ -170,6 +171,27 @@ class ThreadPool(object):
 				log.info('Build aborted')
 				if not self._errors:
 					self._errors.append("Build aborted")
+			
+			# before this point running=False means we called stop and aborted it... from now on we use running=False 
+			# to terminate the remaining workers before starting the next phase
+			self.running = False
+			self.condition.notifyAll()
+			
+		if self.profile: 
+			log.debug('Joining threads before aggregating profile info')
+			# don't need to bother joining normally, but do for getting profile output
+			for t in self.__threads:
+				t.join()
+			log.debug('Building profile output from %d: %s', len(self.threadProfiles), self.threadProfiles)
+			assert self.threadProfiles
+			path = 'xpybuild-profile-%s.txt'%self.name
+			with open(path, 'w') as f:
+				p = pstats.Stats(*self.threadProfiles, stream=f)
+				p.sort_stats('cumtime').print_stats(f)
+				p.dump_stats(path.replace('.txt', '')) # also in binary format
+			
+			log.critical('=== Wrote Python profiling output from %d threads to: %s', len(self.threadProfiles), path)
+			
 	def _worker_main(self):
 		"""
 			The entry point of the worker threads.
@@ -226,6 +248,7 @@ class ThreadPool(object):
 					self.workerCount = self.workerCount - 1
 					self.completed = self.completed + 1
 					self.inprogress.remove(target)
+					
 					self.condition.notifyAll()
 
 		finally:
@@ -233,6 +256,9 @@ class ThreadPool(object):
 				profiler.disable()
 				profiler.create_stats()
 				with self.lock:
+					self.threadProfiles.append(profiler)
+					"""
+					# in case we ever need per-thread profile data:
 					dirpath = os.path.join(os.getcwd(), 'profile-xpybuild-%s' % os.getpid())
 					mkdir(dirpath)
 					file = os.path.join(dirpath, "%s-thread-%s" % (self.name, threading.current_thread().name))
@@ -242,11 +268,8 @@ class ThreadPool(object):
 							index = index + 1
 						file+'.%s' % index
 					profiler.dump_stats(file)
-					with open(file+'.txt', 'w') as f:
-						p = pstats.Stats(profiler, stream=f)
-						p.sort_stats('cumtime').print_stats(f)
-					
-					log.critical('Wrote Python profiling output to: %s.txt'%file)
+					"""
+
 			with self.lock:
 				self.condition.notifyAll()
 	

@@ -12,6 +12,7 @@
 
 ## Enhancements
 - StringReplaceLineMapper now has an optional parameter disablePropertyExpansion which can be used to disable ${...} expansion
+- Improved usability of --profile option, which now generates textual output, aggregates across all threads, and includes profiling for the build file parsing phase
 
 # 1.13
 
