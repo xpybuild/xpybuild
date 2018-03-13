@@ -92,7 +92,9 @@ class CompilerMakeDependsPathSet(BasePathSet):
 			log.info("Rebuilding dependencies for %s because cached dependencies file does not exist (%s)" % (self.target, dfile))
 		dfiletime = 0 if needsRebuild else getmtime(dfile) 
 		for x in testsources:
-			if not os.path.exists(x):
+			if not exists(x):
+				# can't generate any deps if some source files don't yet exist
+				log.info("Dependency generation %s postponed because source file does not exist: %s" % (self.target, x))
 				return depsources
 			elif getmtime(x) > dfiletime:
 				if not needsRebuild:	log.info("Rebuilding dependencies for %s because cached dependencies file is older than %s" % (self.target, x))
