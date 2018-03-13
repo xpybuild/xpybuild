@@ -3,7 +3,7 @@
 # This class is responsible for working out what tasks need to run, and for 
 # scheduling them
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2018 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 #
 
 import traceback, os, signal, threading, time, math, cProfile
+import pstats
 from basetarget import BaseTarget
 from buildcommon import *
 from threading import Lock
@@ -103,14 +104,15 @@ class ThreadPool(object):
 	inprogress = None
 	utilisation = None
 	profile = False
-	def __init__(self, workers, queue, fn, utillogger=None, profile=False):
+	def __init__(self, name, workers, queue, fn, utillogger=None, profile=False):
 		"""
 			workers - number of workers to start
 			queue - queue to pull jobs from (any type)
 			fn - function to call to process a job. Signature of that function is fn(queue-item) returns ([new items], [error strings], bool)
 			     the boolean should be false if the build run should be aborted
 		"""
-		log.debug('Creating thread pool with workers=%d; initial queue length is %d', workers, queue.qsize())
+		self.name = name
+		log.debug('Creating thread pool %s with workers=%d; initial queue length is %d', name, workers, queue.qsize())
 		self.workers = workers
 		self.utilisation = utillogger or _UtilisationDummy()
 		self.queue = queue
@@ -174,7 +176,7 @@ class ThreadPool(object):
 			Loops while the pool is active, waiting for the queue to become non-empty.
 			Also takes the returned errors and new queue items and adds them to the appropriate queues
 		"""
-		log.debug("Starting worker")
+		log.debug("Starting worker in %s thread pool", self.name)
 		if self.profile:
 			profiler = cProfile.Profile()
 			profiler.enable()
@@ -231,13 +233,20 @@ class ThreadPool(object):
 				profiler.disable()
 				profiler.create_stats()
 				with self.lock:
-					dirpath = os.path.join(os.getcwd(), 'profile-%s' % os.getpid())
+					dirpath = os.path.join(os.getcwd(), 'profile-xpybuild-%s' % os.getpid())
 					mkdir(dirpath)
-					file = os.path.join(dirpath, "thread-%s" % threading.current_thread().name)
-					index=0
-					while os.path.exists(file+'.%s' % index):
-						index = index + 1
-					profiler.dump_stats(file+'.%s' % index)
+					file = os.path.join(dirpath, "%s-thread-%s" % (self.name, threading.current_thread().name))
+					if os.path.exists(file): # probably won't ever happen
+						index=0
+						while os.path.exists(file+'.%s' % index):
+							index = index + 1
+						file+'.%s' % index
+					profiler.dump_stats(file)
+					with open(file+'.txt', 'w') as f:
+						p = pstats.Stats(profiler, stream=f)
+						p.sort_stats('cumtime').print_stats(f)
+					
+					log.critical('Wrote Python profiling output to: %s.txt'%file)
 			with self.lock:
 				self.condition.notifyAll()
 	

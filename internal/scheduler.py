@@ -226,7 +226,7 @@ class BuildScheduler(object):
 		for i in self.pending:
 			pending.put_nowait((0, i))
 
-		pool = ThreadPool(self.options["workers"], pending, self._deps_target, self.utilisation, profile=self.options["profile"])
+		pool = ThreadPool('dependencychecking', self.options["workers"], pending, self._deps_target, self.utilisation, profile=self.options["profile"])
 
 		pool.start()
 
@@ -370,7 +370,7 @@ class BuildScheduler(object):
 			else:
 				self.leaves.put_nowait((l.priority, l))
 
-		pool = ThreadPool(self.options["workers"], self.leaves, self._process_target, self.utilisation, profile=self.options["profile"])
+		pool = ThreadPool('building', self.options["workers"], self.leaves, self._process_target, self.utilisation, profile=self.options["profile"])
 
 		pool.start()
 
