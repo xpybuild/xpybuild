@@ -309,10 +309,11 @@ def getstat(path):
 	""" Cached-once os.stat (DO NOT USE if you expect it to chage after startup) """
 	st = __statcache.get(path, None)
 	if None == st:
-		if os.path.exists(path):
+		try:
 			st = os.stat(path)
-		else:
+		except os.error: # mean file doesn't exist
 			st = False
+
 		__statcache[path] = st
 	return st
 
