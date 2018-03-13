@@ -25,9 +25,11 @@ import subprocess, errno
 import logging
 log = logging.getLogger('fileutils')
 
+__isWindows = platform.system()=='Windows'
 def _isWindows(): # this is duplicated since it's included by buildcommon
 	""" Returns True if this is a windows platform. """
-	return platform.system()=='Windows'
+	#global __isWindows
+	return __isWindows
 
 if _isWindows(): # ugly ugly hacks due to stupid windows filesystem semantics. See http://bugs.python.org/issue4944
 	try:
@@ -160,7 +162,7 @@ def deleteDir(path, allowRetry=True):
 			
 			# on windows, try again using a separate process, just in case that 
 			# helps to avoid problems with virus checkers, etc
-			if _isWindows():
+			if __isWindows:
 				rmdirresult = os.system(u'rmdir /s /q "%s" 2>1 > /dev/nul'%path)
 				log.info("Directory deletion retry using rmdir returned code %d: %s", rmdirresult, path)
 				
@@ -282,15 +284,15 @@ def normLongPath(path):
 	# normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case 
 	# for drive letters (more so than directory names), with different cmd prompts frequently using different 
 	# capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts
-	if len(path)>2 and _isWindows() and path[1] == ':': 
+	if len(path)>2 and __isWindows and path[1] == ':': 
 		path = path[0].lower()+path[1:]
 		
-	if _isWindows() and path and path.startswith('\\\\?\\'):
+	if __isWindows and path and path.startswith('\\\\?\\'):
 		return path.replace('/', '\\')
 	# abspath also normalizes slashes
 	path = os.path.abspath(path)+(os.path.sep if isDirPath(path) else '')
 	
-	if _isWindows() and path and not path.startswith('\\\\?\\'):
+	if __isWindows and path and not path.startswith('\\\\?\\'):
 		try:
 			if path.startswith('\\\\'): 
 				return u'\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My

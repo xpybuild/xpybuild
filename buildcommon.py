@@ -29,6 +29,7 @@ import logging
 # do NOT define a 'log' variable here or targets will use it by mistake
 
 from utils.flatten import flatten
+import utils.fileutils
 from utils.fileutils import parsePropertiesFile
 
 def __getXpybuildVersion():
@@ -113,7 +114,7 @@ def normpath(path):
 	
 def isWindows():
 	""" Returns True if this is a windows platform. """
-	return platform.system()=='Windows'
+	return utils.fileutils._isWindows()
 
 _stdoutEncoding = None
 try:
