@@ -303,7 +303,7 @@ def normLongPath(path):
 			# could try converting using a default encoding, but slightly error-prone
 			pass 
 	return path
-
+	
 __statcache = {}
 def getstat(path):
 	""" Cached-once os.stat (DO NOT USE if you expect it to chage after startup) """
@@ -318,20 +318,20 @@ def getstat(path):
 	return st
 
 def getmtime(path):
-	""" Cached-once os.getmtime (DO NOT USE if you expect it to chage after startup) """
+	""" Cached-once os.getmtime (DO NOT USE if you expect it to change after startup) """
 	return getstat(path).st_mtime
 def getsize(path):
-	""" Cached-once os.path.getsize (DO NOT USE if you expect it to chage after startup) """
+	""" Cached-once os.path.getsize (DO NOT USE if you expect it to change after startup) """
 	return getstat(path).st_size
 def exists(path):
-	""" Cached-once os.path.exists (DO NOT USE if you expect it to chage after startup) """
+	""" Cached-once os.path.exists (DO NOT USE if you expect it to change after startup) """
 	return getstat(path) != False
 def isfile(path):
-	""" Cached-once os.path.isfile (DO NOT USE if you expect it to chage after startup) """
+	""" Cached-once os.path.isfile (DO NOT USE if you expect it to change after startup) """
 	st = getstat(path)
 	return st and stat.S_ISREG(st.st_mode)
 def isdir(path):
-	""" Cached-once os.path.isdir (DO NOT USE if you expect it to chage after startup) """
+	""" Cached-once os.path.isdir (DO NOT USE if you expect it to change after startup) """
 	st = getstat(path)
 	return st and stat.S_ISDIR(st.st_mode)
 
