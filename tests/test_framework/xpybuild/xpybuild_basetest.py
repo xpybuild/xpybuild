@@ -20,7 +20,8 @@ class XpybuildBaseTest(BaseTest):
 		try:
 			try:
 				result = self.startProcess(sys.executable, [
-					PROJECT.rootdir+'/../xpybuild.py', 
+#					PROJECT.rootdir+'/../xpybuild.py', 
+					PROJECT.XPYBUILD,
 					'-f', os.path.join(self.input, buildfile), 
 					'--logfile', os.path.join(self.output, stdout.replace('.out', '')+'.log'), 
 					'-J', # might as well run in parallel to speed things up and help find race conditions

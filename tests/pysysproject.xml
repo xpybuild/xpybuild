@@ -57,6 +57,8 @@
 	-->
 	<property root="rootdir"/>
 	
+
+	<property name="XPYBUILD" value="${env.XPYBUILD}" default="${rootdir}/../xpybuild.py" />
 	
 	<!-- 
 	Set a property on the project class. The property can then be used as a substitution variable 
