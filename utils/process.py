@@ -106,7 +106,7 @@ def _wait_with_timeout(process, displayName, timeout, read):
 		if read:
 			return stdout, stderr, True
 		else:
-			raise BuildException('Terminating process %s after hitting %d second timout' % (processName, timeout))
+			raise BuildException('Terminating process %s after hitting %d second timout' % (displayName, timeout))
 	else:
 		if read:
 			return stdout, stderr, False
