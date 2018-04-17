@@ -105,6 +105,9 @@ class CustomCommand(BaseTarget):
 		"""
 		The command line MUST not reference any generated paths unless they are 
 		explicitly listed in deps. 
+		
+		Use .option("process.timeout") to control the maximum number of seconds the command can 
+		run before being cancelled. 
 
 		@param target: the file or directory to be built. Will be cleaned, and its parent dir created, 
 		before target runs. 
