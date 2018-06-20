@@ -393,6 +393,13 @@ def signjar(path, keystore, options, alias=None, storepass=None, outputHandler=N
 defineOption('javadoc.options', [])
 defineOption('javadoc.title', "Documentation")
 defineOption('javadoc.access', "public")
+""" By default, Javadoc will parse any source .java files present in the classpath in case they contain comments 
+that should be inherited by the source files being documented. If these files contain errors (such as missing 
+optional dependencies) it will cause Javadoc to fail. This option prevents the classpath from being searched 
+for source files (by setting -sourcepath to a non-existent directoryu), which avoids errors and may also speed 
+up the Javadoc generation. 
+"""
+defineOption('javadoc.ignoreSourceFilesFromClasspath', False)
 
 def javadoc(path, sources, classpath, options, outputHandler):
 	""" Create javadoc from sources and a set of options
@@ -424,6 +431,8 @@ def javadoc(path, sources, classpath, options, outputHandler):
 	# build up arguments
 	args = [binary]
 	args.extend(options['javadoc.options'])
+	if options['javadoc.ignoreSourceFilesFromClasspath']:
+		args.extend(['-sourcepath', path+'/xpybuild_fake_sourcepath'])
 	args.extend([
 		"-d", path,
 		"-classpath", classpath,

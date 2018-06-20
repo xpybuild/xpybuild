@@ -14,6 +14,7 @@
 - StringReplaceLineMapper now has an optional parameter disablePropertyExpansion which can be used to disable ${...} expansion
 - Improved usability of --profile option, which now generates textual output, aggregates across all threads, and includes profiling for the build file parsing phase
 - Improve dependency checking performance
+- Javadoc now has an option "javadoc.ignoreSourceFilesFromClasspath" which can be enabled to prevent .java files in classpath jars from being parsed (by setting an empty directory for the -sourcepath), which can lead to errors if classpath jars contain source that requires optional dependencies which are not present.
 
 # 1.13
 
