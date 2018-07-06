@@ -482,10 +482,12 @@ class VisualStudio(Compiler, Linker, Depends, Archiver, ToolChain):
 		args.extend(flags or [])
 		args.extend(src)
 		deplist = list(src)
+		fatalerrors = []
 
 		class VSDependsHandler(VisualStudioProcessOutputHandler):
 			def handleLine(self, line, isstderr=False):
 				data = line.encode('utf8')
+				if 'fatal error' in data: fatalerrors.append(data.strip())
 				if 'Cannot open include file:' in data:
 					data = re.sub(".*Cannot open include file: '([^']*)':.*", r'\1', data).strip()
 					if data: deplist.append(data)
@@ -498,6 +500,12 @@ class VisualStudio(Compiler, Linker, Depends, Archiver, ToolChain):
 				l = VisualStudioProcessOutputHandler._decideLogLevel(self, line, isstderr)
 				if l < logging.ERROR: l = logging.DEBUG # don't care about compiler warnings etc at dep generation time
 				return l
+				
+			def handleEnd(self, returnCode=None):
+				if returnCode and not self.getErrors() and fatalerrors:
+					# special-case to give a more useful error message tha just the exit code if a dependency is missing
+					raise BuildException('Native dependency checking failed: %s'%(fatalerrors[0]))
+				return super(VSDependsHandler, self).handleEnd(returnCode=returnCode)
 
 		self.call(context, args, outputHandler=VSDependsHandler, options=options)
 		return deplist
