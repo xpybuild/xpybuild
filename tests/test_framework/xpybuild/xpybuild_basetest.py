@@ -19,6 +19,14 @@ class XpybuildBaseTest(BaseTest):
 		args = args or []
 		try:
 			try:
+				environs = {}
+				if PLATFORM != 'win32':
+					pythonhome = os.path.dirname(sys.executable)
+					if pythonhome.endswith('bin'): pythonhome = os.path.dirname(pythonhome)
+					# python doesn't seem to launch on linux without PYTHONHOME being set
+					environs['PYTHONHOME'] = pythonhome
+					environs['PYTHONPATH'] = ''
+					
 				result = self.startProcess(sys.executable, [
 #					PROJECT.rootdir+'/../xpybuild.py', 
 					PROJECT.XPYBUILD,
@@ -26,8 +34,7 @@ class XpybuildBaseTest(BaseTest):
 					'--logfile', os.path.join(self.output, stdout.replace('.out', '')+'.log'), 
 					'-J', # might as well run in parallel to speed things up and help find race conditions
 					'OUTPUT_DIR=%s'%self.output+'/build-output']+args, 
-					# python doesn't seem to launch on linux without PYTHONHOME being set
-					environs={'PYTHONHOME':os.path.dirname(os.path.dirname(sys.executable)), 'PYTHONPATH':''}, 
+					environs=environs, 
 					stdout=stdout, stderr=stderr, displayName=('xpybuild %s'%' '.join(args)).strip(), 
 					abortOnError=True, ignoreExitStatus=shouldFail)
 				if shouldFail and result != 0: raise Exception('Build failed as expected')
@@ -44,7 +51,7 @@ class XpybuildBaseTest(BaseTest):
 			except Exception, e2:
 				if shouldFail: raise e2 # this is fatal if we need the error message
 				self.log.exception('Error handling block failed: ')
-			if not m: log.warning('Caught exception running build: %s', e)
+			if not m: self.log.warning('Caught exception running build: %s', e)
 			m = m or '<unknown failure>'
 
 			if shouldFail: 
