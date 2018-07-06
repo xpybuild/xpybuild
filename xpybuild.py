@@ -66,6 +66,7 @@ from propertysupport import defineOption, parsePropertiesFile
 from internal.stacktrace import listen_for_stack_signal
 from buildexceptions import BuildException
 from utils.consoleformatter import _registeredConsoleFormatters, publishArtifact
+from utils.timeutils import formatTimePeriod
 
 import utils.teamcity # to get handler registered
 import utils.visualstudio # needed to create the entry in _handlers
@@ -460,14 +461,6 @@ def main(args):
 			
 			try:
 				DATE_TIME_FORMAT = "%a %Y-%m-%d %H:%M:%S %Z"
-				
-				def formatTimePeriod(secs):
-					if secs >= 120:
-						return '%0.1f minutes'%(secs/60.0)
-					elif secs >= 10:
-						return '%d seconds'%(secs)
-					else:
-						return '%0.1f seconds'%(secs)
 				
 				errorsList = []
 				if task in [_TASK_CLEAN, _TASK_REBUILD]:
