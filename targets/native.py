@@ -27,10 +27,12 @@ from pathsets import PathSet, BasePathSet
 from buildcontext import getBuildInitializationContext
 from buildexceptions import BuildException
 from propertyfunctors import make_functor, Composable
-from utils.compilers import DefaultCompilers
 from utils.fileutils import openForWrite, mkdir, deleteFile, getmtime, exists, normLongPath
 
-defineOption('native.compilers', DefaultCompilers())
+class __CompilersNotSpecified(object):
+	def __getattr__(self, attr):
+		raise Exception('Cannot use native targets until a compiler is configured by setting the native.compilers option')
+defineOption('native.compilers', __CompilersNotSpecified())
 defineOption('native.libs', [])
 defineOption('native.libpaths', [])
 defineOption('native.c.flags', None) # defaults to native.cxx.flags if not set

@@ -254,14 +254,6 @@ class UnixArchiver(Archiver):
 		args.extend(src)
 		self.call(context, args, outputHandler=self.ar_handler, cwd=os.path.dirname(output), options=options)
 
-class DefaultCompilers(ToolChain):
-	"""
-	A default Unix tool chain
-	"""
-	def __init__(self):
-		ToolChain.__init__(self, Depends(), UnixCompiler('cc'), UnixCompiler('CC'), UnixLinker('CC'), UnixArchiver('ar'))
-
-
 class GccProcessOutputHandler(ProcessOutputHandler):
 	"""
 	A ProcessOutputHandler than can parse the output of GCC tools
