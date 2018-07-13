@@ -21,7 +21,7 @@ from targets.native import *
 from targets.copy import Copy
 from utils.compilers import GCC, VisualStudio
 
-include('../../../build_utilities/native_config.xpybuild.py')
+include('../../../../build_utilities/native_config.xpybuild.py')
 
 objs = [Cpp(objectname("${BUILD_WORK_DIR}/obj/"+cpp), "./%s.cpp" % cpp,
 		includes=[
