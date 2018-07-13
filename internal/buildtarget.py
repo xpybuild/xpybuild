@@ -218,8 +218,9 @@ class BuildTarget(object):
 							lineterm='',
 							n=0
 							))
-						if len(thediff)>10:
-							thediff = thediff[:10]+['...']
+						maxdifflines = int(os.getenv('XPYBUILD_IMPLICIT_INPUTS_MAX_DIFF_LINES', '10'))
+						if maxdifflines> 0 and len(thediff)>maxdifflines:
+							thediff = thediff[:maxdifflines]+['...']
 						log.info('Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self._implicitInputsFile, 
 							'\n\t'.join(thediff).replace('\r','\\r\r'))
 						return False
