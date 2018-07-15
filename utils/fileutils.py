@@ -263,7 +263,7 @@ def parsePropertiesFile(lines, excludeLines=None):
 
 def isDirPath(path):
 	""" Returns true if the path is a directory (ends with / or \\). """
-	return path and (path.endswith('/') or path.endswith('\\'))
+	return path and (path[-1] in ('/', '\\'))
 
 __longPathCache = {} # GIL protects integrity of dict, no need for extra locking as it's only a cache
 	
