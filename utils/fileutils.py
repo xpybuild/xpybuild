@@ -26,12 +26,8 @@ import logging
 log = logging.getLogger('fileutils')
 
 __isWindows = platform.system()=='Windows'
-def _isWindows(): # this is duplicated since it's included by buildcommon
-	""" Returns True if this is a windows platform. """
-	#global __isWindows
-	return __isWindows
 
-if _isWindows(): # ugly ugly hacks due to stupid windows filesystem semantics. See http://bugs.python.org/issue4944
+if __isWindows: # ugly ugly hacks due to stupid windows filesystem semantics. See http://bugs.python.org/issue4944
 	try:
 		import win32file
 		class openForWrite:

@@ -90,31 +90,36 @@ def requireXpyBuildVersion(version):
 	""" Checks that this xpybuild is at least a certain version number """
 	if not _compareVersion(_XPYBUILD_VERSION, version): raise Exception("This build file requires xpyBuild at least version "+version+" but this is xpyBuild "+_XPYBUILD_VERSION)
 
-
-def isDirPath(path):
-	""" Returns true if the path is a directory (ends with / or \\). """
-	return path and (path.endswith('/') or path.endswith('\\'))
+""" Returns true if the path is a directory (ends with / or \\). """
+isDirPath = utils.fileutils.isDirPath
 
 def normpath(path):
 	""" Normalizes the specified file or dir path, leaving in place a 
 	trailing platform-appropriate character to indicate directory if appropriate.
 
 	"""
-	if isinstance(path, unicode) and not (isWindows() and path.startswith('\\\\?')):
+	if isinstance(path, unicode) and not (IS_WINDOWS and path.startswith('\\\\?')):
 		path = path.encode()
 	path = os.path.normpath(path)+(os.path.sep if isDirPath(path) else '')
 	
 	# normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case 
 	# for drive letters (more so than directory names), with different cmd prompts frequently using different 
 	# capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts
-	if len(path)>2 and isWindows() and path[1] == ':': 
+	if len(path)>2 and IS_WINDOWS and path[1] == ':': 
 		path = path[0].lower()+path[1:]
 			
 	return path
-	
+
+""" A boolean that specifies whether this is Windows or some other operating system. """
+IS_WINDOWS = platform.system()=='Windows'
+# (we won't want constants for every possible OS here, but since there is so much conditionalization between 
+# windows and unix-based systems, much of it on the critical path, it is worthwhile having a constant for this). 
+
 def isWindows():
-	""" Returns True if this is a windows platform. """
-	return utils.fileutils._isWindows()
+	""" Returns True if this is a windows platform. 
+	@deprecated: Use the IS_WINDOWS constant instead. 
+	"""
+	return IS_WINDOWS
 
 _stdoutEncoding = None
 try:
