@@ -3,7 +3,7 @@ from pysys.basetest import BaseTest
 from pysys.utils.filegrep import filegrep
 
 class XpybuildBaseTest(BaseTest):
-	def xpybuild(self, args=None, buildfile='test.xpybuild.py', shouldFail=False):
+	def xpybuild(self, args=None, buildfile='test.xpybuild.py', shouldFail=False, stdouterr='xpybuild'):
 		"""
 		Runs xpybuild against the specified buildfile or test.xpybuild.py from the 
 		input dir. Produces output in the <testoutput>/build-output folder. 
@@ -15,7 +15,7 @@ class XpybuildBaseTest(BaseTest):
 		
 		@returns the failure message string if shouldFail=True, otherwise nothing
 		"""
-		stdout,stderr=self.allocateUniqueStdOutErr('xpybuild')
+		stdout,stderr=self.allocateUniqueStdOutErr(stdouterr)
 		args = args or []
 		try:
 			try:

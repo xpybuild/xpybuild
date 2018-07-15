@@ -1,34 +1,4 @@
 <?xml version="1.0" standalone="yes"?>
-<!DOCTYPE pysysproject [
-<!ELEMENT pysysproject (property*, path*, runner?, maker?, writers?, formatters?) >
-<!ELEMENT property (#PCDATA)>
-<!ELEMENT path (#PCDATA)>
-<!ELEMENT runner (#PCDATA)>
-<!ELEMENT maker (#PCDATA)>
-<!ELEMENT formatters (formatter+) >
-<!ELEMENT formatter (#PCDATA) >
-<!ELEMENT writers (writer+) >
-<!ELEMENT writer (property*) >
-<!ATTLIST property root CDATA #IMPLIED>
-<!ATTLIST property environment CDATA #IMPLIED>
-<!ATTLIST property osfamily CDATA #IMPLIED>
-<!ATTLIST property file CDATA #IMPLIED>
-<!ATTLIST property name CDATA #IMPLIED>
-<!ATTLIST property value CDATA #IMPLIED>
-<!ATTLIST property default CDATA #IMPLIED>
-<!ATTLIST path value CDATA #REQUIRED>
-<!ATTLIST path relative CDATA #IMPLIED>
-<!ATTLIST runner classname CDATA #REQUIRED>
-<!ATTLIST runner module CDATA #REQUIRED>
-<!ATTLIST maker classname CDATA #REQUIRED>
-<!ATTLIST maker module CDATA #REQUIRED>
-<!ATTLIST formatter name CDATA #REQUIRED>
-<!ATTLIST formatter messagefmt CDATA #REQUIRED>
-<!ATTLIST formatter datefmt CDATA #REQUIRED>
-<!ATTLIST writer classname CDATA #REQUIRED>
-<!ATTLIST writer module CDATA #REQUIRED>
-<!ATTLIST writer file CDATA #IMPLIED>
-]>
 
 <pysysproject>
 
@@ -57,6 +27,7 @@
 	-->
 	<property root="rootdir"/>
 	
+	<property name="XPYBUILD_ROOT" value="${rootdir}/.." />
 
 	<property name="XPYBUILD" value="${env.XPYBUILD}" default="${rootdir}/../xpybuild.py" />
 	
@@ -195,5 +166,7 @@
 		<formatter name="runlog" messagefmt="%(asctime)s %(levelname)-5s %(message)s" datefmt=""/>
 		-->
 	</formatters>
+
+	<performance-reporter classname="xpybuild.perfreporter.XpybuildPerfReporter"/>
 	
 </pysysproject>
