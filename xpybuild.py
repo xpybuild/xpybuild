@@ -94,7 +94,7 @@ def main(args):
 	try:
 		usage = [
 '',
-'eXtensible Python-based Build System %s'% (_XPYBUILD_VERSION),
+'eXtensible Python-based Build System %s on Python %s.%s.%s'% (_XPYBUILD_VERSION, sys.version_info[0], sys.version_info[1], sys.version_info[2]),
 '',
 'xpybuild.py [operation]? [options]* [property=value]* [-x] [target|tag|regex]* ', 
 '',
@@ -435,7 +435,9 @@ def main(args):
 			hdlr.setLevel(logLevel or logging.INFO)
 			logging.getLogger().addHandler(hdlr)
 			
-			log.info('Using xpybuild %s with build options: %s', _XPYBUILD_VERSION, buildOptions)
+			log.info('Using xpybuild %s from %s on Python %s.%s.%s', _XPYBUILD_VERSION, os.path.normpath(os.path.dirname(__file__)), sys.version_info[0], sys.version_info[1], sys.version_info[2])
+			log.info('Using build options: %s', buildOptions)
+
 			try:
 				# sometimes useful to have this info available
 				import socket, getpass
