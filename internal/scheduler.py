@@ -29,6 +29,7 @@ from internal.buildtarget import BuildTarget
 from internal.threadpool import ThreadPool, Utilisation
 from internal.outputbuffering import outputBufferingManager
 from utils.fileutils import deleteFile, normLongPath, exists, isfile, isdir, resetStatCache
+from utils.timeutils import formatTimePeriod
 from threading import Lock
 
 import time
@@ -438,13 +439,16 @@ class BuildScheduler(object):
 		total = 0
 		completed = 0
 		log.critical('Starting dependency resolution phase')
+		depstime = time.time()
 		deperrors = self._expand_deps()
+		depstime = time.time()-depstime
 		if self.options.get("depGraphFile", None):
 			createDepGraph(self.options["depGraphFile"], self, self.context)
 			return deperrors+builderrors, built, completed, total
 			
 		if not deperrors or self.options["keep-going"]:
-			log.critical('Starting %s execution phase'%('clean' if self.options['clean'] else 'build'))
+			log.critical('Starting %s execution phase; dependency resolution took %s'%
+				('clean' if self.options['clean'] else 'build', formatTimePeriod(depstime)))
 			builderrors, built, completed, total = self._build()
 
 		if not deperrors and not builderrors and self.index != self.total:
