@@ -317,11 +317,18 @@ class GCC(ToolChain, UnixCompiler, UnixLinker, Depends):
 		class GccDependsHandler(ProcessOutputHandler):
 			def __init__(self, name, **kwargs):
 				ProcessOutputHandler.__init__(self, name, **kwargs)
+				self.fatalerrors = []
 			def handleLine(self, line, isstderr=False):
+				if ': error ' in line: self.fatalerrors.append(line.rstrip())
 				if not isstderr and line.startswith(' '):
 					# sometimes there are multiple items on a single line, space delimited
 					# if there are spaces in the path itself they are escaped as "\ "
 					deplist.extend([x.replace('<space>',' ') for x in line.strip('\\').strip().replace('\\ ','<space>').split(' ')])
+			def handleEnd(self, returnCode=None):
+				if returnCode and not self.getErrors() and self.fatalerrors:
+					# special-case to give a more useful error message tha just the exit code if a dependency is missing
+					raise BuildException('Native dependency checking failed: %s'%(self.fatalerrors[0]))
+				return super(GccDependsHandler, self).handleEnd(returnCode=returnCode)
 
 		try:
 			self.call(context, args, outputHandler=GccDependsHandler, options=options)
