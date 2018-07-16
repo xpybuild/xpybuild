@@ -26,14 +26,23 @@ class XpybuildBaseTest(BaseTest):
 					# python doesn't seem to launch on linux without PYTHONHOME being set
 					environs['PYTHONHOME'] = pythonhome
 					environs['PYTHONPATH'] = ''
-					
-				result = self.startProcess(sys.executable, [
+				args = 	[
 #					PROJECT.rootdir+'/../xpybuild.py', 
 					PROJECT.XPYBUILD,
 					'-f', os.path.join(self.input, buildfile), 
 					'--logfile', os.path.join(self.output, stdout.replace('.out', '')+'.log'), 
 					'-J', # might as well run in parallel to speed things up and help find race conditions
-					'OUTPUT_DIR=%s'%self.output+'/build-output']+args, 
+					'OUTPUT_DIR=%s'%self.output+'/build-output']+args
+				if os.getenv('XPYBUILD_PPROFILE',None):
+					self.log.info('Enabling Python per-line pprofile')
+					args = [os.environ['XPYBUILD_PPROFILE'], '--out', 'profileoutput.txt', 
+						'--include', os.getenv('XPYBUILD_PPROFILE_REGEX', '.*xpybuild.*'), '--exclude', '.*', #'--verbose'
+						]+args
+					assert args[0].endswith('py'), args[0]
+					assert os.path.exists(args[0]), args[0]
+					self.log.info('   see %s', os.path.normpath(self.output+'/profileoutput.txt'))
+
+				result = self.startProcess(sys.executable, args, 
 					environs=environs, 
 					stdout=stdout, stderr=stderr, displayName=('xpybuild %s'%' '.join(args)).strip(), 
 					abortOnError=True, ignoreExitStatus=shouldFail)
