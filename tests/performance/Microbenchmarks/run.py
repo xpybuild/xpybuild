@@ -31,13 +31,16 @@ class PySysTest(XpybuildBaseTest):
 			try:
 				self.xpybuild(buildfile=bf, shouldFail=False, args=['-n'],stdouterr=opname)
 			except Exception as e:
-				self.addOutcome(BLOCKED, 'xpybuild failed for %s'%opname, abortOnError=False)
+				self.addOutcome(NOTVERIFIED, 'xpybuild failed for %s'%opname, abortOnError=False)
 
 	def validate(self):
 		for op in self.OPS:
 			opname = self.OPS[op]
 			try:
-				self.reportPerformanceResult(float(self.getExprFromFile(opname+'.out', 'Microbenchmark operation took ([0-9.]+) ms each')), 
+				result = float(self.getExprFromFile(opname+'.out', 'Microbenchmark operation took ([0-9.]+) ms each'))
+				self.reportPerformanceResult(result, 
 					'Time per call to %s'%opname, 'ms')
+				self.log.info('   = {:,} operations/sec'.format(int(1000.0/result)))
+				self.log.info('')
 			except Exception as e:
-				self.addOutcome(BLOCKED, 'missing output for %s: %s'%(opname, e), abortOnError=False)			
+				self.addOutcome(NOTVERIFIED, 'missing output for %s: %s'%(opname, e), abortOnError=False)			
