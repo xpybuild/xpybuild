@@ -17,14 +17,22 @@ class PySysTest(XpybuildBaseTest):
 		self.xpybuild(shouldFail=False, args=['-n', 
 			'NUMBER_PATTERNS=%s'%self.NUMBER_PATTERNS, 
 			'NUMBER_TARGETS=%s'%self.NUMBER_TARGETS, #'--log-level=debug', #'--profile',
-			])
+			], stdouterr='xpybuild_many')
+		self.xpybuild(shouldFail=False, args=['-n', 
+			'NUMBER_PATTERNS=1', 
+			'NUMBER_TARGETS=%s'%(self.NUMBER_TARGETS*5), 
+			], stdouterr='xpybuild_1')
 		try:
 			shutil.rmtree(self.output+'/findpathsroot')
 		except Exception as e:
 			self.log.info('Failed to cleanup findpathsroot: %s', e)
 
 	def validate(self):
-		self.assertGrep(file='xpybuild.out', expr="ERROR .*", contains=False)
-		deps = float(self.getExprFromFile('xpybuild.log', 'dependency resolution took ([0-9.]+) s'))
+		self.assertGrep(file='xpybuild_1.out', expr="ERROR .*", contains=False)
+		self.assertGrep(file='xpybuild_many.out', expr="ERROR .*", contains=False)
 		
+		deps = float(self.getExprFromFile('xpybuild_many.out', 'dependency resolution took ([0-9.]+) s'))
 		self.reportPerformanceResult(1000*deps/self.NUMBER_TARGETS/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with %d include patterns'%self.NUMBER_PATTERNS, 'ms')
+
+		deps = float(self.getExprFromFile('xpybuild_1.out', 'dependency resolution took ([0-9.]+) s'))
+		self.reportPerformanceResult(1000*deps/(self.NUMBER_TARGETS*5)/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with 1 include pattern', 'ms')
