@@ -6,6 +6,7 @@ from targets.writefile import WriteFile
 from utils.fileutils import isDirPath as fileutils_isDirPath
 from utils.buildfilelocation import BuildFileLocation
 import utils.fileutils
+import utils.antglob
 
 OUTPUT_DIR = getPropertyValue('OUTPUT_DIR')
 

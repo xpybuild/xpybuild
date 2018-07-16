@@ -4,10 +4,12 @@ import io, collections
 
 class PySysTest(XpybuildBaseTest):
 	OPS = collections.OrderedDict([
-	("""utils.fileutils.toLongPathSafe(OUTPUT_DIR+'/foo%010d0'%0)""",'toLongPathSafe_noop'),
-	("""utils.fileutils.toLongPathSafe(OUTPUT_DIR+'/foo%010d/'%0)""",'toLongPathSafe_dir_caching'),
-	("""utils.fileutils.toLongPathSafe(OUTPUT_DIR+'/foo%010d/'%ops)""",'toLongPathSafe_dir_nocaching'),
-	("""utils.fileutils.toLongPathSafe(OUTPUT_DIR+'/foo%010d/../'%0)""",'toLongPathSafe_dirnormrequired_caching'),
+	("utils.antglob.antGlobMatch('path1/**/*.foo', 'path1/path2/path3/bar.foo')",'antGlob_match'),
+	("utils.antglob.antGlobMatch('path1/**/*.foo', 'path2/path2/path3/bar.foo')",'antGlob_nonmatch'),
+	("utils.fileutils.toLongPathSafe(OUTPUT_DIR+'/foo%010d0'%0)",'toLongPathSafe_noop'),
+	("utils.fileutils.toLongPathSafe(OUTPUT_DIR+'/foo%010d/'%0)",'toLongPathSafe_dir_caching'),
+	("utils.fileutils.toLongPathSafe(OUTPUT_DIR+'/foo%010d/'%ops)",'toLongPathSafe_dir_nocaching'),
+	("utils.fileutils.toLongPathSafe(OUTPUT_DIR+'/foo%010d/../'%0)",'toLongPathSafe_dirnormrequired_caching'),
 	('isDirPath(OUTPUT_DIR)','isDirPath'), 
 	('fileutils_isDirPath(OUTPUT_DIR)','fileutils_isDirPath'),
 	('isWindows()','isWindows'), 
@@ -17,7 +19,6 @@ class PySysTest(XpybuildBaseTest):
 	('BuildFileLocation()','BuildFileLocation'),
 	("utils.fileutils.exists(OUTPUT_DIR+'/doesntexist')",'utils.fileutils.exists'),
 	])
-
 
 	def execute(self):
 		for op in self.OPS:
