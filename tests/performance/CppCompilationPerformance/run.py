@@ -1,5 +1,6 @@
 from pysys.constants import *
 from xpybuild.xpybuild_basetest import XpybuildBaseTest
+import shutil
 
 class PySysTest(XpybuildBaseTest):
 	TARGETS = 200
@@ -10,6 +11,11 @@ class PySysTest(XpybuildBaseTest):
 		self.xpybuild(shouldFail=False, args=['--workers', str(self.THREADS), 'CPP_FILES=%s'%self.TARGETS, '-n'], buildfile='root.xpybuild.py', stdouterr='xpybuild-dep-check-no-op')
 		self.xpybuild(shouldFail=False, args=['--workers', str(self.THREADS), 'CPP_FILES=%s'%self.TARGETS], buildfile='root.xpybuild.py', stdouterr='xpybuild-build')
 		self.xpybuild(shouldFail=False, args=['--workers', str(self.THREADS), 'CPP_FILES=%s'%self.TARGETS], buildfile='root.xpybuild.py', stdouterr='xpybuild-build-no-op')
+		# this is large and not useful for so delete it
+		try:
+			shutil.rmtree(self.output+'/build-output/BUILD_WORK')
+		except Exception as e:
+			self.log.warn('Failed to purge BUILD_WORK: %s', e)
 
 	def validate(self):
 		results = {}
