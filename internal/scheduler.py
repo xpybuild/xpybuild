@@ -20,7 +20,7 @@
 # $Id: scheduler.py 301527 2017-02-06 15:31:43Z matj $
 #
 
-import traceback, os, re
+import traceback, os, re, stat
 from basetarget import BaseTarget
 from buildcommon import *
 from buildcontext import BuildContext
@@ -28,7 +28,7 @@ from buildexceptions import BuildException
 from internal.buildtarget import BuildTarget
 from internal.threadpool import ThreadPool, Utilisation
 from internal.outputbuffering import outputBufferingManager
-from utils.fileutils import deleteFile, normLongPath, exists, isfile, isdir, resetStatCache
+from utils.fileutils import deleteFile, normLongPath, exists, isfile, isdir, resetStatCache, getstat
 from utils.timeutils import formatTimePeriod
 from threading import Lock
 
@@ -295,6 +295,7 @@ class BuildScheduler(object):
 				for dname in deps:
 					#log.debug('Processing dependency: %s -> %s', tname, dname)
 					dpath = normLongPath(dname)
+					dnameIsDirPath = isDirPath(dname)
 					
 					if dname in self.targets:
 						leaf = False
@@ -307,7 +308,7 @@ class BuildScheduler(object):
 						target.increment()
 						
 						
-						if not isDirPath(dname):
+						if not dnameIsDirPath:
 							target.filedep(dname) # might have an already built target dependency which is still newer
 						else:
 							# special case directory target deps - must use stamp file not dir, to avoid re-walking 
@@ -321,17 +322,19 @@ class BuildScheduler(object):
 								pending.append((0, dname))
 						
 						targetDeps.append(str(self.targets[dname]))
-					elif (isDirPath(dname) and isdir(dpath)) or (not isDirPath(dname) and isfile(dpath)):
-						target.filedep(dname)
 					else:
-						# in the specific case of a dependency error, build will definitely fail immediately so we should log line number 
-						# at ERROR log level not just at info
-						ex = BuildException("Cannot find dependency %s" % dname)
-						log.error('FAILED during dependency resolution: %s', ex.toMultiLineString(target, includeStack=False), extra=ex.getLoggerExtraArgDict(target))
-						assert not os.path.exists(dpath), dname
-						errors.append(ex.toSingleLineString(target))
-						
-						break
+						dstat = getstat(dpath)
+						if dstat and ( (dnameIsDirPath and stat.S_ISDIR(dstat.st_mode)) or (not dnameIsDirPath and stat.S_ISREG(dstat.st_mode)) ):
+							target.filedep(dname)
+						else:
+							# in the specific case of a dependency error, build will definitely fail immediately so we should log line number 
+							# at ERROR log level not just at info
+							ex = BuildException("Cannot find dependency %s" % dname)
+							log.error('FAILED during dependency resolution: %s', ex.toMultiLineString(target, includeStack=False), extra=ex.getLoggerExtraArgDict(target))
+							assert not os.path.exists(dpath), dname
+							errors.append(ex.toSingleLineString(target))
+							
+							break
 						
 				if leaf:
 					log.info('Target dependencies of %s (priority %s) are: <no dependencies>', target, -target.priority)
