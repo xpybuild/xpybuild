@@ -265,12 +265,68 @@ def isDirPath(path):
 	""" Returns true if the path is a directory (ends with / or \\). """
 	return path and (path[-1] in ('/', '\\'))
 
+
 __longPathCache = {} # GIL protects integrity of dict, no need for extra locking as it's only a cache
+def toLongPathSafe(path, force=False):
+	"""
+	Converts the specified path string to a form suitable for passing to API 
+	calls if it exceeds the maximum path length on this OS. 
+	
+	Currently, this is necessary only on Windows, where a unicode string 
+	starting with \\?\ must be used to get correct behaviour for long paths. 
+	
+	Unlike L{normLongPath} which also performs the long path conversion, this 
+	function does NOT convert to a canonical form, normalize slashes or 
+	remove '..' elements (unless required for long path support). It is therefore 
+	faster. 
+	
+	@param path: A path. Must not be a relative path. Can be None/empty. Can 
+	contain ".." sequences. 
+	
+	@param force: Normally the long path support is added only if this path 
+	exceeds the maximum length on this OS (e.g. 256 chars) or ends with a 
+	directory slash. Set force to True to add long path support regardless of 
+	length, which allows extra characters to be added on to the end of the 
+	string (e.g. ".log" or a directory filename) safely. 
+	
+	@return The passed-in path, possibly with a \\?\ prefix added and 
+	forward slashes converted to backslashes on Windows. Any trailing slash 
+	is preserved by this function (though will be converted to a backslash). 
+	"""
+	if (not __isWindows) or (not path): return path
+	if (force or len(path)>255 or isDirPath(path)) and not path.startswith('\\\\?\\'):
+		
+		if path in __longPathCache: return __longPathCache[path]
+		inputpath = path
+		# ".." is not permitted in \\?\ paths; normpath is expensive so don't do this unless we have to
+		if '..' in path: 
+			path = os.path.normpath(path)+('\\' if isDirPath(path) else '') 
+		else:
+			# path is most likely to contain / so more efficient to conditionalize this 
+			path = path.replace('/','\\')
+
+		try:
+			if path.startswith('\\\\'): 
+				path = u'\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
+			else:
+				path = u'\\\\?\\'+path
+		except Exception:
+			# can throw an exception if path is a bytestring containing non-ascii characters
+			# to be safe, fallback to original string, just hoping it isn't both 
+			# international AND long
+			# could try converting using a default encoding, but slightly error-prone
+			pass 
+		__longPathCache[inputpath]  = path
+	return path
+
+__normLongPathCache = {} # GIL protects integrity of dict, no need for extra locking as it's only a cache
 	
 def normLongPath(path):
 	"""
-	Normalizes and absolutizes a path (os.path.abspath), and on windows adds 
-	the \\?\ prefix needed to force correct handling of long (>256 chars) paths. 
+	Normalizes and absolutizes a path (os.path.abspath), converts to a canonical 
+	form (e.g. normalizing the case of the drive letter on Windows), and on 
+	windows adds the \\?\ prefix needed to force correct handling of long 
+	(>256 chars) paths (same as L{toLongPath}). 
 	
 	@param path: the absolute path to be converted should be a unicode string where possible, as specifying a byte 
 	string will not work if the path contains non-ascii characters. 
@@ -278,8 +334,7 @@ def normLongPath(path):
 	if not path: return path
 	
 	# profiling shows normLongPath is surprisingly costly; caching results reduces dep checking by 2-3x
-	if path in __longPathCache:
-		return __longPathCache[path]
+	if path in __normLongPathCache: return __normLongPathCache[path]
 	inputpath = path
 	# currently there is some duplication between this and buildcommon.normpath which we ought to fix at some point
 	
@@ -307,12 +362,12 @@ def normLongPath(path):
 				# international AND long
 				# could try converting using a default encoding, but slightly error-prone
 				pass 
-	__longPathCache[inputpath] = path
+	__normLongPathCache[inputpath] = path
 	return path
 	
 __statcache = {}
 def getstat(path):
-	""" Cached-once os.stat (DO NOT USE if you expect it to chage after startup) """
+	""" Cached-once os.stat (DO NOT USE if you expect it to change after startup) """
 	st = __statcache.get(path, None)
 	if None == st:
 		try:

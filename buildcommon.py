@@ -94,8 +94,15 @@ def requireXpyBuildVersion(version):
 isDirPath = utils.fileutils.isDirPath
 
 def normpath(path):
-	""" Normalizes the specified file or dir path, leaving in place a 
-	trailing platform-appropriate character to indicate directory if appropriate.
+	""" Normalizes the specified file or dir path to remove ".." sequences and 
+	differences in the capitalization of Windows drive letters. 
+	
+	Does not add Windows long-path safety or absolutization. 
+	
+	Leaves in place any  trailing platform-appropriate character to indicate 
+	directory if appropriate.
+	
+	See also L{utils.fileutils.normLongPath} and L{utils.fileutils.toLongPathSafe}. 
 
 	"""
 	if isinstance(path, unicode) and not (IS_WINDOWS and path.startswith('\\\\?')):

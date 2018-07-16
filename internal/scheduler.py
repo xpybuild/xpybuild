@@ -28,7 +28,7 @@ from buildexceptions import BuildException
 from internal.buildtarget import BuildTarget
 from internal.threadpool import ThreadPool, Utilisation
 from internal.outputbuffering import outputBufferingManager
-from utils.fileutils import deleteFile, normLongPath, exists, isfile, isdir, resetStatCache, getstat
+from utils.fileutils import deleteFile, exists, isfile, isdir, resetStatCache, getstat, toLongPathSafe
 from utils.timeutils import formatTimePeriod
 from threading import Lock
 
@@ -294,7 +294,7 @@ class BuildScheduler(object):
 				leaf = True
 				for dname in deps:
 					#log.debug('Processing dependency: %s -> %s', tname, dname)
-					dpath = normLongPath(dname)
+					dpath = toLongPathSafe(dname)
 					dnameIsDirPath = isDirPath(dname)
 					
 					if dname in self.targets:

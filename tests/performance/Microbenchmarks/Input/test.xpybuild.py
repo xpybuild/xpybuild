@@ -11,7 +11,7 @@ OUTPUT_DIR = getPropertyValue('OUTPUT_DIR')
 
 t = time.time()
 ops = 0
-while time.time()-t < 2:
+while time.time()-t < 3:
 	for i in range(10000):
 		ops += 1
 		@OP@

@@ -26,7 +26,7 @@ from basetarget import BaseTarget
 from buildcommon import *
 from threading import Lock
 from buildexceptions import BuildException
-from utils.fileutils import deleteFile, mkdir, openForWrite, normLongPath, getmtime, exists, isfile, isdir
+from utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, isfile, isdir, toLongPathSafe
 
 import logging
 log = logging.getLogger('xpybuild.buildtarget')
@@ -207,9 +207,7 @@ class BuildTarget(object):
 				if not exists(self._implicitInputsFile):
 					log.info('Up-to-date check: %s must be rebuilt because implicit inputs/stamp file does not exist: "%s"', self.name, self._implicitInputsFile)
 					return False
-				iminpath = os.path.normpath(self._implicitInputsFile)
-				iminpath = normLongPath(iminpath)
-				with open(iminpath, 'rb') as f:
+				with open(toLongPathSafe(self._implicitInputsFile), 'rb') as f:
 					latestImplicitInputs = f.read().split(os.linesep)
 					if latestImplicitInputs != implicitInputs:
 						thediff = list(difflib.unified_diff(latestImplicitInputs, implicitInputs,
@@ -235,7 +233,7 @@ class BuildTarget(object):
 			stampmodtime = getmtime(self.stampfile)
 
 			def isNewer(path):
-				pathmodtime = getmtime(normLongPath(path))
+				pathmodtime = getmtime(toLongPathSafe(path))
 				if pathmodtime <= stampmodtime: return False
 				if pathmodtime-stampmodtime < 1: # such a small time gap seems dodgy
 					log.warn('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" by just %0.1f seconds', self.name, path, self.stampfile, pathmodtime-stampmodtime)
@@ -244,9 +242,9 @@ class BuildTarget(object):
 				return True
 
 			for f in self.fdeps:
-				if isdir(normLongPath(f)): 
+				if isDirPath(f): 
 					log.debug('Up-to-date check: walking dependency directory %s to check for newly modified files', f)
-					for path, subdirs, files in os.walk(normLongPath(f)):
+					for path, subdirs, files in os.walk(toLongPathSafe(f)):
 						for name in files:
 							if isNewer(os.path.join(path, name)): return False
 					log.debug('uptodate: done walking dependency directory %s', f)
@@ -269,9 +267,7 @@ class BuildTarget(object):
 		if implicitInputs or isDirPath(self.target.name):
 			log.debug('writing implicitInputsFile: %s', self._implicitInputsFile)
 			mkdir(os.path.dirname(self._implicitInputsFile))
-			iminpath = os.path.normpath(self._implicitInputsFile)
-			if isWindows(): iminpath = u'\\\\?\\'+iminpath
-			with openForWrite(iminpath, 'wb') as f:
+			with openForWrite(toLongPathSafe(self._implicitInputsFile), 'wb') as f:
 				f.write(os.linesep.join(implicitInputs))
 		
 	def clean(self, context):
