@@ -1,0 +1,23 @@
+<?xml version="1.0" standalone="yes"?>
+<pysystest type="auto" state="runnable">
+    
+  <description> 
+    <title>Unit - run all doctests</title>
+    <purpose><![CDATA[
+Run all doctest embedded in the classes
+]]>
+    </purpose>
+  </description>
+
+  <classification>
+  </classification>
+
+  <data>
+    <class name="PySysTest" module="run"/>
+  </data>
+  
+  <traceability>
+    <requirements>    
+    </requirements>
+  </traceability>
+</pysystest>
