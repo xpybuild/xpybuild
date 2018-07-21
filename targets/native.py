@@ -52,6 +52,7 @@ else:
 	defineOption('native.cxx.staticlibnamefn', FilenameStringFormatter("lib%s.a"))
 	defineOption('native.cxx.objnamefn', FilenameStringFormatter("%s.o"))
 
+makedeplog = logging.getLogger('MakeDepend')
 class CompilerMakeDependsPathSet(BasePathSet):
 	"""
 		Use the selection ToolChain to get a list of dependencies from a set of source files
@@ -67,6 +68,7 @@ class CompilerMakeDependsPathSet(BasePathSet):
 		@param includes: a list of include directory paths
 		"""
 		BasePathSet.__init__(self)
+		self.log = makedeplog
 		self.target = target
 		self.sources = src
 		self.flags = flatten([flags]) or []
@@ -78,12 +80,10 @@ class CompilerMakeDependsPathSet(BasePathSet):
 		return [(i, os.path.basename(i)) for i in _resolveUnderlyingDependencies(context)]
 	def clean(self):
 		dfile = self.target.workDir+'.makedepend'
-		log = logging.getLogger('MakeDepend')
 		deleteFile(dfile)
 	def _resolveUnderlyingDependencies(self, context):
 		deplist = None
 		options = self.target.options # get the merged options
-		log = logging.getLogger('MakeDepend')
 
 		dfile = normLongPath(self.target.workDir+'.makedepend')
 		testsources = self.sources.resolve(context)
@@ -91,15 +91,15 @@ class CompilerMakeDependsPathSet(BasePathSet):
 
 		needsRebuild = not os.path.exists(dfile)
 		if needsRebuild:
-			log.info("Rebuilding dependencies for %s because cached dependencies file does not exist (%s)" % (self.target, dfile))
+			self.log.info("Rebuilding dependencies for %s because cached dependencies file does not exist (%s)" % (self.target, dfile))
 		dfiletime = 0 if needsRebuild else getmtime(dfile) 
 		for x in testsources:
 			if not exists(x):
 				# can't generate any deps if some source files don't yet exist
-				log.info("Dependency generation %s postponed because source file does not exist: %s" % (self.target, x))
+				self.log.info("Dependency generation %s postponed because source file does not exist: %s" % (self.target, x))
 				return depsources
 			elif getmtime(x) > dfiletime:
-				if not needsRebuild:	log.info("Rebuilding dependencies for %s because cached dependencies file is older than %s" % (self.target, x))
+				if not needsRebuild:	self.log.info("Rebuilding dependencies for %s because cached dependencies file is older than %s" % (self.target, x))
 				needsRebuild = True
 
 		if not needsRebuild: # read in cached dependencies
@@ -114,16 +114,16 @@ class CompilerMakeDependsPathSet(BasePathSet):
 						deplist.append(d)
 					else:
 						needsRebuild = True
-						log.warn("Rebuilding dependencies for %s because dependency %s is missing" % (self.target, d))
+						self.log.warn("Rebuilding dependencies for %s because dependency %s is missing" % (self.target, d))
 						break
 			if header != str(self):
-				log.info("Rebuilding dependencies for %s because target options have changed (%s != %s)" % (self.target, header, str(self)))
+				self.log.info("Rebuilding dependencies for %s because target options have changed (%s != %s)" % (self.target, header, str(self)))
 			elif not needsRebuild:
 				return deplist
 
 		# generate them again
 		startt = time.time()
-		log.info("*** Generating native dependencies for %s" % self.target)
+		self.log.info("*** Generating native dependencies for %s" % self.target)
 		try:
 			deplist = options['native.compilers'].dependencies.depends(context=context, src=testsources, options=options, flags=flatten(options['native.cxx.flags']+[context.expandPropertyValues(x).split(' ') for x in self.flags]), includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']]))
 		except BuildException, e:
@@ -138,7 +138,7 @@ class CompilerMakeDependsPathSet(BasePathSet):
 			for d in deplist:
 				f.write(d.encode('UTF-8')+os.linesep)
 		if time.time()-startt > 5: # this should usually be pretty quick, so may indicate a real build file mistake
-			log.warn('Dependency generation took a long time: %0.1f s to evaluate %s', time.time()-startt, self)
+			self.log.warn('Dependency generation took a long time: %0.1f s to evaluate %s', time.time()-startt, self)
 
 		return deplist
 
