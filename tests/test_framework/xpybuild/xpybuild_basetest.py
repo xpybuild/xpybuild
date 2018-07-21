@@ -35,12 +35,12 @@ class XpybuildBaseTest(BaseTest):
 					'OUTPUT_DIR=%s'%self.output+'/build-output']+args
 				if os.getenv('XPYBUILD_PPROFILE',None):
 					self.log.info('Enabling Python per-line pprofile')
-					args = [os.environ['XPYBUILD_PPROFILE'], '--out', 'profileoutput.txt', 
+					args = [os.environ['XPYBUILD_PPROFILE'], '--out', 'profileoutput.py', 
 						'--include', os.getenv('XPYBUILD_PPROFILE_REGEX', '.*xpybuild.*'), '--exclude', '.*', #'--verbose'
 						]+args
 					assert args[0].endswith('py'), args[0]
 					assert os.path.exists(args[0]), args[0]
-					self.log.info('   see %s', os.path.normpath(self.output+'/profileoutput.txt'))
+					self.log.info('   see %s', os.path.normpath(self.output+'/profileoutput.py'))
 
 				result = self.startProcess(sys.executable, args, 
 					environs=environs, 
