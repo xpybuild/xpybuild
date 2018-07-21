@@ -38,7 +38,7 @@ class XpybuildBaseTest(BaseTest):
 					args = [os.environ['XPYBUILD_PPROFILE'], '--out', 'profileoutput.py', 
 						'--include', os.getenv('XPYBUILD_PPROFILE_REGEX', '.*xpybuild.*'), '--exclude', '.*', #'--verbose'
 						]+args
-					assert args[0].endswith('py'), args[0]
+					assert args[0].endswith('py'), args[0] # use the script path not the dir
 					assert os.path.exists(args[0]), args[0]
 					self.log.info('   see %s', os.path.normpath(self.output+'/profileoutput.py'))
 
