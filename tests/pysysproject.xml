@@ -30,7 +30,7 @@
 	<property name="XPYBUILD_ROOT" value="${env.XPYBUILD_ROOT}" default="${rootdir}/.."/>
 
 	<property name="XPYBUILD" value="${XPYBUILD_ROOT}/xpybuild.py" />
-	
+
 	<!-- 
 	Set a property on the project class. The property can then be used as a substitution variable 
 	within the project file, and is also set as an attribute to the project class so it's value 
@@ -167,6 +167,6 @@
 		-->
 	</formatters>
 
-	<performance-reporter classname="xpybuild.perfreporter.XpybuildPerfReporter"/>
+	<performance-reporter classname="xpybuild.customperfreporter.XpybuildPerfReporter"/>
 	
 </pysysproject>
