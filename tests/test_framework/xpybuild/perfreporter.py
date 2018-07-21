@@ -15,7 +15,7 @@ class XpybuildPerfReporter(CSVPerformanceReporter):
 		self.XPYBUILD_VERSION = getXpybuildVersion(project)
 
 		super(XpybuildPerfReporter, self).__init__(project, summaryfile or 'performance_output/v'+self.XPYBUILD_VERSION+'/@OUTDIR@_@HOSTNAME@/perf_@DATE@_@TIME@.csv', testoutdir)
-		self.unitAliases['ms'] = PerformanceUnit('ms', biggerIsBetter=False)
+		self.unitAliases['ns'] = PerformanceUnit('ns', biggerIsBetter=False)
 	
 	def getRunDetails(self):
 		d = super(XpybuildPerfReporter, self).getRunDetails()

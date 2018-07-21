@@ -32,7 +32,7 @@ class PySysTest(XpybuildBaseTest):
 		self.assertGrep(file='xpybuild_many.out', expr="ERROR .*", contains=False)
 		
 		deps = float(self.getExprFromFile('xpybuild_many.out', 'dependency resolution took ([0-9.]+) s'))
-		self.reportPerformanceResult(1000*deps/self.NUMBER_TARGETS/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with %d include patterns'%self.NUMBER_PATTERNS, 'ms')
+		self.reportPerformanceResult(1000*1000*1000*deps/self.NUMBER_TARGETS/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with %d include patterns'%self.NUMBER_PATTERNS, 'ns')
 
 		deps = float(self.getExprFromFile('xpybuild_1.out', 'dependency resolution took ([0-9.]+) s'))
-		self.reportPerformanceResult(1000*deps/(self.NUMBER_TARGETS*5)/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with 1 include pattern', 'ms')
+		self.reportPerformanceResult(1000*1000*1000*deps/(self.NUMBER_TARGETS*5)/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with 1 include pattern', 'ns')

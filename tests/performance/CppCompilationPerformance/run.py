@@ -32,10 +32,10 @@ class PySysTest(XpybuildBaseTest):
 		self.assertGrep(file='xpybuild-build-no-op.log', expr="<NO TARGETS> built")
 		
 		# get a per-target per-thread number
-		normfactor = self.TARGETS/(float(self.THREADS)*1000)
+		normfactor = self.TARGETS/(float(self.THREADS)*1000*1000*1000)
 
-		self.reportPerformanceResult(results['xpybuild-dep-check.deps']/normfactor, 'Dependency resolution time per C++ target', 'ms')
-		self.reportPerformanceResult(results['xpybuild-build.build']/normfactor, 'Build time per C++ target', 'ms')
+		self.reportPerformanceResult(results['xpybuild-dep-check.deps']/normfactor, 'Dependency resolution time per C++ target', 'ns')
+		self.reportPerformanceResult(results['xpybuild-build.build']/normfactor, 'Build time per C++ target', 'ns')
 
 		# should be very small
-		self.reportPerformanceResult((results['xpybuild-build-no-op.deps']+results['xpybuild-build-no-op.build'])/normfactor, 'Incremental build and dependency resolution time per C++ target', 'ms')
+		self.reportPerformanceResult((results['xpybuild-build-no-op.deps']+results['xpybuild-build-no-op.build'])/normfactor, 'Incremental build and dependency resolution time per C++ target', 'ns')

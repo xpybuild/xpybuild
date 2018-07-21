@@ -6,6 +6,7 @@ class PySysTest(XpybuildBaseTest):
 	OPS = collections.OrderedDict([
 	("utils.antglob.antGlobMatch('path1/**/*.foo', 'path1/path2/path3/bar.foo')",'antGlob_match'),
 	("utils.antglob.antGlobMatch('path1/**/*.foo', 'path2/path2/path3/bar.foo')",'antGlob_nonmatch'),
+	("utils.antglob.antGlobMatch('**', 'path2/path2/path3/bar.foo')",'antGlob_wildcard'), # common, so hopefully optimized
 	("utils.fileutils.toLongPathSafe(OUTPUT_DIR+'/foo%010d0'%0)",'toLongPathSafe_noop'),
 	("utils.fileutils.toLongPathSafe(OUTPUT_DIR+'/foo%010d/'%0)",'toLongPathSafe_dir_caching'),
 	("utils.fileutils.toLongPathSafe(OUTPUT_DIR+'/foo%010d/'%ops)",'toLongPathSafe_dir_nocaching'),
@@ -19,6 +20,7 @@ class PySysTest(XpybuildBaseTest):
 	('BuildFileLocation()','BuildFileLocation'),
 	("utils.fileutils.exists(OUTPUT_DIR+'/doesntexist')",'utils.fileutils.exists'),
 	])
+
 
 	def execute(self):
 		for op in self.OPS:
@@ -38,8 +40,8 @@ class PySysTest(XpybuildBaseTest):
 			opname = self.OPS[op]
 			try:
 				result = float(self.getExprFromFile(opname+'.out', 'Microbenchmark operation took ([0-9.]+) ms each'))
-				self.reportPerformanceResult(result, 
-					'Time per call to %s'%opname, 'ms')
+				self.reportPerformanceResult(result*1000*1000, 
+					'Time per call to %s'%opname, 'ns')
 				self.log.info('   = {:,} operations/sec'.format(int(1000.0/result)))
 				self.log.info('')
 			except Exception as e:
