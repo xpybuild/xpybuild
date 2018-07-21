@@ -25,6 +25,7 @@ from buildexceptions import BuildException
 # we might want a wrapper that stores all content and writes it to a file for artifact publishing, 
 # perhaps only iff an exception occurs and/or its not empty
 
+_logger = logging.getLogger('processoutput')
 
 class ProcessOutputHandler(object):
 	"""
@@ -81,7 +82,7 @@ class ProcessOutputHandler(object):
 		self._warnings = []
 		self._lastLine = ''
 		
-		self._logger = logging.getLogger('process.%s'%name)
+		self._logger = _logger
 		self._treatStdErrAsErrors = treatStdErrAsErrors
 		self.options = kwargs.pop('options', None) or {}
 		assert not kwargs, 'Unexpected keyword argument to ProcessOutputHandler: %s'%kwargs.keys()
