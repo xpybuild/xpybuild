@@ -2,9 +2,9 @@
 <pysystest type="auto" state="runnable">
     
   <description> 
-    <title>Utility functions - performance microbenchmarks</title>
+    <title>Microbenchmarks</title>
     <purpose><![CDATA[
-Check for regressions in the performance of very-commonly called utilities.
+Check for regressions in the performance of commonly called utilities.
 ]]>
     </purpose>
   </description>
