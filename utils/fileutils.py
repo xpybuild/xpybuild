@@ -366,10 +366,12 @@ def normLongPath(path):
 	return path
 	
 __statcache = {}
+__statcache_get = __statcache.get
 def getstat(path):
-	""" Cached-once os.stat (DO NOT USE if you expect it to change after startup) """
-	st = __statcache.get(path, None)
-	if None == st:
+	""" Cached-once os.stat (DO NOT USE if you expect it to change after startup). 
+	Returns False if missing.  """
+	st = __statcache_get(path, None)
+	if st is None:
 		try:
 			st = os.stat(path)
 		except os.error: # mean file doesn't exist
@@ -386,15 +388,15 @@ def getsize(path):
 	return getstat(path).st_size
 def exists(path):
 	""" Cached-once os.path.exists (DO NOT USE if you expect it to change after startup) """
-	return getstat(path) != False
+	return getstat(path) is not False
 def isfile(path):
 	""" Cached-once os.path.isfile (DO NOT USE if you expect it to change after startup) """
 	st = getstat(path)
-	return st and stat.S_ISREG(st.st_mode)
+	return (st is not False) and stat.S_ISREG(st.st_mode)
 def isdir(path):
 	""" Cached-once os.path.isdir (DO NOT USE if you expect it to change after startup) """
 	st = getstat(path)
-	return st and stat.S_ISDIR(st.st_mode)
+	return (st is not False) and stat.S_ISDIR(st.st_mode)
 
 def resetStatCache():
 	""" Resets cached stat data """
