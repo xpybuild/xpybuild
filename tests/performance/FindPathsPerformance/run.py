@@ -25,7 +25,7 @@ class PySysTest(XpybuildBaseTest):
 		self.xpybuild(shouldFail=False, args=['-n', 
 			'NUMBER_PATTERNS=1', 
 			'PATTERN=**', 
-			'NUMBER_TARGETS=%s'%(self.NUMBER_TARGETS*5), 
+			'NUMBER_TARGETS=%s'%(self.NUMBER_TARGETS*10), 
 			], stdouterr='xpybuild_starstar')
 		self.xpybuild(shouldFail=False, args=['-n', 
 			'NUMBER_PATTERNS=1', 
@@ -47,7 +47,7 @@ class PySysTest(XpybuildBaseTest):
 		self.reportPerformanceResult(1000*1000*1000*deps/self.NUMBER_TARGETS/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with %d include patterns'%self.NUMBER_PATTERNS, 'ns')
 
 		deps = float(self.getExprFromFile('xpybuild_1.out', 'dependency resolution took ([0-9.]+) s'))
-		self.reportPerformanceResult(1000*1000*1000*deps/(self.NUMBER_TARGETS*5)/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with 1 include pattern', 'ns')
+		self.reportPerformanceResult(1000*1000*1000*deps/(self.NUMBER_TARGETS*10)/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with 1 include pattern', 'ns')
 
 		deps = float(self.getExprFromFile('xpybuild_starstar.out', 'dependency resolution took ([0-9.]+) s'))
 		self.reportPerformanceResult(1000*1000*1000*deps/(self.NUMBER_TARGETS*5)/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with ** include pattern', 'ns')
