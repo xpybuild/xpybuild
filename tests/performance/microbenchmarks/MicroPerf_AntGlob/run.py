@@ -8,6 +8,7 @@ class PySysTest(MicroPerfPySysTest):
 	('antGlobMatch() match', "utils.antglob.antGlobMatch('path1/**/*.foo', 'path1/path2/path3/bar.foo')", "import utils.antglob"),
 	('antGlobMatch() non-match',"utils.antglob.antGlobMatch('path1/**/*.foo', 'path2/path2/path3/bar.foo')", "import utils.antglob"),
 	('antGlobMatch() non-match with file/dir mix',"utils.antglob.antGlobMatch('path1/**/*.foo', 'path2/path2/path3/bar.foo/')", "import utils.antglob"),
-	('antGlobMatch() double-start wildcard',"utils.antglob.antGlobMatch('**', 'path2/path2/path3/bar.foo')", "import utils.antglob"), # common, so hopefully optimized
+	('antGlobMatch() double-star wildcard',"utils.antglob.antGlobMatch('**', 'path2/path2/path3/bar.foo')", "import utils.antglob"), # common, so hopefully optimized
+	('antGlobMatch() double-star/path wildcard',"utils.antglob.antGlobMatch('**/*.foo', 'path2/path2/path3/bar.foo')", "import utils.antglob"), # common, so hopefully optimized
 
 	]
