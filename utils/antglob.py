@@ -229,22 +229,10 @@ class GlobPatternSet(object):
 		if elementPattern == '*' or elementPattern == '**':
 			return True
 
-		elementPattern = elementPattern.split('*')
-		
-		# simple cases, efficient implementation
-		if len(elementPattern) == 1:
-			return elementPattern[0] == element
-		if len(elementPattern) == 2: # copes with: a* *a and a*b
-			return element.startswith(elementPattern[0]) and element.endswith(elementPattern[1])
-		
-		return re.match('.*'.join(map(re.escape, elementPattern)), element)
-	
-		#TODO: make this work
-		"""
 		# simple cases, efficient implementation
 		star1 = elementPattern.find('*')
-		if star1 == -1: return elementPattern
-		
+		if star1 == -1: return elementPattern==element
+
 		star2 = elementPattern.find('*', star1+1)
 		if star2 == -1: # copes with: a* *a and a*b
 			return element.startswith(elementPattern[:star1]) and element.endswith(elementPattern[star1+1:])
@@ -252,7 +240,6 @@ class GlobPatternSet(object):
 		# more complex cases will have to be less efficient
 		elementPattern = elementPattern.split('*')
 		return re.match('.*'.join(map(re.escape, elementPattern)), element)
-		"""
 
 	@staticmethod	
 	def __matchSinglePath(pattern, path):
