@@ -33,7 +33,12 @@ class XpybuildBaseTest(BaseTest):
 					'--logfile', os.path.join(self.output, stdout.replace('.out', '')+'.log'), 
 					'-J', # might as well run in parallel to speed things up and help find race conditions
 					'OUTPUT_DIR=%s'%self.output+'/build-output']+args
-				if os.getenv('XPYBUILD_PPROFILE',None):
+				pythoncoverage = getattr(self, 'PYTHON_COVERAGE', '')=='true'
+				if pythoncoverage:
+					self.log.info('Enabling Python code coverage')
+					args = ['-m', 'coverage', 'run', '--source=%s'%PROJECT.XPYBUILD_ROOT]+args
+					self.log.info('   see %s', os.path.normpath(self.output+'/profileoutput.py'))
+				elif os.getenv('XPYBUILD_PPROFILE',None):
 					self.log.info('Enabling Python per-line pprofile')
 					args = [os.environ['XPYBUILD_PPROFILE'], '--out', 'profileoutput.py', 
 						'--include', os.getenv('XPYBUILD_PPROFILE_REGEX', '.*xpybuild.*'), '--exclude', '.*', #'--verbose'
@@ -47,6 +52,13 @@ class XpybuildBaseTest(BaseTest):
 					stdout=stdout, stderr=stderr, displayName=('xpybuild %s'%' '.join(args)).strip(), 
 					abortOnError=True, ignoreExitStatus=shouldFail)
 				if shouldFail and result != 0: raise Exception('Build failed as expected')
+				if pythoncoverage:
+					self.startProcess(sys.executable, ['-m', 'coverage', 'html'], 
+					environs=environs, 
+					stdout='python-coverage.out', stderr='python-coverage.err', displayName='python coverage', 
+					abortOnError=True, ignoreExitStatus=False)
+					self.log.info('See %s'%os.path.normpath(self.output+'/htmlcov'))
+
 			finally:
 				self.logFileContents(stdout, tail=True) or self.logFileContents(stderr, tail=True)
 		
