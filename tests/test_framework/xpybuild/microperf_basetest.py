@@ -47,6 +47,10 @@ class MicroPerfPySysTest(XpybuildBaseTest):
 				self.addOutcome(NOTVERIFIED, 'xpybuild failed for %s'%opname, abortOnError=False)
 
 	def validate(self):
+		IGNORE_MISSING_PERF_RESULTS = getattr(self, 'IGNORE_MISSING_PERF_RESULTS', '')=='true'
+		if IGNORE_MISSING_PERF_RESULTS:
+			del self.outcome[:]
+		
 		for opname, _, _ in self.OPERATIONS:
 			try:
 				result = float(self.getExprFromFile(self.escapeOpName(opname)+'.out', 'Microbenchmark operation took ([0-9.]+) ns each'))
@@ -55,7 +59,7 @@ class MicroPerfPySysTest(XpybuildBaseTest):
 				self.log.info('   = {:,} operations/sec'.format(int(1000.0*1000.0*1000.0/result)))
 				self.log.info('')
 			except Exception as e:
-				if getattr(self, 'XPYBUILD_IGNORE_MISSING_PERF_RESULTS', '')=='true':
+				if IGNORE_MISSING_PERF_RESULTS:
 					self.addOutcome(NOTVERIFIED, 'missing output for %s: %s'%(opname, e), abortOnError=False)			
 				else:
 					raise
