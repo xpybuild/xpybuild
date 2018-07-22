@@ -22,6 +22,16 @@ class PySysTest(XpybuildBaseTest):
 			'NUMBER_PATTERNS=1', 
 			'NUMBER_TARGETS=%s'%(self.NUMBER_TARGETS*5), 
 			], stdouterr='xpybuild_1')
+		self.xpybuild(shouldFail=False, args=['-n', 
+			'NUMBER_PATTERNS=1', 
+			'PATTERN=**', 
+			'NUMBER_TARGETS=%s'%(self.NUMBER_TARGETS*5), 
+			], stdouterr='xpybuild_starstar')
+		self.xpybuild(shouldFail=False, args=['-n', 
+			'NUMBER_PATTERNS=1', 
+			'PATTERN=**/test*', 
+			'NUMBER_TARGETS=%s'%(self.NUMBER_TARGETS*5), 
+			], stdouterr='xpybuild_starstar_pattern')
 		try:
 			shutil.rmtree(self.output+'/findpathsroot')
 		except Exception as e:
@@ -30,9 +40,17 @@ class PySysTest(XpybuildBaseTest):
 	def validate(self):
 		self.assertGrep(file='xpybuild_1.out', expr="ERROR .*", contains=False)
 		self.assertGrep(file='xpybuild_many.out', expr="ERROR .*", contains=False)
+		self.assertGrep(file='xpybuild_starstar.out', expr="ERROR .*", contains=False)
+		self.assertGrep(file='xpybuild_starstar_pattern.out', expr="ERROR .*", contains=False)
 		
 		deps = float(self.getExprFromFile('xpybuild_many.out', 'dependency resolution took ([0-9.]+) s'))
 		self.reportPerformanceResult(1000*1000*1000*deps/self.NUMBER_TARGETS/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with %d include patterns'%self.NUMBER_PATTERNS, 'ns')
 
 		deps = float(self.getExprFromFile('xpybuild_1.out', 'dependency resolution took ([0-9.]+) s'))
 		self.reportPerformanceResult(1000*1000*1000*deps/(self.NUMBER_TARGETS*5)/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with 1 include pattern', 'ns')
+
+		deps = float(self.getExprFromFile('xpybuild_starstar.out', 'dependency resolution took ([0-9.]+) s'))
+		self.reportPerformanceResult(1000*1000*1000*deps/(self.NUMBER_TARGETS*5)/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with ** include pattern', 'ns')
+
+		deps = float(self.getExprFromFile('xpybuild_starstar_pattern.out', 'dependency resolution took ([0-9.]+) s'))
+		self.reportPerformanceResult(1000*1000*1000*deps/(self.NUMBER_TARGETS*5)/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with **/test* pattern', 'ns')
