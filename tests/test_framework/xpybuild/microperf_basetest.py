@@ -50,6 +50,7 @@ class MicroPerfPySysTest(XpybuildBaseTest):
 		IGNORE_MISSING_PERF_RESULTS = getattr(self, 'IGNORE_MISSING_PERF_RESULTS', '')=='true'
 		if IGNORE_MISSING_PERF_RESULTS:
 			del self.outcome[:]
+		self.addOutcome(PASSED)
 		
 		for opname, _, _ in self.OPERATIONS:
 			try:
