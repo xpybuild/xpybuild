@@ -37,7 +37,7 @@ import os, sys
 import threading
 import logging
 import time
-from utils.antglob import antGlobMatch
+from utils.antglob import *
 from utils.flatten import flatten
 from utils.buildfilelocation import BuildFileLocation
 from utils.fileutils import normLongPath
@@ -365,9 +365,21 @@ class FindPaths(BasePathSet):
 		self.includes = flatten(includes)
 		self.excludes = flatten(excludes)
 		
+
 		bad = [x for x in (self.includes+self.excludes) if ('//' in x or x.startswith('/') or x.startswith('/') or '\\' in x or '${' in x) ]
 		if bad:
 			raise BuildException('Invalid includes/excludes pattern in FindPaths - must not contain \\, begin or end with /, or contain substitution variables: "%s"'%bad[0])
+			
+		if not self.includes: 
+			self.includes = None # comparing to None is very efficient
+		else:
+			self.includes = GlobPatternSet.create(self.includes)
+
+		if not self.excludes: 
+			self.excludes = None
+		else:
+			self.excludes = GlobPatternSet.create(self.excludes)
+			
 		if isinstance(dir, basestring) and '\\' in dir: # avoid silly mistakes, and enforce consistency
 			raise BuildException('Invalid base directory for FindPaths - must not contain \\ (always use forward slashes)')
 		
@@ -377,7 +389,7 @@ class FindPaths(BasePathSet):
 	
 	def __repr__(self): 
 		""" Return a string including this class name and the basedir and include/exclude patterns with which it was created. """
-		return ('FindPaths(%s, includes=%s, excludes=%s)'%('"%s"'%self.__dir if isinstance(self.__dir, basestring) else str(self.__dir), self.includes, self.excludes)).replace('\'','"')
+		return ('FindPaths(%s, includes=%s, excludes=%s)'%('"%s"'%self.__dir if isinstance(self.__dir, basestring) else str(self.__dir), self.includes or [], self.excludes or [])).replace('\'','"')
 	
 	def _resolveUnderlyingDependencies(self, context):
 		if isinstance(self.__dir, BaseTarget):
@@ -387,6 +399,19 @@ class FindPaths(BasePathSet):
 		else:
 			return self.resolve(context)
 		
+	@staticmethod
+	def __removeNamesFromList(l, toberemoved):
+		"""
+		Efficiently removes all items in toberemoved from list l (in-place). 
+		
+		@param toberemoved: must contain only items from l, with no duplicates. 
+		"""	
+		if len(toberemoved)==0: return
+		if len(toberemoved) == len(l): 
+			toberemoved[:] = []
+		if len(toberemoved) > 2: toberemoved = set(toberemoved)
+		l[:] = [x for x in l if x not in toberemoved]
+	
 	def resolveWithDestinations(self, context):
 		"""
 		Uses the file system to returns a list of relative paths for files 
@@ -411,61 +436,53 @@ class FindPaths(BasePathSet):
 			
 			resolveddir = _resolveDirPath(self.__dir, context, self.location)
 
-			def dirCouldMatchIncludePattern(includePattern, d):
-				if d.startswith('**'): return True
-				d = d.split('/')
-				p = includePattern.split('/')[:-1] # strip off trailing '' or filename
-				if '**' not in includePattern and len(d) > len(p): 
-					# don't go into a dir structure that's more deeply nested than the pattern
-					#log.debug('   maybe vetoing %s based on counts : %s', d, p)
-					return False
-				
-				i = 0
-				while i < len(d) and i < len(p) and p[i]:
-					if '*' in p[i]: return True # any kind of wildcard and we give up trying to match
-					if d[i] != p[i]: 
-						#log.debug('   maybe vetoing %s due to not matching %s', d, includePattern)
-						return False
-					i += 1
-				return True
-
 			matches = []
 			try:
 				if not os.path.isdir(resolveddir):
 					raise BuildException('FindPaths root directory does not exist: "%s"'%os.path.normpath(resolveddir), location=self.location)
 				startt = time.time()
-				usedIncludes = set() # give an error if any are not used
+				if self.includes is not None:
+					unusedPatternsTracker = GlobUnusedPatternTracker(self.includes) # give an error if any are not used
+				else:
+					unusedPatternsTracker = None
 				longdir = normLongPath(resolveddir)
 				visited = 0
 				for root, dirs, files in os.walk(longdir):
 					visited += 1 
-					root = root.replace(longdir, '').replace('\\','/').lstrip('/').rstrip('/')
+					root = root.replace(longdir, '').replace('\\','/').strip('/')
+					if root != '': root += '/'
 					#log.debug('visiting: "%s"'%root)
 					
 					# optimization: if this doesn't require walking down the dir tree, don't do any!
 					# (this optimization applies to includes like prefix/** but not if there is a bare '**' 
 					# in the includes lsit)
-					if self.includes and "**" not in self.includes:
-						dirs[:] = [d for d in dirs if any(dirCouldMatchIncludePattern(e, (root+'/'+d).lstrip('/')) for e in self.includes)]
-					
+					if self.includes is not None:
+						self.includes.removeUnmatchableDirectories(root, dirs)
+
 					# optimization: if there's an exclude starting with this dir and ending with '/**' or '/*', don't navigate to it
-					dirs[:] = [d for d in dirs if not 
-						next( (e for e in self.excludes if antGlobMatch(e, root+'/'+d)), None)]
-					for p in files+[d+'/' for d in dirs]:
-						if root: p = root+'/'+p
-							
-						# first check if it matches an exclude
-						if next( (True for e in self.excludes if antGlobMatch(e, p)), False): continue
-							
-						if not self.includes: # include all files (not directories - that wouldn't make sense or be helpful)
-							if not p.endswith('/'):
-								matches.append(p)
-						else:
-							m = next( (i for i in self.includes if antGlobMatch(i, p)), None)
-							if m: 
-								log.debug('FindPaths matched %s from pattern %s', p, m)
-								usedIncludes.add(m)
-								matches.append(p)
+					# we deliberately match only against filename patterns (not dir patterns) since 
+					# empty dirs are handled in the later loop not through this mechanism, so it's just files that matter
+					if self.excludes is not None and dirs != []:
+						# nb: both dirs and the result of getMatches will have no trailing slashes
+						self.__removeNamesFromList(dirs, self.excludes.getMatches(root, filenames=dirs))
+					
+					# now find which files and empty dirs match
+					matchedemptydirs = dirs
+					
+					if self.includes is not None:
+						files, matchedemptydirs = self.includes.getMatches(root, filenames=files, dirnames=matchedemptydirs, unusedPatternsTracker=unusedPatternsTracker)
+					else:
+						matchedemptydirs = [] # only include empty dirs if explicitly specified
+					
+					if self.excludes is not None:
+						exfiles, exdirs = self.excludes.getMatches(root, filenames=files, dirnames=matchedemptydirs)
+						self.__removeNamesFromList(files, exfiles)
+						self.__removeNamesFromList(matchedemptydirs, exdirs)
+						
+					for p in files:
+						matches.append(root+p)
+					for p in matchedemptydirs:
+						matches.append(root+p+'/')					
 
 				log.info('FindPaths in "%s" found %d path(s) for %s after visiting %s directories; %s', resolveddir, len(matches), self, visited, self.location)
 				if time.time()-startt > 5: # this should usually be pretty quick, so may indicate a real build file mistake
@@ -473,8 +490,10 @@ class FindPaths(BasePathSet):
 				
 				if not matches:
 					raise BuildException('No matching files found', location=self.location)
-				if len(usedIncludes) < len(self.includes): # this is a check that ant doesn't do, but it's helpful for ensuring correctness
-					raise BuildException('Some include patterns did not match any files: %s'%', '.join(set(self.includes)-usedIncludes), location=self.location)
+				if unusedPatternsTracker is not None:
+					unusedPatterns = unusedPatternsTracker.getUnusedPatterns()
+					if unusedPatterns != []:
+						raise BuildException('Some include patterns did not match any files: %s'%', '.join(unusedPatterns), location=self.location)
 						
 			except BuildException, e:
 				raise BuildException('%s for %s'%(e.toSingleLineString(target=None), self), causedBy=False, location=self.location)
