@@ -25,7 +25,6 @@ from buildcommon import *
 from pathsets import PathSet, BasePathSet
 from basetarget import BaseTarget
 from utils.fileutils import mkdir, deleteDir, normLongPath
-from utils.antglob import antGlobMatch
 from utils.flatten import flatten
 from buildexceptions import BuildException
 
