@@ -50,7 +50,10 @@ class XpybuildBaseTest(BaseTest):
 			finally:
 				self.logFileContents(stdout, tail=True) or self.logFileContents(stderr, tail=True)
 		
-		except Exception, e:
+		except AssertionError as e:
+			self.log.exception('Assertion error: ')
+			raise
+		except Exception as e:
 			m = None
 			try:
 				# these give the best messages
