@@ -116,7 +116,7 @@ class GlobPatternSet(object):
 		if self.alldirs: assert len(self.dirpatterns)==1, 'No point specifying additional directory patterns after adding **/'
 		
 		self.nofiles = self.filepatterns == []
-		self.nodirs = self.filepatterns == []
+		self.nodirs = self.dirpatterns == []
 
 	
 	def __str__(self): 
@@ -188,14 +188,24 @@ class GlobPatternSet(object):
 
 		if filenames is not None:
 			if filenames != []:
-				operations.append((self.filepatterns, filenames, False))
+				if self.allfiles: # special-case ** to make it fast
+					fileresults.extend(filenames)
+					if unusedPatternsTracker is not None: unusedPatternsTracker._recordUsage(self.filepatterns[0][1])
+				elif not self.nofiles:
+					operations.append((self.filepatterns, filenames, False))
 			results = fileresults
 		if dirnames is not None:
 			if dirnames != []:
-				operations.append((self.dirpatterns, dirnames, True))
+				if self.alldirs: # special-case **/ to make it fast
+					dirresults.extend(dirnames)
+					if unusedPatternsTracker is not None: unusedPatternsTracker._recordUsage(self.dirpatterns[0][1])
+				elif not self.nodirs:
+					operations.append((self.dirpatterns, dirnames, True))
 			results = dirresults
 		
 		if dirnames is not None and filenames is not None: results = (fileresults, dirresults)
+			
+		
 		
 		for (patternlist, basenames, isdir) in operations:
 			#if not basenames: continue
@@ -220,7 +230,6 @@ class GlobPatternSet(object):
 							fileresults.append(origbasename)
 						if unusedPatternsTracker is not None: unusedPatternsTracker._recordUsage(origpatternindex)
 						break
-		
 		return results
 
 	@staticmethod	
