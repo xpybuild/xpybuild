@@ -101,11 +101,11 @@ class GlobPatternSet(object):
 			if p.startswith('**'): self.hasStarStarPrefixPattern = True
 			if p[-1] == '/':
 				if p == '**/': self.alldirs = True
-				elements = p[:-1].split('/')
+				elements = [self.__canonicalizePatternElement(e) for e in p[:-1].split('/')]
 				self.dirpatterns.append([elements, len(self.origpatterns)-1])
 			else:
 				if p == '**': self.allfiles = True
-				elements = p.split('/')
+				elements = [self.__canonicalizePatternElement(e) for e in p.split('/')]
 				self.filepatterns.append([elements, len(self.origpatterns)-1])
 
 			for e in elements:
@@ -118,6 +118,13 @@ class GlobPatternSet(object):
 		self.nofiles = self.filepatterns == []
 		self.nodirs = self.dirpatterns == []
 
+	@staticmethod
+	def __canonicalizePatternElement(element):
+		# allow faster comparisons with these common strings
+		if element == '*': return GlobPatternSet.STAR
+		if element == '**': return GlobPatternSet.STARSTAR
+		return element
+			
 	
 	def __str__(self): 
 		"""
@@ -235,7 +242,7 @@ class GlobPatternSet(object):
 	@staticmethod	
 	def __elementMatch(elementPattern, element):
 		# NB: do this case sensitively, because that's what unix will do anyway
-		if elementPattern == '*' or elementPattern == '**':
+		if elementPattern is GlobPatternSet.STAR or elementPattern == GlobPatternSet.STARSTAR:
 			return True
 
 		# simple cases, efficient implementation
@@ -259,7 +266,7 @@ class GlobPatternSet(object):
 		# nb: pattern is a list of pattern elements; path is rstripped and split by /
 		x = y = 0
 		while x < lenpattern and y < lenpath:
-			if pattern[x] == '**':
+			if pattern[x] is GlobPatternSet.STARSTAR:
 				if x == lenpattern-1:
 					return True
 				else:
@@ -286,7 +293,7 @@ class GlobPatternSet(object):
 			return False
 	
 		# we've run out of path
-		return pattern[x] == '**' # ** may happily match nothing
+		return pattern[x] is GlobPatternSet.STARSTAR # ** may happily match nothing
 		
 
 	@staticmethod
@@ -298,14 +305,14 @@ class GlobPatternSet(object):
 		else:
 			p = includePattern[:-1] # strip off trailing filename
 			
-		if '**' not in includePattern and len(d) > len(p): 
+		if GlobPatternSet.STARSTAR not in includePattern and len(d) > len(p): 
 			# don't go into a dir structure that's more deeply nested than the pattern
 			#log.debug('   maybe vetoing %s based on counts : %s', d, p)
 			return False
 		
 		i = 0
 		while i < len(d) and i < len(p) and p[i]:
-			if '*' in p[i]: return True # any kind of wildcard and we give up trying to match
+			if GlobPatternSet.STAR in p[i]: return True # any kind of wildcard and we give up trying to match
 			if d[i] != p[i]: 
 				#log.debug('   maybe vetoing %s due to not matching %s', d, includePattern)
 				return False
