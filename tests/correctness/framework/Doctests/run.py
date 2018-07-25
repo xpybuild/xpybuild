@@ -23,6 +23,8 @@ class PySysTest(XpybuildBaseTest):
 				if f.endswith('.py') and f != '__init__.py' and f != 'root.xpybuild.py':
 					with open(dirpath+'/'+f) as pyfile:
 						if '>>>' in pyfile.read():
+							if getattr(self, 'DOCTEST_FILTER', '') and self.DOCTEST_FILTER.replace('.py','') != f.replace('.py',''): continue
+							
 							allScripts.append(dirpath+'/'+f)
 		
 		good = bad = 0
@@ -44,10 +46,23 @@ class PySysTest(XpybuildBaseTest):
 			else:
 				environs['SYSTEMROOT'] = os.environ['SYSTEMROOT']
 			environs['PYTHONPATH'] = DIR
-			result = self.startProcess(sys.executable, ['-m', 'doctest', '-v', f], 
+			args = ['-m', 'doctest', '-v', f]
+			pythoncoverage = getattr(self, 'PYTHON_COVERAGE', '')=='true'
+			if pythoncoverage:
+				self.log.info('Enabling Python code coverage')
+				args = ['-m', 'coverage', 'run', '--source=%s'%PROJECT.XPYBUILD_ROOT]+args
+			result = self.startProcess(sys.executable, args, 
 				environs=environs, 
 				stdout=moduleName+'.out', stderr=moduleName+'.err', displayName='doctest '+moduleName, 
 				abortOnError=True, ignoreExitStatus=True)
+
+			if pythoncoverage:
+				self.startProcess(sys.executable, ['-m', 'coverage', 'html'], 
+				environs=environs, 
+				stdout='python-coverage.out', stderr='python-coverage.err', displayName='python coverage', 
+				abortOnError=True, ignoreExitStatus=False)
+				self.log.info('See %s'%os.path.normpath(self.output+'/htmlcov'))
+
 
 			if result.exitStatus != 0: 
 				self.logFileContents(moduleName+'.err', maxLines=0) or self.logFileContents(moduleName+'.out', maxLines=0)
