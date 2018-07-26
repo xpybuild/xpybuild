@@ -260,7 +260,7 @@ class BuildScheduler(object):
 		errors = []
 		pending = [] # list of new jobs to done as part of dependency resolution
 		log.debug("Inspecting dependencies of target %s", tname)			
-		target = self.targets.get(tname, None)
+		target = self.targets.get(tname, None) # a BuildTarget object
 
 		# only log dependency status periodically since usually its very quick
 		# and not worthwhile
