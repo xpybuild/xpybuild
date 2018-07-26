@@ -506,8 +506,11 @@ class FindPaths(BasePathSet):
 				raise BuildException('%s for %s'%(repr(e), self), causedBy=True, location=self.location)
 			
 			result = []
+			normedbasedir = normpath(resolveddir)
+			replacesep = os.sep != '/'
 			for m in matches:
-				result.append( (normpath(resolveddir+'/'+m), normpath(m) ) )
+				if replacesep and '/' in m: m = m.replace('/', os.sep)
+				result.append( (normedbasedir+m, m ) )
 			result.sort()
 			
 			self.__cached = result
