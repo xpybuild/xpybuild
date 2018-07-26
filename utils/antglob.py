@@ -18,7 +18,7 @@
 #
 
 from buildexceptions import BuildException
-import re, logging
+import re, logging, sys
 from utils.flatten import flatten
 
 _log = logging.getLogger('antglob')
@@ -183,8 +183,10 @@ class GlobPatternSet(object):
 		
 		# this is _very_ performance critical code. we do less validation than 
 		# normal to keep it fast - caller needs to pass in clean inputs
-		if rootdir is None: rootdir = ''
-		assert rootdir=='' or rootdir[-1]=='/', 'Root directory must end with a slash: %s'%rootdir
+		if rootdir is None: 
+			rootdir = ''
+		else:
+			assert rootdir=='' or rootdir[-1]=='/', 'Root directory must end with a slash: %s'%rootdir
 
 		results = []
 		
@@ -211,26 +213,27 @@ class GlobPatternSet(object):
 			results = dirresults
 		
 		if dirnames is not None and filenames is not None: results = (fileresults, dirresults)
-			
+		if len(operations) == 0: return results
 		
+		if len(rootdir)>0:
+			rootdir = rootdir[:-1].split('/')
+		else:
+			rootdir = []
+		rootdirlen = len(rootdir)
 		
 		for (patternlist, basenames, isdir) in operations:
 			#if not basenames: continue
 			assert '/' not in basenames[0], 'Slashes are not permitted in the base names passed to this function: %s'%basenames[0] # sanity check for correct usage
-			
-			# TODO: special-case ** here for speed-up
-			# could also optimize recognition of rootdir, to minimize per-basename logic
-			
+
 			for basename in basenames:
 				origbasename = basename
 				
 				if isdir and (basename[-1] == '/'): basename = basename[:-1] # strip off optional dir suffix
 				
-				fullpath = rootdir+basename
-				path = fullpath.split('/')
-				
 				for (patternelements, origpatternindex) in patternlist:
-					if GlobPatternSet.__matchSinglePath(patternelements, path):
+					finalpattern = GlobPatternSet.__matchSinglePath(patternelements, rootdir, rootdirlen)
+					if finalpattern is None: continue
+					if finalpattern is GlobPatternSet.STARSTAR or finalpattern is GlobPatternSet.STAR or GlobPatternSet.__elementMatch(finalpattern, basename): 
 						if isdir: 
 							dirresults.append(origbasename)
 						else:
@@ -258,17 +261,21 @@ class GlobPatternSet(object):
 		return re.match('.*'.join(map(re.escape, elementPattern)), element)
 
 	@staticmethod	
-	def __matchSinglePath(pattern, path):
+	def __matchSinglePath(pattern, rootdir, lenrootdir):
+		# matches all elements of pattern against rootdir/basename where basename 
+		# could be anything. Returns None if no match is possible, or the pattern element 
+		# string that basenames must match or .STAR/STARSTAR if any. 
 		
 		lenpattern = len(pattern)
-		lenpath = len(path)
 		
-		# nb: pattern is a list of pattern elements; path is rstripped and split by /
-		x = y = 0
-		while x < lenpattern and y < lenpath:
-			if pattern[x] is GlobPatternSet.STARSTAR:
-				if x == lenpattern-1:
-					return True
+		# nb: pattern is a list of pattern elements; rootdir is rstripped and split by /
+		e = y = 0
+		while e < lenpattern-1 and y < lenrootdir:
+			patternelement = pattern[e]
+			if patternelement is GlobPatternSet.STARSTAR:
+				if e == lenpattern-2: # this is just an optimization for a common case **/pattern
+					# all that remains is the pattern to match against the basename
+					return pattern[lenpattern-1]
 				else:
 					# consume as much as we need to of ** until we get another match
 					# (try to be greedy - should ignore matches that are too early, i.e. don't leave 
@@ -276,26 +283,37 @@ class GlobPatternSet(object):
 					# the pattern contains a ** this might still not do quite the 
 					# right thing, perhaps a recursive algorithm is needed to 
 					# cope with case)
-					x += 1
-					while y < lenpath and (not GlobPatternSet.__elementMatch(pattern[x], path[y]) or lenpattern-x < lenpath-y):
+					# don't consume the final pattern element since we'll need that to match the basename
+					e += 1
+					patternelement = pattern[e]
+					
+					while y < lenrootdir and (not GlobPatternSet.__elementMatch(patternelement, rootdir[y]) or lenpattern-1-e < lenrootdir-y):
 						y += 1
 			else:
-				if not GlobPatternSet.__elementMatch(pattern[x], path[y]):
-					return False
-				x += 1
+				if not GlobPatternSet.__elementMatch(patternelement, rootdir[y]):
+					return None
+				e += 1
 				y += 1
-		
-		if x == lenpattern:
-			if y == lenpath: # got to the end of both
-				return True
-		
-			# pattern didn't end in ** but there's still some unmatched path, so we failed
-			return False
-	
-		# we've run out of path
-		return pattern[x] is GlobPatternSet.STARSTAR # ** may happily match nothing
-		
 
+		if y == lenrootdir:
+			# we've used up all the rootdir
+			
+			if e == lenpattern-1: 
+				return pattern[-1]
+
+			if e == lenpattern-2: 
+				if pattern[-2] is GlobPatternSet.STARSTAR: 
+					return pattern[-1]
+				if pattern[-1] is GlobPatternSet.STARSTAR: 
+					return pattern[-2]
+			return None
+		
+		# we have some rootdir left over, only ok if we have a final **
+		if e == lenpattern-1 and pattern[-1] is GlobPatternSet.STARSTAR: 
+			return GlobPatternSet.STARSTAR
+			
+		return None
+		
 	@staticmethod
 	def __dirCouldMatchIncludePattern(includePattern, isdir, d):
 		# nb: we already checked it doesn't start with ** before calling this function
@@ -541,6 +559,9 @@ def antGlobMatch(pattern, path):
 
 	>>> antGlobMatch('**/*.x/', 'a/y/c.x/d.x/')
 	True
+
+	>>> antGlobMatch('a/b/c/d/e/**', 'a/b/c')
+	False
 
 	"""
 	if not path: return not pattern # not useful or ideal, but for compatibility with older users keep this behaviour the same
