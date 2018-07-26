@@ -468,19 +468,19 @@ class FindPaths(BasePathSet):
 					# we deliberately match only against filename patterns (not dir patterns) since 
 					# empty dirs are handled in the later loop not through this mechanism, so it's just files that matter
 					if self.excludes is not None and dirs != []:
-						# nb: both dirs and the result of getMatches will have no trailing slashes
-						self.__removeNamesFromList(dirs, self.excludes.getMatches(root, filenames=dirs))
+						# nb: both dirs and the result of getPathMatches will have no trailing slashes
+						self.__removeNamesFromList(dirs, self.excludes.getPathMatches(root, filenames=dirs))
 					
 					# now find which files and empty dirs match
 					matchedemptydirs = dirs
 					
 					if self.includes is not None:
-						files, matchedemptydirs = self.includes.getMatches(root, filenames=files, dirnames=matchedemptydirs, unusedPatternsTracker=unusedPatternsTracker)
+						files, matchedemptydirs = self.includes.getPathMatches(root, filenames=files, dirnames=matchedemptydirs, unusedPatternsTracker=unusedPatternsTracker)
 					else:
 						matchedemptydirs = [] # only include empty dirs if explicitly specified
 					
 					if self.excludes is not None:
-						exfiles, exdirs = self.excludes.getMatches(root, filenames=files, dirnames=matchedemptydirs)
+						exfiles, exdirs = self.excludes.getPathMatches(root, filenames=files, dirnames=matchedemptydirs)
 						self.__removeNamesFromList(files, exfiles)
 						self.__removeNamesFromList(matchedemptydirs, exdirs)
 						

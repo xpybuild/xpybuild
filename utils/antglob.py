@@ -141,7 +141,7 @@ class GlobPatternSet(object):
 		return 'GlobPatternSet%s'%self.__str__()
 
 
-	def getMatches(self, rootdir, filenames=None, dirnames=None, unusedPatternsTracker=None):
+	def getPathMatches(self, rootdir, filenames=None, dirnames=None, unusedPatternsTracker=None):
 		"""
 		Check these patterns against one or more basenames (dir names and filenames) 
 		within a single root directory and return the list which match at least 
@@ -405,7 +405,7 @@ class GlobPatternSet(object):
 		Returns True if the specified path matches any of the patterns in this set 
 		or False if not. 
 		
-		Note that L{getMatches} is considerably more efficient than this method 
+		Note that L{getPathMatches} is considerably more efficient than this method 
 		when there are several paths to be matched in the same directory. 
 		
 		@param path: A path string. Must not be empty, must not contains 
@@ -413,10 +413,10 @@ class GlobPatternSet(object):
 		"""
 		if path[-1]=='/':
 			path = path[:-1].split('/')
-			return self.getMatches('/'.join(path[:-1])+'/' if len(path)>1 else None, dirnames=[path[-1]]) != []
+			return self.getPathMatches('/'.join(path[:-1])+'/' if len(path)>1 else None, dirnames=[path[-1]]) != []
 		else:
 			path = path.split('/')
-			return self.getMatches('/'.join(path[:-1])+'/' if len(path)>1 else None, filenames=[path[-1]]) != []
+			return self.getPathMatches('/'.join(path[:-1])+'/' if len(path)>1 else None, filenames=[path[-1]]) != []
 
 class GlobUnusedPatternTracker(object):
 	"""
