@@ -201,7 +201,7 @@ class GlobPatternSet(object):
 					fileresults.extend(filenames)
 					if unusedPatternsTracker is not None: unusedPatternsTracker._recordUsage(self.filepatterns[0][1])
 				elif not self.nofiles:
-					operations.append((self.filepatterns, filenames, False))
+					operations.append((self.filepatterns, filenames, False, fileresults))
 			results = fileresults
 		if dirnames is not None:
 			if dirnames != []:
@@ -209,7 +209,7 @@ class GlobPatternSet(object):
 					dirresults.extend(dirnames)
 					if unusedPatternsTracker is not None: unusedPatternsTracker._recordUsage(self.dirpatterns[0][1])
 				elif not self.nodirs:
-					operations.append((self.dirpatterns, dirnames, True))
+					operations.append((self.dirpatterns, dirnames, True, dirresults))
 			results = dirresults
 		
 		if dirnames is not None and filenames is not None: results = (fileresults, dirresults)
@@ -221,31 +221,43 @@ class GlobPatternSet(object):
 			rootdir = []
 		rootdirlen = len(rootdir)
 		
-		for (patternlist, basenames, isdir) in operations:
+		for (patternlist, basenames, isdir, thisresultlist) in operations:
 			#if not basenames: continue
 			assert '/' not in basenames[0], 'Slashes are not permitted in the base names passed to this function: %s'%basenames[0] # sanity check for correct usage
 
-			for basename in basenames:
-				origbasename = basename
-				
-				if isdir and (basename[-1] == '/'): basename = basename[:-1] # strip off optional dir suffix
-				
-				for (patternelements, origpatternindex) in patternlist:
-					finalpattern = GlobPatternSet.__matchSinglePath(patternelements, rootdir, rootdirlen)
-					if finalpattern is None: continue
-					if finalpattern is GlobPatternSet.STARSTAR or finalpattern is GlobPatternSet.STAR or GlobPatternSet.__elementMatch(finalpattern, basename): 
-						if isdir: 
-							dirresults.append(origbasename)
-						else:
-							fileresults.append(origbasename)
-						if unusedPatternsTracker is not None: unusedPatternsTracker._recordUsage(origpatternindex)
-						break
+			# start by finding out which patterns match against basenames in this directory
+			basenamepatterns = [] # patterns to match against basenames
+			for (patternelements, origpatternindex) in patternlist:
+				finalpattern = GlobPatternSet.__matchSinglePath(patternelements, rootdir, rootdirlen)
+				if finalpattern is None: continue
+				if finalpattern is GlobPatternSet.STARSTAR: finalpattern = GlobPatternSet.STAR #canonicalize further
+				basenamepatterns.append( (finalpattern, origpatternindex) )
+				if finalpattern is GlobPatternSet.STAR: break # no point doing any others
+			
+			if len(basenamepatterns) == 0: continue
+			if basenamepatterns[0][0] is GlobPatternSet.STAR:
+				#special-case this common case
+				thisresultlist.extend(basenames)
+				if unusedPatternsTracker is not None: unusedPatternsTracker._recordUsage(basenamepatterns[0][1])
+			else:
+
+				for basename in basenames:
+					origbasename = basename
+					
+					if isdir and (basename[-1] == '/'): basename = basename[:-1] # strip off optional dir suffix
+					
+					for (basenamepattern, origpatternindex) in basenamepatterns:
+						if GlobPatternSet.__elementMatch(basenamepattern, basename): 
+							thisresultlist.append(basename)
+							if unusedPatternsTracker is not None: unusedPatternsTracker._recordUsage(origpatternindex)
+							break
+
 		return results
 
 	@staticmethod	
 	def __elementMatch(elementPattern, element):
 		# NB: do this case sensitively, because that's what unix will do anyway
-		if elementPattern is GlobPatternSet.STAR or elementPattern == GlobPatternSet.STARSTAR:
+		if elementPattern is GlobPatternSet.STAR or elementPattern is GlobPatternSet.STARSTAR:
 			return True
 
 		# simple cases, efficient implementation
