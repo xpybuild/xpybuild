@@ -37,7 +37,6 @@ class XpybuildBaseTest(BaseTest):
 				if pythoncoverage:
 					self.log.info('Enabling Python code coverage')
 					args = ['-m', 'coverage', 'run', '--source=%s'%PROJECT.XPYBUILD_ROOT]+args
-					self.log.info('   see %s', os.path.normpath(self.output+'/profileoutput.py'))
 				elif os.getenv('XPYBUILD_PPROFILE',None):
 					self.log.info('Enabling Python per-line pprofile')
 					args = [os.environ['XPYBUILD_PPROFILE'], '--out', 'profileoutput.py', 
