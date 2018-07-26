@@ -242,11 +242,14 @@ class BuildScheduler(object):
 			for d in target.deps:
 				dt = self.targets.get(d, None)
 				if dt: 
-					with dt.lock:
+						# should be safe to read priority without lock due to GIL, and this is on critical path so worth doing quickly
+						# especially as in most cases there is no priority change required
 						if dt.priority > target.priority:
-							log.debug("Setting priority=%s on target %s", target.priority, dt.name)
-							dt.setPriority(target.priority)
-							self._updatePriority(dt)
+							with dt.lock:
+								if dt.priority > target.priority:
+									log.debug("Setting priority=%s on target %s", target.priority, dt.name)
+									dt.setPriority(target.priority)
+									self._updatePriority(dt)
 
 	def _deps_target(self, tname):
 		"""
