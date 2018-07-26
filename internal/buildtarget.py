@@ -107,7 +107,7 @@ class BuildTarget(object):
 			
 			Returns a list of dependencies as strings (paths). Either files or targets.
 		"""
-		if self.deps: return self.deps
+		if self.deps is not None: return self.deps
 
 		# note that some of these may be PathSetGeneratedByTarget path sets where 
 		# the real list of dependencies is not yet known, and the target that 
