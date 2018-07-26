@@ -42,7 +42,7 @@ from utils.flatten import flatten
 from utils.buildfilelocation import BuildFileLocation
 from utils.fileutils import normLongPath
 from buildexceptions import BuildException
-from buildcommon import isDirPath, normpath
+from buildcommon import isDirPath, normpath, IS_WINDOWS
 from buildcontext import BaseContext, getBuildInitializationContext
 
 # don't define a 'log' variable here or targets will use it by mistake when importing this file
@@ -510,7 +510,11 @@ class FindPaths(BasePathSet):
 			replacesep = os.sep != '/'
 			for m in matches:
 				if replacesep and '/' in m: m = m.replace('/', os.sep)
-				result.append( (normedbasedir+m, m ) )
+				
+				# see normpath(); have to convert from unicode (from os.walk-ing a long path) 
+				# back to byte strings to avoid confusing other parts of build. gross. 
+				if IS_WINDOWS and isinstance(m, unicode): m = m.encode() 
+				result.append( ( normedbasedir+m, m ) )
 			result.sort()
 			
 			self.__cached = result
