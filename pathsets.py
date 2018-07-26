@@ -185,6 +185,9 @@ class PathSet(BasePathSet):
 				r.extend(self.__resolveStringPath(x, context)[0])
 			else:
 				# for pathsets, delegate to child
+				if len(self.contents)==1:
+					# short-circuit this common case, avoiding an extra copy and search
+					return x._resolveUnderlyingDependencies(context)
 				r.extend(x._resolveUnderlyingDependencies(context))
 		
 		# check for duplicates here
@@ -211,6 +214,8 @@ class PathSet(BasePathSet):
 				y = self.__resolveStringPath(x, context)
 				r.extend(zip(y[0], y[1]))
 			else:
+				if len(self.contents)==1: # short-circuit this common case
+					return x.resolveWithDestinations(context)
 				r.extend(x.resolveWithDestinations(context))
 		return r
 		
