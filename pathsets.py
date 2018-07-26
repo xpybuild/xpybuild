@@ -413,9 +413,9 @@ class FindPaths(BasePathSet):
 		"""	
 		if len(toberemoved)==0: return
 		if len(toberemoved) == len(l): 
-			toberemoved[:] = []
-		if len(toberemoved) > 2: toberemoved = set(toberemoved)
-		l[:] = [x for x in l if x not in toberemoved]
+			l[:] = []
+		elif len(toberemoved) > 2: toberemoved = set(toberemoved)
+		l[:] = [x for x in l if (x not in toberemoved)]
 	
 	def resolveWithDestinations(self, context):
 		"""
