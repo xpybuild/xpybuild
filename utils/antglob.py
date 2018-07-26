@@ -195,11 +195,16 @@ class GlobPatternSet(object):
 		fileresults = []
 		dirresults = []
 
+		if unusedPatternsTracker is None:
+			unusedPatternsTrackerIndex = None
+		else: # speed up lookups since this is frequent
+			unusedPatternsTrackerIndex = unusedPatternsTracker._used
+
 		if filenames is not None:
 			if filenames != []:
 				if self.allfiles: # special-case ** to make it fast
 					fileresults.extend(filenames)
-					if unusedPatternsTracker is not None: unusedPatternsTracker._recordUsage(self.filepatterns[0][1])
+					if unusedPatternsTracker is not None: unusedPatternsTrackerIndex[self.filepatterns[0][1]] = True
 				elif not self.nofiles:
 					operations.append((self.filepatterns, filenames, False, fileresults))
 			results = fileresults
@@ -207,7 +212,7 @@ class GlobPatternSet(object):
 			if dirnames != []:
 				if self.alldirs: # special-case **/ to make it fast
 					dirresults.extend(dirnames)
-					if unusedPatternsTracker is not None: unusedPatternsTracker._recordUsage(self.dirpatterns[0][1])
+					if unusedPatternsTracker is not None: unusedPatternsTrackerIndex[self.dirpatterns[0][1]] = True
 				elif not self.nodirs:
 					operations.append((self.dirpatterns, dirnames, True, dirresults))
 			results = dirresults
@@ -238,7 +243,7 @@ class GlobPatternSet(object):
 			if basenamepatterns[0][0] is GlobPatternSet.STAR:
 				#special-case this common case
 				thisresultlist.extend(basenames)
-				if unusedPatternsTracker is not None: unusedPatternsTracker._recordUsage(basenamepatterns[0][1])
+				if unusedPatternsTracker is not None: unusedPatternsTrackerIndex[basenamepatterns[0][1]] = True
 			else:
 
 				for basename in basenames:
@@ -249,7 +254,7 @@ class GlobPatternSet(object):
 					for (basenamepattern, origpatternindex) in basenamepatterns:
 						if GlobPatternSet.__elementMatch(basenamepattern, basename): 
 							thisresultlist.append(basename)
-							if unusedPatternsTracker is not None: unusedPatternsTracker._recordUsage(origpatternindex)
+							if unusedPatternsTracker is not None: unusedPatternsTrackerIndex[origpatternindex] = True
 							break
 
 		return results
@@ -423,12 +428,6 @@ class GlobUnusedPatternTracker(object):
 	def __init__(self, patternSet):
 		self._patterns = patternSet.origpatterns
 		self._used = [False for i in range(len(self._patterns))]
-	
-	def _recordUsage(self, patternIndex):
-		"""
-		@private
-		"""
-		self._used[patternIndex] = True
 	
 	def getUnusedPatterns(self):
 		"""
