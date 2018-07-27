@@ -82,7 +82,7 @@ class BuildScheduler(object):
 					raise BuildException('Duplicate target path "%s"'%(t.path))
 				caseInsensitivePaths.add(t.path.lower())
 				
-				assert isDirPath(t.path) == isDirPath(t.name) # must have agreement on whether it's a dir or file target between these different representations
+				assert isDirPath(t.path) == isDirPath(t.name), (repr(t.path), repr(t.name), isDirPath(t.path), isDirPath(t.name)) # must have agreement on whether it's a dir or file target between these different representations
 				
 				for o in init.getOutputDirs():
 					if t.path.rstrip('\\/') == o.rstrip('\\/'):
