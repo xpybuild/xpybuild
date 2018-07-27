@@ -23,6 +23,10 @@ from utils.flatten import flatten
 
 _log = logging.getLogger('antglob')
 
+#def dbg(s, *args): # for manual use with doc tests
+#	sys.stderr.write((s%args)+'\n')
+#	sys.stderr.flush()
+
 class GlobPatternSet(object):
 	"""
 	Holds a set of one or more ant-style glob patterns, which can be used to 
@@ -96,6 +100,15 @@ class GlobPatternSet(object):
 				raise BuildException('Invalid pattern (must use forward slashes not backslashes): %s'%p)
 	
 			if p.endswith('**/*'): p = p[:-2] # normalize since this is pointless
+				
+			if '**/*/' in p:
+				# we disallow this because it messes up our ability to decide how many path elements the ** should eat; 
+				# breaks cases like >>> antGlobMatch('**/*/f/*.e', 'f/PPP/a/b/c/d/e/PPP/f/foo.e') (ought to be True)
+				# in theory we could solve that case by counting from the back, but the potential presence of 
+				# **s later in the pattern would make that a very inefficient operation. 
+				# There isn't really a compelling case for supporting this so disable it to avoid people
+				# shooting themselves in the foot
+				raise BuildException('Invalid pattern (**/* sequences are not permitted): %s'%p)
 			
 			self.origpatterns.append(p)
 			if p.startswith('**'): self.hasStarStarPrefixPattern = True
@@ -283,30 +296,33 @@ class GlobPatternSet(object):
 		# could be anything. Returns None if no match is possible, or the pattern element 
 		# string that basenames must match or .STAR/STARSTAR if any. 
 		
+		#dbg('matching: %s, %s, %s', pattern, rootdir, lenrootdir)
+		
 		lenpattern = len(pattern)
 		
 		# nb: pattern is a list of pattern elements; rootdir is rstripped and split by /
 		e = y = 0
 		while e < lenpattern-1 and y < lenrootdir:
 			patternelement = pattern[e]
+			#dbg('loop patternelement: %s, %s, %s, %s', patternelement, e, rootdir[y], y)
 			if patternelement is GlobPatternSet.STARSTAR:
 				if e == lenpattern-2: # this is just an optimization for a common case **/pattern
 					# all that remains is the pattern to match against the basename
 					return pattern[lenpattern-1]
 				else:
 					# consume as much as we need to of ** until we get another match
-					# (try to be greedy - should ignore matches that are too early, i.e. don't leave 
-					# enough remaining elements to possibly match. If the rest of 
-					# the pattern contains a ** this might still not do quite the 
-					# right thing, perhaps a recursive algorithm is needed to 
-					# cope with case)
+					# be completely greedy; in theory we could try to ignore matches that are too early, i.e. don't leave 
+					# enough remaining elements to possibly match (e.g. antGlobMatch('**/PPP/f/*.e', 'f/PPP/a/b/c/d/e/PPP/f/foo.e') )
+					# but in practice that gets too hard to handle in case there are further **s later in the pattern. 
 					# don't consume the final pattern element since we'll need that to match the basename
 					e += 1
 					patternelement = pattern[e]
-					
-					while y < lenrootdir and (not GlobPatternSet.__elementMatch(patternelement, rootdir[y]) or lenpattern-1-e < lenrootdir-y):
+					#dbg('INNER loop patternelement: %s, %s, %s, %s', patternelement, e, rootdir[y], y)
+					while y < lenrootdir and not GlobPatternSet.__elementMatch(patternelement, rootdir[y]):
 						y += 1
+					#dbg('INNER loop done: %s, %s, %s', patternelement, e, y)
 			else:
+				#dbg('normal patternelement: %s, %s, %s, %s', patternelement, e, rootdir[y], y)
 				if not GlobPatternSet.__elementMatch(patternelement, rootdir[y]):
 					return None
 				e += 1
@@ -315,12 +331,13 @@ class GlobPatternSet(object):
 		if y == lenrootdir:
 			# we've used up all the rootdir
 			
+			while e < lenpattern-1 and pattern[e] is GlobPatternSet.STARSTAR:
+				e += 1
+			
 			if e == lenpattern-1: 
 				return pattern[-1]
 
 			if e == lenpattern-2: 
-				if pattern[-2] is GlobPatternSet.STARSTAR: 
-					return pattern[-1]
 				if pattern[-1] is GlobPatternSet.STARSTAR: 
 					return pattern[-2]
 			return None
@@ -573,6 +590,31 @@ def antGlobMatch(pattern, path):
 
 	>>> antGlobMatch('a/b/c/d/e/**', 'a/b/c')
 	False
+
+	>>> antGlobMatch('**/PPP/**/*.e', 'a/b/c/d/e/f/PPP/g/h/i/foo.e')
+	True
+
+	>>> antGlobMatch('**/PPP/**/*.e', 'PPP/g/h/i/foo.e')
+	True
+
+	>>> antGlobMatch('**/PPP/**/*.e', 'a/b/c/d/e/f/PPP/foo.e')
+	True
+
+	>>> antGlobMatch('**/PPP/**/*.e', 'a/b/PPP/g/h/i/j/k/l/m/n/o/foo.e')
+	True
+
+	>>> antGlobMatch('**/PPP/**/*.e', 'a/b/c/d/e/f/g/h/i/foo.e')
+	False
+
+	>>> antGlobMatch('**/PPP/**/**/**/PPP/**/**/*.e', 'f/PPP/x/PPP/foo.e')
+	True
+
+	# this one is debatable (could decide not to match first PPP to allow second to match, but in general hard to reliably detect that condition given any later **s would invalidate any attempt to do it by counting); this behaviour is simpler to describe and more efficient to implement
+	>>> antGlobMatch('**/PPP/f/*.e', 'f/PPP/a/b/c/d/e/PPP/f/foo.e') 
+	False
+
+	>>> antGlobMatch('*/**/f/*.e', 'f/PPP/a/b/c/d/e/PPP/f/foo.e') 
+	True
 
 	"""
 	if not path: return not pattern # not useful or ideal, but for compatibility with older users keep this behaviour the same
