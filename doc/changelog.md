@@ -1,16 +1,16 @@
 # 1.14
 
 ## Breaking changes
+- FindPaths/anGlob: Add constraint that **/*/ patterns are no longer permitted; this construct is not very useful in practice and supporting it would hurt performance considerably. 
 
 ## Deprecation
-
-## Breaking changes
 
 ## Fixes
 - "Unknown option tmpdir" regression introduced 1.13 when calling mergeOptions(options=self.options) is now fixed; though it's recommended to just use self.options and avoid mergeOptions now. 
 - CustomCommand was only passing environment variables from the parent process/shell to the new process when env overrides were specified but not when an empty env dictionary was specified. Now these are passed in all cases. 
 
 ## Enhancements
+- Significant performance improvement to depending checking phase (fixing a regression introduced in 1.13, plus additional improvements), and to FindPaths and antGlob, especially when matching a large number of patterns within a single directory. 
 - StringReplaceLineMapper now has an optional parameter disablePropertyExpansion which can be used to disable ${...} expansion
 - Improved usability of --profile option, which now generates textual output, aggregates across all threads, and includes profiling for the build file parsing phase
 - Improve dependency checking performance
