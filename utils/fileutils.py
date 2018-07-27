@@ -261,16 +261,42 @@ def parsePropertiesFile(lines, excludeLines=None):
 		result.append((key,value, lineNo))
 	return result
 
-if os.pathsep == '\\':
+if os.sep == '\\':
 	def isDirPath(path):
-		""" Returns true if the path is a directory (ends with / or \\). """
+		""" Returns true if the path is a directory (ends with / or \\).
+		
+		>>> isDirPath(None)
+		False
+
+		>>> isDirPath('/')
+		True
+
+		>>> isDirPath('a/')
+		True
+
+		>>> isDirPath('a'+os.sep)
+		True
+		"""
 		try:
 			return path[-1] in ('/', '\\')
 		except Exception:
 			return False
 else:
 	def isDirPath(path):
-		""" Returns true if the path is a directory (ends with / or \\). """
+		""" Returns true if the path is a directory (ends with / or \\).
+		
+		>>> isDirPath(None)
+		False
+
+		>>> isDirPath('/')
+		True
+
+		>>> isDirPath('a/')
+		True
+
+		>>> isDirPath('a'+os.sep)
+		True
+		"""
 		try:
 			return path[-1] == '/'
 		except Exception:
