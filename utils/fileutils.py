@@ -1,6 +1,6 @@
 # fileutils - helper methods related to the file system
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2018 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -139,7 +139,7 @@ def deleteDir(path, allowRetry=True):
 	try:	
 		shutil.rmtree(path, ignore_errors=False, onerror=handleRemoveReadonly)
 		
-	except OSError, e:
+	except OSError as e:
 		if os.path.isfile(path):
 			raise OSError, "Unable to delete dir %s as this is a file not a directory" % (path)
 			
@@ -171,8 +171,8 @@ def deleteDir(path, allowRetry=True):
 		else:
 			if os.path.exists(path): 
 				# maybe logging this is overkill, consider removing in future
-				log.exception("Unable to delete dir %s - original exception is: " % (path))
-				raise OSError, "Unable to delete dir %s: %s" % (path, e)
+				log.info("Unable to delete dir %s - original exception is: " % (path), exc_info=sys.exc_info())
+				raise OSError("Unable to delete dir %s: %s" % (path, e))
 
 def deleteFile(path, allowRetry=True):
 	"""Delete the specified file, with the option of automatically retrying a few times if the first attempt fails 
