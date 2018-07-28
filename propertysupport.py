@@ -43,14 +43,19 @@ def defineOption(name, default):
 	behaviour of one or more targets. They are accessed using self.options 
 	in any target instance. 
 	
-	@param name: The option name, which should be in lowercase, and contain a prefix specific
-	to this target or group of targets, e.g. "java.home"
+	@param name: The option name, which should usually be in lowerCamelCase, with 
+	a TitleCase prefix specific to this target or group of targets, often 
+	matching the target name, e.g. "Javac.compilerArgs". 
 
 	@param default: The default value of the option
 	"""
 	init = getBuildInitializationContext()
 	if init:
 		init._defineOption(name, default)
+	elif 'doctest' not in sys.argv[0] and 'epydoc' not in sys.modules:
+		# this check is so we notice if unfortunate module order causes us to try to 
+		# define options before we have a real context to put them in
+		assert False, 'Cannot define options at this point in the build as there is no initialization build context active'
 
 def setGlobalOption(key, value):
 	"""

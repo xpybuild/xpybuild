@@ -477,6 +477,9 @@ class BuildInitializationContext(BaseContext):
 		for p in ['OUTPUT_DIR', 'BUILD_MODE', 'BUILD_NUMBER', 'BUILD_WORK_DIR', 'LOG_FILE']:
 			self.getPropertyValue(p) 
 
+		# make sure this has been imported, since it's used for implementing many targets and defines some options of its own
+		# which must happen before hte build phase begins
+		import utils.outputhandler
 		_setBuildInitializationContext('build phase')
 		self._initializationCompleted = True
 		

@@ -291,11 +291,10 @@ def javac(output, inputs, classpath, options, logbasename, targetname):
 		except Exception as e:
 			log.info('Cleaning up file failed: %s' % e)
 		
-		outputHandler = JavacProcessOutputHandler(targetname, options=options)
-		outputHandler.setJavacLogBasename(logbasename)
-		
+		outputHandler = options.get('javac.outputHandlerFactory', JavacProcessOutputHandler)(targetname, options=options)
+		if hasattr(outputHandler, 'setJavacLogBasename'):
+			outputHandler.setJavacLogBasename(logbasename)
 		call([javacpath, "@%s" % argsfile], outputHandler=outputHandler, outputEncoding='UTF-8', cwd=output, timeout=options['process.timeout'])
-		
 		if (not os.listdir(output)): # unlikely, but useful failsafe
 			raise EnvironmentError('javac command failed to create any target files (but returned no error code); see output at "%s"'%(logbasename+'.out'))
 		success = True
@@ -305,6 +304,7 @@ def javac(output, inputs, classpath, options, logbasename, targetname):
 
 
 defineOption('jar.options', [])
+defineOption('javac.outputHandlerFactory', JavacProcessOutputHandler)
 
 def jar(path, manifest, sourcedir, options, preserveManifestFormatting=False, update=False, outputHandler=None):
 	""" Create a jar file containing a manifest and some other files

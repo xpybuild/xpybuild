@@ -1,6 +1,6 @@
 # xpyBuild - eXtensible Python-based Build System
 #
-# Copyright (c) 2014 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2014 - 2018 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 import subprocess, os, re, logging
 from buildexceptions import BuildException
-
+from propertysupport import defineOption
 
 # we might want a wrapper that stores all content and writes it to a file for artifact publishing, 
 # perhaps only iff an exception occurs and/or its not empty
@@ -58,9 +58,75 @@ class ProcessOutputHandler(object):
 	This class is not thread-safe, so locking should be provided by the caller 
 	if multiple threads are in use (e.g. for reading stdout+err in parallel). 
 	
+	>>> h = ProcessOutputHandler('myhandler')
+	>>> h.handleLine(u'error: My error')
+	>>> h.handleLine(u'error: My error 2')
+	
+	>>> len(h.getErrors())
+	2
+
+	>>> h.handleEnd(5)
+	Traceback (most recent call last):
+	...
+	BuildException: 2 errors, first is: error: My error
+
+	>>> h = ProcessOutputHandler('myhandler')
+	>>> h.handleLine(u'some message')
+	>>> h.handleLine(u'later message')
+	
+	>>> h.handleEnd(5)
+	Traceback (most recent call last):
+	...
+	BuildException: myhandler failed with return code 5; no errors reported, last line was: later message
+
 	"""
+	
+	class Options: # may rework how we handle docstrings for options in a future release
+		"""
+		This class may be renamed or removed, please do not use it directly. 
+		"""
+		
+		ignoreReturnCode = 'ProcessOutputHandler.ignoreReturnCode'
+		""" If True, non-zero return codes 
+		are not treated as errors. 
+	
+		>>> h = ProcessOutputHandler.create('myhandler', options={ProcessOutputHandler.Options.ignoreReturnCode:True})
+		>>> h.handleLine(u'some message')
+		>>> h.handleEnd(5)
+	
+		"""
+		
+		regexIgnore = 'ProcessOutputHandler.regexIgnore'
+		""" Optional regular expression; any 
+		lines matching this will not be treated as errors, or warnings, or logged. 
+	
+		>>> h = ProcessOutputHandler.create('myhandler', options={ProcessOutputHandler.Options.regexIgnore:'(.*ignorable.*|foobar)'})
+		>>> h.handleLine(u'error: an ignorable error')
+		>>> h.handleLine(u'error: another error')
+		>>> h.handleLine(u'warning: an ignorable warning')
+		>>> h.handleLine(u'warning: another warning')
+		>>> h.handleLine(u'warning: another other warning')
+		>>> len(h.getErrors())
+		1
+	
+		>>> len(h.getWarnings())
+		2
+	
+		"""
+	
+		factory = 'ProcessOutputHandler.factory'
+		""" The ProcessOutputHandler class or subclass 
+		that will be instantiated; must have a constructor with the same signature 
+		as the ProcessOutputHandler constructor. This option exists to allow 
+		per-target customizations; it is not recommended to set a global factory 
+		override that applies to all targets, as such a generic output handler would 
+		replace more specific output handlers that are needed for some targets. 
+		See L{ProcessOutputHandler.create}. 
+		"""
+	
 	def __init__(self, name, treatStdErrAsErrors=True, **kwargs):
 		"""
+
 		The constructor for this object. Subclasses that override this should 
 		always pass **kwargs down to the super constructor to allow for new 
 		functionality to be added
@@ -83,9 +149,35 @@ class ProcessOutputHandler(object):
 		self._lastLine = ''
 		
 		self._logger = _logger
-		self._treatStdErrAsErrors = treatStdErrAsErrors
 		self.options = kwargs.pop('options', None) or {}
+		self._treatStdErrAsErrors = treatStdErrAsErrors
+		self._ignoreReturnCode = self.options.get(ProcessOutputHandler.Options.ignoreReturnCode, False)
+		self._regexIgnore = self.options.get(ProcessOutputHandler.Options.regexIgnore, None)
+		if self._regexIgnore: self._regexIgnore = re.compile(self._regexIgnore)
 		assert not kwargs, 'Unexpected keyword argument to ProcessOutputHandler: %s'%kwargs.keys()
+	
+	@staticmethod
+	def create(name, options=None, **kwargs):
+		"""
+		Create a new ProcessOutputHandler using the specified target options. 
+		
+		This is preferred over calling the ProcessOutputHandler constructor as 
+		it permits overriding the ProcessOutputHandler subclass using the 
+		L{ProcessOutputHandler.Options.factory} option. 
+
+		>>> type(ProcessOutputHandler.create('mine')).__name__
+		'ProcessOutputHandler'
+	
+		>>> def myfactory(*args, **kwargs): print 'called factory %s, kwarg keys: %s'%(args, kwargs.keys())
+		>>> ProcessOutputHandler.create('mine', options={ProcessOutputHandler.Options.factory: myfactory})
+		called factory ('mine',), kwarg keys: ['options']
+		
+		"""
+		if options is not None and ProcessOutputHandler.Options.factory in options:
+			cls = options[ProcessOutputHandler.Options.factory]
+		else:
+			cls = ProcessOutputHandler
+		return cls(name, options=options, **kwargs)
 	
 	def handleLine(self, line, isstderr=False):
 		"""
@@ -103,6 +195,8 @@ class ProcessOutputHandler(object):
 		hint to indicate the source of the line. 
 		"""
 		self._lastLine = line # in case it helps us give an error message
+		
+		if self._regexIgnore is not None and self._regexIgnore.match(line): return
 		
 		level = self._decideLogLevel(line, isstderr)
 		if not level: return
@@ -128,7 +222,7 @@ class ProcessOutputHandler(object):
 			msg = self._errors[0]
 			if len(self._errors)>1:
 				msg = '%d errors, first is: %s'%(len(self._errors), msg)
-		elif returnCode:
+		elif returnCode and not self._ignoreReturnCode:
 			msg = '%s failed with return code %s'%(self._name, returnCode)
 			# in case it's relevant, since the return code doesn't provide much to go on
 			if self._warnings: 
@@ -230,3 +324,7 @@ class StdoutRedirector(ProcessOutputHandler):
 	
 	def handleEnd(self, returnCode=None):
 		ProcessOutputHandler.handleEnd(self, returnCode)
+
+defineOption(ProcessOutputHandler.Options.ignoreReturnCode, False)
+defineOption(ProcessOutputHandler.Options.regexIgnore, None)
+defineOption(ProcessOutputHandler.Options.factory, ProcessOutputHandler)

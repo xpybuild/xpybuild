@@ -114,7 +114,7 @@ def _wait_with_timeout(process, displayName, timeout, read):
 			return rv
 
 
-def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, timeout=600, displayName=None):
+def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, timeout=None, displayName=None, options=None):
 	"""
 	Call a process with the specified args, logging stderr and stdout to the specified 
 	output handler which will throw an exception if the exit code or output 
@@ -125,7 +125,9 @@ def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, time
 	@param args: The command and arguments to invoke (a list, the first element of which is the executable). 
 		None items in this list will be ignored. 
 
-	@param outputHandler: a ProcessOutputHandler instance
+	@param outputHandler: a ProcessOutputHandler instance, perhaps constructed using 
+	the L{ProcessOutputHandler.create} method. If not specified, a default is created 
+	based on the supplied options. 
 
 	@param env: Override the environment the process is started in (defaults to the parent environment)
 
@@ -134,11 +136,17 @@ def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, time
 	@param outputEncoding: name of the character encoding the process generates. Assumed to be 
 		getStdoutEncoding (e.g. what the terminal is using, or else UTF-8) if not specified. 
 
-	@param timeout: maximum time a process is allowed to run. This should ALWAYS be set to a value 
-		from an option and not defaulted, typically options['process.timeout']
+	@param timeout: maximum time a process is allowed to run. If an options dictionary is not 
+	present, this should ALWAYS be set to a value e.g. options['process.timeout']. 
 	
-	@param displayName: human-friendly description of the process for use in error messages, including the target name if possible
+	@param displayName: human-friendly description of the process for use in error messages, including the target name if possible=
+	
+	@param options: where possible, always pass in a dictionary of resolved options, which may be used to customize 
+	how this function operates. 
 	"""
+	if options is None: options = {}
+	if not timeout: timeout = options.get('process.timeout', 600)
+	
 	processName = os.path.basename(args[0])
 	#if not timeout: # too many things don't set it at present
 	#	raise Exception('Invalid argument to %s call - timeout must always be set explicitly'%processName)
@@ -165,7 +173,7 @@ def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, time
 		raise EnvironmentError('Cannot start process "%s": %s'%(args[0], e))
 
 	if not outputHandler: # use short processName not longer displayName for per-line prefixes, the extra context isn't necessary anyway
-		outputHandler = ProcessOutputHandler(processName) # can't pass options in as we don't have it here
+		outputHandler = ProcessOutputHandler.create(processName, options=options)
 
 	# give the full arguments as the process display name (unless really long) since it's impossible to identify the target otherwise
 	if not displayName:

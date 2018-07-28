@@ -146,7 +146,7 @@ class SignJars(BaseTarget):
 					jar(os.path.join(self.path, dest), manifest, None, options, update=True)
 	
 				signjar(os.path.join(self.path, dest), self.keystore, options, alias=self.alias, storepass=self.storepass, 
-					outputHandler=ProcessOutputHandler('signjars', treatStdErrAsErrors=False, options=options))
+					outputHandler=ProcessOutputHandler.create('signjars', treatStdErrAsErrors=False, options=options))
 			except BuildException, e:
 				raise BuildException('Error processing %s: %s'%(os.path.basename(dest), e))
 
@@ -304,7 +304,7 @@ class Jar(BaseTarget):
 
 		# create the jar
 		jar(self.path, manifest, classes, options=options, preserveManifestFormatting=self.preserveManifestFormatting, 
-			outputHandler=ProcessOutputHandler('jar', treatStdErrAsErrors=False,options=options))
+			outputHandler=ProcessOutputHandler.create('jar', treatStdErrAsErrors=False,options=options))
 
 	def getHashableImplicitInputs(self, context):
 		# changes in the manifest text should cause a rebuild
@@ -339,7 +339,7 @@ class Javadoc(BaseTarget):
 		options = self.options
 		classpath = os.pathsep.join(self.classpath.resolve(context))
 		javadoc(self.path, self.sources.resolve(context), classpath, options, 
-			outputHandler=ProcessOutputHandler('javadoc', treatStdErrAsErrors=False, options=options))
+			outputHandler=ProcessOutputHandler.create('javadoc', treatStdErrAsErrors=False, options=options))
 
 	def getHashableImplicitInputs(self, context):
 		# changes in the manifest text should cause a rebuild

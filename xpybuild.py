@@ -60,7 +60,6 @@ if os.getenv('XPYBUILD_IMPORTS'):
 from buildcommon import *
 from buildcommon import _XPYBUILD_VERSION
 from buildcontext import *
-from internal.scheduler import BuildScheduler, logTargetTimes
 from utils.fileutils import mkdir, deleteDir
 from propertysupport import defineOption, parsePropertiesFile
 from internal.stacktrace import listen_for_stack_signal
@@ -315,6 +314,12 @@ def main(args):
 			profiler.enable()
 
 		init = loadBuildFile()
+
+		# nb: don't import any modules that might define options (including outputhandler) 
+		# until build file is loaded
+		# or we may not have a build context in place yet#
+		from internal.scheduler import BuildScheduler, logTargetTimes
+
 
 		if buildOptions['profile']:
 			profilepath = 'xpybuild-profile-%s.txt'%'parsing'

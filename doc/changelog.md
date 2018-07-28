@@ -15,6 +15,12 @@
 - Improved usability of --profile option, which now generates textual output, aggregates across all threads, and includes profiling for the build file parsing phase
 - Improve dependency checking performance
 - Javadoc now has an option "javadoc.ignoreSourceFilesFromClasspath" which can be enabled to prevent .java files in classpath jars from being parsed (by setting an empty directory for the -sourcepath), which can lead to errors if classpath jars contain source that requires optional dependencies which are not present.
+- ProcessOutputHandler: new option regexIgnore can be set to a string which will be ignored by the output handler. This can be used to suppress unwanted logging, and to selectively ignore warning and error lines. 
+- ProcessOutputHandler: new option ignoreReturnCode can be set to prevent a non-zero return code from being treated as an error. 
+- ProcessOutputHandler: new option factory can be set to specify a function or class to be used instead of ProcessOutputHandler for output of a specific target, allowing detailed customization of behaviour. The new static function ProcessOutputHandler.create(..., options) should be used instead of the ProcessOutputHandler handler to ensure that this option is honoured if set. 
+- javac/visualstudio/csharp/docker: all have a new outputHandlerFactory option which can be set to override the default ProcessOutputHandler subclass used for these targets, for example to customize handling of errors and warnings. 
+- process.call(): this method now accepts an options dictionary, which should be set wherever possible; this avoids callers having to deal with passing boilerplate defaults in to call manually. 
+
 
 # 1.13
 

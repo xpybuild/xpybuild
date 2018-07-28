@@ -48,7 +48,7 @@ class CSCProcessOutputHandler(ProcessOutputHandler):
 
 # functor or constructor taking a process name and returning a new 
 # ProcessOutputHandler with handleLine and handleEnd methods. 
-defineOption('csharp.processoutputhandler', CSCProcessOutputHandler) 
+defineOption('csharp.outputHandlerFactory', CSCProcessOutputHandler) 
 
 def _isDotNetFile(p): return p.lower().endswith('.cs')
 
@@ -100,4 +100,4 @@ class CSharp(BaseTarget):
 		args.extend(self.compile.resolve(context))
 
 		mkdir(os.path.dirname(self.path))
-		call(args, outputHandler=self.getOption('csharp.processoutputhandler')('csc', False, options=self.options), timeout=self.options['process.timeout'])
+		call(args, outputHandler=self.getOption('csharp.outputHandlerFactory')('csc', False, options=self.options), timeout=self.options['process.timeout'])

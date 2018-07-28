@@ -420,6 +420,8 @@ defineOption('visualstudio.pdboutput', None)
 # errors matching this will not be logged as an ERROR the first time they occur and will result in a retry
 defineOption('visualstudio.transientErrorRegex', '.*(Permission denied|Access denied).*')
 defineOption('visualstudio.transientErrorRetrySecs', 40)
+defineOption('visualstudio.outputHandlerFactory', VisualStudioProcessOutputHandler)
+"""Allows overriding the output handler used by Visual Studio for compiler output such as errors and warnings. """
 
 class VisualStudio(Compiler, Linker, Depends, Archiver, ToolChain):
 	"""
@@ -457,7 +459,7 @@ class VisualStudio(Compiler, Linker, Depends, Archiver, ToolChain):
 		args.extend(['-I%s' % _checkDirExists(x.replace('/','\\'), 'Cannot find include directory ``%s"') for x in (includes or [])])
 		args.extend(flags or [])
 		args.extend(src)
-		self.call(context, args, outputHandler=VisualStudioProcessOutputHandler, cwd=os.path.dirname(output), environs={'PATH':os.pathsep.join(options['native.cxx.path'])}, options=options)
+		self.call(context, args, outputHandler=options.get('visualstudio.outputHandlerFactory', None) or VisualStudioProcessOutputHandler, cwd=os.path.dirname(output), environs={'PATH':os.pathsep.join(options['native.cxx.path'])}, options=options)
 	def link(self, context, output, src, options, shared=False, flags=None, libs=None, libdirs=None):
 		args=[r"%s\link.exe" % self.vsbin]
 		if shared: 
@@ -474,11 +476,11 @@ class VisualStudio(Compiler, Linker, Depends, Archiver, ToolChain):
 		args.extend(['/LIBPATH:%s' % _checkDirExists(x.replace('/','\\'), 'Cannot find lib directory ``%s"') for x in (libdirs or [])])
 		args.extend(['%s.lib' % x for x in (libs or [])])
 		args.extend(src)
-		self.call(context, args, outputHandler=VisualStudioProcessOutputHandler, cwd=os.path.dirname(output), environs={'PATH':os.pathsep.join(options['native.cxx.path'])}, options=options)
+		self.call(context, args, outputHandler=options.get('visualstudio.outputHandlerFactory', None) or VisualStudioProcessOutputHandler, cwd=os.path.dirname(output), environs={'PATH':os.pathsep.join(options['native.cxx.path'])}, options=options)
 	def archive(self, context, output, src, options):
 		args=[r"%s\lib.exe" % self.vsbin, '/OUT:'+os.path.basename(output), '/nologo']
 		args.extend(src)
-		self.call(context, args, outputHandler=VisualStudioProcessOutputHandler, cwd=os.path.dirname(output), environs={'PATH':os.pathsep.join(options['native.cxx.path'])}, options=options)
+		self.call(context, args, outputHandler=options.get('visualstudio.outputHandlerFactory', None) or VisualStudioProcessOutputHandler, cwd=os.path.dirname(output), environs={'PATH':os.pathsep.join(options['native.cxx.path'])}, options=options)
 
 	def depends(self, context, src, options, flags=None, includes=None):
 		args=[
