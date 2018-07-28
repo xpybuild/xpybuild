@@ -11,6 +11,8 @@
 
 ## Enhancements
 - Significant performance improvement to depending checking phase (fixing a regression introduced in 1.13, plus additional improvements), and to FindPaths and antGlob, especially when matching a large number of patterns within a single directory. 
+- IS_WINDOWS: new constant, replaces the isWindows() function and is significantly faster to use. 
+- fileutils.toLongPathSafe: new method which implements Windows logic for allowing paths longer than 256 characters to be operated on. This is similar to normLongPath but does not perform canonicalization/normalization so is a lot faster for cases where that is not required. 
 - StringReplaceLineMapper now has an optional parameter disablePropertyExpansion which can be used to disable ${...} expansion
 - Improved usability of --profile option, which now generates textual output, aggregates across all threads, and includes profiling for the build file parsing phase
 - Improve dependency checking performance
