@@ -1,0 +1,27 @@
+# resultKey,testId,value,unit,biggerIsBetter,toleranceStdDevs,samples,stdDev,#runDetails:#,outdir=win32,hostname=mcbsp02,time=2018-07-28 17:39:38,xpybuildVersion=1.14,platform=win32
+Build time per C++ target,CppCompilationPerformance,161900000.0,ns,False,0.0,20,8693009.89604
+Dependency resolution time per C++ target,CppCompilationPerformance,149100000.0,ns,False,0.0,20,5637281.91316
+Dependency resolution time per Copy target,DependencyPerformance,1348388.80084,ns,False,0.0,20,53155.3401952
+Incremental build and dependency resolution time per C++ target,CppCompilationPerformance,6500000.0,ns,False,0.0,20,888523.316639
+PathSet FindPaths resolution time per file with ** include pattern,FindPathsPerformance,87500.0,ns,False,0.0,20,5256.57483038
+PathSet FindPaths resolution time per file with **/test* pattern,FindPathsPerformance,87650.0,ns,False,0.0,20,4944.69412603
+PathSet FindPaths resolution time per file with 1 include pattern,FindPathsPerformance,73900.0,ns,False,0.0,20,6307.05536431
+PathSet FindPaths resolution time per file with 50 include patterns,FindPathsPerformance,152000.0,ns,False,0.0,20,4103.91340834
+Time BuildFileLocation constructor,MicroPerf_BuildFileLocation,18062.6473005,ns,False,0.0,20,253.866395
+Time antGlobMatch() double-star wildcard,MicroPerf_AntGlob,2906.0975843,ns,False,0.0,20,157.752052127
+Time antGlobMatch() double-star/path wildcard,MicroPerf_AntGlob,8615.1935517,ns,False,0.0,20,160.252545858
+Time antGlobMatch() match,MicroPerf_AntGlob,9485.83693645,ns,False,0.0,20,129.188293171
+Time antGlobMatch() non-match,MicroPerf_AntGlob,6880.10663145,ns,False,0.0,20,460.053761664
+Time antGlobMatch() non-match with file/dir mix,MicroPerf_AntGlob,3072.13852175,ns,False,0.0,20,172.806568932
+Time buildcommon.isDirPath(),MicroPerf_BuildCommon,305.93096755,ns,False,0.0,20,4.884907673
+Time fileutils.exists() non-existent file with caching,MicroPerf_FileUtilsCaches,726.17547455,ns,False,0.0,20,14.1439313641
+Time fileutils.exists() non-existent file without caching,MicroPerf_FileUtilsCaches,35806.666745,ns,False,0.0,20,406.420350723
+Time fileutils.isDirPath(),MicroPerf_BuildCommon,305.92643865,ns,False,0.0,20,7.21540544476
+Time isWindows(),MicroPerf_BuildCommon,199.38481455,ns,False,0.0,20,3.06034953536
+Time normLongPath(unique),MicroPerf_NormPath,13950.9999048,ns,False,0.0,20,389.340382653
+Time normpath(unique),MicroPerf_NormPath,7859.82989585,ns,False,0.0,20,169.111863904
+Time toLongPathSafe() dirnormrequired_caching,MicroPerf_ToLongPathSafe,1209.38415795,ns,False,0.0,20,67.1137809815
+Time toLongPathSafe() noop,MicroPerf_ToLongPathSafe,671.59221425,ns,False,0.0,20,41.1441694907
+Time toLongPathSafe() using cached data,MicroPerf_ToLongPathSafe,1188.91450325,ns,False,0.0,20,32.1727108103
+Time toLongPathSafe() with no caching,MicroPerf_ToLongPathSafe,3665.8985389,ns,False,0.0,20,201.786869224
+Up-to-date checking per Copy target,DependencyPerformance,4819070.25885,ns,False,0.0,20,135354.002726
