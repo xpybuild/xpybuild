@@ -43,14 +43,25 @@ class PySysTest(XpybuildBaseTest):
 		self.assertGrep(file='xpybuild_starstar.out', expr="ERROR .*", contains=False)
 		self.assertGrep(file='xpybuild_starstar_pattern.out', expr="ERROR .*", contains=False)
 		
+		# try to normalize to get a per-file figure
+		# if we're mostly matching then cost is proportional to number of matches, else to number files*pathsets
+		def getnormfactor(f):
+			matches = sum([int(x) for x in self.getExprFromFile(f, 'FindPaths .*found ([0-9]+) path', returnAll=True)])
+			assert matches > 0, f
+			nonmatches = (len(self.getExprFromFile(f, 'FindPaths .*found ([0-9]+) path', returnAll=True))*self.NUMBER_FILES)
+			assert nonmatches >- 0, f
+
+			self.log.info('matched paths: %s FindPaths instances * numfiles: %s', matches, nonmatches)
+			return max(matches, nonmatches)
+			
 		deps = float(self.getExprFromFile('xpybuild_many.out', 'dependency resolution took ([0-9.]+) s'))
-		self.reportPerformanceResult(1000*1000*1000*deps/self.NUMBER_TARGETS/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with %d include patterns'%self.NUMBER_PATTERNS, 'ns')
+		self.reportPerformanceResult(1000*1000*1000*deps/getnormfactor('xpybuild_many.log'), 'PathSet FindPaths resolution time per file with %d include patterns'%self.NUMBER_PATTERNS, 'ns')
 
 		deps = float(self.getExprFromFile('xpybuild_1.out', 'dependency resolution took ([0-9.]+) s'))
-		self.reportPerformanceResult(1000*1000*1000*deps/(self.NUMBER_TARGETS*10)/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with 1 include pattern', 'ns')
+		self.reportPerformanceResult(1000*1000*1000*deps/getnormfactor('xpybuild_1.log'), 'PathSet FindPaths resolution time per file with 1 include pattern', 'ns')
 
 		deps = float(self.getExprFromFile('xpybuild_starstar.out', 'dependency resolution took ([0-9.]+) s'))
-		self.reportPerformanceResult(1000*1000*1000*deps/(self.NUMBER_TARGETS*5)/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with ** include pattern', 'ns')
+		self.reportPerformanceResult(1000*1000*1000*deps/getnormfactor('xpybuild_starstar.log'), 'PathSet FindPaths resolution time per file with ** include pattern', 'ns')
 
 		deps = float(self.getExprFromFile('xpybuild_starstar_pattern.out', 'dependency resolution took ([0-9.]+) s'))
-		self.reportPerformanceResult(1000*1000*1000*deps/(self.NUMBER_TARGETS*5)/self.NUMBER_FILES, 'PathSet FindPaths resolution time per file with **/test* pattern', 'ns')
+		self.reportPerformanceResult(1000*1000*1000*deps/getnormfactor('xpybuild_starstar_pattern.log'), 'PathSet FindPaths resolution time per file with **/test* pattern', 'ns')
