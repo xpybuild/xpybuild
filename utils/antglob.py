@@ -41,6 +41,8 @@ class GlobPatternSet(object):
 	Glob patterns may contain '*' (indicating zero or more non-slash 
 	characters) or '**' (indicating zero or more characters including slashes). 
 	The '?' character is not supported. 
+	
+	@undocumented: __init__
 	"""
 	__patternCache = {} # static cache, since there will be lots of these; mostly to save memory, but also a bit of CPU
 	__patternCache_get = __patternCache.get
@@ -73,8 +75,6 @@ class GlobPatternSet(object):
 	
 	def __init__(self, patterns):
 		"""Do not call this constructor - use L{create} instead of constructing directly.
-		
-		@undocumented
 		"""
 		patterns = flatten(patterns)
 		

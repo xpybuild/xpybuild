@@ -326,7 +326,7 @@ def toLongPathSafe(path, force=False):
 	length, which allows extra characters to be added on to the end of the 
 	string (e.g. ".log" or a directory filename) safely. 
 	
-	@return The passed-in path, possibly with a \\?\ prefix added and 
+	@return: The passed-in path, possibly with a "\\?\" prefix added and 
 	forward slashes converted to backslashes on Windows. Any trailing slash 
 	is preserved by this function (though will be converted to a backslash). 
 	"""
@@ -362,8 +362,8 @@ def normLongPath(path):
 	"""
 	Normalizes and absolutizes a path (os.path.abspath), converts to a canonical 
 	form (e.g. normalizing the case of the drive letter on Windows), and on 
-	windows adds the \\?\ prefix needed to force correct handling of long 
-	(>256 chars) paths (same as L{toLongPath}). 
+	windows adds the "\\?\" prefix needed to force correct handling of long 
+	(>256 chars) paths (same as L{toLongPathSafe}). 
 	
 	@param path: the absolute path to be converted should be a unicode string where possible, as specifying a byte 
 	string will not work if the path contains non-ascii characters. 
