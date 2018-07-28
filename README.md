@@ -3,7 +3,8 @@ XPyBuild -- The eXtensible Python Build framework.
 Copyright and license information
 =================================
 
-Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+Copyright (c) 2013 - 2018 Software AG, Darmstadt, Germany and/or its licensors
+Copyright (c) 2013 - 2018 Ben Spiller and Matthew Johnson
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
