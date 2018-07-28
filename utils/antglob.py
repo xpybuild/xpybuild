@@ -57,7 +57,7 @@ class GlobPatternSet(object):
 		Patterns ending with a '/' can only match directories, and patterns without 
 		can only match files. 
 
-		@patterns: a string, or a list of one or more pattern strings. 
+		@param patterns: a string, or a list of one or more pattern strings. 
 		Glob patterns may contain '*' (indicating zero or more non-slash 
 		characters) or '**' (indicating zero or more characters including slashes). 
 		Backslashes are not permitted. Empty pattern strings are ignored. 
@@ -72,9 +72,9 @@ class GlobPatternSet(object):
 		return p
 	
 	def __init__(self, patterns):
-		""" Do not call this constructor - use L{create} instead of constructing directly.
+		"""Do not call this constructor - use L{create} instead of constructing directly.
 		
-		@private
+		@undocumented
 		"""
 		patterns = flatten(patterns)
 		
@@ -178,7 +178,7 @@ class GlobPatternSet(object):
 		No slash characters may be present in the names, except optionally 
 		as a suffix. 
 		
-		@param unusedPatternTracker: Optionally specify an instance of 
+		@param unusedPatternsTracker: Optionally specify an instance of 
 		L{GlobUnusedPatternTracker} which will be notified of the patterns that 
 		are used, allow an error to be produced for any that are not used. 
 		
@@ -194,19 +194,7 @@ class GlobPatternSet(object):
 		
 		# we avoid using regexes for efficiency reasons
 		
-		# this is _very_ performance critical code. we do less validation than 
-		# normal to keep it fast - caller needs to pass in clean inputs
-		if rootdir is None: 
-			rootdir = ''
-		else:
-			assert rootdir=='' or rootdir[-1]=='/', 'Root directory must end with a slash: %s'%rootdir
-
-		results = []
-		
 		operations = []
-
-		fileresults = []
-		dirresults = []
 
 		if unusedPatternsTracker is None:
 			unusedPatternsTrackerIndex = None
@@ -214,17 +202,20 @@ class GlobPatternSet(object):
 			unusedPatternsTrackerIndex = unusedPatternsTracker._used
 
 		if filenames is not None:
+			fileresults = []
 			if filenames != []:
 				if self.allfiles: # special-case ** to make it fast
-					fileresults.extend(filenames)
+					fileresults = filenames
 					if unusedPatternsTracker is not None: unusedPatternsTrackerIndex[self.filepatterns[0][1]] = True
 				elif not self.nofiles:
 					operations.append((self.filepatterns, filenames, False, fileresults))
 			results = fileresults
+			
 		if dirnames is not None:
+			dirresults = []
 			if dirnames != []:
 				if self.alldirs: # special-case **/ to make it fast
-					dirresults.extend(dirnames)
+					dirresults = dirnames
 					if unusedPatternsTracker is not None: unusedPatternsTrackerIndex[self.dirpatterns[0][1]] = True
 				elif not self.nodirs:
 					operations.append((self.dirpatterns, dirnames, True, dirresults))
@@ -232,12 +223,21 @@ class GlobPatternSet(object):
 		
 		if dirnames is not None and filenames is not None: results = (fileresults, dirresults)
 		if len(operations) == 0: return results
+
+		# this is _very_ performance critical code. we do less validation than 
+		# normal to keep it fast - caller needs to pass in clean inputs
+		if rootdir is None: 
+			rootdir = ''
+		else:
+			assert rootdir=='' or rootdir[-1]=='/', 'Root directory must end with a slash: %s'%rootdir
 		
 		if len(rootdir)>0:
 			rootdir = rootdir[:-1].split('/')
 		else:
 			rootdir = []
 		rootdirlen = len(rootdir)
+		STAR = GlobPatternSet.STAR 
+		STARSTAR = GlobPatternSet.STARSTAR
 		
 		for (patternlist, basenames, isdir, thisresultlist) in operations:
 			#if not basenames: continue
@@ -248,12 +248,12 @@ class GlobPatternSet(object):
 			for (patternelements, origpatternindex) in patternlist:
 				finalpattern = GlobPatternSet.__matchSinglePath(patternelements, rootdir, rootdirlen)
 				if finalpattern is None: continue
-				if finalpattern is GlobPatternSet.STARSTAR: finalpattern = GlobPatternSet.STAR #canonicalize further
+				if finalpattern is STARSTAR: finalpattern = STAR #canonicalize further
 				basenamepatterns.append( (finalpattern, origpatternindex) )
-				if finalpattern is GlobPatternSet.STAR: break # no point doing any others
+				if finalpattern is STAR: break # no point doing any others
 			
 			if len(basenamepatterns) == 0: continue
-			if basenamepatterns[0][0] is GlobPatternSet.STAR:
+			if basenamepatterns[0][0] is STAR:
 				#special-case this common case
 				thisresultlist.extend(basenames)
 				if unusedPatternsTracker is not None: unusedPatternsTrackerIndex[basenamepatterns[0][1]] = True
@@ -299,13 +299,14 @@ class GlobPatternSet(object):
 		#dbg('matching: %s, %s, %s', pattern, rootdir, lenrootdir)
 		
 		lenpattern = len(pattern)
+		STARSTAR = GlobPatternSet.STARSTAR
 		
 		# nb: pattern is a list of pattern elements; rootdir is rstripped and split by /
 		e = y = 0
 		while e < lenpattern-1 and y < lenrootdir:
 			patternelement = pattern[e]
 			#dbg('loop patternelement: %s, %s, %s, %s', patternelement, e, rootdir[y], y)
-			if patternelement is GlobPatternSet.STARSTAR:
+			if patternelement is STARSTAR:
 				if e == lenpattern-2: # this is just an optimization for a common case **/pattern
 					# all that remains is the pattern to match against the basename
 					return pattern[lenpattern-1]
@@ -331,20 +332,20 @@ class GlobPatternSet(object):
 		if y == lenrootdir:
 			# we've used up all the rootdir
 			
-			while e < lenpattern-1 and pattern[e] is GlobPatternSet.STARSTAR:
+			while e < lenpattern-1 and pattern[e] is STARSTAR:
 				e += 1
 			
 			if e == lenpattern-1: 
 				return pattern[-1]
 
 			if e == lenpattern-2: 
-				if pattern[-1] is GlobPatternSet.STARSTAR: 
+				if pattern[-1] is STARSTAR: 
 					return pattern[-2]
 			return None
 		
 		# we have some rootdir left over, only ok if we have a final **
-		if e == lenpattern-1 and pattern[-1] is GlobPatternSet.STARSTAR: 
-			return GlobPatternSet.STARSTAR
+		if e == lenpattern-1 and pattern[-1] is STARSTAR: 
+			return STARSTAR
 			
 		return None
 		
