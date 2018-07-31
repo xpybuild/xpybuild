@@ -30,13 +30,14 @@ from utils.outputhandler import ProcessOutputHandler
 
 defineOption('docker.path', 'docker')
 defineOption('docker.host', None)
+defineOption('docker.buildoptions', [])
 defineOption('docker.outputHandlerFactory', ProcessOutputHandler) 
 
 class DockerBase(BaseTarget):
 	""" A target that runs commands in docker, using stamp files for up-to-dateness
 	"""
 	
-	def __init__(self, imagename, inputs, depimage=None, dockerfile=None, buildArgs=None):
+	def __init__(self, imagename, inputs, depimage=None, dockerfile=None, buildArgs=None, dockerArgs=None):
 		"""
 		imagename: the name/tag of the image to build
 		"""
@@ -44,6 +45,7 @@ class DockerBase(BaseTarget):
 		self.depimage = depimage
 		self.dockerfile = dockerfile
 		self.buildArgs = buildArgs
+		self.dockerArgs = dockerArgs
 		self.stampfile = '${BUILD_WORK_DIR}/targets/docker/.%s' % re.sub(r'[\\/]', '_', imagename)
 		self.depstampfile = '${BUILD_WORK_DIR}/targets/docker/.%s' % re.sub(r'[\\/]', '_', depimage) if depimage else None
 		self.inputs = PathSet(inputs)
@@ -65,8 +67,8 @@ class DockerBase(BaseTarget):
 		environs = { 'DOCKER_HOST' : self.getOption('docker.host') } if self.getOption('docker.host') else {}
 
 class DockerBuild(DockerBase):
-	def __init__(self, imagename, inputs, depimage=None, dockerfile=None, buildArgs=None):
-		DockerBase.__init__(self, imagename, inputs, depimage, dockerfile, buildArgs)
+	def __init__(self, imagename, inputs, depimage=None, dockerfile=None, buildArgs=None, dockerArgs=None):
+		DockerBase.__init__(self, imagename, inputs, depimage, dockerfile, buildArgs, dockerArgs)
 
 	def run(self, context):
 		args = [ self.getOption('docker.path') ]
@@ -76,6 +78,8 @@ class DockerBuild(DockerBase):
 		dargs.extend([
 				'build', '--rm=true', '-t', context.expandPropertyValues(self.imagename),
 			])
+		dargs.extend(self.getOption('docker.buildoptions'))
+		if self.dockerArgs: dargs.extend(self.dockerArgs)
 		if self.buildArgs: dargs.extend(["--build-arg=%s" % context.expandPropertyValues(x) for x in self.buildArgs])
 		if self.dockerfile: dargs.extend(["-f", context.expandPropertyValues(self.dockerfile)])
 		inputs = self.inputs.resolve(context)
