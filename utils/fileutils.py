@@ -318,7 +318,7 @@ def toLongPathSafe(path, force=False):
 	faster. 
 	
 	@param path: A path. Must not be a relative path. Can be None/empty. Can 
-	contain ".." sequences. 
+	contain ".." sequences, though performance is a lot lower if it does. 
 	
 	@param force: Normally the long path support is added only if this path 
 	exceeds the maximum length on this OS (e.g. 256 chars) or ends with a 
@@ -336,11 +336,14 @@ def toLongPathSafe(path, force=False):
 		if path in __longPathCache: return __longPathCache[path]
 		inputpath = path
 		# ".." is not permitted in \\?\ paths; normpath is expensive so don't do this unless we have to
-		if '..' in path: 
+		if '.' in path: 
 			path = os.path.normpath(path)+('\\' if isDirPath(path) else '') 
 		else:
 			# path is most likely to contain / so more efficient to conditionalize this 
 			path = path.replace('/','\\')
+			if '\\\\' in path:
+			# consecutive \ separators are not permitted in \\?\ paths
+				path = path.replace('\\\\','\\')
 
 		try:
 			if path.startswith('\\\\'): 
