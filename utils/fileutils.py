@@ -60,10 +60,12 @@ def mkdir(newdir):
 	If it does, exit without error. 
 
 	@param newdir: The path to create.
+	@return: newdir, to allow fluent use of this method. 
 	"""
+	origdir = newdir
 	newdir=normLongPath(newdir)
 	if os.path.isdir(newdir): # already exists
-		return
+		return origdir
 		
 	if os.path.isfile(newdir):
 		raise IOError("A file with the same name as the desired dir, '%s', already exists" % newdir)
@@ -77,6 +79,7 @@ def mkdir(newdir):
 			pass
 		else:
 			raise IOError('Problem creating directory %s: %s' % (newdir, e))
+	return origdir
 
 def deleteDir(path, allowRetry=True):
 	""" Recursively delete the contents of a directory. 
