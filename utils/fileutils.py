@@ -40,6 +40,7 @@ if __isWindows: # ugly ugly hacks due to stupid windows filesystem semantics. Se
 					None, win32file.CREATE_ALWAYS, win32file.FILE_ATTRIBUTE_NORMAL, None)
 				return self
 			def write(self, string):
+				assert isinstance(string, str), repr(string) # must pass byte strings not unicode objects when writing in binary mode
 				win32file.WriteFile(self.Fd, string)
 			def writelines(self, lines):
 				for l in lines:
