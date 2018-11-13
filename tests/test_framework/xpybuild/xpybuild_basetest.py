@@ -3,7 +3,7 @@ from pysys.basetest import BaseTest
 from pysys.utils.filegrep import filegrep
 
 class XpybuildBaseTest(BaseTest):
-	def xpybuild(self, args=None, buildfile='test.xpybuild.py', shouldFail=False, stdouterr='xpybuild'):
+	def xpybuild(self, args=None, buildfile='test.xpybuild.py', shouldFail=False, stdouterr='xpybuild', env=None):
 		"""
 		Runs xpybuild against the specified buildfile or test.xpybuild.py from the 
 		input dir. Produces output in the <testoutput>/build-output folder. 
@@ -45,6 +45,10 @@ class XpybuildBaseTest(BaseTest):
 					assert args[0].endswith('py'), args[0] # use the script path not the dir
 					assert os.path.exists(args[0]), args[0]
 					self.log.info('   see %s', os.path.normpath(self.output+'/profileoutput.py'))
+
+				if env:
+					for k in env:
+						environs[k] = env[k]
 
 				result = self.startProcess(sys.executable, args, 
 					environs=environs, 

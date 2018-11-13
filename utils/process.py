@@ -156,7 +156,11 @@ def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, time
 	environs = os.environ.copy()
 	if env:
 		for k in env:
-			environs[k] = env[k]
+			log.critical('env[%s]=%s' % (k, env[k]))
+			if None == env[k]:
+				del environs[k]
+			else:
+				environs[k] = env[k]
 	if not cwd: cwd = os.getcwd()
 	
 	log.info('Executing %s process: %s', processName, ' '.join(['"%s"'%s if ' ' in s else s for s in args]))

@@ -228,10 +228,14 @@ class CustomCommand(BaseTarget):
 			if callable(env):
 				env = env(context)
 			else:
-				env = {k: self._resolveItem(env[k], context) for k in env}
+				env = {k: None if None == env[k] else self._resolveItem(env[k], context) for k in env}
 			self.log.info('Environment overrides for %s are: %s', self.name, ''.join(['\n\t"%s=%s"'%(k, env[k]) for k in env]))
 		for k in os.environ:
 			if k not in env: env[k] = os.getenv(k)
+
+		for k in env.keys():
+			if None == env[k]:
+				del env[k]
 		self.log.info('Output from %s will be written to "%s" and "%s"', self.name, 
 			stdoutPath, 
 			stderrPath)
