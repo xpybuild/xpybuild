@@ -427,8 +427,12 @@ def main(args):
 		elif task in [_TASK_BUILD, _TASK_CLEAN, _TASK_REBUILD]:
 			
 			if not logFile:
+				if includedTargets == ['all'] and not excludedTargets:
+					buildtag = None
+				else:
+					buildtag = 'custom'
 				logFile = _maybeCustomizeLogFilename(init.getPropertyValue('LOG_FILE'), 
-					includedTargets[0] if (len(includedTargets)==1 and includedTargets[0] != 'all' and includedTargets[0] in init.tags() and not excludedTargets) else None,
+					buildtag,
 					task==_TASK_CLEAN)
 			logFile = os.path.abspath(logFile)
 

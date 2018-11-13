@@ -210,17 +210,16 @@ class BuildTarget(object):
 				with open(toLongPathSafe(self._implicitInputsFile), 'rb') as f:
 					latestImplicitInputs = f.read().split(os.linesep)
 					if latestImplicitInputs != implicitInputs:
-						thediff = list(difflib.unified_diff(latestImplicitInputs, implicitInputs,
-							fromfile='inputs for previous build of the target (%d lines)'%len(implicitInputs),
-							tofile='inputs for current build of the target (%d lines)'%len(latestImplicitInputs),
-							lineterm='',
-							n=0
-							))
-						maxdifflines = int(os.getenv('XPYBUILD_IMPLICIT_INPUTS_MAX_DIFF_LINES', '10'))
-						if maxdifflines> 0 and len(thediff)>maxdifflines:
-							thediff = thediff[:maxdifflines]+['...']
+						maxdifflines = int(os.getenv('XPYBUILD_IMPLICIT_INPUTS_MAX_DIFF_LINES', '30'))/2
+						added = ['+ %s'%x for x in latestImplicitInputs if x not in implicitInputs]
+						removed = ['- %s'%x for x in implicitInputs if x not in latestImplicitInputs]
+						if len(added) > maxdifflines: added = added[:maxdifflines]+['...']
+						if len(removed) > maxdifflines: removed = removed[:maxdifflines]+['...']
+						if not added and not removed: added = ['N/A']
 						log.info('Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self._implicitInputsFile, 
-							'\n\t'.join(thediff).replace('\r','\\r\r'))
+							'\n\t'.join(
+								['previous build had %d lines, current build has %d lines'%(len(implicitInputs), len(latestImplicitInputs))]+removed+added
+							).replace('\r','\\r\r'))
 						return False
 					else:
 						log.debug("Up-to-date check: implicit inputs file contents has not changed: %s", self._implicitInputsFile)
