@@ -22,6 +22,7 @@
 
 
 import threading, re, os, time
+import locale
 
 from buildcommon import *
 
@@ -80,6 +81,9 @@ class OutputBufferingStreamWrapper(object):
 		self.bufferingDisabled = bufferingDisabled # can be set by formatter if doesn't support it, e.g. progress
 		
 	def write(self, s):
+		if isinstance(s, unicode):
+			s = s.encode(self.__underlying.encoding or locale.getpreferredencoding(), errors='replace')
+	
 		if not self.bufferingDisabled and outputBufferingManager.isBufferingEnabledForCurrentThread():
 			self.tlocal.buffer = getattr(self.tlocal, 'buffer', '')+s
 		else:
