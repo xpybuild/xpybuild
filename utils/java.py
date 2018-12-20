@@ -60,11 +60,11 @@ def create_manifest(path, properties, options):
 	# build up the list of lines
 	lines = []
 	for key in sorted(fullmap.keys()): # select a deterministic order
-		line = ("%s: %s"+os.linesep) % (key, fullmap[key])
+		line = ("%s: %s").strip() % (key, fullmap[key])
 		while len(line) > 70: # need to split long lines. Thanks Java. Thava.
 			lines.append(line[:70]+os.linesep)
 			line = " %s" % line[70:]
-		lines.append(line)
+		lines.append(line+os.linesep)
 
 	# nb: manifests are UTF-8 so if any of the lines are unicode strings 
 	# we probably should explicitly encode them to UTF-8 byte strings here
