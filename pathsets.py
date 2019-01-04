@@ -313,14 +313,14 @@ class DirBasedPathSet(BasePathSet):
 		
 
 class FindPaths(BasePathSet):
-	""" A lazily-evaluated PathSet that using * and ** (ant-style) globbing 
+	""" A lazily-evaluated PathSet that uses * and ** (ant-style) globbing 
 	to dynamically discover files (and optionally directories) under a common 
-	path during each build. 
+	parent directory. 
 	
-	As FindPaths performs a dynamic search of the file system it is 
-	considerably slower than other PathSets, so should only be used for 
-	specifying the contents of a directory, or filenames where 
-	it is not possible to statistically specify the filenames in the build 
+	As FindPaths performs a dynamic search of the file system the dependency 
+	checking phase of each build it is considerably slower than other PathSets, 
+	so should only be used for specifying the contents of a directory, or for 
+	filenames where it is not possible to statistically specify the filenames in the build 
 	script (e.g. using L{DirBasedPathSet}). 
 	
 	Is always case-sensitive, will give an error if the dir does not exist 
