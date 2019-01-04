@@ -72,6 +72,8 @@ class BuildScheduler(object):
 		self.progressFormat = str(len(str(len(init.targets()))))
 		self.progressFormat = '*** %'+self.progressFormat+'d/%'+self.progressFormat+'d '
 		
+		self.outputDirs = init.getOutputDirs()
+		
 		for t in init.targets().values():
 			try:
 				# this is also a good place to resolve target names into paths
@@ -96,6 +98,7 @@ class BuildScheduler(object):
 				raise BuildException('FAILED to prepare target %s'%t, causedBy=True, location=t.location)
 		
 		self.context = BuildContext(init, set(self.targets.keys()))
+		self.context._buildOptions = options # occasionally targets may need to know e.g. whether it's a dry-run (during dep checking)
 		
 		for dtarget in self.targets:
 			if isDirPath(dtarget):
@@ -435,11 +438,39 @@ class BuildScheduler(object):
 			errors.extend(self._handle_error(target.target, prefix="Target FAILED"))
 		return (newleaves, errors, 0 == len(errors) or self.options["keep-going"])
 	
+	def checkForUndeclaredDependencies(self):
+		# do a sanity check to ensure we don't have undeclared implicit dependencies on any directory targets 
+		# which is a common source of tricky problems. Only works for targets under an output dir, but 
+		# that's almost all of them so good enough
+		checktime = time.time()
+		
+		# remove children if parent is also an output dir 
+		# (which is common as output dirs are often used to enforce existence), 
+		# which speeds up checking in later part
+		outputDirs = sorted(list(self.outputDirs))
+		for o in list(outputDirs):
+			x = os.path.dirname(o)
+			while x and x != os.path.dirname(x):
+				if x in outputDirs:
+					outputDirs.remove(o)
+					break
+				x = os.path.dirname(x)
+	
+		for t in self.pending:
+			underlyingdeps = self.targets[t].resolveDependencies(self.context)
+			for dep in underlyingdeps:
+				for outdir in self.outputDirs:
+					if dep.startswith(outdir) and dep not in self.targets:
+						raise BuildException('Target %s depends on output %s which is implicitly created by some other directory target - please use DirGeneratedByTarget to explicitly name the directory target that it depends on'%(self.targets[t], dep), location=self.targets[t].location) # e.g. FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/foo/')+'bar/') # or similar
+		checktime = time.time()-checktime
+		log.info('Spent %0.1fs checking for undeclared implicit directory dependencies - none found', checktime)
+	
 	def run(self):
 		"""
 			Run the build taking the set of requested targets, 
 			expanding it for dependencies and running each in order
 		"""
+		
 		builderrors = []
 		built = 0
 		total = 0
@@ -448,6 +479,9 @@ class BuildScheduler(object):
 		depstime = time.time()
 		deperrors = self._expand_deps()
 		depstime = time.time()-depstime
+		
+		self.checkForUndeclaredDependencies()
+		
 		if self.options.get("depGraphFile", None):
 			createDepGraph(self.options["depGraphFile"], self, self.context)
 			return deperrors+builderrors, built, completed, total
