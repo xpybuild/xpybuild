@@ -156,7 +156,6 @@ def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, time
 	environs = os.environ.copy()
 	if env:
 		for k in env:
-			log.critical('env[%s]=%s' % (k, env[k]))
 			if None == env[k]:
 				del environs[k]
 			else:
