@@ -240,6 +240,11 @@ class DirBasedPathSet(BasePathSet):
 	""" Constructs a pathset using a basedir and a list of (statically defined, 
 	non-globbed) basedir-relative paths within it. 
 	
+	If it is not possible to statically specify the files to be included 
+	and globbing is required, use L{FindPaths} instead to perform a dynamic 
+	search; but since FindPaths is a lot slower due to the additional file 
+	system operations it is better to use DirBasedPathSet where possible. 
+		
 	e.g. DirBasedPathSet('${MY_DIR}/', 'a', 'b/', '${MY_JARS[]}', 'x, y, ${Z[]}')
 
 	>>> str(DirBasedPathSet('${MY_DIR}', 'a', 'b/c/', '${MY_JARS[]}', 'd').resolveWithDestinations(BaseContext({'MY_DIR':'MY_DIR/', 'MY_JARS[]':'  1 , 2/3, 4/5/'}))).replace('\\\\\\\\','/')
