@@ -65,14 +65,15 @@ class CompilerMakeDependsPathSet(BasePathSet):
 
 		@param flags: additional compiler flags
 
-		@param includes: a list of include directory paths
+		@param includes: a PathSet containing a list of directory include paths, as strings or PathSets. 
+		DirGeneratedByTarget must be used only if a string is concatenated onto the end of the target name. 
 		"""
 		BasePathSet.__init__(self)
 		self.log = makedeplog
 		self.target = target
 		self.sources = src
 		self.flags = flatten([flags]) or []
-		self.includes = includes or []
+		self.includes = includes
 		
 	def __repr__(self):
 		return "MakeDepend(%s, %s)" % (self.sources, self.flags)
@@ -101,7 +102,7 @@ class CompilerMakeDependsPathSet(BasePathSet):
 			elif getmtime(x) > dfiletime:
 				if not needsRebuild:	self.log.info("Rebuilding dependencies for %s because cached dependencies file is older than %s" % (self.target, x))
 				needsRebuild = True
-
+		
 		if not needsRebuild: # read in cached dependencies
 			deplist = []
 			with open(dfile) as f:
@@ -110,6 +111,7 @@ class CompilerMakeDependsPathSet(BasePathSet):
 				lines = lines[1:]
 				for d in lines:
 					d = d.strip()
+					if not d: continue
 					if context._isValidTarget(d) or exists(normLongPath(d)):
 						deplist.append(d)
 					else:
@@ -124,23 +126,37 @@ class CompilerMakeDependsPathSet(BasePathSet):
 		# generate them again
 		startt = time.time()
 		self.log.info("*** Generating native dependencies for %s" % self.target)
+		
+		generatedIncludeDirs = []
+		for d in self.includes._resolveUnderlyingDependencies(context):
+			if context._isValidTarget(d) and (d not in generatedIncludeDirs):
+				generatedIncludeDirs.append(d)
+		def isGeneratedIncludeFile(e):
+			for generated in generatedIncludeDirs:
+				if e.startswith(generated): 
+					return True
+			return False
 		try:
 			deplist = options['native.compilers'].dependencies.depends(context=context, src=testsources, options=options, flags=flatten(options['native.cxx.flags']+[context.expandPropertyValues(x).split(' ') for x in self.flags]), includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']]))
+			
+			# remove paths inside generated directories and replace with the targets themselves
+			deplist = [d for d in deplist if not isGeneratedIncludeFile(d)] + generatedIncludeDirs
+			
 		except BuildException, e:
 			if len(testsources)==1 and testsources[0] not in str(e):
 				raise BuildException('Dependency resolution failed for %s: %s'%(testsources[0], e))
 			raise
-		deplist += depsources
+		
 		mkdir(os.path.dirname(dfile))
 		with openForWrite(dfile, 'wb') as f:
 			assert not os.linesep in str(self)
 			f.write(str(self)+os.linesep)
-			for d in deplist:
+			for d in deplist+['']+depsources: # spacer to make it easier to see what's going on - distinction between depsources and deplist
 				f.write(d.encode('UTF-8')+os.linesep)
 		if time.time()-startt > 5: # this should usually be pretty quick, so may indicate a real build file mistake
 			self.log.warn('Dependency generation took a long time: %0.1f s to evaluate %s', time.time()-startt, self)
-
-		return deplist
+		
+		return deplist+depsources
 
 class Cpp(BaseTarget):
 	""" A target that compiles a C++ source file to a .o
@@ -150,14 +166,14 @@ class Cpp(BaseTarget):
 		"""
 		@param object: the object file to generate
 		@param source: a (list of) source files
-		@param includes: a (list of) include directories
+		@param includes: a (list of) include directories, as strings or PathSets. If specifying a subdirectory of a generated directory, use DirGeneratedByTarget. 
 		@param flags: a list of additional compiler flags
 		@param dependencies: a list of additional dependencies that need to be built 
 		before this target
 		@param options: [DEPRECATED - use .option() instead]
 		"""
 		self.source = PathSet(source)
-		self.includes = PathSet(includes or []) 
+		self.includes = PathSet(includes)
 		self.flags = flatten([flags]) or []
 		self.makedepend = CompilerMakeDependsPathSet(self, self.source, flags=self.flags, includes=self.includes)
 		BaseTarget.__init__(self, object, [dependencies or [], self.source, self.makedepend])
@@ -192,7 +208,7 @@ class C(BaseTarget):
 		"""
 		@param object: the object file to generate
 		@param source: a (list of) source files
-		@param includes: a (list of) include directories
+		@param includes: a (list of) include directories. If specifying a subdirectory of a generated directory, use DirGeneratedByTarget. 
 		@param flags: a list of additional compiler flags
 		@param dependencies: a list of additional dependencies that need to be built 
 		before this target
@@ -200,7 +216,7 @@ class C(BaseTarget):
 
 		"""
 		self.source = PathSet(source)
-		self.includes = PathSet(includes or []) 
+		self.includes = PathSet(includes) 
 		self.flags = flags or []
 		self.makedepend = CompilerMakeDependsPathSet(self, self.source, flags=self.flags, includes=self.includes)
 		BaseTarget.__init__(self, object, [dependencies or [], self.makedepend])
