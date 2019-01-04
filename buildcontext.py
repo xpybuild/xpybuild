@@ -164,6 +164,10 @@ class BaseContext(object):
 		['dir/a.jar', 'dir/b.jar', 'dir/c.jar']
 		>>> BaseContext({'NAMES[]':'a, b, c'}).expandPropertyValues('$${${NAMES[]}}', expandList=True)
 		['${a}', '${b}', '${c}']
+		>>> BaseContext({'A':''}).expandPropertyValues('${A}', expandList=True)
+		[]
+		>>> BaseContext({'A':'b'}).expandPropertyValues('', expandList=True)
+		[]
 		>>> BaseContext({'A':'a','B':'b'}).expandPropertyValues(Compose('${A}', '${B}'))
 		'ab'
 		>>> BaseContext({'A':'a'}).expandPropertyValues('x${A}x$${A}x${A}x$$${A}x')
@@ -184,7 +188,7 @@ class BaseContext(object):
 		BuildException: Cannot expand as a list a string containing multiple list variables
 		
 		"""
-		if not string: return string
+		if not string: return [] if expandList else string
 		if hasattr(string, 'resolveToString'):
 			string = string.resolveToString(self)
 		assert isinstance(string, basestring), 'Error in expandPropertyValues: expecting string but argument was of type "%s"'%(string.__class__.__name__)
@@ -226,7 +230,7 @@ class BaseContext(object):
 		else:
 			string = string.replace('<escaped_xpybuild_placeholder>', '${')
 			if expandList:
-				return [string]
+				return [string] if string else []
 			else:
 				return string
 
@@ -372,6 +376,7 @@ class BaseContext(object):
 			return os.path.join(defaultDir, p)
 		
 		if expandList:
+			orig = path
 			path = self.expandPropertyValues(path, expandList=expandList)
 			rv = []
 			for p in path:
