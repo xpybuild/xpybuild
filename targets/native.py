@@ -129,6 +129,7 @@ class CompilerMakeDependsPathSet(BasePathSet):
 		
 		generatedIncludeDirs = []
 		for d in self.includes._resolveUnderlyingDependencies(context):
+			if not d.endswith(os.sep): d += os.sep # includes are always directories
 			if context._isValidTarget(d) and (d not in generatedIncludeDirs):
 				generatedIncludeDirs.append(d)
 		def isGeneratedIncludeFile(e):
