@@ -111,7 +111,11 @@ class BasePathSet(object):
 		during the dependency evaluation phase. 
 		
 		For pathsets that definitely have no PathSet dependencies, this 
-		can be implemented as return self.resolve(context)
+		can be implemented as return self.resolve(context). 
+		
+		Like the other resolve methods, this returns absolute and normalized 
+		path strings containing no substitution variables, and ending with a 
+		slash for any directories. 
 		"""
 		raise Exception('TODO: must implement _resolveUnderlyingDependencies for %s'%self.__class__)
 
@@ -246,7 +250,7 @@ class DirBasedPathSet(BasePathSet):
 	system operations it is better to use DirBasedPathSet where possible. 
 		
 	e.g. DirBasedPathSet('${MY_DIR}/', 'a', 'b/', '${MY_JARS[]}', 'x, y, ${Z[]}')
-
+	
 	>>> str(DirBasedPathSet('${MY_DIR}', 'a', 'b/c/', '${MY_JARS[]}', 'd').resolveWithDestinations(BaseContext({'MY_DIR':'MY_DIR/', 'MY_JARS[]':'  1 , 2/3, 4/5/'}))).replace('\\\\\\\\','/')
 	"[('BUILD_DIR/MY_DIR/a', 'a'), ('BUILD_DIR/MY_DIR/b/c/', 'b/c/'), ('BUILD_DIR/MY_DIR/1', '1'), ('BUILD_DIR/MY_DIR/2/3', '2/3'), ('BUILD_DIR/MY_DIR/4/5/', '4/5/'), ('BUILD_DIR/MY_DIR/d', 'd')]"
 
