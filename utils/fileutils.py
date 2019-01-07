@@ -40,7 +40,10 @@ if __isWindows: # ugly ugly hacks due to stupid windows filesystem semantics. Se
 					None, win32file.CREATE_ALWAYS, win32file.FILE_ATTRIBUTE_NORMAL, None)
 				return self
 			def write(self, string):
-				assert isinstance(string, str), repr(string) # must pass byte strings not unicode objects when writing in binary mode
+				if isinstance(string, unicode):
+					# must pass byte strings not unicode objects when writing in binary mode; for backwards compatibility, automatically convert 7-bit ascii (which is what the Unix impl will do)
+					string = string.encode('ascii', errors='strict') 
+				assert isinstance(string, str), 'cannot write unicode character string to binary file; please use byte str instead: %s'%repr(string) 
 				win32file.WriteFile(self.Fd, string)
 			def writelines(self, lines):
 				for l in lines:
