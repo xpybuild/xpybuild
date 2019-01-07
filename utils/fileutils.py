@@ -41,7 +41,7 @@ if __isWindows: # ugly ugly hacks due to stupid windows filesystem semantics. Se
 				return self
 			def write(self, string):
 				if isinstance(string, unicode):
-					# must pass byte strings not unicode objects when writing in binary mode; for backwards compatibility, automatically convert 7-bit ascii (which is what the Unix impl will do)
+					# must pass byte strings not unicode objects when writing in binary mode; for backwards compatibility, automatically convert 7-bit ascii (which is what the Unix impl will do), but give errors for anything else as user should be explicitly specifying their encoding
 					string = string.encode('ascii', errors='strict') 
 				assert isinstance(string, str), 'cannot write unicode character string to binary file; please use byte str instead: %s'%repr(string) 
 				win32file.WriteFile(self.Fd, string)
