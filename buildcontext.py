@@ -147,7 +147,8 @@ class BaseContext(object):
 
 		@param string: The string with unexpanded properties in ${...} to expand.
 		May alternatively be a Composable object which will be later 
-		evaluated using its resolveToString method.
+		evaluated using its resolveToString method, or a function that accepts 
+		a single argument containing the context.
 
 		@param expandList: return a list not a string and expand exactly one ${VAR[]} to multiple list items.
 		
@@ -191,6 +192,7 @@ class BaseContext(object):
 		if not string: return [] if expandList else string
 		if hasattr(string, 'resolveToString'):
 			string = string.resolveToString(self)
+		if callable(string): string = string(self)
 		assert isinstance(string, basestring), 'Error in expandPropertyValues: expecting string but argument was of type "%s"'%(string.__class__.__name__)
 		
 		if '$${' in string:

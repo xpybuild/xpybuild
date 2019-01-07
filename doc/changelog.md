@@ -24,6 +24,8 @@
 - ProcessOutputHandler: new option factory can be set to specify a function or class to be used instead of ProcessOutputHandler for output of a specific target, allowing detailed customization of behaviour. The new static function ProcessOutputHandler.create(..., options) should be used instead of the ProcessOutputHandler handler to ensure that this option is honoured if set. 
 - javac/visualstudio/csharp/docker: all have a new outputHandlerFactory option which can be set to override the default ProcessOutputHandler subclass used for these targets, for example to customize handling of errors and warnings. 
 - process.call(): this method now accepts an options dictionary, which should be set wherever possible; this avoids callers having to deal with passing boilerplate defaults in to call manually. 
+- basetarget: new utility methods have been added addHashableImplicitInputOption('optionkey') and addHashableImplicitInput('foo=bar') to make it easier for target classes to specify their implicit inputs without needing to implement getHashableImplicitInputs()
+- buildcontext: getExpandPropertyValues() now handles callable(context) inputs as well as other strings, allowing it to perform common resolutions needed in many different situations. 
 
 
 # 1.13

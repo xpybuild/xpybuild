@@ -96,6 +96,8 @@ class BaseTarget(Composable):
 			
 		self.__path = None # set by _resolveTargetPath
 		self.__workDir = None
+		
+		self.__hashableImplicitInputs = []
 
 	def __setattr__(self, name, value):
 		# this is a hack to retain backwards compat for a few classes that rely on explicitly assigning to self.options
@@ -209,6 +211,40 @@ class BaseTarget(Composable):
 				fileutils.deleteDir(self.path)
 			else:
 				fileutils.deleteFile(self.path)
+
+	def addHashableImplicitInputOption(self, optionKey):
+		""" Adds a target-specific string giving information about an 
+		implicit input of this target, to the list that will be returned
+		getHashableImplicitInputs to help detect when the target should be rebuilt. 
+		
+		Call this for each option that this target is affected by. 
+		
+		See L{getHashableImplicitInputs} for more information.
+		
+		@param optionKey: the name of an option. 
+		
+		"""
+		self.addHashableImplicitInput(lambda context: u'option %s=%s'%(optionKey, repr(self.options[optionKey])))
+		
+	def addHashableImplicitInput(self, item):
+		""" Adds a target-specific string giving information about an 
+		implicit input of this target to the list that will be returned by
+		getHashableImplicitInputs to help detect when the target should be rebuilt. 
+		
+		This can include options, property values (e.g. changes in build number,
+		release/debug mode) and glob results (e.g. addition or removal of a
+		file should trigger a rebuild). 
+		
+		See L{getHashableImplicitInputs} for more information.
+		
+		@param item: a string (which may contain substitution variables), 
+		or a function that accepts a context parameter and returns a string. 
+		The item will converted to a string using L{BuildContext.expandPropertyValues}. 
+		For example, 'myparameter="foobar"'. 
+		
+		"""
+		assert isinstance(item, basestring) or callable(item)
+		self.__hashableImplicitInputs.append(item)
 	
 	def getHashableImplicitInputs(self, context):
 		""" Return a target-specific token (a list of strings) representing the 
@@ -223,12 +259,17 @@ class BaseTarget(Composable):
 		builds successfully, and compared with its recorded value when 
 		subsequently checking the up-to-date-ness of the target.
 		
-		The default implementation returns nothing, so only the globbed and 
+		The default implementation returns nothing, unless 
+		L{addHashableImplicitInput} or L{addHashableImplicitInputOption} 
+		have been called, so only the globbed and 
 		resolved paths of any pathsets in the dependency list will be used. 
 		
 		Some targets should override this to append additional information, 
-		such as relevant property or option values. 
+		such as relevant property or option values. Alternatively, for simple 
+		cases call L{addHashableImplicitInput} or L{addHashableImplicitInputOption}. 
 		"""
+		if self.__hashableImplicitInputs:
+			return list([context.expandPropertyValues(x) for x in self.__hashableImplicitInputs])
 		return []
 	
 	def getTags(self): 

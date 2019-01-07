@@ -1,0 +1,4 @@
+defaults.txt mergeOptions testoption.default=expectedval
+defaults.txt mergeOptions testoption.globalOverride=expectedval
+defaults.txt mergeOptions testoption.legacyTargetOverride=defaultval
+defaults.txt mergeOptions testoption.targetOverride=defaultval
