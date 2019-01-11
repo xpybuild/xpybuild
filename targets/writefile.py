@@ -33,12 +33,14 @@ class WriteFile(BaseTarget):
 		"""
 		Constructor. 
 		
+		Example usage: WriteFile('${OUTPUT_DIR}/foo.txt', lambda context: '\n'.join(['Foo:', context.expandPropertyValues('${FOO}')]))
+		
 		@param name: the output filename
 		
 		@param getContents: a string (which will be subject to expansion) or 
 		a function that accepts a context as input 
 		followed optionally by any specified 'args') and returns 
-		the string that should be written to the file.
+		the string that should be written to the file, using \\n for newlines (not os.linesep).
 		
 		The file is written in binary mode, but any occurrences of the newline character \\n in 
 		the provided string will be replaced automatically with the 
