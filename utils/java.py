@@ -40,16 +40,13 @@ defineOption('jar.manifest.defaults', {})
 def create_manifest(path, properties, options):
 	""" Create a manifest file in path from the map properties.
 
-	path: The path in which to create a manifest file
+	@param path: The absolute path in which to create a manifest file. If None is specified, 
+	no file is written but a byte string containing the file contents is returned. 
 
-	properties: A map of manifest keys to values
+	@param properties: A map of manifest keys to values (unicode character strings)
 
-	options: The options to use for creating the manifest (prefix: jar.manifest)
+	@param options: The options to use for creating the manifest (prefix: jar.manifest)
 
-	>>> create_manifest(None, {"Class-path":"foo.jar", "Implementation-name":"Progress Apama"}, {'jar.manifest.defaults':[]}).replace('\\r\\n','\\n')
-	'Class-path: foo.jar\\nImplementation-name: Progress Apama\\n'
-	>>> create_manifest(None, {"Class-path":"foo.jar bar.jar wibble-12.3-r12345.jar third-party/ant2.jar third-party/ant-internal.jar", "Implementation-name":"Progress Apama"}, {'jar.manifest.defaults':[]}).replace('\\r\\n','\\n')
-	'Class-path: foo.jar bar.jar wibble-12.3-r12345.jar third-party/ant2.ja\\n r third-party/ant-internal.jar\\nImplementation-name: Progress Apama\\n'
 	"""
 	# merge in the defaults to the map (properties will already have been expanded
 	fullmap = {}
@@ -57,24 +54,33 @@ def create_manifest(path, properties, options):
 		for key in source:
 			fullmap[key] = source[key]
 	
+
 	# build up the list of lines
 	lines = []
 	for key in sorted(fullmap.keys()): # select a deterministic order
-		line = ("%s: %s"+os.linesep) % (key, fullmap[key])
-		while len(line) > 70: # need to split long lines. Thanks Java. Thava.
-			lines.append(line[:70]+os.linesep)
-			line = " %s" % line[70:]
+		# strip whitespace since it isn't needed, and could confuse the continuation character logic
+		line = ("%s: %s") % (key.strip(), fullmap[key].strip())
+		assert '\n' not in line, repr(line)
+		
+		# must convert to utf8 before applying continuation char logic
+		if not isinstance(line, str): line = line.encode('utf-8')
+		
+		# spec says: No line may be longer than 72 bytes (not characters), in its UTF8-encoded form
+		# If a value would make the initial line longer than this, it should be continued on extra lines (each starting with a single SPACE).
+		maxbytes = 72-1 # remove one byte for the newline
+		while len(line) > maxbytes:
+			lines.append(line[:maxbytes])
+			line = b" %s" % line[maxbytes:]
 		lines.append(line)
 
-	# nb: manifests are UTF-8 so if any of the lines are unicode strings 
-	# we probably should explicitly encode them to UTF-8 byte strings here
+	lines = '\n'.join(lines) # don't use os.linesep for simplicity, and because spec says only \r\n, \n, \r are valid not \n\r
 
 	# write out the file
 	if path:
 		with openForWrite(path, 'wb') as f:
-			f.writelines(lines)
-	else: # this case for docstrings tests
-		return "".join(lines)
+			f.write(lines)
+	else: # this case for unit testing
+		return lines
 
 # Options for javac
 defineOption('javac.options', [])

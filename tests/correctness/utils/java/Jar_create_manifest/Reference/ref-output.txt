@@ -1,0 +1,55 @@
+72 bytes per line
+|........................................................................|
+|a: xyz|
+-----
+|........................................................................|
+|a: x\t\nz|
+-----
+|........................................................................|
+|a: xyz|
+-----
+|........................................................................|
+|a: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy|
+-----
+|........................................................................|
+|a: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy|
+-----
+|........................................................................|
+|a: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyN|
+| y|
+-----
+|........................................................................|
+|a: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyN|
+| yy|
+-----
+|........................................................................|
+|b: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz Z|
+-----
+|........................................................................|
+|b: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz  Z|
+-----
+|........................................................................|
+|b: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz  N|
+|  Z|
+-----
+|........................................................................|
+|b: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz  N|
+|   Z|
+-----
+|........................................................................|
+|c: some value   cccccccccccccccccccccccccccccccccccccccccccccccccccccccN|
+| ccccccccccccccccN|
+|d: default value ddddddddddddddddddddddddddddddddddddddddddddddddddddddN|
+| dddddddddddddddd|
+-----
+|........................................................................|
+|c: some valueN|
+|d: default value override|
+-----
+|........................................................................|
+|d: default value ddddddddddddddddddddddddddddddddddddddddddddddddddddddN|
+| ddddddddddddddddN|
+|u: utf8 string uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuN|
+| uuuuuuuuuuuuuuutf8_EuropeanáÁxß_KatakanaﾉﾁﾐﾁｿｸﾁｽﾁN|
+| ｿｶｲｽﾄ_Hiragana日本語_Symbols☠☢☃_abc123@#£!~=£x|
+-----
