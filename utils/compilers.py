@@ -171,6 +171,8 @@ class ToolChain(object):
 		self.linker = linker
 		assert isWindows() or isinstance(archiver, Archiver) or archiver == None
 		self.archiver = archiver
+	
+	def __repr__(self): return '%s instance'%self.__class__ # make sure we get a stable stringification of the instance stored in the native.compilers option
 
 class UnixCompiler(Compiler):
 	"""
