@@ -486,7 +486,8 @@ class BuildScheduler(object):
 		deperrors = self._expand_deps()
 		depstime = time.time()-depstime
 		
-		self.checkForUndeclaredDependencies()
+		if not self.options['clean']:
+			self.checkForUndeclaredDependencies()
 		
 		if self.options.get("depGraphFile", None):
 			createDepGraph(self.options["depGraphFile"], self, self.context)
