@@ -90,7 +90,7 @@ class BuildTarget(object):
 		# dependencies are explicit i.e. no FindPathSets are present
 
 		# sort the list in case of determinism problems with filesystem walk order
-		x = sorted(self.resolveDependencies(context))
+		x = self.resolveDependencies(context)
 		
 		# since this is meant to be a list of lines, normalize with a split->join
 		# also make any non-linesep \r or \n chars explicit to avoid confusion when diffing
@@ -105,7 +105,7 @@ class BuildTarget(object):
 			Calls through to the wrapped target, which does the expansion/replacement
 			of dependency strings here.
 			
-			Returns a list of dependencies as strings (paths). Either files or targets.
+			Returns a SORTED list of dependencies as strings (paths). Either files or targets.
 		"""
 		if self.deps is not None: return self.deps
 
@@ -118,6 +118,7 @@ class BuildTarget(object):
 
 		if self.path in deps: deps.remove(self.path)
 		
+		deps.sort()
 		self.deps = deps
 		return self.deps
 		

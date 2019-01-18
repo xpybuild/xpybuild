@@ -292,7 +292,7 @@ class BuildScheduler(object):
 			self.leaves.append(target)
 		elif not (self.options['ignore-deps'] and self.options['clean']): 
 			try:
-				deps = target.resolveDependencies(self.context)
+				deps = target.resolveDependencies(self.context) # this list is sorted
 				if deps: log.debug('%s has %d dependencies', target.target, len(deps))
 				
 				targetDeps = [] # just for logging
