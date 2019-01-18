@@ -195,8 +195,8 @@ class PathSet(BasePathSet):
 				r.extend(x._resolveUnderlyingDependencies(context))
 		
 		# check for duplicates here
-		seen = set()
 		if len(self.contents) > 1: # no point if it's a trivial wrapper around another PathSet
+			seen = set()
 			for x in r:
 				if '//' in x: # this could easily confuse things later!
 					raise BuildException('Invalid path with multiple slashes "%s" in %s'%(x, self), location=self.__location)
