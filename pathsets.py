@@ -116,6 +116,12 @@ class BasePathSet(object):
 		Like the other resolve methods, this returns absolute and normalized 
 		path strings containing no substitution variables, and ending with a 
 		slash for any directories. 
+		
+		Note that any directory/ items in the returned list indicate
+		empty directories to be created; their contents will NOT be
+		checked during dependency evaluation, so always use FindPaths if you wish
+		to include the contents of a directory. Including non-empty/non-target
+		directories is likely to be an error. 
 		"""
 		raise Exception('TODO: must implement _resolveUnderlyingDependencies for %s'%self.__class__)
 

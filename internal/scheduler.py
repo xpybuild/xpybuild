@@ -331,7 +331,13 @@ class BuildScheduler(object):
 					else:
 						dstat = getstat(dpath)
 						if dstat and ( (dnameIsDirPath and stat.S_ISDIR(dstat.st_mode)) or (not dnameIsDirPath and stat.S_ISREG(dstat.st_mode)) ):
-							target.filedep(dname)
+							if not dnameIsDirPath:
+								# do not need to record directories as useless for uptodate checking (they just need to appear 
+								# in the implicit inputs file, but that's already happened in BuildTarget.__getImplicitInputs)
+								# FindPaths(...) must be used if directory contents matter
+								target.filedep(dname)
+							else:
+								log.debug('Ignoring directory for dependency-checking purposes (use FindPaths if you care about the contents): %s', dname)
 						else:
 							# in the specific case of a dependency error, build will definitely fail immediately so we should log line number 
 							# at ERROR log level not just at info

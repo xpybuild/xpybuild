@@ -168,7 +168,7 @@ class BuildTarget(object):
 			return self._rdeps
 	def filedep(self, path):
 		"""
-			Adds to the list of file dependencies.
+			Adds to the list of file dependencies. Not called for directories. 
 			Holds the object lock
 		"""
 		with self.lock:
@@ -242,14 +242,7 @@ class BuildTarget(object):
 				return True
 
 			for f in self.fdeps:
-				if isDirPath(f): 
-					log.debug('Up-to-date check: walking dependency directory %s to check for newly modified files', f)
-					for path, subdirs, files in os.walk(toLongPathSafe(f)):
-						for name in files:
-							if isNewer(os.path.join(path, name)): return False
-					log.debug('uptodate: done walking dependency directory %s', f)
-				else:
-					if isNewer(f): return False
+				if isNewer(f): return False
 		return True
 		
 	def run(self, context):
