@@ -80,7 +80,6 @@ def create_manifest(path, properties, options):
 	lines = b'\n'.join(lines) # don't use os.linesep for simplicity, and because spec says only \r\n, \n, \r are valid not \n\r
 
 	# write out the file
-	log.critical('manifest: source=%s\nresult=%s', fullmap, lines)
 	if path:
 		with openForWrite(path, 'wb') as f:
 			f.write(lines)
