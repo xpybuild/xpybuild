@@ -1,55 +1,69 @@
 72 bytes per line
 |........................................................................|
-|a: xyz|
+|a: xyzN|
+||
 -----
 |........................................................................|
-|a: x\t\nz|
+|a: x\t\nzN|
+||
 -----
 |........................................................................|
-|a: xyz|
+|a: xyzN|
+||
 -----
 |........................................................................|
-|a: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy|
------
-|........................................................................|
-|a: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy|
------
-|........................................................................|
-|a: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyN|
-| y|
+|a: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyN|
+||
 -----
 |........................................................................|
 |a: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyN|
-| yy|
+||
 -----
 |........................................................................|
-|b: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz Z|
+|a: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyN|
+| yN|
+||
 -----
 |........................................................................|
-|b: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz  Z|
+|a: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyN|
+| yyN|
+||
+-----
+|........................................................................|
+|b: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz ZN|
+||
+-----
+|........................................................................|
+|b: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz  ZN|
+||
 -----
 |........................................................................|
 |b: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz  N|
-|  Z|
+|  ZN|
+||
 -----
 |........................................................................|
 |b: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz  N|
-|   Z|
+|   ZN|
+||
 -----
 |........................................................................|
 |c: some value   cccccccccccccccccccccccccccccccccccccccccccccccccccccccN|
 | ccccccccccccccccN|
 |d: default value ddddddddddddddddddddddddddddddddddddddddddddddddddddddN|
-| dddddddddddddddd|
+| ddddddddddddddddN|
+||
 -----
 |........................................................................|
 |c: some valueN|
-|d: default value override|
+|d: default value overrideN|
+||
 -----
 |........................................................................|
 |d: default value ddddddddddddddddddddddddddddddddddddddddddddddddddddddN|
 | ddddddddddddddddN|
 |u: utf8 string uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuN|
 | uuuuuuuuuuuuuuutf8_EuropeanáÁxß_KatakanaﾉﾁﾐﾁｿｸﾁｽﾁN|
-| ｿｶｲｽﾄ_Hiragana日本語_Symbols☠☢☃_abc123@#£!~=£x|
+| ｿｶｲｽﾄ_Hiragana日本語_Symbols☠☢☃_abc123@#£!~=£xN|
+||
 -----

@@ -3,7 +3,9 @@ from buildcommon import *
 from pathsets import *
 
 from utils.java import create_manifest
+from targets.java import Jar
 from targets.writefile import *
+from targets.unpack import *
 import logging
 
 def getoutput(context):
@@ -48,3 +50,13 @@ def getoutput(context):
 	return '\n'.join(r)
 
 WriteFile('${OUTPUT_DIR}/output.txt', getoutput)
+
+# also useful to test with the jar target since the jar executable munges it further
+Jar('${OUTPUT_DIR}/test.jar', [], [], manifest={
+	'Implementation-Title':'My title ',
+	' Main-Class ':' my.main ',
+	'Header-2':' value 2 ',
+	'Header-3':' value 3 '+'x'*150+'_',
+ })
+
+Unpack('${OUTPUT_DIR}/unpacked/', '${OUTPUT_DIR}/test.jar')

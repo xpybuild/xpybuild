@@ -43,7 +43,8 @@ def create_manifest(path, properties, options):
 	@param path: The absolute path in which to create a manifest file. If None is specified, 
 	no file is written but a byte string containing the file contents is returned. 
 
-	@param properties: A map of manifest keys to values (unicode character strings)
+	@param properties: A map of manifest keys to values (unicode character strings). 
+	Must follow java jar file format specification, e.g. headers cannot contain spaces. 
 
 	@param options: The options to use for creating the manifest (prefix: jar.manifest)
 
@@ -60,6 +61,7 @@ def create_manifest(path, properties, options):
 	for key in sorted(fullmap.keys()): # select a deterministic order
 		# strip whitespace since it isn't needed, and could confuse the continuation character logic
 		line = ("%s: %s") % (key.strip(), fullmap[key].strip())
+		assert ' ' not in key.strip(), 'manifest.mf key "%s" does not confirm to jar file specification - cannot contain spaces'%(key.strip())
 		assert '\n' not in line, repr(line)
 		
 		# must convert to utf8 before applying continuation char logic
@@ -71,11 +73,14 @@ def create_manifest(path, properties, options):
 		while len(line) > maxbytes:
 			lines.append(line[:maxbytes])
 			line = b" %s" % line[maxbytes:]
+		assert line
 		lines.append(line)
+	lines.append(b'') # need a trailing newline else Java ignores last line!
 
-	lines = '\n'.join(lines) # don't use os.linesep for simplicity, and because spec says only \r\n, \n, \r are valid not \n\r
+	lines = b'\n'.join(lines) # don't use os.linesep for simplicity, and because spec says only \r\n, \n, \r are valid not \n\r
 
 	# write out the file
+	log.critical('manifest: source=%s\nresult=%s', fullmap, lines)
 	if path:
 		with openForWrite(path, 'wb') as f:
 			f.write(lines)
