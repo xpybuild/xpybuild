@@ -174,13 +174,16 @@ class BaseTarget(Composable):
 		# take the opportunity to provide a merged set of options
 		self.__optionsResolved = context.mergeOptions(target=self)
 
-	def _resolveUnderlyingDependencies(self, context):
+	def _resolveUnderlyingDependencies(self, context, rawdeps=False):
 		""" Internal method for resolving dependencies needed by this target, 
 		e.g. doing path expansion, globbing, etc. 
 		
 		Do not override this method. This method should be invoked only once, 
 		by the scheduler. 
 		"""
+		# special option just for verify implementation, returning the real deps not the underlying deps
+		if rawdeps: return self.__dependencies.resolve(context)
+		
 		# don't think there's any value in caching this result
 		if not self.__dependencies: return []
 		return self.__dependencies._resolveUnderlyingDependencies(context)

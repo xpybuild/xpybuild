@@ -37,6 +37,7 @@ import thread
 import logging
 import Queue
 import random
+import math
 
 log = logging.getLogger('scheduler')
 		
@@ -63,6 +64,7 @@ class BuildScheduler(object):
 		self.lock = None
 		self.built = 0
 		self.completed = 0 # include built plus any deemed to be up to date
+		self.verificationerrors = []
 
 		resetStatCache() # at this point reread the stats of files, rather than using potentially stale cached ones
 
@@ -159,7 +161,7 @@ class BuildScheduler(object):
 	def _run_target(self, target):
 		"""
 			Run a single target, calling clean or run appropriately and counting the time taken
-			target - the target object to build
+			target - the BuildTarget holding the target to build
 			number - how far through the build are we
 			total - the total number of targets to (potentially) build
 			Returns a list of error(s) encountered during the build
@@ -168,7 +170,7 @@ class BuildScheduler(object):
 		errors = []
 		
 		log.info("%s: executing", target.name)
-		duration = time.time()
+		starttime = time.time()
 		try:
 			if self.options["clean"]:
 				try:
@@ -209,10 +211,23 @@ class BuildScheduler(object):
 						# hopefully won't happen ever
 						errors.extend(self._handle_error(target.target, prefix='ERROR deleting target stampfile after target failure'))
 					
-			duration = time.time() - duration
+				if self.options["verify"]:
+					for dep in target.target._resolveUnderlyingDependencies(self.context, rawdeps=True):
+						dep = toLongPathSafe(dep)
+						if not os.path.exists(dep): 
+							self.verificationerrors.append("%s verification error: Target dependency was deleted while it was being built: %s"%(target, dep))
+						elif not isDirPath(dep):
+							# check not modified recently obviously must NOT use cached stat values here
+							# note that precision of this field is not very much on some OSes (hence checking > ceil not >=)
+							modtime = os.stat(dep).st_mtime 
+							if modtime > math.ceil(starttime): 
+								self.verificationerrors.append("%s verification error: Modification date of target dependency %s is %0.1fs after the target's start time (suggests that this target or some other has modified the file without making the dependency explicit)"%(target, dep, modtime-starttime))
+					
+			duration = time.time() - starttime
 			
 			if not self.options["clean"]:
 				self.targetTimes[target.name] = (target.path, duration)
+				
 			log.critical("    %s: done in %.1f seconds", target.name, duration)
 			return errors
 		finally:
@@ -498,6 +513,8 @@ class BuildScheduler(object):
 				('clean' if self.options['clean'] else 'build', formatTimePeriod(depstime)))
 			builderrors, built, completed, total = self._build()
 
+		builderrors.extend(self.verificationerrors)
+				
 		if not deperrors and not builderrors and self.index != self.total:
 			bad = [self.targets[dname] for dname in self.pending if self.targets[dname].depcount != 0]
 			log.info('Unexpected build error - some scheduled targets did not execute, possible dependency graph cycle; unexecuted targets are: %s'%

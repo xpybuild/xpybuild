@@ -113,6 +113,8 @@ def main(args):
 '  (if none is specified, the default operation is a normal build)',
 '      --clean                Clean specified targets incl all deps (default=all)',
 '      --rebuild              Clean specified targets incl all deps then build',
+'                             (add --ignore-deps to rebuild just specified ',
+'                             targets)',
 '',
 ' --ft --find-targets <str>   List targets containing the specified substring', 
 ' --ti --target-info <str>    Print details including build file location for ',
@@ -154,6 +156,8 @@ def main(args):
 '      --depgraph <file>      Just resolve dependencies and dump them to <file>',
 '      --cpu-stats            Log CPU utilisation stats',
 '      --random-priority      Randomizes build order',
+'      --verify               Performs additional verifications during the ',
+'                             build to to help detect bugs in the build files. ',
 '      --profile              Profiles all the worker threads',
 '   -F --format               Message output format.',
 '                             Options:',
@@ -167,7 +171,7 @@ def main(args):
 
 		# set up defaults
 		properties = {}
-		buildOptions = { "keep-going":False, "workers":1, "dry-run":False, "ignore-deps":False, "logCPUUtilisation":False, "profile":False } 
+		buildOptions = { "keep-going":False, "workers":1, "dry-run":False, "ignore-deps":False, "logCPUUtilisation":False, "profile":False, "verify":False } 
 		includedTargets = []
 		excludedTargets = []
 		task = _TASK_BUILD
@@ -181,7 +185,7 @@ def main(args):
 			["help","exclude=","parallel","workers=","keep-going",
 			"log-level=","logfile=","buildfile=", "dry-run",
 			"targets", 'target-info=', 'ti=', "properties", "options", "clean", "rebuild", "ignore-deps", "id",
-			"format=", "timefile=", "ft=", "find-targets=", "depgraph=", 'cpu-stats', 'random-priority', 'profile'])
+			"format=", "timefile=", "ft=", "find-targets=", "depgraph=", 'cpu-stats', 'random-priority', 'profile', 'verify'])
 		
 		for o, a in opts: # option arguments
 			o = o.strip('-')
@@ -245,6 +249,8 @@ def main(args):
 				buildOptions['dry-run'] = True
 			elif o in ['timefile']:
 				buildOptions['timeFile'] = a
+			elif o in ['verify']:
+				buildOptions['verify'] = True
 			elif o in ['profile']:
 				buildOptions['profile'] = True
 			elif o in ['depgraph']:
