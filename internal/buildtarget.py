@@ -89,8 +89,9 @@ class BuildTarget(object):
 		# we could optimize this by not writing the file if all the 
 		# dependencies are explicit i.e. no FindPathSets are present
 
-		# sort the list in case of determinism problems with filesystem walk order
-		x = self.resolveDependencies(context)
+		# list os already sorted (in case of determinism problems with filesystem walk order)
+		# take a copy here since it is used from other places
+		x = list(self.resolveDependencies(context))
 		
 		# since this is meant to be a list of lines, normalize with a split->join
 		# also make any non-linesep \r or \n chars explicit to avoid confusion when diffing
@@ -106,6 +107,8 @@ class BuildTarget(object):
 			of dependency strings here.
 			
 			Returns a SORTED list of dependencies as strings (paths). Either files or targets.
+			
+			Not not modify the returned list.
 		"""
 		if self.deps is not None: return self.deps
 
