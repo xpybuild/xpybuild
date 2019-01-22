@@ -215,14 +215,15 @@ class BuildTarget(object):
 					latestImplicitInputs = f.read().split(os.linesep)
 					if latestImplicitInputs != implicitInputs:
 						maxdifflines = int(os.getenv('XPYBUILD_IMPLICIT_INPUTS_MAX_DIFF_LINES', '30'))/2
-						added = ['+ %s'%x for x in latestImplicitInputs if x not in implicitInputs]
-						removed = ['- %s'%x for x in implicitInputs if x not in latestImplicitInputs]
-						if len(added) > maxdifflines: added = added[:maxdifflines]+['...']
-						if len(removed) > maxdifflines: removed = removed[:maxdifflines]+['...']
+						added = ['+ %s'%x for x in implicitInputs if x not in latestImplicitInputs]
+						removed = ['- %s'%x for x in latestImplicitInputs if x not in implicitInputs]
+						# the end is usually more informative than beginning
+						if len(added) > maxdifflines: added = ['...']+added[len(added)-maxdifflines:] 
+						if len(removed) > maxdifflines: removed = ['...']+removed[len(removed)-maxdifflines:]
 						if not added and not removed: added = ['N/A']
 						log.info('Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self._implicitInputsFile, 
 							'\n\t'.join(
-								['previous build had %d lines, current build has %d lines'%(len(implicitInputs), len(latestImplicitInputs))]+removed+added
+								['previous build had %d lines, current build has %d lines'%(len(latestImplicitInputs), len(implicitInputs))]+removed+added
 							).replace('\r','\\r\r'))
 						return False
 					else:
