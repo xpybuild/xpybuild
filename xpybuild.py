@@ -158,6 +158,7 @@ def main(args):
 '      --random-priority      Randomizes build order',
 '      --verify               Performs additional verifications during the ',
 '                             build to to help detect bugs in the build files. ',
+'                             [verify is currently an experimental feature]',
 '      --profile              Profiles all the worker threads',
 '   -F --format               Message output format.',
 '                             Options:',

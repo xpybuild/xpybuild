@@ -27,7 +27,7 @@
 - process.call(): this method now accepts an options dictionary, which should be set wherever possible; this avoids callers having to deal with passing boilerplate defaults in to call manually. 
 - basetarget: new utility methods have been added addHashableImplicitInputOption('optionkey') and addHashableImplicitInput('foo=bar') to make it easier for target classes to specify their implicit inputs without needing to implement getHashableImplicitInputs()
 - buildcontext: getExpandPropertyValues() now handles callable(context) inputs as well as other strings, allowing it to perform common resolutions needed in many different situations. 
-- Command line: new option --verify that can be used to run the build in a slower and stricter mode that will flag up potential build problems. This feature should be considered experimental in this release. 
+- Command line: new (experimental) option --verify that can be used to run the build in a slower and stricter mode that will flag up potential build problems. This feature should be considered experimental in this release. 
 
 
 # 1.13
