@@ -78,7 +78,7 @@ class CompilerMakeDependsPathSet(BasePathSet):
 	def __repr__(self):
 		return "MakeDepend(%s, %s)" % (self.sources, self.flags)
 	def resolveWithDestinations(self, context):
-		return [(i, os.path.basename(i)) for i in _resolveUnderlyingDependencies(context)]
+		return [(i, os.path.basename(i)) for i in self._resolveUnderlyingDependencies(context)]
 	def clean(self):
 		dfile = self.target.workDir+'.makedepend'
 		deleteFile(dfile)
