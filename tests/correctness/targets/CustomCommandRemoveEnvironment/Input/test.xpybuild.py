@@ -13,10 +13,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+import os
 from propertysupport import *
 from buildcommon import *
 from pathsets import *
 
 from targets.custom import CustomCommand
 
-CustomCommand('${OUTPUT_DIR}/output.txt', ['/usr/bin/env'], [], env={'UNSET_ENV':None, 'ADD_ENV':'Foo', 'OVERRIDE_ENV':'Quuxx'}, redirectStdOutToTarget=True)
+CustomCommand('${OUTPUT_DIR}/output.txt', [os.getenv('ComSpec', 'cmd.exe'), '/c', 'set'] if IS_WINDOWS else ['/usr/bin/env'], [], env={'UNSET_ENV':None, 'ADD_ENV':'Foo', 'OVERRIDE_ENV':'Quuxx'}, redirectStdOutToTarget=True)
