@@ -36,13 +36,13 @@ install:
 # for running tests and building documentation:
 script:
   - cd tests
-  - pysys.py --purge --threads auto -X PYTHON_COVERAGE=true
+  - pysys.py run --purge --threads auto -X PYTHON_COVERAGE=true
   
   - |
     if [[ -n $XPYBUILD_DOC_AND_DEPLOY ]]; then (
        set -e
        $PY -m pip install epydoc
-       $PY ./xpybuild.py EPYDOC_ROOT=.
+       $PY ../xpybuild.py EPYDOC_ROOT=.
        export XPYBUILD_VERSION=`cat release-output/VERSION.txt`
        "export TRAVIS_TAG=$XPYBUILD_VERSION"
     )
