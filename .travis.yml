@@ -30,24 +30,26 @@ cache: pip
 install:
   - if [[ -z $PY ]]; then export PY=python$TRAVIS_PYTHON_VERSION; fi
   - $PY -m pip --version
+  - $PY -m pip install coverage
   
   - $PY -m pip install pysys==1.4.0
 
 # for running tests and building documentation:
 script:
-  - cd tests
-  - pysys.py run --purge --threads auto -X PYTHON_COVERAGE=true
-  
   - |
     if [[ -n $XPYBUILD_DOC_AND_DEPLOY ]]; then (
        set -e
        $PY -m pip install epydoc
-       $PY ../xpybuild.py EPYDOC_ROOT=.
+       $PY ./xpybuild.py EPYDOC_ROOT=.
        export XPYBUILD_VERSION=`cat release-output/VERSION.txt`
        "export TRAVIS_TAG=$XPYBUILD_VERSION"
     )
     fi
-  - cd ..
+
+  - cd tests/correctness
+  - pysys.py run --purge --threads auto -X PYTHON_COVERAGE=true
+
+  - cd ../..
 
 after_script:
   # upload Python code coverage
