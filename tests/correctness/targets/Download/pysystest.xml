@@ -10,6 +10,10 @@ To check the functionality of the Download target
   </description>
 
   <classification>
+  <groups>
+  <!-- can't run inside a CI as needs external network access -->
+  <group>skip_ci</group>
+  </groups>
   </classification>
 
   <data>
