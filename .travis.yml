@@ -1,0 +1,90 @@
+# Travis CI configuration file. 
+#
+# Executes Unix shell commands instructions from "install", then "script" sections, then finally invokes "deploy" if successful. 
+#
+# Only required setup in Travis is to set the secure environment variable GITHUB_API_KEY to 
+# a personal access token from this GitHub repo (to be found under Developer Settings)
+#
+
+matrix:
+  include:
+  
+  - name: Python 2.7 Linux + doc + deploy
+    os: linux
+    python: 2.7
+    env: XPYBUILD_DOC_AND_DEPLOY=true
+  
+  - name: Python 2.7 Windows
+    os: windows
+    language: sh
+    before_install: 
+      - unset GITHUB_API_KEY
+      - choco install python2 vcredist2008 -i vcpython27
+      - export PATH=/c/Python27:/c/Python27/Scripts:$PATH
+    filter_secrets: false
+
+# Default Linux build runs on Ubuntu
+language: python
+cache: pip
+
+install:
+  - if [[ -z $PY ]]; then export PY=python$TRAVIS_PYTHON_VERSION; fi
+  - $PY -m pip --version
+  
+  - $PY -m pip install pysys==1.4.0
+
+# for running tests and building documentation:
+script:
+  - cd tests
+  - pysys.py --purge --threads auto -X PYTHON_COVERAGE=true
+  
+  - |
+    if [[ -n $XPYBUILD_DOC_AND_DEPLOY ]]; then (
+       set -e
+       $PY -m pip install epydoc
+       $PY ./xpybuild.py EPYDOC_ROOT=.
+       export XPYBUILD_VERSION=`cat release-output/VERSION.txt`
+       "export TRAVIS_TAG=$XPYBUILD_VERSION"
+    )
+    fi
+  - cd ..
+
+after_script:
+  # upload Python code coverage
+  - cd tests
+  - codecov
+  - cd ..
+  
+deploy:
+  - provider: releases
+    api_key: $GITHUB_API_KEY
+    file_glob: true
+    file: 
+      - release-output/*.zip
+    skip_cleanup: true
+    overwrite: true
+    on: 
+       branch: master
+       
+       # best to only publish from one platform to avoid possible race conditions, use 2.7 as only it has the epydocs
+       condition: $XPYBUILD_DOC_AND_DEPLOY = true
+
+    name: "xpybuild v$XPYBUILD_VERSION"
+    body: This release adds <TODO>. There are also a number of bug fixes and other improvements. See CHANGELOG.md for a full list of changes. 
+  
+    # this is a draft release, allows manually editing details in github UI
+    draft: true
+
+  - provider: pages
+    github-token: $GITHUB_API_KEY
+    target-branch: gh-pages
+    local-dir: release-output\doc\api
+    skip_cleanup: true
+    keep-history: true
+    project-name: "XPyBuild $XPYBUILD_VERSION"
+    
+    on: 
+       branch: master
+       
+       # best to only publish from one platform to avoid possible race conditions, use 2.7 as only it has the epydocs
+       condition: $XPYBUILD_DOC_AND_DEPLOY = true

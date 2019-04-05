@@ -27,6 +27,7 @@ from pathsets import *
 
 from targets.zip import Zip
 from targets.copy import Copy
+from targets.writefile import WriteFile
 from targets.custom import CustomCommand
 
 from utils.process import call
@@ -34,11 +35,13 @@ from utils.process import call
 requireXpyBuildVersion('1.12')
 
 # Need the caller to provide the path to epydoc
-definePathProperty('EPYDOC_ROOT', None, mustExist=True) # parent of the /lib directory
+definePathProperty('EPYDOC_ROOT', None, mustExist=True) # parent of the /lib directory; used for local builds but not Travis
 defineOutputDirProperty('OUTPUT_DIR', 'release-output')
 definePropertiesFromFile('release.properties')
 
 def markdownToTxt(f): return f.replace('.md', '.txt')
+
+WriteFile('${OUTPUT_DIR}/VERSION.txt', '${VERSION}')
 
 CustomCommand('${OUTPUT_DIR}/doc/api/', 
 	command=[ 
