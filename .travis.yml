@@ -50,7 +50,7 @@ script:
 
   # run tests
   - cd tests/correctness
-  - pysys.py run --purge --threads auto -X PYTHON_COVERAGE=true --exclude skip_ci
+  - pysys.py run --threads auto -X PYTHON_COVERAGE=true --exclude skip_ci
   - cd ../..
 
 after_script:

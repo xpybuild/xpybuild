@@ -12,7 +12,7 @@ class PySysTest(XpybuildBaseTest):
 		failedModules = []
 		
 		DIR = PROJECT.XPYBUILD_ROOT
-		allScripts = []c
+		allScripts = []
 		for dirpath, dirnames, filenames in os.walk(DIR):
 			for excl in ['.svn', 'tests', 'release-output', 
 					# doesn't contain any
