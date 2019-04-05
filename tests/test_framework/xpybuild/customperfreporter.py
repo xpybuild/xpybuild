@@ -4,11 +4,8 @@ import logging, io, sys
 
 def getXpybuildVersion(project):
 	assert project, 'not initialized yet'
-	with io.open(project.XPYBUILD_ROOT+'/release.properties', encoding='iso-8859-1') as f:
-		key, version = f.read().strip().split('=')
-		assert key=='VERSION', key
-		return version
-
+	with io.open(project.XPYBUILD_ROOT+'/XPYBUILD_VERSION', encoding='ascii') as f:
+		return f.read().strip()
 
 class XpybuildPerfReporter(CSVPerformanceReporter):
 	def __init__(self, project, summaryfile, testoutdir):
