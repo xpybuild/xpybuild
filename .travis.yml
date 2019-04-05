@@ -56,12 +56,8 @@ script:
 after_script:
   # upload Python code coverage
   - cd tests
-  - ls -a correctness/framework/AddHashableImplicitInputs/Output/linux
+  - $PY combine_coverage.py
   - codecov
-  - cd correctness/framework/AddHashableImplicitInputs/Output/linux
-  - codecov
-  - cd ../../../../..
-  
   - cd ..
   
 deploy:
