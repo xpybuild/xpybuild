@@ -19,13 +19,7 @@ class XpybuildBaseTest(BaseTest):
 		args = args or []
 		try:
 			try:
-				environs = {}
-				if PLATFORM != 'win32':
-					pythonhome = os.path.dirname(sys.executable)
-					if pythonhome.endswith('bin'): pythonhome = os.path.dirname(pythonhome)
-					# python doesn't seem to launch on linux without PYTHONHOME being set
-					environs['PYTHONHOME'] = pythonhome
-					environs['PYTHONPATH'] = ''
+				environs = self.createEnvirons(env, command=sys.executable)
 				args = 	[
 #					PROJECT.rootdir+'/../xpybuild.py', 
 					PROJECT.XPYBUILD,
@@ -45,10 +39,6 @@ class XpybuildBaseTest(BaseTest):
 					assert args[0].endswith('py'), args[0] # use the script path not the dir
 					assert os.path.exists(args[0]), args[0]
 					self.log.info('   see %s', os.path.normpath(self.output+'/profileoutput.py'))
-
-				if env:
-					for k in env:
-						environs[k] = env[k]
 
 				result = self.startProcess(sys.executable, args, 
 					environs=environs, 
