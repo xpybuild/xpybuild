@@ -80,7 +80,9 @@ def _compareVersion(version, ref):
 	ref = ref.split('.')
 	equal = True
 	for i in range(0, min(len(version), len(ref))):
-		if int(version[i]) < int(ref[i]):
+		if (version[i]+ref[i]).isdigit() and int(version[i]) < int(ref[i]):
+			return False
+		if version[i] < ref[i]: # fall back to lexical comparison for thigns like .beta1
 			return False
 		elif version[i] != ref[i]:
 			equal = False
