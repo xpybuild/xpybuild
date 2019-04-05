@@ -37,20 +37,13 @@ class PySysTest(XpybuildBaseTest):
 				skipped += 1
 				continue
 			
-			environs = {}#dict(os.environ)
-			if PLATFORM != 'win32':
-				pythonhome = os.path.dirname(sys.executable)
-				if pythonhome.endswith('bin'): pythonhome = os.path.dirname(pythonhome)
-				# python doesn't seem to launch on linux without PYTHONHOME being set
-				environs['PYTHONHOME'] = pythonhome
-			else:
-				environs['SYSTEMROOT'] = os.environ['SYSTEMROOT']
-			environs['PYTHONPATH'] = DIR
+			environs = self.createEnvirons({'PYTHONPATH':DIR}, command=sys.executable)
 			args = ['-m', 'doctest', '-v', f]
 			pythoncoverage = getattr(self, 'PYTHON_COVERAGE', '')=='true'
 			if pythoncoverage:
 				self.log.info('Enabling Python code coverage')
-				args = ['-m', 'coverage', 'run', '--source=%s'%PROJECT.XPYBUILD_ROOT]+args
+				# use -a to aggregate the coverage together rather than overwriting
+				args = ['-m', 'coverage', 'run', '-a', '--source=%s'%PROJECT.XPYBUILD_ROOT]+args
 			result = self.startProcess(sys.executable, args, 
 				environs=environs, 
 				stdout=moduleName+'.out', stderr=moduleName+'.err', displayName='doctest '+moduleName, 

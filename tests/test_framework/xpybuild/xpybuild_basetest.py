@@ -20,6 +20,7 @@ class XpybuildBaseTest(BaseTest):
 		try:
 			try:
 				environs = self.createEnvirons(env, command=sys.executable)
+				environs['COVERAGE_FILE'] = '.coverage.%s'%stdouterr # use unique names to avoid overwriting
 				args = 	[
 #					PROJECT.rootdir+'/../xpybuild.py', 
 					PROJECT.XPYBUILD,
@@ -30,7 +31,7 @@ class XpybuildBaseTest(BaseTest):
 				pythoncoverage = getattr(self, 'PYTHON_COVERAGE', '')=='true'
 				if pythoncoverage:
 					self.log.info('Enabling Python code coverage')
-					args = ['-m', 'coverage', 'run', '--source=%s'%PROJECT.XPYBUILD_ROOT]+args
+					args = ['-m', 'coverage', 'run', '--source=%s'%PROJECT.XPYBUILD_ROOT, '--omit=*tests/*']+args
 				elif os.getenv('XPYBUILD_PPROFILE',None):
 					self.log.info('Enabling Python per-line pprofile')
 					args = [os.environ['XPYBUILD_PPROFILE'], '--out', 'profileoutput.py', 
