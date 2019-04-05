@@ -242,7 +242,7 @@ class BaseTarget(Composable):
 		
 		@param item: a string (which may contain substitution variables), 
 		or a function that accepts a context parameter and returns a string. 
-		The item will converted to a string using L{BuildContext.expandPropertyValues}. 
+		The item will converted to a string using L{buildcontext.BuildContext.expandPropertyValues}. 
 		For example, 'myparameter="foobar"'. 
 		
 		"""

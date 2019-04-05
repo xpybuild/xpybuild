@@ -33,7 +33,9 @@ class WriteFile(BaseTarget):
 		"""
 		Constructor. 
 		
-		Example usage: WriteFile('${OUTPUT_DIR}/foo.txt', lambda context: '\n'.join(['Foo:', context.expandPropertyValues('${FOO}')]))
+		Example usage:: 
+		
+			WriteFile('${OUTPUT_DIR}/foo.txt', lambda context: '\\n'.join(['Foo:', context.expandPropertyValues('${FOO}')]))
 		
 		@param name: the output filename
 		
