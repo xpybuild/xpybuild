@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>targets.docker</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="targets-module.html">Package&nbsp;targets</a> ::
+        Module&nbsp;docker
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="targets.docker-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="targets.docker-module.html">Module targets.docker</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># xpyBuild - eXtensible Python-based Build System</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2013 - 2018 Software AG, Darmstadt, Germany and/or its licensors</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment">#   Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment">#   you may not use this file except in compliance with the License.</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment">#   You may obtain a copy of the License at</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment">#       http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment">#   Unless required by applicable law or agreed to in writing, software</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment">#   distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment">#   See the License for the specific language governing permissions and</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment">#   limitations under the License.</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"># $Id: touch.py 301527 2017-02-06 15:31:43Z matj $</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt> <tt class="py-name">inspect</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module buildcommon=buildcommon-module.html"><a title="buildcommon" class="py-name" href="#" onclick="return doclink('link-0', 'buildcommon', 'link-0');">buildcommon</a></tt> <tt class="py-keyword">import</tt> <tt class="py-op">*</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name" targets="Module propertysupport=propertysupport-module.html"><a title="propertysupport" class="py-name" href="#" onclick="return doclink('link-1', 'propertysupport', 'link-1');">propertysupport</a></tt> <tt class="py-keyword">import</tt> <tt class="py-op">*</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-2" class="py-name" targets="Module basetarget=basetarget-module.html"><a title="basetarget" class="py-name" href="#" onclick="return doclink('link-2', 'basetarget', 'link-2');">basetarget</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Class basetarget.BaseTarget=basetarget.BaseTarget-class.html"><a title="basetarget.BaseTarget" class="py-name" href="#" onclick="return doclink('link-3', 'BaseTarget', 'link-3');">BaseTarget</a></tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-4" class="py-name" targets="Module pathsets=pathsets-module.html"><a title="pathsets" class="py-name" href="#" onclick="return doclink('link-4', 'pathsets', 'link-4');">pathsets</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Class pathsets.PathSet=pathsets.PathSet-class.html"><a title="pathsets.PathSet" class="py-name" href="#" onclick="return doclink('link-5', 'PathSet', 'link-5');">PathSet</a></tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-6" class="py-name" targets="Package utils=utils-module.html"><a title="utils" class="py-name" href="#" onclick="return doclink('link-6', 'utils', 'link-6');">utils</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Module utils.fileutils=utils.fileutils-module.html"><a title="utils.fileutils" class="py-name" href="#" onclick="return doclink('link-7', 'fileutils', 'link-7');">fileutils</a></tt> <tt class="py-keyword">import</tt> <tt class="py-name">openForWrite</tt><tt class="py-op">,</tt> <tt id="link-8" class="py-name" targets="Function utils.fileutils.normLongPath()=utils.fileutils-module.html#normLongPath"><a title="utils.fileutils.normLongPath" class="py-name" href="#" onclick="return doclink('link-8', 'normLongPath', 'link-8');">normLongPath</a></tt><tt class="py-op">,</tt> <tt id="link-9" class="py-name" targets="Function utils.fileutils.mkdir()=utils.fileutils-module.html#mkdir"><a title="utils.fileutils.mkdir" class="py-name" href="#" onclick="return doclink('link-9', 'mkdir', 'link-9');">mkdir</a></tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-10" class="py-name"><a title="utils" class="py-name" href="#" onclick="return doclink('link-10', 'utils', 'link-6');">utils</a></tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Module utils.process=utils.process-module.html"><a title="utils.process" class="py-name" href="#" onclick="return doclink('link-11', 'process', 'link-11');">process</a></tt> <tt class="py-keyword">import</tt> <tt id="link-12" class="py-name" targets="Method utils.compilers.Process.call()=utils.compilers.Process-class.html#call,Method utils.compilers.VisualStudio.call()=utils.compilers.VisualStudio-class.html#call,Function utils.process.call()=utils.process-module.html#call"><a title="utils.compilers.Process.call
+utils.compilers.VisualStudio.call
+utils.process.call" class="py-name" href="#" onclick="return doclink('link-12', 'call', 'link-12');">call</a></tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-13" class="py-name" targets="Module buildexceptions=buildexceptions-module.html"><a title="buildexceptions" class="py-name" href="#" onclick="return doclink('link-13', 'buildexceptions', 'link-13');">buildexceptions</a></tt> <tt class="py-keyword">import</tt> <tt id="link-14" class="py-name" targets="Class buildexceptions.BuildException=buildexceptions.BuildException-class.html"><a title="buildexceptions.BuildException" class="py-name" href="#" onclick="return doclink('link-14', 'BuildException', 'link-14');">BuildException</a></tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-15" class="py-name"><a title="utils" class="py-name" href="#" onclick="return doclink('link-15', 'utils', 'link-6');">utils</a></tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Module utils.outputhandler=utils.outputhandler-module.html"><a title="utils.outputhandler" class="py-name" href="#" onclick="return doclink('link-16', 'outputhandler', 'link-16');">outputhandler</a></tt> <tt class="py-keyword">import</tt> <tt id="link-17" class="py-name" targets="Class utils.outputhandler.ProcessOutputHandler=utils.outputhandler.ProcessOutputHandler-class.html"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-17', 'ProcessOutputHandler', 'link-17');">ProcessOutputHandler</a></tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt id="link-18" class="py-name" targets="Function propertysupport.defineOption()=propertysupport-module.html#defineOption"><a title="propertysupport.defineOption" class="py-name" href="#" onclick="return doclink('link-18', 'defineOption', 'link-18');">defineOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.path'</tt><tt class="py-op">,</tt> <tt class="py-string">'docker'</tt><tt class="py-op">)</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt id="link-19" class="py-name"><a title="propertysupport.defineOption" class="py-name" href="#" onclick="return doclink('link-19', 'defineOption', 'link-18');">defineOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.host'</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt id="link-20" class="py-name"><a title="propertysupport.defineOption" class="py-name" href="#" onclick="return doclink('link-20', 'defineOption', 'link-18');">defineOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.buildoptions'</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt id="link-21" class="py-name"><a title="propertysupport.defineOption" class="py-name" href="#" onclick="return doclink('link-21', 'defineOption', 'link-18');">defineOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.outputHandlerFactory'</tt><tt class="py-op">,</tt> <tt id="link-22" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-22', 'ProcessOutputHandler', 'link-17');">ProcessOutputHandler</a></tt><tt class="py-op">)</tt>  </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"> </tt>
+<a name="DockerBase"></a><div id="DockerBase-def"><a name="L36"></a><tt class="py-lineno"> 36</tt> <a class="py-toggle" href="#" id="DockerBase-toggle" onclick="return toggle('DockerBase');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="targets.docker.DockerBase-class.html">DockerBase</a><tt class="py-op">(</tt><tt class="py-base-class">BaseTarget</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DockerBase-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="DockerBase-expanded"><a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">        <tt class="py-docstring">""" A target that runs commands in docker, using stamp files for up-to-dateness</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">         </tt>
+<a name="DockerBase.__init__"></a><div id="DockerBase.__init__-def"><a name="L40"></a><tt class="py-lineno"> 40</tt> <a class="py-toggle" href="#" id="DockerBase.__init__-toggle" onclick="return toggle('DockerBase.__init__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.docker.DockerBase-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">imagename</tt><tt class="py-op">,</tt> <tt class="py-param">inputs</tt><tt class="py-op">,</tt> <tt class="py-param">depimage</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">dockerfile</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">buildArgs</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">dockerArgs</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DockerBase.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="DockerBase.__init__-expanded"><a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-docstring">                imagename: the name/tag of the image to build</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">imagename</tt> <tt class="py-op">=</tt> <tt class="py-name">imagename</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">depimage</tt> <tt class="py-op">=</tt> <tt class="py-name">depimage</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dockerfile</tt> <tt class="py-op">=</tt> <tt class="py-name">dockerfile</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buildArgs</tt> <tt class="py-op">=</tt> <tt class="py-name">buildArgs</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dockerArgs</tt> <tt class="py-op">=</tt> <tt class="py-name">dockerArgs</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">stampfile</tt> <tt class="py-op">=</tt> <tt class="py-string">'${BUILD_WORK_DIR}/targets/docker/.%s'</tt> <tt class="py-op">%</tt> <tt class="py-name">re</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Class propertyfunctors.sub=propertyfunctors.sub-class.html"><a title="propertyfunctors.sub" class="py-name" href="#" onclick="return doclink('link-23', 'sub', 'link-23');">sub</a></tt><tt class="py-op">(</tt><tt class="py-string">r'[\\/]'</tt><tt class="py-op">,</tt> <tt class="py-string">'_'</tt><tt class="py-op">,</tt> <tt class="py-name">imagename</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">depstampfile</tt> <tt class="py-op">=</tt> <tt class="py-string">'${BUILD_WORK_DIR}/targets/docker/.%s'</tt> <tt class="py-op">%</tt> <tt class="py-name">re</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name"><a title="propertyfunctors.sub" class="py-name" href="#" onclick="return doclink('link-24', 'sub', 'link-23');">sub</a></tt><tt class="py-op">(</tt><tt class="py-string">r'[\\/]'</tt><tt class="py-op">,</tt> <tt class="py-string">'_'</tt><tt class="py-op">,</tt> <tt class="py-name">depimage</tt><tt class="py-op">)</tt> <tt class="py-keyword">if</tt> <tt class="py-name">depimage</tt> <tt class="py-keyword">else</tt> <tt class="py-name">None</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">inputs</tt> <tt class="py-op">=</tt> <tt id="link-25" class="py-name"><a title="pathsets.PathSet" class="py-name" href="#" onclick="return doclink('link-25', 'PathSet', 'link-5');">PathSet</a></tt><tt class="py-op">(</tt><tt class="py-name">inputs</tt><tt class="py-op">)</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">                <tt id="link-26" class="py-name"><a title="basetarget.BaseTarget" class="py-name" href="#" onclick="return doclink('link-26', 'BaseTarget', 'link-3');">BaseTarget</a></tt><tt class="py-op">.</tt><tt id="link-27" class="py-name" targets="Method basetarget.BaseTarget.__init__()=basetarget.BaseTarget-class.html#__init__,Method buildcommon.FilenameStringFormatter.__init__()=buildcommon.FilenameStringFormatter-class.html#__init__,Method buildcommon.StringFormatter.__init__()=buildcommon.StringFormatter-class.html#__init__,Method buildcontext.BaseContext.__init__()=buildcontext.BaseContext-class.html#__init__,Method buildcontext.BuildContext.__init__()=buildcontext.BuildContext-class.html#__init__,Method buildcontext.BuildInitializationContext.__init__()=buildcontext.BuildInitializationContext-class.html#__init__,Method buildexceptions.BuildException.__init__()=buildexceptions.BuildException-class.html#__init__,Method pathsets.AddDestPrefix.__init__()=pathsets.AddDestPrefix-class.html#__init__,Method pathsets.BasePathSet.__init__()=pathsets.BasePathSet-class.html#__init__,Method pathsets.DirBasedPathSet.__init__()=pathsets.DirBasedPathSet-class.html#__init__,Method pathsets.DirGeneratedByTarget.__init__()=pathsets.DirGeneratedByTarget-class.html#__init__,Method pathsets.FilteredPathSet.__init__()=pathsets.FilteredPathSet-class.html#__init__,Method pathsets.FindPaths.__init__()=pathsets.FindPaths-class.html#__init__,Method pathsets.FlattenDest.__init__()=pathsets.FlattenDest-class.html#__init__,Method pathsets.MapDest.__init__()=pathsets.MapDest-class.html#__init__,Method pathsets.MapSrc.__init__()=pathsets.MapSrc-class.html#__init__,Method pathsets.PathSet.__init__()=pathsets.PathSet-class.html#__init__,Method pathsets.RemoveDestParents.__init__()=pathsets.RemoveDestParents-class.html#__init__,Method pathsets.SingletonDestRenameMapper.__init__()=pathsets.SingletonDestRenameMapper-class.html#__init__,Method pathsets.TargetsWithTag.__init__()=pathsets.TargetsWithTag-class.html#__init__,Method propertyfunctors.basename.__init__()=propertyfunctors.basename-class.html#__init__,Method propertyfunctors.dirname.__init__()=propertyfunctors.dirname-class.html#__init__,Method propertyfunctors.joinPaths.__init__()=propertyfunctors.joinPaths-class.html#__init__,Method propertyfunctors.sub.__init__()=propertyfunctors.sub-class.html#__init__,Method targets.copy.AddFileFooter.__init__()=targets.copy.AddFileFooter-class.html#__init__,Method targets.copy.AddFileHeader.__init__()=targets.copy.AddFileHeader-class.html#__init__,Method targets.copy.Copy.__init__()=targets.copy.Copy-class.html#__init__,Method targets.copy.FilteredCopy.__init__()=targets.copy.FilteredCopy-class.html#__init__,Method targets.copy.InsertFileContentsLineMapper.__init__()=targets.copy.InsertFileContentsLineMapper-class.html#__init__,Method targets.copy.OmitLines.__init__()=targets.copy.OmitLines-class.html#__init__,Method targets.copy.RegexLineMapper.__init__()=targets.copy.RegexLineMapper-class.html#__init__,Method targets.copy.StringReplaceLineMapper.__init__()=targets.copy.StringReplaceLineMapper-class.html#__init__,Method targets.csharp.CSharp.__init__()=targets.csharp.CSharp-class.html#__init__,Method targets.custom.Custom.__init__()=targets.custom.Custom-class.html#__init__,Method targets.custom.CustomCommand.__init__()=targets.custom.CustomCommand-class.html#__init__,Method targets.custom.CustomCommandWithCopy.__init__()=targets.custom.CustomCommandWithCopy-class.html#__init__,Method targets.custom.ResolvePath.__init__()=targets.custom.ResolvePath-class.html#__init__,Method targets.docker.DockerBase.__init__()=targets.docker.DockerBase-class.html#__init__,Method targets.docker.DockerBuild.__init__()=targets.docker.DockerBuild-class.html#__init__,Method targets.docker.DockerPushTag.__init__()=targets.docker.DockerPushTag-class.html#__init__,Method targets.download.Download.__init__()=targets.download.Download-class.html#__init__,Method targets.java.Jar.__init__()=targets.java.Jar-class.html#__init__,Method targets.java.Javac.__init__()=targets.java.Javac-class.html#__init__,Method targets.java.Javadoc.__init__()=targets.java.Javadoc-class.html#__init__,Method targets.java.SignJars.__init__()=targets.java.SignJars-class.html#__init__,Method targets.native.Ar.__init__()=targets.native.Ar-class.html#__init__,Method targets.native.C.__init__()=targets.native.C-class.html#__init__,Method targets.native.CompilerMakeDependsPathSet.__init__()=targets.native.CompilerMakeDependsPathSet-class.html#__init__,Method targets.native.Cpp.__init__()=targets.native.Cpp-class.html#__init__,Method targets.native.Link.__init__()=targets.native.Link-class.html#__init__,Method targets.symlink.SymLink.__init__()=targets.symlink.SymLink-class.html#__init__,Method targets.tar.Tarball.__init__()=targets.tar.Tarball-class.html#__init__,Method targets.touch.Touch.__init__()=targets.touch.Touch-class.html#__init__,Method targets.unpack.FilteredArchiveContents.__init__()=targets.unpack.FilteredArchiveContents-class.html#__init__,Method targets.unpack.Unpack.__init__()=targets.unpack.Unpack-class.html#__init__,Method targets.writefile.WriteFile.__init__()=targets.writefile.WriteFile-class.html#__init__,Method targets.zip.Zip.__init__()=targets.zip.Zip-class.html#__init__,Method utils.antglob.GlobUnusedPatternTracker.__init__()=utils.antglob.GlobUnusedPatternTracker-class.html#__init__,Method utils.buildfilelocation.BuildFileLocation.__init__()=utils.buildfilelocation.BuildFileLocation-class.html#__init__,Method utils.compilers.Archiver.__init__()=utils.compilers.Archiver-class.html#__init__,Method utils.compilers.Compiler.__init__()=utils.compilers.Compiler-class.html#__init__,Method utils.compilers.Depends.__init__()=utils.compilers.Depends-class.html#__init__,Method utils.compilers.GCC.__init__()=utils.compilers.GCC-class.html#__init__,Method utils.compilers.Linker.__init__()=utils.compilers.Linker-class.html#__init__,Method utils.compilers.Process.__init__()=utils.compilers.Process-class.html#__init__,Method utils.compilers.ToolChain.__init__()=utils.compilers.ToolChain-class.html#__init__,Method utils.compilers.UnixArchiver.__init__()=utils.compilers.UnixArchiver-class.html#__init__,Method utils.compilers.UnixCompiler.__init__()=utils.compilers.UnixCompiler-class.html#__init__,Method utils.compilers.UnixLinker.__init__()=utils.compilers.UnixLinker-class.html#__init__,Method utils.compilers.VisualStudio.__init__()=utils.compilers.VisualStudio-class.html#__init__,Method utils.consoleformatter.ConsoleFormatter.__init__()=utils.consoleformatter.ConsoleFormatter-class.html#__init__,Method utils.consoleformatter.DefaultConsoleFormatter.__init__()=utils.consoleformatter.DefaultConsoleFormatter-class.html#__init__,Method utils.functors.ComposableFn.__init__()=utils.functors.ComposableFn-class.html#__init__,Method utils.functors.ComposableWrapper.__init__()=utils.functors.ComposableWrapper-class.html#__init__,Method utils.functors.Compose.__init__()=utils.functors.Compose-class.html#__init__,Method utils.java.JavacProcessOutputHandler.__init__()=utils.java.JavacProcessOutputHandler-class.html#__init__,Method utils.make.MakeConsoleFormatter.__init__()=utils.make.MakeConsoleFormatter-class.html#__init__,Method utils.outputhandler.ProcessOutputHandler.__init__()=utils.outputhandler.ProcessOutputHandler-class.html#__init__,Method utils.outputhandler.StdoutRedirector.__init__()=utils.outputhandler.StdoutRedirector-class.html#__init__,Method utils.progress.ProgressBarConsoleFormatter.__init__()=utils.progress.ProgressBarConsoleFormatter-class.html#__init__,Method utils.progress.VT100ProgressBarConsoleFormatter.__init__()=utils.progress.VT100ProgressBarConsoleFormatter-class.html#__init__,Method utils.teamcity.TeamcityHandler.__init__()=utils.teamcity.TeamcityHandler-class.html#__init__,Method utils.visualstudio.VisualStudioConsoleFormatter.__init__()=utils.visualstudio.VisualStudioConsoleFormatter-class.html#__init__"><a title="basetarget.BaseTarget.__init__
+buildcommon.FilenameStringFormatter.__init__
+buildcommon.StringFormatter.__init__
+buildcontext.BaseContext.__init__
+buildcontext.BuildContext.__init__
+buildcontext.BuildInitializationContext.__init__
+buildexceptions.BuildException.__init__
+pathsets.AddDestPrefix.__init__
+pathsets.BasePathSet.__init__
+pathsets.DirBasedPathSet.__init__
+pathsets.DirGeneratedByTarget.__init__
+pathsets.FilteredPathSet.__init__
+pathsets.FindPaths.__init__
+pathsets.FlattenDest.__init__
+pathsets.MapDest.__init__
+pathsets.MapSrc.__init__
+pathsets.PathSet.__init__
+pathsets.RemoveDestParents.__init__
+pathsets.SingletonDestRenameMapper.__init__
+pathsets.TargetsWithTag.__init__
+propertyfunctors.basename.__init__
+propertyfunctors.dirname.__init__
+propertyfunctors.joinPaths.__init__
+propertyfunctors.sub.__init__
+targets.copy.AddFileFooter.__init__
+targets.copy.AddFileHeader.__init__
+targets.copy.Copy.__init__
+targets.copy.FilteredCopy.__init__
+targets.copy.InsertFileContentsLineMapper.__init__
+targets.copy.OmitLines.__init__
+targets.copy.RegexLineMapper.__init__
+targets.copy.StringReplaceLineMapper.__init__
+targets.csharp.CSharp.__init__
+targets.custom.Custom.__init__
+targets.custom.CustomCommand.__init__
+targets.custom.CustomCommandWithCopy.__init__
+targets.custom.ResolvePath.__init__
+targets.docker.DockerBase.__init__
+targets.docker.DockerBuild.__init__
+targets.docker.DockerPushTag.__init__
+targets.download.Download.__init__
+targets.java.Jar.__init__
+targets.java.Javac.__init__
+targets.java.Javadoc.__init__
+targets.java.SignJars.__init__
+targets.native.Ar.__init__
+targets.native.C.__init__
+targets.native.CompilerMakeDependsPathSet.__init__
+targets.native.Cpp.__init__
+targets.native.Link.__init__
+targets.symlink.SymLink.__init__
+targets.tar.Tarball.__init__
+targets.touch.Touch.__init__
+targets.unpack.FilteredArchiveContents.__init__
+targets.unpack.Unpack.__init__
+targets.writefile.WriteFile.__init__
+targets.zip.Zip.__init__
+utils.antglob.GlobUnusedPatternTracker.__init__
+utils.buildfilelocation.BuildFileLocation.__init__
+utils.compilers.Archiver.__init__
+utils.compilers.Compiler.__init__
+utils.compilers.Depends.__init__
+utils.compilers.GCC.__init__
+utils.compilers.Linker.__init__
+utils.compilers.Process.__init__
+utils.compilers.ToolChain.__init__
+utils.compilers.UnixArchiver.__init__
+utils.compilers.UnixCompiler.__init__
+utils.compilers.UnixLinker.__init__
+utils.compilers.VisualStudio.__init__
+utils.consoleformatter.ConsoleFormatter.__init__
+utils.consoleformatter.DefaultConsoleFormatter.__init__
+utils.functors.ComposableFn.__init__
+utils.functors.ComposableWrapper.__init__
+utils.functors.Compose.__init__
+utils.java.JavacProcessOutputHandler.__init__
+utils.make.MakeConsoleFormatter.__init__
+utils.outputhandler.ProcessOutputHandler.__init__
+utils.outputhandler.StdoutRedirector.__init__
+utils.progress.ProgressBarConsoleFormatter.__init__
+utils.progress.VT100ProgressBarConsoleFormatter.__init__
+utils.teamcity.TeamcityHandler.__init__
+utils.visualstudio.VisualStudioConsoleFormatter.__init__" class="py-name" href="#" onclick="return doclink('link-27', '__init__', 'link-27');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">stampfile</tt><tt class="py-op">,</tt> <tt class="py-name">inputs</tt> <tt class="py-op">+</tt> <tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">depstampfile</tt><tt class="py-op">]</tt> <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">depstampfile</tt> <tt class="py-keyword">else</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"> </tt>
+<a name="DockerBase.clean"></a><div id="DockerBase.clean-def"><a name="L54"></a><tt class="py-lineno"> 54</tt> <a class="py-toggle" href="#" id="DockerBase.clean-toggle" onclick="return toggle('DockerBase.clean');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.docker.DockerBase-class.html#clean">clean</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DockerBase.clean-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="DockerBase.clean-expanded"><a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">                <tt id="link-28" class="py-name"><a title="basetarget.BaseTarget" class="py-name" href="#" onclick="return doclink('link-28', 'BaseTarget', 'link-3');">BaseTarget</a></tt><tt class="py-op">.</tt><tt id="link-29" class="py-name" targets="Method basetarget.BaseTarget.clean()=basetarget.BaseTarget-class.html#clean,Method targets.custom.Custom.clean()=targets.custom.Custom-class.html#clean,Method targets.docker.DockerBase.clean()=targets.docker.DockerBase-class.html#clean,Method targets.native.C.clean()=targets.native.C-class.html#clean,Method targets.native.CompilerMakeDependsPathSet.clean()=targets.native.CompilerMakeDependsPathSet-class.html#clean,Method targets.native.Cpp.clean()=targets.native.Cpp-class.html#clean"><a title="basetarget.BaseTarget.clean
+targets.custom.Custom.clean
+targets.docker.DockerBase.clean
+targets.native.C.clean
+targets.native.CompilerMakeDependsPathSet.clean
+targets.native.Cpp.clean" class="py-name" href="#" onclick="return doclink('link-29', 'clean', 'link-29');">clean</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">context</tt><tt class="py-op">)</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">                <tt class="py-name">args</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-30" class="py-name" targets="Method basetarget.BaseTarget.getOption()=basetarget.BaseTarget-class.html#getOption"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-30', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.path'</tt><tt class="py-op">)</tt> <tt class="py-op">]</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">                <tt class="py-name">environs</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> <tt class="py-string">'DOCKER_HOST'</tt> <tt class="py-op">:</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-31" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-31', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.host'</tt><tt class="py-op">)</tt> <tt class="py-op">}</tt> <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-32', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.host'</tt><tt class="py-op">)</tt> <tt class="py-keyword">else</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">                <tt class="py-name">args</tt><tt class="py-op">.</tt><tt class="py-name">extend</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-string">'rmi'</tt><tt class="py-op">,</tt> <tt class="py-name">context</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name" targets="Method buildcontext.BaseContext.expandPropertyValues()=buildcontext.BaseContext-class.html#expandPropertyValues"><a title="buildcontext.BaseContext.expandPropertyValues" class="py-name" href="#" onclick="return doclink('link-33', 'expandPropertyValues', 'link-33');">expandPropertyValues</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">imagename</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">                <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">                        <tt id="link-34" class="py-name"><a title="utils.compilers.Process.call
+utils.compilers.VisualStudio.call
+utils.process.call" class="py-name" href="#" onclick="return doclink('link-34', 'call', 'link-12');">call</a></tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">,</tt> <tt class="py-name">outputHandler</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-35', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.outputHandlerFactory'</tt><tt class="py-op">)</tt><tt class="py-op">(</tt><tt class="py-string">'docker-rmi'</tt><tt class="py-op">,</tt> <tt class="py-name">treatStdErrAsErrors</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">timeout</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-36', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'process.timeout'</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">env</tt><tt class="py-op">=</tt><tt class="py-name">environs</tt><tt class="py-op">)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">                <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt> <tt class="py-keyword">as</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">                        <tt class="py-name">logger</tt> <tt class="py-op">=</tt> <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">getLogger</tt><tt class="py-op">(</tt><tt class="py-string">'DockerBase'</tt><tt class="py-op">)</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">                        <tt class="py-name">logger</tt><tt class="py-op">.</tt><tt class="py-name">info</tt><tt class="py-op">(</tt><tt class="py-string">'Exception cleaning Docker target: %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">e</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">         </tt>
+<a name="DockerBase.run"></a><div id="DockerBase.run-def"><a name="L65"></a><tt class="py-lineno"> 65</tt> <a class="py-toggle" href="#" id="DockerBase.run-toggle" onclick="return toggle('DockerBase.run');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.docker.DockerBase-class.html#run">run</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DockerBase.run-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="DockerBase.run-expanded"><a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">                <tt class="py-name">args</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-37', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.path'</tt><tt class="py-op">)</tt> <tt class="py-op">]</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">                <tt class="py-name">environs</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> <tt class="py-string">'DOCKER_HOST'</tt> <tt class="py-op">:</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-38" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-38', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.host'</tt><tt class="py-op">)</tt> <tt class="py-op">}</tt> <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-39', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.host'</tt><tt class="py-op">)</tt> <tt class="py-keyword">else</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+</div></div><a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line"> </tt>
+<a name="DockerBuild"></a><div id="DockerBuild-def"><a name="L69"></a><tt class="py-lineno"> 69</tt> <a class="py-toggle" href="#" id="DockerBuild-toggle" onclick="return toggle('DockerBuild');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="targets.docker.DockerBuild-class.html">DockerBuild</a><tt class="py-op">(</tt><tt class="py-base-class">DockerBase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DockerBuild-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="DockerBuild-expanded"><a name="DockerBuild.__init__"></a><div id="DockerBuild.__init__-def"><a name="L70"></a><tt class="py-lineno"> 70</tt> <a class="py-toggle" href="#" id="DockerBuild.__init__-toggle" onclick="return toggle('DockerBuild.__init__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.docker.DockerBuild-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">imagename</tt><tt class="py-op">,</tt> <tt class="py-param">inputs</tt><tt class="py-op">,</tt> <tt class="py-param">depimage</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">dockerfile</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">buildArgs</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">dockerArgs</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DockerBuild.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="DockerBuild.__init__-expanded"><a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">                <tt id="link-40" class="py-name" targets="Class targets.docker.DockerBase=targets.docker.DockerBase-class.html"><a title="targets.docker.DockerBase" class="py-name" href="#" onclick="return doclink('link-40', 'DockerBase', 'link-40');">DockerBase</a></tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="basetarget.BaseTarget.__init__
+buildcommon.FilenameStringFormatter.__init__
+buildcommon.StringFormatter.__init__
+buildcontext.BaseContext.__init__
+buildcontext.BuildContext.__init__
+buildcontext.BuildInitializationContext.__init__
+buildexceptions.BuildException.__init__
+pathsets.AddDestPrefix.__init__
+pathsets.BasePathSet.__init__
+pathsets.DirBasedPathSet.__init__
+pathsets.DirGeneratedByTarget.__init__
+pathsets.FilteredPathSet.__init__
+pathsets.FindPaths.__init__
+pathsets.FlattenDest.__init__
+pathsets.MapDest.__init__
+pathsets.MapSrc.__init__
+pathsets.PathSet.__init__
+pathsets.RemoveDestParents.__init__
+pathsets.SingletonDestRenameMapper.__init__
+pathsets.TargetsWithTag.__init__
+propertyfunctors.basename.__init__
+propertyfunctors.dirname.__init__
+propertyfunctors.joinPaths.__init__
+propertyfunctors.sub.__init__
+targets.copy.AddFileFooter.__init__
+targets.copy.AddFileHeader.__init__
+targets.copy.Copy.__init__
+targets.copy.FilteredCopy.__init__
+targets.copy.InsertFileContentsLineMapper.__init__
+targets.copy.OmitLines.__init__
+targets.copy.RegexLineMapper.__init__
+targets.copy.StringReplaceLineMapper.__init__
+targets.csharp.CSharp.__init__
+targets.custom.Custom.__init__
+targets.custom.CustomCommand.__init__
+targets.custom.CustomCommandWithCopy.__init__
+targets.custom.ResolvePath.__init__
+targets.docker.DockerBase.__init__
+targets.docker.DockerBuild.__init__
+targets.docker.DockerPushTag.__init__
+targets.download.Download.__init__
+targets.java.Jar.__init__
+targets.java.Javac.__init__
+targets.java.Javadoc.__init__
+targets.java.SignJars.__init__
+targets.native.Ar.__init__
+targets.native.C.__init__
+targets.native.CompilerMakeDependsPathSet.__init__
+targets.native.Cpp.__init__
+targets.native.Link.__init__
+targets.symlink.SymLink.__init__
+targets.tar.Tarball.__init__
+targets.touch.Touch.__init__
+targets.unpack.FilteredArchiveContents.__init__
+targets.unpack.Unpack.__init__
+targets.writefile.WriteFile.__init__
+targets.zip.Zip.__init__
+utils.antglob.GlobUnusedPatternTracker.__init__
+utils.buildfilelocation.BuildFileLocation.__init__
+utils.compilers.Archiver.__init__
+utils.compilers.Compiler.__init__
+utils.compilers.Depends.__init__
+utils.compilers.GCC.__init__
+utils.compilers.Linker.__init__
+utils.compilers.Process.__init__
+utils.compilers.ToolChain.__init__
+utils.compilers.UnixArchiver.__init__
+utils.compilers.UnixCompiler.__init__
+utils.compilers.UnixLinker.__init__
+utils.compilers.VisualStudio.__init__
+utils.consoleformatter.ConsoleFormatter.__init__
+utils.consoleformatter.DefaultConsoleFormatter.__init__
+utils.functors.ComposableFn.__init__
+utils.functors.ComposableWrapper.__init__
+utils.functors.Compose.__init__
+utils.java.JavacProcessOutputHandler.__init__
+utils.make.MakeConsoleFormatter.__init__
+utils.outputhandler.ProcessOutputHandler.__init__
+utils.outputhandler.StdoutRedirector.__init__
+utils.progress.ProgressBarConsoleFormatter.__init__
+utils.progress.VT100ProgressBarConsoleFormatter.__init__
+utils.teamcity.TeamcityHandler.__init__
+utils.visualstudio.VisualStudioConsoleFormatter.__init__" class="py-name" href="#" onclick="return doclink('link-41', '__init__', 'link-27');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">imagename</tt><tt class="py-op">,</tt> <tt class="py-name">inputs</tt><tt class="py-op">,</tt> <tt class="py-name">depimage</tt><tt class="py-op">,</tt> <tt class="py-name">dockerfile</tt><tt class="py-op">,</tt> <tt class="py-name">buildArgs</tt><tt class="py-op">,</tt> <tt class="py-name">dockerArgs</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line"> </tt>
+<a name="DockerBuild.run"></a><div id="DockerBuild.run-def"><a name="L73"></a><tt class="py-lineno"> 73</tt> <a class="py-toggle" href="#" id="DockerBuild.run-toggle" onclick="return toggle('DockerBuild.run');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.docker.DockerBuild-class.html#run">run</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DockerBuild.run-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="DockerBuild.run-expanded"><a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">                <tt class="py-name">args</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-42" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-42', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.path'</tt><tt class="py-op">)</tt> <tt class="py-op">]</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">                <tt class="py-name">environs</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> <tt class="py-string">'DOCKER_HOST'</tt> <tt class="py-op">:</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-43', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.host'</tt><tt class="py-op">)</tt> <tt class="py-op">}</tt> <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-44" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-44', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.host'</tt><tt class="py-op">)</tt> <tt class="py-keyword">else</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">                <tt class="py-name">dargs</tt> <tt class="py-op">=</tt> <tt class="py-name">list</tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">                <tt class="py-name">dargs</tt><tt class="py-op">.</tt><tt class="py-name">extend</tt><tt class="py-op">(</tt><tt class="py-op">[</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">                                <tt class="py-string">'build'</tt><tt class="py-op">,</tt> <tt class="py-string">'--rm=true'</tt><tt class="py-op">,</tt> <tt class="py-string">'-t'</tt><tt class="py-op">,</tt> <tt class="py-name">context</tt><tt class="py-op">.</tt><tt id="link-45" class="py-name"><a title="buildcontext.BaseContext.expandPropertyValues" class="py-name" href="#" onclick="return doclink('link-45', 'expandPropertyValues', 'link-33');">expandPropertyValues</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">imagename</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">                        <tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">                <tt class="py-name">dargs</tt><tt class="py-op">.</tt><tt class="py-name">extend</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-46', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.buildoptions'</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dockerArgs</tt><tt class="py-op">:</tt> <tt class="py-name">dargs</tt><tt class="py-op">.</tt><tt class="py-name">extend</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dockerArgs</tt><tt class="py-op">)</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buildArgs</tt><tt class="py-op">:</tt> <tt class="py-name">dargs</tt><tt class="py-op">.</tt><tt class="py-name">extend</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-string">"--build-arg=%s"</tt> <tt class="py-op">%</tt> <tt class="py-name">context</tt><tt class="py-op">.</tt><tt id="link-47" class="py-name"><a title="buildcontext.BaseContext.expandPropertyValues" class="py-name" href="#" onclick="return doclink('link-47', 'expandPropertyValues', 'link-33');">expandPropertyValues</a></tt><tt class="py-op">(</tt><tt class="py-name">x</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">x</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buildArgs</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dockerfile</tt><tt class="py-op">:</tt> <tt class="py-name">dargs</tt><tt class="py-op">.</tt><tt class="py-name">extend</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-string">"-f"</tt><tt class="py-op">,</tt> <tt class="py-name">context</tt><tt class="py-op">.</tt><tt id="link-48" class="py-name"><a title="buildcontext.BaseContext.expandPropertyValues" class="py-name" href="#" onclick="return doclink('link-48', 'expandPropertyValues', 'link-33');">expandPropertyValues</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dockerfile</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">                <tt class="py-name">inputs</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">inputs</tt><tt class="py-op">.</tt><tt id="link-49" class="py-name" targets="Method pathsets.BasePathSet.resolve()=pathsets.BasePathSet-class.html#resolve,Method targets.custom.ResolvePath.resolve()=targets.custom.ResolvePath-class.html#resolve"><a title="pathsets.BasePathSet.resolve
+targets.custom.ResolvePath.resolve" class="py-name" href="#" onclick="return doclink('link-49', 'resolve', 'link-49');">resolve</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">inputs</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> <tt class="py-keyword">raise</tt> <tt id="link-50" class="py-name"><a title="buildexceptions.BuildException" class="py-name" href="#" onclick="return doclink('link-50', 'BuildException', 'link-14');">BuildException</a></tt><tt class="py-op">(</tt><tt class="py-string">"Must specify a single input for Docker.BUILD"</tt><tt class="py-op">,</tt> <tt class="py-name">location</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">location</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">                <tt class="py-name">dargs</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">inputs</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">                <tt class="py-name">cwd</tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-51" class="py-name" targets="Class propertyfunctors.dirname=propertyfunctors.dirname-class.html"><a title="propertyfunctors.dirname" class="py-name" href="#" onclick="return doclink('link-51', 'dirname', 'link-51');">dirname</a></tt><tt class="py-op">(</tt><tt class="py-name">inputs</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">                <tt id="link-52" class="py-name"><a title="utils.compilers.Process.call
+utils.compilers.VisualStudio.call
+utils.process.call" class="py-name" href="#" onclick="return doclink('link-52', 'call', 'link-12');">call</a></tt><tt class="py-op">(</tt><tt class="py-name">dargs</tt><tt class="py-op">,</tt> <tt class="py-name">outputHandler</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-53" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-53', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.outputHandlerFactory'</tt><tt class="py-op">)</tt><tt class="py-op">(</tt><tt class="py-string">'docker-build'</tt><tt class="py-op">,</tt> <tt class="py-name">treatStdErrAsErrors</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">timeout</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-54" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-54', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'process.timeout'</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">env</tt><tt class="py-op">=</tt><tt class="py-name">environs</tt><tt class="py-op">,</tt> <tt class="py-name">cwd</tt><tt class="py-op">=</tt><tt class="py-name">cwd</tt><tt class="py-op">)</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">         </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">                <tt class="py-comment"># update the stamp file</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name" targets="Method basetarget.BaseTarget.updateStampFile()=basetarget.BaseTarget-class.html#updateStampFile"><a title="basetarget.BaseTarget.updateStampFile" class="py-name" href="#" onclick="return doclink('link-55', 'updateStampFile', 'link-55');">updateStampFile</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"> </tt>
+<a name="DockerPushTag"></a><div id="DockerPushTag-def"><a name="L94"></a><tt class="py-lineno"> 94</tt> <a class="py-toggle" href="#" id="DockerPushTag-toggle" onclick="return toggle('DockerPushTag');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="targets.docker.DockerPushTag-class.html">DockerPushTag</a><tt class="py-op">(</tt><tt class="py-base-class">DockerBase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DockerPushTag-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="DockerPushTag-expanded"><a name="DockerPushTag.__init__"></a><div id="DockerPushTag.__init__-def"><a name="L95"></a><tt class="py-lineno"> 95</tt> <a class="py-toggle" href="#" id="DockerPushTag.__init__-toggle" onclick="return toggle('DockerPushTag.__init__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.docker.DockerPushTag-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">imagename</tt><tt class="py-op">,</tt> <tt class="py-param">fromimage</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DockerPushTag.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="DockerPushTag.__init__-expanded"><a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">                <tt id="link-56" class="py-name"><a title="targets.docker.DockerBase" class="py-name" href="#" onclick="return doclink('link-56', 'DockerBase', 'link-40');">DockerBase</a></tt><tt class="py-op">.</tt><tt id="link-57" class="py-name"><a title="basetarget.BaseTarget.__init__
+buildcommon.FilenameStringFormatter.__init__
+buildcommon.StringFormatter.__init__
+buildcontext.BaseContext.__init__
+buildcontext.BuildContext.__init__
+buildcontext.BuildInitializationContext.__init__
+buildexceptions.BuildException.__init__
+pathsets.AddDestPrefix.__init__
+pathsets.BasePathSet.__init__
+pathsets.DirBasedPathSet.__init__
+pathsets.DirGeneratedByTarget.__init__
+pathsets.FilteredPathSet.__init__
+pathsets.FindPaths.__init__
+pathsets.FlattenDest.__init__
+pathsets.MapDest.__init__
+pathsets.MapSrc.__init__
+pathsets.PathSet.__init__
+pathsets.RemoveDestParents.__init__
+pathsets.SingletonDestRenameMapper.__init__
+pathsets.TargetsWithTag.__init__
+propertyfunctors.basename.__init__
+propertyfunctors.dirname.__init__
+propertyfunctors.joinPaths.__init__
+propertyfunctors.sub.__init__
+targets.copy.AddFileFooter.__init__
+targets.copy.AddFileHeader.__init__
+targets.copy.Copy.__init__
+targets.copy.FilteredCopy.__init__
+targets.copy.InsertFileContentsLineMapper.__init__
+targets.copy.OmitLines.__init__
+targets.copy.RegexLineMapper.__init__
+targets.copy.StringReplaceLineMapper.__init__
+targets.csharp.CSharp.__init__
+targets.custom.Custom.__init__
+targets.custom.CustomCommand.__init__
+targets.custom.CustomCommandWithCopy.__init__
+targets.custom.ResolvePath.__init__
+targets.docker.DockerBase.__init__
+targets.docker.DockerBuild.__init__
+targets.docker.DockerPushTag.__init__
+targets.download.Download.__init__
+targets.java.Jar.__init__
+targets.java.Javac.__init__
+targets.java.Javadoc.__init__
+targets.java.SignJars.__init__
+targets.native.Ar.__init__
+targets.native.C.__init__
+targets.native.CompilerMakeDependsPathSet.__init__
+targets.native.Cpp.__init__
+targets.native.Link.__init__
+targets.symlink.SymLink.__init__
+targets.tar.Tarball.__init__
+targets.touch.Touch.__init__
+targets.unpack.FilteredArchiveContents.__init__
+targets.unpack.Unpack.__init__
+targets.writefile.WriteFile.__init__
+targets.zip.Zip.__init__
+utils.antglob.GlobUnusedPatternTracker.__init__
+utils.buildfilelocation.BuildFileLocation.__init__
+utils.compilers.Archiver.__init__
+utils.compilers.Compiler.__init__
+utils.compilers.Depends.__init__
+utils.compilers.GCC.__init__
+utils.compilers.Linker.__init__
+utils.compilers.Process.__init__
+utils.compilers.ToolChain.__init__
+utils.compilers.UnixArchiver.__init__
+utils.compilers.UnixCompiler.__init__
+utils.compilers.UnixLinker.__init__
+utils.compilers.VisualStudio.__init__
+utils.consoleformatter.ConsoleFormatter.__init__
+utils.consoleformatter.DefaultConsoleFormatter.__init__
+utils.functors.ComposableFn.__init__
+utils.functors.ComposableWrapper.__init__
+utils.functors.Compose.__init__
+utils.java.JavacProcessOutputHandler.__init__
+utils.make.MakeConsoleFormatter.__init__
+utils.outputhandler.ProcessOutputHandler.__init__
+utils.outputhandler.StdoutRedirector.__init__
+utils.progress.ProgressBarConsoleFormatter.__init__
+utils.progress.VT100ProgressBarConsoleFormatter.__init__
+utils.teamcity.TeamcityHandler.__init__
+utils.visualstudio.VisualStudioConsoleFormatter.__init__" class="py-name" href="#" onclick="return doclink('link-57', '__init__', 'link-27');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">imagename</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">depimage</tt><tt class="py-op">=</tt><tt class="py-name">fromimage</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"> </tt>
+<a name="DockerPushTag.run"></a><div id="DockerPushTag.run-def"><a name="L98"></a><tt class="py-lineno"> 98</tt> <a class="py-toggle" href="#" id="DockerPushTag.run-toggle" onclick="return toggle('DockerPushTag.run');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.docker.DockerPushTag-class.html#run">run</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DockerPushTag.run-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="DockerPushTag.run-expanded"><a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">                <tt class="py-name">args</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-58', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.path'</tt><tt class="py-op">)</tt> <tt class="py-op">]</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">                <tt class="py-name">environs</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> <tt class="py-string">'DOCKER_HOST'</tt> <tt class="py-op">:</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-59" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-59', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.host'</tt><tt class="py-op">)</tt> <tt class="py-op">}</tt> <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-60" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-60', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.host'</tt><tt class="py-op">)</tt> <tt class="py-keyword">else</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">                <tt class="py-name">inputs</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">inputs</tt><tt class="py-op">.</tt><tt id="link-61" class="py-name"><a title="pathsets.BasePathSet.resolve
+targets.custom.ResolvePath.resolve" class="py-name" href="#" onclick="return doclink('link-61', 'resolve', 'link-49');">resolve</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">inputs</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> <tt class="py-keyword">raise</tt> <tt id="link-62" class="py-name"><a title="buildexceptions.BuildException" class="py-name" href="#" onclick="return doclink('link-62', 'BuildException', 'link-14');">BuildException</a></tt><tt class="py-op">(</tt><tt class="py-string">"Must not specify inputs for Docker.PUSHTAG"</tt><tt class="py-op">,</tt> <tt class="py-name">location</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">location</tt><tt class="py-op">)</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">                <tt class="py-name">dargs</tt> <tt class="py-op">=</tt> <tt class="py-name">list</tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">                <tt class="py-name">dargs</tt><tt class="py-op">.</tt><tt class="py-name">extend</tt><tt class="py-op">(</tt><tt class="py-op">[</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">                                <tt class="py-string">'tag'</tt><tt class="py-op">,</tt> <tt class="py-name">context</tt><tt class="py-op">.</tt><tt id="link-63" class="py-name"><a title="buildcontext.BaseContext.expandPropertyValues" class="py-name" href="#" onclick="return doclink('link-63', 'expandPropertyValues', 'link-33');">expandPropertyValues</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">depimage</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">context</tt><tt class="py-op">.</tt><tt id="link-64" class="py-name"><a title="buildcontext.BaseContext.expandPropertyValues" class="py-name" href="#" onclick="return doclink('link-64', 'expandPropertyValues', 'link-33');">expandPropertyValues</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">imagename</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">                        <tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">                <tt id="link-65" class="py-name"><a title="utils.compilers.Process.call
+utils.compilers.VisualStudio.call
+utils.process.call" class="py-name" href="#" onclick="return doclink('link-65', 'call', 'link-12');">call</a></tt><tt class="py-op">(</tt><tt class="py-name">dargs</tt><tt class="py-op">,</tt> <tt class="py-name">outputHandler</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-66', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.outputHandlerFactory'</tt><tt class="py-op">)</tt><tt class="py-op">(</tt><tt class="py-string">'docker-tag'</tt><tt class="py-op">,</tt> <tt class="py-name">treatStdErrAsErrors</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">timeout</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-67" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-67', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'process.timeout'</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">env</tt><tt class="py-op">=</tt><tt class="py-name">environs</tt><tt class="py-op">)</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">                <tt class="py-name">dargs</tt> <tt class="py-op">=</tt> <tt class="py-name">list</tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">                <tt class="py-name">dargs</tt><tt class="py-op">.</tt><tt class="py-name">extend</tt><tt class="py-op">(</tt><tt class="py-op">[</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">                                <tt class="py-string">'push'</tt><tt class="py-op">,</tt> <tt class="py-name">context</tt><tt class="py-op">.</tt><tt id="link-68" class="py-name"><a title="buildcontext.BaseContext.expandPropertyValues" class="py-name" href="#" onclick="return doclink('link-68', 'expandPropertyValues', 'link-33');">expandPropertyValues</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">imagename</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">                        <tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">                <tt id="link-69" class="py-name"><a title="utils.compilers.Process.call
+utils.compilers.VisualStudio.call
+utils.process.call" class="py-name" href="#" onclick="return doclink('link-69', 'call', 'link-12');">call</a></tt><tt class="py-op">(</tt><tt class="py-name">dargs</tt><tt class="py-op">,</tt> <tt class="py-name">outputHandler</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-70" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-70', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'docker.outputHandlerFactory'</tt><tt class="py-op">)</tt><tt class="py-op">(</tt><tt class="py-string">'docker-push'</tt><tt class="py-op">,</tt> <tt class="py-name">treatStdErrAsErrors</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">timeout</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-71" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-71', 'getOption', 'link-30');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'process.timeout'</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">env</tt><tt class="py-op">=</tt><tt class="py-name">environs</tt><tt class="py-op">)</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">                 </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">                <tt class="py-comment"># update the stamp file</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-72" class="py-name"><a title="basetarget.BaseTarget.updateStampFile" class="py-name" href="#" onclick="return doclink('link-72', 'updateStampFile', 'link-55');">updateStampFile</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Apr  5 15:17:00 2019
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

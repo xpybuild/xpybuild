@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>utils.outputhandler</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="utils-module.html">Package&nbsp;utils</a> ::
+        Module&nbsp;outputhandler
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="utils.outputhandler-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="utils.outputhandler-module.html">Module utils.outputhandler</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># xpyBuild - eXtensible Python-based Build System</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2014 - 2018 Software AG, Darmstadt, Germany and/or its licensors</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment">#   Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment">#   you may not use this file except in compliance with the License.</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment">#   You may obtain a copy of the License at</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment">#       http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment">#   Unless required by applicable law or agreed to in writing, software</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment">#   distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment">#   See the License for the specific language governing permissions and</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment">#   limitations under the License.</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"># $Id: outputhandler.py 301527 2017-02-06 15:31:43Z matj $</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment"># Authors: Ben Spiller</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">subprocess</tt><tt class="py-op">,</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt> <tt class="py-name">re</tt><tt class="py-op">,</tt> <tt class="py-name">logging</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module buildexceptions=buildexceptions-module.html"><a title="buildexceptions" class="py-name" href="#" onclick="return doclink('link-0', 'buildexceptions', 'link-0');">buildexceptions</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Class buildexceptions.BuildException=buildexceptions.BuildException-class.html"><a title="buildexceptions.BuildException" class="py-name" href="#" onclick="return doclink('link-1', 'BuildException', 'link-1');">BuildException</a></tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-2" class="py-name" targets="Module propertysupport=propertysupport-module.html"><a title="propertysupport" class="py-name" href="#" onclick="return doclink('link-2', 'propertysupport', 'link-2');">propertysupport</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Function propertysupport.defineOption()=propertysupport-module.html#defineOption"><a title="propertysupport.defineOption" class="py-name" href="#" onclick="return doclink('link-3', 'defineOption', 'link-3');">defineOption</a></tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-comment"># we might want a wrapper that stores all content and writes it to a file for artifact publishing, </tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-comment"># perhaps only iff an exception occurs and/or its not empty</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt id="link-4" class="py-name" targets="Variable utils.compilers._logger=utils.compilers-module.html#_logger,Variable utils.outputhandler._logger=utils.outputhandler-module.html#_logger"><a title="utils.compilers._logger
+utils.outputhandler._logger" class="py-name" href="#" onclick="return doclink('link-4', '_logger', 'link-4');">_logger</a></tt> <tt class="py-op">=</tt> <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">getLogger</tt><tt class="py-op">(</tt><tt class="py-string">'processoutput'</tt><tt class="py-op">)</tt> </tt>
+<a name="ProcessOutputHandler"></a><div id="ProcessOutputHandler-def"><a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt> <a class="py-toggle" href="#" id="ProcessOutputHandler-toggle" onclick="return toggle('ProcessOutputHandler');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="utils.outputhandler.ProcessOutputHandler-class.html">ProcessOutputHandler</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ProcessOutputHandler-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ProcessOutputHandler-expanded"><a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt class="py-docstring">        An extensible class for handling stdout/stderr output lines and return code </tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-docstring">        from a process, accumulating error and warnings, and converting into </tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-docstring">        appropriate log statements and a summary exception if it failed. </tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"><tt class="py-docstring">        It is expected that subclasses would be created to abtract away handling of </tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt class="py-docstring">        output from different particular types of process (e.g. Java compilation, </tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-docstring">        gmake, msbuild, etc).</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-docstring">        Usage: the handleLine method will be invoked for every line in the stdout </tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-docstring">        and stderr, then handleEnd will be called once, with the process returnCode </tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-docstring">        if known. handleEnd should raise a BuildException if the process is </tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-docstring">        deemed to have failed. </tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt class="py-docstring">        The errors and warnings lists can be inspected after handleEnd has been </tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"><tt class="py-docstring">        called to get further information if desired. </tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"><tt class="py-docstring">        Subclasses may often wish to do some of the following:</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-docstring">                - override the logic for deciding what consistutes an error/warning </tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-docstring">                        (see _decideLogLevel)</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-docstring">                - use a regex to get the filename and number from error messages to </tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"><tt class="py-docstring">                        support IDE jump-to integration (see _parseLocationFromLine)</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"><tt class="py-docstring">                - strip timestamp/threadid prefixes from lines (see _preprocessLine) </tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"><tt class="py-docstring">                - support warnings-as-errors behaviour by putting the first warning into </tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"><tt class="py-docstring">                        the final error message if the only error is that there are warnings </tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"><tt class="py-docstring">                        (by overriding handleEnd)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"><tt class="py-docstring">        This class is not thread-safe, so locking should be provided by the caller </tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"><tt class="py-docstring">        if multiple threads are in use (e.g. for reading stdout+err in parallel). </tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"><tt class="py-docstring">        &gt;&gt;&gt; h = ProcessOutputHandler('myhandler')</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line"><tt class="py-docstring">        &gt;&gt;&gt; h.handleLine(u'error: My error')</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line"><tt class="py-docstring">        &gt;&gt;&gt; h.handleLine(u'error: My error 2')</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line"><tt class="py-docstring">        &gt;&gt;&gt; len(h.getErrors())</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"><tt class="py-docstring">        2</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line"><tt class="py-docstring">        &gt;&gt;&gt; h.handleEnd(5)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line"><tt class="py-docstring">        Traceback (most recent call last):</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"><tt class="py-docstring">        ...</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line"><tt class="py-docstring">        BuildException: 2 errors, first is: error: My error</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"><tt class="py-docstring">        &gt;&gt;&gt; h = ProcessOutputHandler('myhandler')</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"><tt class="py-docstring">        &gt;&gt;&gt; h.handleLine(u'some message')</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line"><tt class="py-docstring">        &gt;&gt;&gt; h.handleLine(u'later message')</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"><tt class="py-docstring">        &gt;&gt;&gt; h.handleEnd(5)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line"><tt class="py-docstring">        Traceback (most recent call last):</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"><tt class="py-docstring">        ...</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"><tt class="py-docstring">        BuildException: myhandler failed with return code 5; no errors reported, last line was: later message</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">         </tt>
+<a name="ProcessOutputHandler.Options"></a><div id="ProcessOutputHandler.Options-def"><a name="L84"></a><tt class="py-lineno"> 84</tt> <a class="py-toggle" href="#" id="ProcessOutputHandler.Options-toggle" onclick="return toggle('ProcessOutputHandler.Options');">-</a><tt class="py-line">        <tt class="py-keyword">class</tt> <a class="py-def-name" href="utils.outputhandler.ProcessOutputHandler.Options-class.html">Options</a><tt class="py-op">:</tt> <tt class="py-comment"># may rework how we handle docstrings for options in a future release</tt> </tt>
+</div><a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"><tt class="py-docstring">                This class may be renamed or removed, please do not use it directly. </tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">                 </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">                <tt id="link-5" class="py-name" targets="Variable utils.outputhandler.ProcessOutputHandler.Options.ignoreReturnCode=utils.outputhandler.ProcessOutputHandler.Options-class.html#ignoreReturnCode"><a title="utils.outputhandler.ProcessOutputHandler.Options.ignoreReturnCode" class="py-name" href="#" onclick="return doclink('link-5', 'ignoreReturnCode', 'link-5');">ignoreReturnCode</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'ProcessOutputHandler.ignoreReturnCode'</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">                <tt class="py-string">""" If True, non-zero return codes </tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"><tt class="py-string">                are not treated as errors. </tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"><tt class="py-string">        </tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"><tt class="py-string">                &gt;&gt;&gt; h = ProcessOutputHandler.create('myhandler', options={ProcessOutputHandler.Options.ignoreReturnCode:True})</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"><tt class="py-string">                &gt;&gt;&gt; h.handleLine(u'some message')</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"><tt class="py-string">                &gt;&gt;&gt; h.handleEnd(5)</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"><tt class="py-string">        </tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"><tt class="py-string">                """</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">                 </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">                <tt id="link-6" class="py-name" targets="Variable utils.outputhandler.ProcessOutputHandler.Options.regexIgnore=utils.outputhandler.ProcessOutputHandler.Options-class.html#regexIgnore"><a title="utils.outputhandler.ProcessOutputHandler.Options.regexIgnore" class="py-name" href="#" onclick="return doclink('link-6', 'regexIgnore', 'link-6');">regexIgnore</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'ProcessOutputHandler.regexIgnore'</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">                <tt class="py-string">""" Optional regular expression; any </tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"><tt class="py-string">                lines matching this will not be treated as errors, or warnings, or logged. </tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line"><tt class="py-string">        </tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line"><tt class="py-string">                &gt;&gt;&gt; h = ProcessOutputHandler.create('myhandler', options={ProcessOutputHandler.Options.regexIgnore:'(.*ignorable.*|foobar)'})</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"><tt class="py-string">                &gt;&gt;&gt; h.handleLine(u'error: an ignorable error')</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line"><tt class="py-string">                &gt;&gt;&gt; h.handleLine(u'error: another error')</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line"><tt class="py-string">                &gt;&gt;&gt; h.handleLine(u'warning: an ignorable warning')</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"><tt class="py-string">                &gt;&gt;&gt; h.handleLine(u'warning: another warning')</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"><tt class="py-string">                &gt;&gt;&gt; h.handleLine(u'warning: another other warning')</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"><tt class="py-string">                &gt;&gt;&gt; len(h.getErrors())</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"><tt class="py-string">                1</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"><tt class="py-string">        </tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"><tt class="py-string">                &gt;&gt;&gt; len(h.getWarnings())</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"><tt class="py-string">                2</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"><tt class="py-string">        </tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"><tt class="py-string">                """</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">         </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">                <tt id="link-7" class="py-name" targets="Variable utils.outputhandler.ProcessOutputHandler.Options.factory=utils.outputhandler.ProcessOutputHandler.Options-class.html#factory"><a title="utils.outputhandler.ProcessOutputHandler.Options.factory" class="py-name" href="#" onclick="return doclink('link-7', 'factory', 'link-7');">factory</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'ProcessOutputHandler.factory'</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">                <tt class="py-string">""" The ProcessOutputHandler class or subclass </tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"><tt class="py-string">                that will be instantiated; must have a constructor with the same signature </tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"><tt class="py-string">                as the ProcessOutputHandler constructor. This option exists to allow </tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"><tt class="py-string">                per-target customizations; it is not recommended to set a global factory </tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"><tt class="py-string">                override that applies to all targets, as such a generic output handler would </tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line"><tt class="py-string">                replace more specific output handlers that are needed for some targets. </tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line"><tt class="py-string">                See L{ProcessOutputHandler.create}. </tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"><tt class="py-string">                """</tt> </tt>
+</div><a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">         </tt>
+<a name="ProcessOutputHandler.__init__"></a><div id="ProcessOutputHandler.__init__-def"><a name="L127"></a><tt class="py-lineno">127</tt> <a class="py-toggle" href="#" id="ProcessOutputHandler.__init__-toggle" onclick="return toggle('ProcessOutputHandler.__init__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.ProcessOutputHandler-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">treatStdErrAsErrors</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ProcessOutputHandler.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="ProcessOutputHandler.__init__-expanded"><a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"><tt class="py-docstring">                The constructor for this object. Subclasses that override this should </tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"><tt class="py-docstring">                always pass **kwargs down to the super constructor to allow for new </tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"><tt class="py-docstring">                functionality to be added</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line"><tt class="py-docstring">                @param name: a short display name for this process or target, used as a </tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line"><tt class="py-docstring">                prefix for log lines. </tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"><tt class="py-docstring">                @param treatStdErrAsErrors: controls where all content on stderr </tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line"><tt class="py-docstring">                (rather than stdout) is treated as an error by default. The correct </tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"><tt class="py-docstring">                setting depends on how the process being invoked uses stdout/err. </tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"><tt class="py-docstring">                @keyword options: a dictionary of resolved option values, in case aspects </tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line"><tt class="py-docstring">                of this handler are customizable. Available to implementations as </tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line"><tt class="py-docstring">                self.options (if None is passed, self.options will be an empty </tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line"><tt class="py-docstring">                dictionary)</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_name</tt> <tt class="py-op">=</tt> <tt class="py-name">name</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_errors</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_warnings</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lastLine</tt> <tt class="py-op">=</tt> <tt class="py-string">''</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">                 </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name"><a title="utils.compilers._logger
+utils.outputhandler._logger" class="py-name" href="#" onclick="return doclink('link-8', '_logger', 'link-4');">_logger</a></tt> <tt class="py-op">=</tt> <tt id="link-9" class="py-name"><a title="utils.compilers._logger
+utils.outputhandler._logger" class="py-name" href="#" onclick="return doclink('link-9', '_logger', 'link-4');">_logger</a></tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt> <tt class="py-op">=</tt> <tt class="py-name">kwargs</tt><tt class="py-op">.</tt><tt class="py-name">pop</tt><tt class="py-op">(</tt><tt class="py-string">'options'</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_treatStdErrAsErrors</tt> <tt class="py-op">=</tt> <tt class="py-name">treatStdErrAsErrors</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_ignoreReturnCode</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt id="link-10" class="py-name" targets="Class utils.outputhandler.ProcessOutputHandler=utils.outputhandler.ProcessOutputHandler-class.html"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-10', 'ProcessOutputHandler', 'link-10');">ProcessOutputHandler</a></tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Class utils.outputhandler.ProcessOutputHandler.Options=utils.outputhandler.ProcessOutputHandler.Options-class.html"><a title="utils.outputhandler.ProcessOutputHandler.Options" class="py-name" href="#" onclick="return doclink('link-11', 'Options', 'link-11');">Options</a></tt><tt class="py-op">.</tt><tt id="link-12" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.Options.ignoreReturnCode" class="py-name" href="#" onclick="return doclink('link-12', 'ignoreReturnCode', 'link-5');">ignoreReturnCode</a></tt><tt class="py-op">,</tt> <tt class="py-name">False</tt><tt class="py-op">)</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_regexIgnore</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt id="link-13" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-13', 'ProcessOutputHandler', 'link-10');">ProcessOutputHandler</a></tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.Options" class="py-name" href="#" onclick="return doclink('link-14', 'Options', 'link-11');">Options</a></tt><tt class="py-op">.</tt><tt id="link-15" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.Options.regexIgnore" class="py-name" href="#" onclick="return doclink('link-15', 'regexIgnore', 'link-6');">regexIgnore</a></tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_regexIgnore</tt><tt class="py-op">:</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_regexIgnore</tt> <tt class="py-op">=</tt> <tt class="py-name">re</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Variable targets.csharp.CSharp.compile=targets.csharp.CSharp-class.html#compile,Variable targets.java.Jar.compile=targets.java.Jar-class.html#compile,Variable targets.java.Javac.compile=targets.java.Javac-class.html#compile,Method utils.compilers.Compiler.compile()=utils.compilers.Compiler-class.html#compile,Method utils.compilers.UnixCompiler.compile()=utils.compilers.UnixCompiler-class.html#compile,Method utils.compilers.VisualStudio.compile()=utils.compilers.VisualStudio-class.html#compile"><a title="targets.csharp.CSharp.compile
+targets.java.Jar.compile
+targets.java.Javac.compile
+utils.compilers.Compiler.compile
+utils.compilers.UnixCompiler.compile
+utils.compilers.VisualStudio.compile" class="py-name" href="#" onclick="return doclink('link-16', 'compile', 'link-16');">compile</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_regexIgnore</tt><tt class="py-op">)</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">                <tt class="py-keyword">assert</tt> <tt class="py-keyword">not</tt> <tt class="py-name">kwargs</tt><tt class="py-op">,</tt> <tt class="py-string">'Unexpected keyword argument to ProcessOutputHandler: %s'</tt><tt class="py-op">%</tt><tt class="py-name">kwargs</tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">         </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">        <tt class="py-decorator">@</tt><tt class="py-decorator">staticmethod</tt> </tt>
+<a name="ProcessOutputHandler.create"></a><div id="ProcessOutputHandler.create-def"><a name="L160"></a><tt class="py-lineno">160</tt> <a class="py-toggle" href="#" id="ProcessOutputHandler.create-toggle" onclick="return toggle('ProcessOutputHandler.create');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.ProcessOutputHandler-class.html#create">create</a><tt class="py-op">(</tt><tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">options</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ProcessOutputHandler.create-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="ProcessOutputHandler.create-expanded"><a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line"><tt class="py-docstring">                Create a new ProcessOutputHandler using the specified target options. </tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line"><tt class="py-docstring">                This is preferred over calling the ProcessOutputHandler constructor as </tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line"><tt class="py-docstring">                it permits overriding the ProcessOutputHandler subclass using the </tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line"><tt class="py-docstring">                L{ProcessOutputHandler.Options.factory} option. </tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line"><tt class="py-docstring">                &gt;&gt;&gt; type(ProcessOutputHandler.create('mine')).__name__</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line"><tt class="py-docstring">                'ProcessOutputHandler'</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line"><tt class="py-docstring">                &gt;&gt;&gt; def myfactory(*args, **kwargs): print 'called factory %s, kwarg keys: %s'%(args, kwargs.keys())</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line"><tt class="py-docstring">                &gt;&gt;&gt; ProcessOutputHandler.create('mine', options={ProcessOutputHandler.Options.factory: myfactory})</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line"><tt class="py-docstring">                called factory ('mine',), kwarg keys: ['options']</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">options</tt> <tt class="py-keyword">is</tt> <tt class="py-keyword">not</tt> <tt class="py-name">None</tt> <tt class="py-keyword">and</tt> <tt id="link-17" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-17', 'ProcessOutputHandler', 'link-10');">ProcessOutputHandler</a></tt><tt class="py-op">.</tt><tt id="link-18" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.Options" class="py-name" href="#" onclick="return doclink('link-18', 'Options', 'link-11');">Options</a></tt><tt class="py-op">.</tt><tt id="link-19" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.Options.factory" class="py-name" href="#" onclick="return doclink('link-19', 'factory', 'link-7');">factory</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">options</tt><tt class="py-op">:</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">                        <tt class="py-name">cls</tt> <tt class="py-op">=</tt> <tt class="py-name">options</tt><tt class="py-op">[</tt><tt id="link-20" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-20', 'ProcessOutputHandler', 'link-10');">ProcessOutputHandler</a></tt><tt class="py-op">.</tt><tt id="link-21" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.Options" class="py-name" href="#" onclick="return doclink('link-21', 'Options', 'link-11');">Options</a></tt><tt class="py-op">.</tt><tt id="link-22" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.Options.factory" class="py-name" href="#" onclick="return doclink('link-22', 'factory', 'link-7');">factory</a></tt><tt class="py-op">]</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">                        <tt class="py-name">cls</tt> <tt class="py-op">=</tt> <tt id="link-23" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-23', 'ProcessOutputHandler', 'link-10');">ProcessOutputHandler</a></tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">cls</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">=</tt><tt class="py-name">options</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-name">kwargs</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">         </tt>
+<a name="ProcessOutputHandler.handleLine"></a><div id="ProcessOutputHandler.handleLine-def"><a name="L182"></a><tt class="py-lineno">182</tt> <a class="py-toggle" href="#" id="ProcessOutputHandler.handleLine-toggle" onclick="return toggle('ProcessOutputHandler.handleLine');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.ProcessOutputHandler-class.html#handleLine">handleLine</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">line</tt><tt class="py-op">,</tt> <tt class="py-param">isstderr</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ProcessOutputHandler.handleLine-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="ProcessOutputHandler.handleLine-expanded"><a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line"><tt class="py-docstring">                Called once for every line in the stdout and stderr </tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line"><tt class="py-docstring">                (stderr after, if not during stdout). </tt> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line"><tt class="py-docstring">                If possible, line should be a unicode object rather than a byte string. </tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line"><tt class="py-docstring">                The default implementation uses _decideLogLevel to decide how to </tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line"><tt class="py-docstring">                interpret each line, then calls _preprocessLine and _parseLocationFromLine </tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line"><tt class="py-docstring">                on the line before stashing errors/warnings, and passing the </tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line"><tt class="py-docstring">                pre-processed line to _log for logging at the specified level. </tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line"><tt class="py-docstring">                @param isstderr: if stdout/err are segregated then this can be used as a </tt> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line"><tt class="py-docstring">                hint to indicate the source of the line. </tt> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lastLine</tt> <tt class="py-op">=</tt> <tt class="py-name">line</tt> <tt class="py-comment"># in case it helps us give an error message</tt> </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line">                 </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_regexIgnore</tt> <tt class="py-keyword">is</tt> <tt class="py-keyword">not</tt> <tt class="py-name">None</tt> <tt class="py-keyword">and</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_regexIgnore</tt><tt class="py-op">.</tt><tt class="py-name">match</tt><tt class="py-op">(</tt><tt class="py-name">line</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">                 </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line">                <tt id="link-24" class="py-name" targets="Variable utils.consoleformatter.ConsoleFormatter.level=utils.consoleformatter.ConsoleFormatter-class.html#level"><a title="utils.consoleformatter.ConsoleFormatter.level" class="py-name" href="#" onclick="return doclink('link-24', 'level', 'link-24');">level</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_decideLogLevel</tt><tt class="py-op">(</tt><tt class="py-name">line</tt><tt class="py-op">,</tt> <tt class="py-name">isstderr</tt><tt class="py-op">)</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt id="link-25" class="py-name"><a title="utils.consoleformatter.ConsoleFormatter.level" class="py-name" href="#" onclick="return doclink('link-25', 'level', 'link-24');">level</a></tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">                 </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt id="link-26" class="py-name"><a title="utils.consoleformatter.ConsoleFormatter.level" class="py-name" href="#" onclick="return doclink('link-26', 'level', 'link-24');">level</a></tt> <tt class="py-op">&gt;=</tt> <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">WARNING</tt> <tt class="py-keyword">or</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-27" class="py-name"><a title="utils.compilers._logger
+utils.outputhandler._logger" class="py-name" href="#" onclick="return doclink('link-27', '_logger', 'link-4');">_logger</a></tt><tt class="py-op">.</tt><tt class="py-name">isEnabledFor</tt><tt class="py-op">(</tt><tt id="link-28" class="py-name"><a title="utils.consoleformatter.ConsoleFormatter.level" class="py-name" href="#" onclick="return doclink('link-28', 'level', 'link-24');">level</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line">                        <tt class="py-name">line</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_preprocessLine</tt><tt class="py-op">(</tt><tt class="py-name">line</tt><tt class="py-op">)</tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line">                        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">                                <tt class="py-name">filename</tt><tt class="py-op">,</tt> <tt class="py-name">fileline</tt><tt class="py-op">,</tt> <tt class="py-name">col</tt><tt class="py-op">,</tt> <tt class="py-name">line</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_parseLocationFromLine</tt><tt class="py-op">(</tt><tt class="py-name">line</tt><tt class="py-op">)</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">                        <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt><tt class="py-op">:</tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line">                                <tt class="py-name">filename</tt><tt class="py-op">,</tt> <tt class="py-name">fileline</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_parseLocationFromLine</tt><tt class="py-op">(</tt><tt class="py-name">line</tt><tt class="py-op">)</tt> <tt class="py-comment"># old form, for backwards compat</tt> </tt>
+<a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line">                                <tt class="py-name">col</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">                         </tt>
+<a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt id="link-29" class="py-name"><a title="utils.consoleformatter.ConsoleFormatter.level" class="py-name" href="#" onclick="return doclink('link-29', 'level', 'link-24');">level</a></tt> <tt class="py-op">==</tt> <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">ERROR</tt><tt class="py-op">:</tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line">                                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_errors</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">line</tt><tt class="py-op">)</tt> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line">                        <tt class="py-keyword">elif</tt> <tt id="link-30" class="py-name"><a title="utils.consoleformatter.ConsoleFormatter.level" class="py-name" href="#" onclick="return doclink('link-30', 'level', 'link-24');">level</a></tt> <tt class="py-op">==</tt> <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">WARNING</tt><tt class="py-op">:</tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">                                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_warnings</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">line</tt><tt class="py-op">)</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line">                        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-31" class="py-name" targets="Variable utils.antglob._log=utils.antglob-module.html#_log"><a title="utils.antglob._log" class="py-name" href="#" onclick="return doclink('link-31', '_log', 'link-31');">_log</a></tt><tt class="py-op">(</tt><tt id="link-32" class="py-name"><a title="utils.consoleformatter.ConsoleFormatter.level" class="py-name" href="#" onclick="return doclink('link-32', 'level', 'link-24');">level</a></tt><tt class="py-op">,</tt> <tt class="py-name">line</tt><tt class="py-op">,</tt> <tt class="py-name">filename</tt><tt class="py-op">,</tt> <tt class="py-name">fileline</tt><tt class="py-op">,</tt> <tt class="py-name">col</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line">         </tt>
+<a name="ProcessOutputHandler.handleEnd"></a><div id="ProcessOutputHandler.handleEnd-def"><a name="L218"></a><tt class="py-lineno">218</tt> <a class="py-toggle" href="#" id="ProcessOutputHandler.handleEnd-toggle" onclick="return toggle('ProcessOutputHandler.handleEnd');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.ProcessOutputHandler-class.html#handleEnd">handleEnd</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">returnCode</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ProcessOutputHandler.handleEnd-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="ProcessOutputHandler.handleEnd-expanded"><a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_warnings</tt><tt class="py-op">:</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name"><a title="utils.compilers._logger
+utils.outputhandler._logger" class="py-name" href="#" onclick="return doclink('link-33', '_logger', 'link-4');">_logger</a></tt><tt class="py-op">.</tt><tt class="py-name">warning</tt><tt class="py-op">(</tt><tt class="py-string">'%d warnings during %s'</tt><tt class="py-op">,</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_warnings</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line">                         </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_errors</tt><tt class="py-op">:</tt>  </tt>
+<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line">                        <tt class="py-name">msg</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_errors</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_errors</tt><tt class="py-op">)</tt><tt class="py-op">&gt;</tt><tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line">                                <tt class="py-name">msg</tt> <tt class="py-op">=</tt> <tt class="py-string">'%d errors, first is: %s'</tt><tt class="py-op">%</tt><tt class="py-op">(</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_errors</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">msg</tt><tt class="py-op">)</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line">                <tt class="py-keyword">elif</tt> <tt class="py-name">returnCode</tt> <tt class="py-keyword">and</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_ignoreReturnCode</tt><tt class="py-op">:</tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line">                        <tt class="py-name">msg</tt> <tt class="py-op">=</tt> <tt class="py-string">'%s failed with return code %s'</tt><tt class="py-op">%</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_name</tt><tt class="py-op">,</tt> <tt class="py-name">returnCode</tt><tt class="py-op">)</tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line">                        <tt class="py-comment"># in case it's relevant, since the return code doesn't provide much to go on</tt> </tt>
+<a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_warnings</tt><tt class="py-op">:</tt>  </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line">                                <tt class="py-name">msg</tt> <tt class="py-op">+=</tt> <tt class="py-string">'; no errors reported, first warning was: %s'</tt><tt class="py-op">%</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_warnings</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">                        <tt class="py-keyword">elif</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name" targets="Method utils.outputhandler.ProcessOutputHandler.getLastOutputLine()=utils.outputhandler.ProcessOutputHandler-class.html#getLastOutputLine"><a title="utils.outputhandler.ProcessOutputHandler.getLastOutputLine" class="py-name" href="#" onclick="return doclink('link-34', 'getLastOutputLine', 'link-34');">getLastOutputLine</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line">                                <tt class="py-comment"># last-ditch attempt to be useful</tt> </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line">                                <tt class="py-name">msg</tt> <tt class="py-op">+=</tt> <tt class="py-string">'; no errors reported, last line was: %s'</tt><tt class="py-op">%</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.getLastOutputLine" class="py-name" href="#" onclick="return doclink('link-35', 'getLastOutputLine', 'link-34');">getLastOutputLine</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line">                        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line">                                <tt class="py-name">msg</tt> <tt class="py-op">+=</tt> <tt class="py-string">' and no output generated'</tt> </tt>
+<a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line">                        <tt class="py-keyword">return</tt> </tt>
+<a name="L237"></a><tt class="py-lineno">237</tt>  <tt class="py-line">                <tt class="py-keyword">raise</tt> <tt id="link-36" class="py-name"><a title="buildexceptions.BuildException" class="py-name" href="#" onclick="return doclink('link-36', 'BuildException', 'link-1');">BuildException</a></tt><tt class="py-op">(</tt><tt class="py-name">msg</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line">         </tt>
+<a name="ProcessOutputHandler._decideLogLevel"></a><div id="ProcessOutputHandler._decideLogLevel-def"><a name="L239"></a><tt class="py-lineno">239</tt> <a class="py-toggle" href="#" id="ProcessOutputHandler._decideLogLevel-toggle" onclick="return toggle('ProcessOutputHandler._decideLogLevel');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.ProcessOutputHandler-class.html#_decideLogLevel">_decideLogLevel</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">line</tt><tt class="py-op">,</tt> <tt class="py-param">isstderr</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ProcessOutputHandler._decideLogLevel-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="ProcessOutputHandler._decideLogLevel-expanded"><a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line"><tt class="py-docstring">                Used by the default handleLine implementation to </tt> </tt>
+<a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line"><tt class="py-docstring">                decide whether the specified (raw, not yet pre-processed) line is a </tt> </tt>
+<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line"><tt class="py-docstring">                warning, an error, or else whether it should be logged at INFO/DEBUG </tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line"><tt class="py-docstring">                or not at all. Called exactly once per line. </tt> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line"><tt class="py-docstring">                The default implementation uses "error[\s]*([A-Z]\d+)?:" to check for </tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line"><tt class="py-docstring">                errors (similarly for warnings), and logs everything else only at INFO, </tt> </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line"><tt class="py-docstring">                and also treats all stderr output as error lines. </tt> </tt>
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line"><tt class="py-docstring">                Typically returns logging.ERROR, logging.WARNING, logging.DEBUG/INFO or </tt> </tt>
+<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line"><tt class="py-docstring">                None. </tt> </tt>
+<a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line">                 </tt>
+<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line">                <tt class="py-keyword">assert</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">line</tt><tt class="py-op">,</tt> <tt class="py-name">unicode</tt><tt class="py-op">)</tt> <tt class="py-comment"># only accept unicode - force caller to explicitly decode their output before calling this, e.g. l.decode(getStdoutEncoding())</tt> </tt>
+<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line">                 </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-op">(</tt><tt class="py-name">isstderr</tt> <tt class="py-keyword">and</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_treatStdErrAsErrors</tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">search</tt><tt class="py-op">(</tt><tt class="py-string">r'error[\s]*([A-Z]+\d+)?:'</tt><tt class="py-op">,</tt> <tt class="py-name">line</tt><tt class="py-op">,</tt> <tt class="py-name">flags</tt><tt class="py-op">=</tt><tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">IGNORECASE</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">ERROR</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">search</tt><tt class="py-op">(</tt><tt class="py-string">'warning[\s]*([A-Z]+\d+)?:'</tt><tt class="py-op">,</tt> <tt class="py-name">line</tt><tt class="py-op">,</tt> <tt class="py-name">flags</tt><tt class="py-op">=</tt><tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">IGNORECASE</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">WARNING</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">INFO</tt> <tt class="py-comment"># default log level</tt> </tt>
+</div><a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line">         </tt>
+<a name="ProcessOutputHandler._parseLocationFromLine"></a><div id="ProcessOutputHandler._parseLocationFromLine-def"><a name="L260"></a><tt class="py-lineno">260</tt> <a class="py-toggle" href="#" id="ProcessOutputHandler._parseLocationFromLine-toggle" onclick="return toggle('ProcessOutputHandler._parseLocationFromLine');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.ProcessOutputHandler-class.html#_parseLocationFromLine">_parseLocationFromLine</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">line</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ProcessOutputHandler._parseLocationFromLine-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="ProcessOutputHandler._parseLocationFromLine-expanded"><a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line"><tt class="py-docstring">                Return (filename, linenumber, col, line)</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line"><tt class="py-docstring">                For backwards compat, returning (filename,location) is also permitted</tt> </tt>
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line"><tt class="py-docstring">                The returned line may be identical to the input, or may have the filename stripped off.</tt> </tt>
+<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line"><tt class="py-docstring">                linenumber is a string and may be a simple line number or may be a "lineno,col" string. </tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">None</tt><tt class="py-op">,</tt><tt class="py-name">None</tt><tt class="py-op">,</tt><tt class="py-name">None</tt><tt class="py-op">,</tt><tt class="py-name">line</tt> </tt>
+</div><a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">         </tt>
+<a name="ProcessOutputHandler._log"></a><div id="ProcessOutputHandler._log-def"><a name="L273"></a><tt class="py-lineno">273</tt> <a class="py-toggle" href="#" id="ProcessOutputHandler._log-toggle" onclick="return toggle('ProcessOutputHandler._log');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.ProcessOutputHandler-class.html#_log">_log</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">level</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">filename</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">fileline</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">filecol</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ProcessOutputHandler._log-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="ProcessOutputHandler._log-expanded"><a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line">                <tt class="py-docstring">""" Writes the specified msg to the logger. </tt> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line"><tt class="py-docstring">                If filename and fileline are specified, they are passed to the logrecord, </tt> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line"><tt class="py-docstring">                which allows output formatting customizations. </tt> </tt>
+<a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt id="link-37" class="py-name"><a title="utils.consoleformatter.ConsoleFormatter.level" class="py-name" href="#" onclick="return doclink('link-37', 'level', 'link-24');">level</a></tt> <tt class="py-op">==</tt> <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">ERROR</tt><tt class="py-op">:</tt> </tt>
+<a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line">                        <tt class="py-name">pattern</tt> <tt class="py-op">=</tt> <tt class="py-string">'%s ERROR&gt; %s'</tt> </tt>
+<a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line">                <tt class="py-keyword">elif</tt> <tt id="link-38" class="py-name"><a title="utils.consoleformatter.ConsoleFormatter.level" class="py-name" href="#" onclick="return doclink('link-38', 'level', 'link-24');">level</a></tt> <tt class="py-op">==</tt> <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">WARNING</tt><tt class="py-op">:</tt> </tt>
+<a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line">                        <tt class="py-name">pattern</tt> <tt class="py-op">=</tt> <tt class="py-string">'%s WARN&gt; %s'</tt> </tt>
+<a name="L283"></a><tt class="py-lineno">283</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line">                        <tt class="py-name">pattern</tt> <tt class="py-op">=</tt> <tt class="py-string">'%s&gt; %s'</tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line">                <tt class="py-name">r</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name"><a title="utils.compilers._logger
+utils.outputhandler._logger" class="py-name" href="#" onclick="return doclink('link-39', '_logger', 'link-4');">_logger</a></tt><tt class="py-op">.</tt><tt class="py-name">makeRecord</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="utils.compilers._logger
+utils.outputhandler._logger" class="py-name" href="#" onclick="return doclink('link-40', '_logger', 'link-4');">_logger</a></tt><tt class="py-op">.</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt id="link-41" class="py-name"><a title="utils.consoleformatter.ConsoleFormatter.level" class="py-name" href="#" onclick="return doclink('link-41', 'level', 'link-24');">level</a></tt><tt class="py-op">,</tt> <tt class="py-name">filename</tt><tt class="py-op">,</tt> <tt class="py-name">fileline</tt><tt class="py-op">,</tt>  </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line">                        <tt class="py-name">pattern</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_name</tt><tt class="py-op">,</tt> <tt class="py-name">msg</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">exc_info</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-name">func</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line">                <tt class="py-comment"># overriding python's filename/line as above is a bit dodgy and doesn't support columns either, </tt> </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line">                <tt class="py-comment"># so as first choice set some xpybuild-specific attributes onto the LogRecord</tt> </tt>
+<a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">filename</tt><tt class="py-op">:</tt>  </tt>
+<a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line">                        <tt class="py-name">r</tt><tt class="py-op">.</tt><tt class="py-name">xpybuild_filename</tt> <tt class="py-op">=</tt> <tt class="py-name">filename</tt> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-name">fileline</tt><tt class="py-op">:</tt> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line">                                <tt class="py-name">r</tt><tt class="py-op">.</tt><tt class="py-name">xpybuild_line</tt> <tt class="py-op">=</tt> <tt class="py-name">fileline</tt> </tt>
+<a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-name">filecol</tt><tt class="py-op">:</tt> </tt>
+<a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line">                                <tt class="py-name">r</tt><tt class="py-op">.</tt><tt class="py-name">xpybuild_col</tt> <tt class="py-op">=</tt> <tt class="py-name">filecol</tt> </tt>
+<a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-42" class="py-name"><a title="utils.compilers._logger
+utils.outputhandler._logger" class="py-name" href="#" onclick="return doclink('link-42', '_logger', 'link-4');">_logger</a></tt><tt class="py-op">.</tt><tt id="link-43" class="py-name" targets="Method utils.consoleformatter.ConsoleFormatter.handle()=utils.consoleformatter.ConsoleFormatter-class.html#handle,Method utils.consoleformatter.DefaultConsoleFormatter.handle()=utils.consoleformatter.DefaultConsoleFormatter-class.html#handle,Method utils.make.MakeConsoleFormatter.handle()=utils.make.MakeConsoleFormatter-class.html#handle,Method utils.progress.ProgressBarConsoleFormatter.handle()=utils.progress.ProgressBarConsoleFormatter-class.html#handle,Method utils.progress.VT100ProgressBarConsoleFormatter.handle()=utils.progress.VT100ProgressBarConsoleFormatter-class.html#handle,Method utils.teamcity.TeamcityHandler.handle()=utils.teamcity.TeamcityHandler-class.html#handle,Method utils.visualstudio.VisualStudioConsoleFormatter.handle()=utils.visualstudio.VisualStudioConsoleFormatter-class.html#handle"><a title="utils.consoleformatter.ConsoleFormatter.handle
+utils.consoleformatter.DefaultConsoleFormatter.handle
+utils.make.MakeConsoleFormatter.handle
+utils.progress.ProgressBarConsoleFormatter.handle
+utils.progress.VT100ProgressBarConsoleFormatter.handle
+utils.teamcity.TeamcityHandler.handle
+utils.visualstudio.VisualStudioConsoleFormatter.handle" class="py-name" href="#" onclick="return doclink('link-43', 'handle', 'link-43');">handle</a></tt><tt class="py-op">(</tt><tt class="py-name">r</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line"> </tt>
+<a name="ProcessOutputHandler._preprocessLine"></a><div id="ProcessOutputHandler._preprocessLine-def"><a name="L297"></a><tt class="py-lineno">297</tt> <a class="py-toggle" href="#" id="ProcessOutputHandler._preprocessLine-toggle" onclick="return toggle('ProcessOutputHandler._preprocessLine');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.ProcessOutputHandler-class.html#_preprocessLine">_preprocessLine</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">line</tt><tt class="py-op">)</tt><tt class="py-op">:</tt>  </tt>
+</div><a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line">                <tt class="py-docstring">""" </tt> </tt>
+<a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line"><tt class="py-docstring">                Performs any necessary transformations on the line before it is </tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line"><tt class="py-docstring">                logged or stored. By default it strips() whitespace. </tt> </tt>
+<a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line"><tt class="py-docstring">                This can be overridden to add support for stripping </tt> </tt>
+<a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line"><tt class="py-docstring">                timestamps, thread ids, unwanted indentation, etc. </tt> </tt>
+<a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">line</tt><tt class="py-op">.</tt><tt class="py-name">strip</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line">         </tt>
+<a name="ProcessOutputHandler.getErrors"></a><div id="ProcessOutputHandler.getErrors-def"><a name="L307"></a><tt class="py-lineno">307</tt> <a class="py-toggle" href="#" id="ProcessOutputHandler.getErrors-toggle" onclick="return toggle('ProcessOutputHandler.getErrors');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.ProcessOutputHandler-class.html#getErrors">getErrors</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_errors</tt> </tt>
+</div><a name="ProcessOutputHandler.getWarnings"></a><div id="ProcessOutputHandler.getWarnings-def"><a name="L308"></a><tt class="py-lineno">308</tt> <a class="py-toggle" href="#" id="ProcessOutputHandler.getWarnings-toggle" onclick="return toggle('ProcessOutputHandler.getWarnings');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.ProcessOutputHandler-class.html#getWarnings">getWarnings</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_warnings</tt> </tt>
+</div><a name="ProcessOutputHandler.getLastOutputLine"></a><div id="ProcessOutputHandler.getLastOutputLine-def"><a name="L309"></a><tt class="py-lineno">309</tt> <a class="py-toggle" href="#" id="ProcessOutputHandler.getLastOutputLine-toggle" onclick="return toggle('ProcessOutputHandler.getLastOutputLine');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.ProcessOutputHandler-class.html#getLastOutputLine">getLastOutputLine</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_preprocessLine</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lastLine</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line">         </tt>
+<a name="StdoutRedirector"></a><div id="StdoutRedirector-def"><a name="L311"></a><tt class="py-lineno">311</tt> <a class="py-toggle" href="#" id="StdoutRedirector-toggle" onclick="return toggle('StdoutRedirector');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="utils.outputhandler.StdoutRedirector-class.html">StdoutRedirector</a><tt class="py-op">(</tt><tt class="py-base-class">ProcessOutputHandler</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StdoutRedirector-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="StdoutRedirector-expanded"><a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line">        <tt class="py-docstring">""" Redirects stdout to a file verbatim and reports errors on stderr """</tt> </tt>
+<a name="StdoutRedirector.__init__"></a><div id="StdoutRedirector.__init__-def"><a name="L313"></a><tt class="py-lineno">313</tt> <a class="py-toggle" href="#" id="StdoutRedirector.__init__-toggle" onclick="return toggle('StdoutRedirector.__init__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.StdoutRedirector-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">fd</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StdoutRedirector.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="StdoutRedirector.__init__-expanded"><a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line">                <tt class="py-docstring">""" </tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line"><tt class="py-docstring">                fd is a binary-mode writable file descriptor """</tt> </tt>
+<a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line">                <tt id="link-44" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-44', 'ProcessOutputHandler', 'link-10');">ProcessOutputHandler</a></tt><tt class="py-op">.</tt><tt id="link-45" class="py-name" targets="Method basetarget.BaseTarget.__init__()=basetarget.BaseTarget-class.html#__init__,Method buildcommon.FilenameStringFormatter.__init__()=buildcommon.FilenameStringFormatter-class.html#__init__,Method buildcommon.StringFormatter.__init__()=buildcommon.StringFormatter-class.html#__init__,Method buildcontext.BaseContext.__init__()=buildcontext.BaseContext-class.html#__init__,Method buildcontext.BuildContext.__init__()=buildcontext.BuildContext-class.html#__init__,Method buildcontext.BuildInitializationContext.__init__()=buildcontext.BuildInitializationContext-class.html#__init__,Method buildexceptions.BuildException.__init__()=buildexceptions.BuildException-class.html#__init__,Method pathsets.AddDestPrefix.__init__()=pathsets.AddDestPrefix-class.html#__init__,Method pathsets.BasePathSet.__init__()=pathsets.BasePathSet-class.html#__init__,Method pathsets.DirBasedPathSet.__init__()=pathsets.DirBasedPathSet-class.html#__init__,Method pathsets.DirGeneratedByTarget.__init__()=pathsets.DirGeneratedByTarget-class.html#__init__,Method pathsets.FilteredPathSet.__init__()=pathsets.FilteredPathSet-class.html#__init__,Method pathsets.FindPaths.__init__()=pathsets.FindPaths-class.html#__init__,Method pathsets.FlattenDest.__init__()=pathsets.FlattenDest-class.html#__init__,Method pathsets.MapDest.__init__()=pathsets.MapDest-class.html#__init__,Method pathsets.MapSrc.__init__()=pathsets.MapSrc-class.html#__init__,Method pathsets.PathSet.__init__()=pathsets.PathSet-class.html#__init__,Method pathsets.RemoveDestParents.__init__()=pathsets.RemoveDestParents-class.html#__init__,Method pathsets.SingletonDestRenameMapper.__init__()=pathsets.SingletonDestRenameMapper-class.html#__init__,Method pathsets.TargetsWithTag.__init__()=pathsets.TargetsWithTag-class.html#__init__,Method propertyfunctors.basename.__init__()=propertyfunctors.basename-class.html#__init__,Method propertyfunctors.dirname.__init__()=propertyfunctors.dirname-class.html#__init__,Method propertyfunctors.joinPaths.__init__()=propertyfunctors.joinPaths-class.html#__init__,Method propertyfunctors.sub.__init__()=propertyfunctors.sub-class.html#__init__,Method targets.copy.AddFileFooter.__init__()=targets.copy.AddFileFooter-class.html#__init__,Method targets.copy.AddFileHeader.__init__()=targets.copy.AddFileHeader-class.html#__init__,Method targets.copy.Copy.__init__()=targets.copy.Copy-class.html#__init__,Method targets.copy.FilteredCopy.__init__()=targets.copy.FilteredCopy-class.html#__init__,Method targets.copy.InsertFileContentsLineMapper.__init__()=targets.copy.InsertFileContentsLineMapper-class.html#__init__,Method targets.copy.OmitLines.__init__()=targets.copy.OmitLines-class.html#__init__,Method targets.copy.RegexLineMapper.__init__()=targets.copy.RegexLineMapper-class.html#__init__,Method targets.copy.StringReplaceLineMapper.__init__()=targets.copy.StringReplaceLineMapper-class.html#__init__,Method targets.csharp.CSharp.__init__()=targets.csharp.CSharp-class.html#__init__,Method targets.custom.Custom.__init__()=targets.custom.Custom-class.html#__init__,Method targets.custom.CustomCommand.__init__()=targets.custom.CustomCommand-class.html#__init__,Method targets.custom.CustomCommandWithCopy.__init__()=targets.custom.CustomCommandWithCopy-class.html#__init__,Method targets.custom.ResolvePath.__init__()=targets.custom.ResolvePath-class.html#__init__,Method targets.docker.DockerBase.__init__()=targets.docker.DockerBase-class.html#__init__,Method targets.docker.DockerBuild.__init__()=targets.docker.DockerBuild-class.html#__init__,Method targets.docker.DockerPushTag.__init__()=targets.docker.DockerPushTag-class.html#__init__,Method targets.download.Download.__init__()=targets.download.Download-class.html#__init__,Method targets.java.Jar.__init__()=targets.java.Jar-class.html#__init__,Method targets.java.Javac.__init__()=targets.java.Javac-class.html#__init__,Method targets.java.Javadoc.__init__()=targets.java.Javadoc-class.html#__init__,Method targets.java.SignJars.__init__()=targets.java.SignJars-class.html#__init__,Method targets.native.Ar.__init__()=targets.native.Ar-class.html#__init__,Method targets.native.C.__init__()=targets.native.C-class.html#__init__,Method targets.native.CompilerMakeDependsPathSet.__init__()=targets.native.CompilerMakeDependsPathSet-class.html#__init__,Method targets.native.Cpp.__init__()=targets.native.Cpp-class.html#__init__,Method targets.native.Link.__init__()=targets.native.Link-class.html#__init__,Method targets.symlink.SymLink.__init__()=targets.symlink.SymLink-class.html#__init__,Method targets.tar.Tarball.__init__()=targets.tar.Tarball-class.html#__init__,Method targets.touch.Touch.__init__()=targets.touch.Touch-class.html#__init__,Method targets.unpack.FilteredArchiveContents.__init__()=targets.unpack.FilteredArchiveContents-class.html#__init__,Method targets.unpack.Unpack.__init__()=targets.unpack.Unpack-class.html#__init__,Method targets.writefile.WriteFile.__init__()=targets.writefile.WriteFile-class.html#__init__,Method targets.zip.Zip.__init__()=targets.zip.Zip-class.html#__init__,Method utils.antglob.GlobUnusedPatternTracker.__init__()=utils.antglob.GlobUnusedPatternTracker-class.html#__init__,Method utils.buildfilelocation.BuildFileLocation.__init__()=utils.buildfilelocation.BuildFileLocation-class.html#__init__,Method utils.compilers.Archiver.__init__()=utils.compilers.Archiver-class.html#__init__,Method utils.compilers.Compiler.__init__()=utils.compilers.Compiler-class.html#__init__,Method utils.compilers.Depends.__init__()=utils.compilers.Depends-class.html#__init__,Method utils.compilers.GCC.__init__()=utils.compilers.GCC-class.html#__init__,Method utils.compilers.Linker.__init__()=utils.compilers.Linker-class.html#__init__,Method utils.compilers.Process.__init__()=utils.compilers.Process-class.html#__init__,Method utils.compilers.ToolChain.__init__()=utils.compilers.ToolChain-class.html#__init__,Method utils.compilers.UnixArchiver.__init__()=utils.compilers.UnixArchiver-class.html#__init__,Method utils.compilers.UnixCompiler.__init__()=utils.compilers.UnixCompiler-class.html#__init__,Method utils.compilers.UnixLinker.__init__()=utils.compilers.UnixLinker-class.html#__init__,Method utils.compilers.VisualStudio.__init__()=utils.compilers.VisualStudio-class.html#__init__,Method utils.consoleformatter.ConsoleFormatter.__init__()=utils.consoleformatter.ConsoleFormatter-class.html#__init__,Method utils.consoleformatter.DefaultConsoleFormatter.__init__()=utils.consoleformatter.DefaultConsoleFormatter-class.html#__init__,Method utils.functors.ComposableFn.__init__()=utils.functors.ComposableFn-class.html#__init__,Method utils.functors.ComposableWrapper.__init__()=utils.functors.ComposableWrapper-class.html#__init__,Method utils.functors.Compose.__init__()=utils.functors.Compose-class.html#__init__,Method utils.java.JavacProcessOutputHandler.__init__()=utils.java.JavacProcessOutputHandler-class.html#__init__,Method utils.make.MakeConsoleFormatter.__init__()=utils.make.MakeConsoleFormatter-class.html#__init__,Method utils.outputhandler.ProcessOutputHandler.__init__()=utils.outputhandler.ProcessOutputHandler-class.html#__init__,Method utils.outputhandler.StdoutRedirector.__init__()=utils.outputhandler.StdoutRedirector-class.html#__init__,Method utils.progress.ProgressBarConsoleFormatter.__init__()=utils.progress.ProgressBarConsoleFormatter-class.html#__init__,Method utils.progress.VT100ProgressBarConsoleFormatter.__init__()=utils.progress.VT100ProgressBarConsoleFormatter-class.html#__init__,Method utils.teamcity.TeamcityHandler.__init__()=utils.teamcity.TeamcityHandler-class.html#__init__,Method utils.visualstudio.VisualStudioConsoleFormatter.__init__()=utils.visualstudio.VisualStudioConsoleFormatter-class.html#__init__"><a title="basetarget.BaseTarget.__init__
+buildcommon.FilenameStringFormatter.__init__
+buildcommon.StringFormatter.__init__
+buildcontext.BaseContext.__init__
+buildcontext.BuildContext.__init__
+buildcontext.BuildInitializationContext.__init__
+buildexceptions.BuildException.__init__
+pathsets.AddDestPrefix.__init__
+pathsets.BasePathSet.__init__
+pathsets.DirBasedPathSet.__init__
+pathsets.DirGeneratedByTarget.__init__
+pathsets.FilteredPathSet.__init__
+pathsets.FindPaths.__init__
+pathsets.FlattenDest.__init__
+pathsets.MapDest.__init__
+pathsets.MapSrc.__init__
+pathsets.PathSet.__init__
+pathsets.RemoveDestParents.__init__
+pathsets.SingletonDestRenameMapper.__init__
+pathsets.TargetsWithTag.__init__
+propertyfunctors.basename.__init__
+propertyfunctors.dirname.__init__
+propertyfunctors.joinPaths.__init__
+propertyfunctors.sub.__init__
+targets.copy.AddFileFooter.__init__
+targets.copy.AddFileHeader.__init__
+targets.copy.Copy.__init__
+targets.copy.FilteredCopy.__init__
+targets.copy.InsertFileContentsLineMapper.__init__
+targets.copy.OmitLines.__init__
+targets.copy.RegexLineMapper.__init__
+targets.copy.StringReplaceLineMapper.__init__
+targets.csharp.CSharp.__init__
+targets.custom.Custom.__init__
+targets.custom.CustomCommand.__init__
+targets.custom.CustomCommandWithCopy.__init__
+targets.custom.ResolvePath.__init__
+targets.docker.DockerBase.__init__
+targets.docker.DockerBuild.__init__
+targets.docker.DockerPushTag.__init__
+targets.download.Download.__init__
+targets.java.Jar.__init__
+targets.java.Javac.__init__
+targets.java.Javadoc.__init__
+targets.java.SignJars.__init__
+targets.native.Ar.__init__
+targets.native.C.__init__
+targets.native.CompilerMakeDependsPathSet.__init__
+targets.native.Cpp.__init__
+targets.native.Link.__init__
+targets.symlink.SymLink.__init__
+targets.tar.Tarball.__init__
+targets.touch.Touch.__init__
+targets.unpack.FilteredArchiveContents.__init__
+targets.unpack.Unpack.__init__
+targets.writefile.WriteFile.__init__
+targets.zip.Zip.__init__
+utils.antglob.GlobUnusedPatternTracker.__init__
+utils.buildfilelocation.BuildFileLocation.__init__
+utils.compilers.Archiver.__init__
+utils.compilers.Compiler.__init__
+utils.compilers.Depends.__init__
+utils.compilers.GCC.__init__
+utils.compilers.Linker.__init__
+utils.compilers.Process.__init__
+utils.compilers.ToolChain.__init__
+utils.compilers.UnixArchiver.__init__
+utils.compilers.UnixCompiler.__init__
+utils.compilers.UnixLinker.__init__
+utils.compilers.VisualStudio.__init__
+utils.consoleformatter.ConsoleFormatter.__init__
+utils.consoleformatter.DefaultConsoleFormatter.__init__
+utils.functors.ComposableFn.__init__
+utils.functors.ComposableWrapper.__init__
+utils.functors.Compose.__init__
+utils.java.JavacProcessOutputHandler.__init__
+utils.make.MakeConsoleFormatter.__init__
+utils.outputhandler.ProcessOutputHandler.__init__
+utils.outputhandler.StdoutRedirector.__init__
+utils.progress.ProgressBarConsoleFormatter.__init__
+utils.progress.VT100ProgressBarConsoleFormatter.__init__
+utils.teamcity.TeamcityHandler.__init__
+utils.visualstudio.VisualStudioConsoleFormatter.__init__" class="py-name" href="#" onclick="return doclink('link-45', '__init__', 'link-45');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-name">kwargs</tt><tt class="py-op">)</tt> </tt>
+<a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fd</tt> <tt class="py-op">=</tt> <tt class="py-name">fd</tt> </tt>
+</div><a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line">         </tt>
+<a name="StdoutRedirector.handleLine"></a><div id="StdoutRedirector.handleLine-def"><a name="L319"></a><tt class="py-lineno">319</tt> <a class="py-toggle" href="#" id="StdoutRedirector.handleLine-toggle" onclick="return toggle('StdoutRedirector.handleLine');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.StdoutRedirector-class.html#handleLine">handleLine</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">line</tt><tt class="py-op">,</tt> <tt class="py-param">isstderr</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StdoutRedirector.handleLine-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="StdoutRedirector.handleLine-expanded"><a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">isstderr</tt><tt class="py-op">:</tt> </tt>
+<a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line">                        <tt id="link-46" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-46', 'ProcessOutputHandler', 'link-10');">ProcessOutputHandler</a></tt><tt class="py-op">.</tt><tt id="link-47" class="py-name" targets="Method utils.java.JavacProcessOutputHandler.handleLine()=utils.java.JavacProcessOutputHandler-class.html#handleLine,Method utils.outputhandler.ProcessOutputHandler.handleLine()=utils.outputhandler.ProcessOutputHandler-class.html#handleLine,Method utils.outputhandler.StdoutRedirector.handleLine()=utils.outputhandler.StdoutRedirector-class.html#handleLine"><a title="utils.java.JavacProcessOutputHandler.handleLine
+utils.outputhandler.ProcessOutputHandler.handleLine
+utils.outputhandler.StdoutRedirector.handleLine" class="py-name" href="#" onclick="return doclink('link-47', 'handleLine', 'link-47');">handleLine</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">line</tt><tt class="py-op">,</tt> <tt class="py-name">isstderr</tt><tt class="py-op">)</tt> </tt>
+<a name="L322"></a><tt class="py-lineno">322</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L323"></a><tt class="py-lineno">323</tt>  <tt class="py-line">                        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fd</tt><tt class="py-op">.</tt><tt class="py-name">write</tt><tt class="py-op">(</tt><tt class="py-name">line</tt><tt class="py-op">.</tt><tt class="py-name">encode</tt><tt class="py-op">(</tt><tt class="py-string">"UTF-8"</tt><tt class="py-op">)</tt><tt class="py-op">+</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">linesep</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L324"></a><tt class="py-lineno">324</tt>  <tt class="py-line">         </tt>
+<a name="StdoutRedirector.handleEnd"></a><div id="StdoutRedirector.handleEnd-def"><a name="L325"></a><tt class="py-lineno">325</tt> <a class="py-toggle" href="#" id="StdoutRedirector.handleEnd-toggle" onclick="return toggle('StdoutRedirector.handleEnd');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.outputhandler.StdoutRedirector-class.html#handleEnd">handleEnd</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">returnCode</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StdoutRedirector.handleEnd-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="StdoutRedirector.handleEnd-expanded"><a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line">                <tt id="link-48" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-48', 'ProcessOutputHandler', 'link-10');">ProcessOutputHandler</a></tt><tt class="py-op">.</tt><tt id="link-49" class="py-name" targets="Method utils.compilers.GccProcessOutputHandler.handleEnd()=utils.compilers.GccProcessOutputHandler-class.html#handleEnd,Method utils.java.JavacProcessOutputHandler.handleEnd()=utils.java.JavacProcessOutputHandler-class.html#handleEnd,Method utils.outputhandler.ProcessOutputHandler.handleEnd()=utils.outputhandler.ProcessOutputHandler-class.html#handleEnd,Method utils.outputhandler.StdoutRedirector.handleEnd()=utils.outputhandler.StdoutRedirector-class.html#handleEnd"><a title="utils.compilers.GccProcessOutputHandler.handleEnd
+utils.java.JavacProcessOutputHandler.handleEnd
+utils.outputhandler.ProcessOutputHandler.handleEnd
+utils.outputhandler.StdoutRedirector.handleEnd" class="py-name" href="#" onclick="return doclink('link-49', 'handleEnd', 'link-49');">handleEnd</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">returnCode</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line"> </tt>
+<a name="L328"></a><tt class="py-lineno">328</tt>  <tt class="py-line"><tt id="link-50" class="py-name"><a title="propertysupport.defineOption" class="py-name" href="#" onclick="return doclink('link-50', 'defineOption', 'link-3');">defineOption</a></tt><tt class="py-op">(</tt><tt id="link-51" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-51', 'ProcessOutputHandler', 'link-10');">ProcessOutputHandler</a></tt><tt class="py-op">.</tt><tt id="link-52" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.Options" class="py-name" href="#" onclick="return doclink('link-52', 'Options', 'link-11');">Options</a></tt><tt class="py-op">.</tt><tt id="link-53" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.Options.ignoreReturnCode" class="py-name" href="#" onclick="return doclink('link-53', 'ignoreReturnCode', 'link-5');">ignoreReturnCode</a></tt><tt class="py-op">,</tt> <tt class="py-name">False</tt><tt class="py-op">)</tt> </tt>
+<a name="L329"></a><tt class="py-lineno">329</tt>  <tt class="py-line"><tt id="link-54" class="py-name"><a title="propertysupport.defineOption" class="py-name" href="#" onclick="return doclink('link-54', 'defineOption', 'link-3');">defineOption</a></tt><tt class="py-op">(</tt><tt id="link-55" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-55', 'ProcessOutputHandler', 'link-10');">ProcessOutputHandler</a></tt><tt class="py-op">.</tt><tt id="link-56" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.Options" class="py-name" href="#" onclick="return doclink('link-56', 'Options', 'link-11');">Options</a></tt><tt class="py-op">.</tt><tt id="link-57" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.Options.regexIgnore" class="py-name" href="#" onclick="return doclink('link-57', 'regexIgnore', 'link-6');">regexIgnore</a></tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L330"></a><tt class="py-lineno">330</tt>  <tt class="py-line"><tt id="link-58" class="py-name"><a title="propertysupport.defineOption" class="py-name" href="#" onclick="return doclink('link-58', 'defineOption', 'link-3');">defineOption</a></tt><tt class="py-op">(</tt><tt id="link-59" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-59', 'ProcessOutputHandler', 'link-10');">ProcessOutputHandler</a></tt><tt class="py-op">.</tt><tt id="link-60" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.Options" class="py-name" href="#" onclick="return doclink('link-60', 'Options', 'link-11');">Options</a></tt><tt class="py-op">.</tt><tt id="link-61" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler.Options.factory" class="py-name" href="#" onclick="return doclink('link-61', 'factory', 'link-7');">factory</a></tt><tt class="py-op">,</tt> <tt id="link-62" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-62', 'ProcessOutputHandler', 'link-10');">ProcessOutputHandler</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L331"></a><tt class="py-lineno">331</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Apr  5 15:17:01 2019
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

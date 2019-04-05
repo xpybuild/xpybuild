@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>utils.buildfilelocation</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="utils-module.html">Package&nbsp;utils</a> ::
+        Module&nbsp;buildfilelocation
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="utils.buildfilelocation-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="utils.buildfilelocation-module.html">Module utils.buildfilelocation</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># buildfilelocation - Class for getting and holding info on the filename and </tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># line of a build file elemnet</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment">#   Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment">#   you may not use this file except in compliance with the License.</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment">#   You may obtain a copy of the License at</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment">#       http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment">#   Unless required by applicable law or agreed to in writing, software</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment">#   distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment">#   See the License for the specific language governing permissions and</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-comment">#   limitations under the License.</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-comment"># $Id: buildfilelocation.py 301527 2017-02-06 15:31:43Z matj $</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">traceback</tt><tt class="py-op">,</tt> <tt class="py-name">inspect</tt><tt class="py-op">,</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt> <tt class="py-name">sys</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"> </tt>
+<a name="BuildFileLocation"></a><div id="BuildFileLocation-def"><a name="L23"></a><tt class="py-lineno">23</tt> <a class="py-toggle" href="#" id="BuildFileLocation-toggle" onclick="return toggle('BuildFileLocation');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="utils.buildfilelocation.BuildFileLocation-class.html">BuildFileLocation</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="BuildFileLocation-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="BuildFileLocation-expanded"><a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">        <tt class="py-docstring">""" Represents information about a location in the user's build file.</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">        <tt id="link-0" class="py-name" targets="Variable utils.buildfilelocation.BuildFileLocation.buildFile=utils.buildfilelocation.BuildFileLocation-class.html#buildFile"><a title="utils.buildfilelocation.BuildFileLocation.buildFile" class="py-name" href="#" onclick="return doclink('link-0', 'buildFile', 'link-0');">buildFile</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">        <tt id="link-1" class="py-name" targets="Variable utils.buildfilelocation.BuildFileLocation.buildDir=utils.buildfilelocation.BuildFileLocation-class.html#buildDir"><a title="utils.buildfilelocation.BuildFileLocation.buildDir" class="py-name" href="#" onclick="return doclink('link-1', 'buildDir', 'link-1');">buildDir</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">        <tt id="link-2" class="py-name" targets="Variable utils.buildfilelocation.BuildFileLocation.lineNumber=utils.buildfilelocation.BuildFileLocation-class.html#lineNumber"><a title="utils.buildfilelocation.BuildFileLocation.lineNumber" class="py-name" href="#" onclick="return doclink('link-2', 'lineNumber', 'link-2');">lineNumber</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt class="py-comment">#sourceLine = None</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">         </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt id="link-3" class="py-name" targets="Variable utils.buildfilelocation.BuildFileLocation._currentBuildFile=utils.buildfilelocation.BuildFileLocation-class.html#_currentBuildFile"><a title="utils.buildfilelocation.BuildFileLocation._currentBuildFile" class="py-name" href="#" onclick="return doclink('link-3', '_currentBuildFile', 'link-3');">_currentBuildFile</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> <tt class="py-comment"># for internal use only; last item indicates the file currently being parsed</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">         </tt>
+<a name="BuildFileLocation.__init__"></a><div id="BuildFileLocation.__init__-def"><a name="L33"></a><tt class="py-lineno">33</tt> <a class="py-toggle" href="#" id="BuildFileLocation.__init__-toggle" onclick="return toggle('BuildFileLocation.__init__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.buildfilelocation.BuildFileLocation-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">raiseOnError</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="BuildFileLocation.__init__-collapsed" style="display:none;" pad="++" indent="++++++++++++"></div><div id="BuildFileLocation.__init__-expanded"><a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"><tt class="py-docstring">                Constructs a new instance by inspecting the stack to find what part </tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"><tt class="py-docstring">                of the build file we're currently processing. </tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"><tt class="py-docstring">                This should only be used during the parsing phase, an empty location </tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line"><tt class="py-docstring">                will be returned if this is called while building or dependency </tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"><tt class="py-docstring">                checking a target. </tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"><tt class="py-docstring">                @param raiseOnError: if False, creates a BuildFileLocation with None for </tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line"><tt class="py-docstring">                the buildFile/buildDir if we are not currently parsing any included </tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line"><tt class="py-docstring">                build files. </tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt id="link-4" class="py-name" targets="Class utils.buildfilelocation.BuildFileLocation=utils.buildfilelocation.BuildFileLocation-class.html"><a title="utils.buildfilelocation.BuildFileLocation" class="py-name" href="#" onclick="return doclink('link-4', 'BuildFileLocation', 'link-4');">BuildFileLocation</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation._currentBuildFile" class="py-name" href="#" onclick="return doclink('link-5', '_currentBuildFile', 'link-3');">_currentBuildFile</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">                        <tt class="py-name">x</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_getCorrectFrame</tt><tt class="py-op">(</tt><tt class="py-op">)</tt>  </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">                        <tt class="py-comment"># do not even try to get location if not doing parsing, since in </tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">                        <tt class="py-comment"># almost all cases the location of the current thread's target </tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">                        <tt class="py-comment"># is more useful</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">                        <tt class="py-name">x</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt>  </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">                 </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">x</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line">                        <tt class="py-name">filename</tt><tt class="py-op">,</tt> <tt class="py-name">lineno</tt> <tt class="py-op">=</tt> <tt class="py-name">x</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">                        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-6" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation.buildFile" class="py-name" href="#" onclick="return doclink('link-6', 'buildFile', 'link-0');">buildFile</a></tt> <tt class="py-op">=</tt> <tt class="py-name">filename</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">                        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation.buildDir" class="py-name" href="#" onclick="return doclink('link-7', 'buildDir', 'link-1');">buildDir</a></tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Class propertyfunctors.dirname=propertyfunctors.dirname-class.html"><a title="propertyfunctors.dirname" class="py-name" href="#" onclick="return doclink('link-8', 'dirname', 'link-8');">dirname</a></tt><tt class="py-op">(</tt><tt class="py-name">filename</tt><tt class="py-op">)</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-string">'doctest'</tt> <tt class="py-keyword">in</tt> <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">argv</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation.buildDir" class="py-name" href="#" onclick="return doclink('link-9', 'buildDir', 'link-1');">buildDir</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'BUILD_DIR'</tt> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">                        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation.lineNumber" class="py-name" href="#" onclick="return doclink('link-10', 'lineNumber', 'link-2');">lineNumber</a></tt> <tt class="py-op">=</tt> <tt class="py-name">lineno</tt> </tt>
+<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-string">'doctest'</tt> <tt class="py-keyword">in</tt> <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">argv</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">:</tt>  </tt>
+<a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line">                                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation.buildDir" class="py-name" href="#" onclick="return doclink('link-11', 'buildDir', 'link-1');">buildDir</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'BUILD_DIR'</tt> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-name">raiseOnError</tt><tt class="py-op">:</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line">                                <tt class="py-keyword">raise</tt> <tt class="py-name">Exception</tt><tt class="py-op">(</tt><tt class="py-string">'Cannot find the location in source build file'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">         </tt>
+<a name="BuildFileLocation.__str__"></a><div id="BuildFileLocation.__str__-def"><a name="L66"></a><tt class="py-lineno">66</tt> <a class="py-toggle" href="#" id="BuildFileLocation.__str__-toggle" onclick="return toggle('BuildFileLocation.__str__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.buildfilelocation.BuildFileLocation-class.html#__str__">__str__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="BuildFileLocation.__str__-collapsed" style="display:none;" pad="++" indent="++++++++++++"></div><div id="BuildFileLocation.__str__-expanded"><a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-12" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation.buildFile" class="py-name" href="#" onclick="return doclink('link-12', 'buildFile', 'link-0');">buildFile</a></tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt id="link-13" class="py-name" targets="Function buildcommon.formatFileLocation()=buildcommon-module.html#formatFileLocation"><a title="buildcommon.formatFileLocation" class="py-name" href="#" onclick="return doclink('link-13', 'formatFileLocation', 'link-13');">formatFileLocation</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation.buildFile" class="py-name" href="#" onclick="return doclink('link-14', 'buildFile', 'link-0');">buildFile</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation.lineNumber" class="py-name" href="#" onclick="return doclink('link-15', 'lineNumber', 'link-2');">lineNumber</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-string">'&lt;unknown build file location&gt;'</tt> </tt>
+</div><a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line">                 </tt>
+<a name="BuildFileLocation.getLineString"></a><div id="BuildFileLocation.getLineString-def"><a name="L70"></a><tt class="py-lineno">70</tt> <a class="py-toggle" href="#" id="BuildFileLocation.getLineString-toggle" onclick="return toggle('BuildFileLocation.getLineString');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.buildfilelocation.BuildFileLocation-class.html#getLineString">getLineString</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="BuildFileLocation.getLineString-collapsed" style="display:none;" pad="++" indent="++++++++++++"></div><div id="BuildFileLocation.getLineString-expanded"><a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line">                <tt class="py-comment">#if self.sourceLine:</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line">                <tt class="py-comment">#       return '%s: %s' % (self.__str__(), self.sourceLine)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line">                <tt class="py-comment">#else:</tt> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Method basetarget.BaseTarget.__str__()=basetarget.BaseTarget-class.html#__str__,Method buildexceptions.BuildException.__str__()=buildexceptions.BuildException-class.html#__str__,Method propertyfunctors.basename.__str__()=propertyfunctors.basename-class.html#__str__,Method propertyfunctors.dirname.__str__()=propertyfunctors.dirname-class.html#__str__,Method propertyfunctors.joinPaths.__str__()=propertyfunctors.joinPaths-class.html#__str__,Method propertyfunctors.sub.__str__()=propertyfunctors.sub-class.html#__str__,Method utils.antglob.GlobPatternSet.__str__()=utils.antglob.GlobPatternSet-class.html#__str__,Method utils.buildfilelocation.BuildFileLocation.__str__()=utils.buildfilelocation.BuildFileLocation-class.html#__str__,Method utils.functors.Composable.__str__()=utils.functors.Composable-class.html#__str__,Method utils.functors.ComposableFn.__str__()=utils.functors.ComposableFn-class.html#__str__,Method utils.functors.Compose.__str__()=utils.functors.Compose-class.html#__str__"><a title="basetarget.BaseTarget.__str__
+buildexceptions.BuildException.__str__
+propertyfunctors.basename.__str__
+propertyfunctors.dirname.__str__
+propertyfunctors.joinPaths.__str__
+propertyfunctors.sub.__str__
+utils.antglob.GlobPatternSet.__str__
+utils.buildfilelocation.BuildFileLocation.__str__
+utils.functors.Composable.__str__
+utils.functors.ComposableFn.__str__
+utils.functors.Compose.__str__" class="py-name" href="#" onclick="return doclink('link-16', '__str__', 'link-16');">__str__</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">         </tt>
+<a name="BuildFileLocation._getCorrectFrame"></a><div id="BuildFileLocation._getCorrectFrame-def"><a name="L76"></a><tt class="py-lineno">76</tt> <a class="py-toggle" href="#" id="BuildFileLocation._getCorrectFrame-toggle" onclick="return toggle('BuildFileLocation._getCorrectFrame');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.buildfilelocation.BuildFileLocation-class.html#_getCorrectFrame">_getCorrectFrame</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="BuildFileLocation._getCorrectFrame-collapsed" style="display:none;" pad="++" indent="++++++++++++"></div><div id="BuildFileLocation._getCorrectFrame-expanded"><a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">                <tt class="py-name">context</tt> <tt class="py-op">=</tt> <tt class="py-number">3</tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">                <tt class="py-name">frame</tt> <tt class="py-op">=</tt> <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">_getframe</tt><tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line">                <tt class="py-comment"># nb: this can be very expensive so we try to do the absolute bare minimum of work here</tt> </tt>
+<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line">                <tt class="py-keyword">while</tt> <tt class="py-name">frame</tt><tt class="py-op">:</tt> </tt>
+<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line">                        <tt class="py-name">filename</tt> <tt class="py-op">=</tt> <tt class="py-name">inspect</tt><tt class="py-op">.</tt><tt class="py-name">getfile</tt><tt class="py-op">(</tt><tt class="py-name">frame</tt><tt class="py-op">)</tt> </tt>
+<a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line">                        <tt class="py-keyword">assert</tt> <tt class="py-name">filename</tt> </tt>
+<a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-name">filename</tt><tt class="py-op">.</tt><tt class="py-name">endswith</tt><tt class="py-op">(</tt><tt class="py-string">'.pyc'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-name">filename</tt> <tt class="py-op">=</tt> <tt class="py-name">filename</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">-</tt><tt class="py-number">3</tt><tt class="py-op">]</tt><tt class="py-op">+</tt><tt class="py-string">'.py'</tt> </tt>
+<a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line">                                 </tt>
+<a name="L85"></a><tt class="py-lineno">85</tt>  <tt class="py-line">                        <tt class="py-comment"># perform some cross-OS but low cost (no disk access) canonicalization</tt> </tt>
+<a name="L86"></a><tt class="py-lineno">86</tt>  <tt class="py-line">                        <tt class="py-comment"># of the paths</tt> </tt>
+<a name="L87"></a><tt class="py-lineno">87</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-name">filename</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">replace</tt><tt class="py-op">(</tt><tt class="py-string">'\\'</tt><tt class="py-op">,</tt><tt class="py-string">'/'</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt id="link-17" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation" class="py-name" href="#" onclick="return doclink('link-17', 'BuildFileLocation', 'link-4');">BuildFileLocation</a></tt><tt class="py-op">.</tt><tt id="link-18" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation._currentBuildFile" class="py-name" href="#" onclick="return doclink('link-18', '_currentBuildFile', 'link-3');">_currentBuildFile</a></tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">replace</tt><tt class="py-op">(</tt><tt class="py-string">'\\'</tt><tt class="py-op">,</tt><tt class="py-string">'/'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L88"></a><tt class="py-lineno">88</tt>  <tt class="py-line">                                <tt class="py-name">lineno</tt> <tt class="py-op">=</tt> <tt class="py-name">inspect</tt><tt class="py-op">.</tt><tt class="py-name">getlineno</tt><tt class="py-op">(</tt><tt class="py-name">frame</tt><tt class="py-op">)</tt> </tt>
+<a name="L89"></a><tt class="py-lineno">89</tt>  <tt class="py-line">                                <tt class="py-keyword">return</tt> <tt class="py-name">filename</tt><tt class="py-op">,</tt> <tt class="py-name">lineno</tt> </tt>
+<a name="L90"></a><tt class="py-lineno">90</tt>  <tt class="py-line">                                 </tt>
+<a name="L91"></a><tt class="py-lineno">91</tt>  <tt class="py-line">                        <tt class="py-name">frame</tt> <tt class="py-op">=</tt> <tt class="py-name">frame</tt><tt class="py-op">.</tt><tt class="py-name">f_back</tt> </tt>
+</div></div><a name="L92"></a><tt class="py-lineno">92</tt>  <tt class="py-line"> </tt>
+<a name="L93"></a><tt class="py-lineno">93</tt>  <tt class="py-line"><tt class="py-comment"># down here to avoid circular reference</tt> </tt>
+<a name="L94"></a><tt class="py-lineno">94</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-19" class="py-name" targets="Module buildcommon=buildcommon-module.html"><a title="buildcommon" class="py-name" href="#" onclick="return doclink('link-19', 'buildcommon', 'link-19');">buildcommon</a></tt> <tt class="py-keyword">import</tt> <tt id="link-20" class="py-name"><a title="buildcommon.formatFileLocation" class="py-name" href="#" onclick="return doclink('link-20', 'formatFileLocation', 'link-13');">formatFileLocation</a></tt> </tt>
+<a name="L95"></a><tt class="py-lineno">95</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Apr  5 15:17:00 2019
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

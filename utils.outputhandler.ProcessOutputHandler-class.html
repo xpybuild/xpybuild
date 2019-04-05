@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>utils.outputhandler.ProcessOutputHandler</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="utils-module.html">Package&nbsp;utils</a> ::
+        <a href="utils.outputhandler-module.html">Module&nbsp;outputhandler</a> ::
+        Class&nbsp;ProcessOutputHandler
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="utils.outputhandler.ProcessOutputHandler-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class ProcessOutputHandler</h1><p class="nomargin-top"><span class="codelink"><a href="utils.outputhandler-pysrc.html#ProcessOutputHandler">source&nbsp;code</a></span></p>
+<pre class="base-tree">
+object --+
+         |
+        <strong class="uidshort">ProcessOutputHandler</strong>
+</pre>
+
+<dl><dt>Known Subclasses:</dt>
+<dd>
+      <ul class="subclass-list">
+<li><a href="targets.csharp.CSCProcessOutputHandler-class.html">targets.csharp.CSCProcessOutputHandler</a></li><li>, <a href="utils.compilers.GccProcessOutputHandler-class.html">compilers.GccProcessOutputHandler</a></li><li>, <a href="utils.compilers.VisualStudioProcessOutputHandler-class.html">compilers.VisualStudioProcessOutputHandler</a></li><li>, <a href="utils.java.JavacProcessOutputHandler-class.html">java.JavacProcessOutputHandler</a></li><li>, <a href="utils.outputhandler.StdoutRedirector-class.html">StdoutRedirector</a></li>  </ul>
+</dd></dl>
+
+<hr />
+<p>An extensible class for handling stdout/stderr output lines and return
+  code from a process, accumulating error and warnings, and converting into
+  appropriate log statements and a summary exception if it failed.</p>
+  <p>It is expected that subclasses would be created to abtract away 
+  handling of output from different particular types of process (e.g. Java 
+  compilation, gmake, msbuild, etc).</p>
+  <p>Usage: the handleLine method will be invoked for every line in the 
+  stdout and stderr, then handleEnd will be called once, with the process 
+  returnCode if known. handleEnd should raise a BuildException if the 
+  process is deemed to have failed.</p>
+  <p>The errors and warnings lists can be inspected after handleEnd has 
+  been called to get further information if desired.</p>
+  <p>Subclasses may often wish to do some of the following:</p>
+  <ul>
+    <li>
+      override the logic for deciding what consistutes an error/warning 
+      (see _decideLogLevel)
+    </li>
+    <li>
+      use a regex to get the filename and number from error messages to 
+      support IDE jump-to integration (see _parseLocationFromLine)
+    </li>
+    <li>
+      strip timestamp/threadid prefixes from lines (see _preprocessLine)
+    </li>
+    <li>
+      support warnings-as-errors behaviour by putting the first warning 
+      into the final error message if the only error is that there are 
+      warnings (by overriding handleEnd)
+    </li>
+  </ul>
+  <p>This class is not thread-safe, so locking should be provided by the 
+  caller if multiple threads are in use (e.g. for reading stdout+err in 
+  parallel).</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>h = ProcessOutputHandler(<span class="py-string">'myhandler'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>h.handleLine(u<span class="py-string">'error: My error'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>h.handleLine(u<span class="py-string">'error: My error 2'</span>)</pre>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>len(h.getErrors())
+<span class="py-output">2</span></pre>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>h.handleEnd(5)
+<span class="py-except">Traceback (most recent call last):</span>
+<span class="py-except">...</span>
+<span class="py-except">BuildException: 2 errors, first is: error: My error</span></pre>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>h = ProcessOutputHandler(<span class="py-string">'myhandler'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>h.handleLine(u<span class="py-string">'some message'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>h.handleLine(u<span class="py-string">'later message'</span>)</pre>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>h.handleEnd(5)
+<span class="py-except">Traceback (most recent call last):</span>
+<span class="py-except">...</span>
+<span class="py-except">BuildException: myhandler failed with return code 5; no errors reported, last line was: later message</span></pre>
+
+<!-- ==================== NESTED CLASSES ==================== -->
+<a name="section-NestedClasses"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Nested Classes</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="utils.outputhandler.ProcessOutputHandler.Options-class.html" class="summary-name">Options</a><br />
+      This class may be renamed or removed, please do not use it 
+        directly.
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="utils.outputhandler.ProcessOutputHandler-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">treatStdErrAsErrors</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      The constructor for this object.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utils.outputhandler-pysrc.html#ProcessOutputHandler.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="utils.outputhandler.ProcessOutputHandler-class.html#handleLine" class="summary-sig-name">handleLine</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>,
+        <span class="summary-sig-arg">isstderr</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Called once for every line in the stdout and stderr (stderr after, if
+      not during stdout).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utils.outputhandler-pysrc.html#ProcessOutputHandler.handleLine">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="handleEnd"></a><span class="summary-sig-name">handleEnd</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">returnCode</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utils.outputhandler-pysrc.html#ProcessOutputHandler.handleEnd">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getErrors"></a><span class="summary-sig-name">getErrors</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utils.outputhandler-pysrc.html#ProcessOutputHandler.getErrors">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getWarnings"></a><span class="summary-sig-name">getWarnings</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utils.outputhandler-pysrc.html#ProcessOutputHandler.getWarnings">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getLastOutputLine"></a><span class="summary-sig-name">getLastOutputLine</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utils.outputhandler-pysrc.html#ProcessOutputHandler.getLastOutputLine">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Static Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="utils.outputhandler.ProcessOutputHandler-class.html#create" class="summary-sig-name">create</a>(<span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">options</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      Create a new ProcessOutputHandler using the specified target options.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utils.outputhandler-pysrc.html#ProcessOutputHandler.create">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">treatStdErrAsErrors</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utils.outputhandler-pysrc.html#ProcessOutputHandler.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The constructor for this object. Subclasses that override this should 
+  always pass **kwargs down to the super constructor to allow for new 
+  functionality to be added</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> - a short display name for this process or target, used as a prefix
+          for log lines.</li>
+        <li><strong class="pname"><code>treatStdErrAsErrors</code></strong> - controls where all content on stderr (rather than stdout) is 
+          treated as an error by default. The correct setting depends on 
+          how the process being invoked uses stdout/err.</li>
+        <li><strong class="pname"><code>options</code></strong> - a dictionary of resolved option values, in case aspects of this 
+          handler are customizable. Available to implementations as 
+          self.options (if None is passed, self.options will be an empty 
+          dictionary)</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="create"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">create</span>(<span class="sig-arg">name</span>,
+        <span class="sig-arg">options</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utils.outputhandler-pysrc.html#ProcessOutputHandler.create">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a new ProcessOutputHandler using the specified target 
+  options.</p>
+  <p>This is preferred over calling the ProcessOutputHandler constructor as
+  it permits overriding the ProcessOutputHandler subclass using the <a 
+  href="utils.outputhandler.ProcessOutputHandler.Options-class.html#factory"
+  class="link">ProcessOutputHandler.Options.factory</a> option.</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>type(ProcessOutputHandler.create(<span class="py-string">'mine'</span>)).__name__
+<span class="py-output">'ProcessOutputHandler'</span></pre>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">def</span> <span class="py-defname">myfactory</span>(*args, **kwargs): <span class="py-keyword">print</span> <span class="py-string">'called factory %s, kwarg keys: %s'</span>%(args, kwargs.keys())
+<span class="py-prompt">&gt;&gt;&gt; </span>ProcessOutputHandler.create(<span class="py-string">'mine'</span>, options={ProcessOutputHandler.Options.factory: myfactory})
+<span class="py-output">called factory ('mine',), kwarg keys: ['options']</span></pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="handleLine"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">handleLine</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line</span>,
+        <span class="sig-arg">isstderr</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utils.outputhandler-pysrc.html#ProcessOutputHandler.handleLine">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called once for every line in the stdout and stderr (stderr after, if 
+  not during stdout).</p>
+  <p>If possible, line should be a unicode object rather than a byte 
+  string.</p>
+  <p>The default implementation uses _decideLogLevel to decide how to 
+  interpret each line, then calls _preprocessLine and 
+  _parseLocationFromLine on the line before stashing errors/warnings, and 
+  passing the pre-processed line to _log for logging at the specified 
+  level.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>isstderr</code></strong> - if stdout/err are segregated then this can be used as a hint to 
+          indicate the source of the line.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Apr  5 15:17:00 2019
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

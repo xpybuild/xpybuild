@@ -1,0 +1,977 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>targets.java</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="targets-module.html">Package&nbsp;targets</a> ::
+        Module&nbsp;java
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="targets.java-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="targets.java-module.html">Module targets.java</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># xpyBuild - eXtensible Python-based Build System</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment">#   Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment">#   you may not use this file except in compliance with the License.</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment">#   You may obtain a copy of the License at</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment">#       http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment">#   Unless required by applicable law or agreed to in writing, software</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment">#   distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment">#   See the License for the specific language governing permissions and</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment">#   limitations under the License.</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"># $Id: java.py 301527 2017-02-06 15:31:43Z matj $</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt> <tt class="py-name">inspect</tt><tt class="py-op">,</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">shutil</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module buildcommon=buildcommon-module.html"><a title="buildcommon" class="py-name" href="#" onclick="return doclink('link-0', 'buildcommon', 'link-0');">buildcommon</a></tt> <tt class="py-keyword">import</tt> <tt class="py-op">*</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name" targets="Module basetarget=basetarget-module.html"><a title="basetarget" class="py-name" href="#" onclick="return doclink('link-1', 'basetarget', 'link-1');">basetarget</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Class basetarget.BaseTarget=basetarget.BaseTarget-class.html"><a title="basetarget.BaseTarget" class="py-name" href="#" onclick="return doclink('link-2', 'BaseTarget', 'link-2');">BaseTarget</a></tt><tt class="py-op">,</tt> <tt id="link-3" class="py-name" targets="Function basetarget.targetNameToUniqueId()=basetarget-module.html#targetNameToUniqueId"><a title="basetarget.targetNameToUniqueId" class="py-name" href="#" onclick="return doclink('link-3', 'targetNameToUniqueId', 'link-3');">targetNameToUniqueId</a></tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-4" class="py-name" targets="Module propertysupport=propertysupport-module.html"><a title="propertysupport" class="py-name" href="#" onclick="return doclink('link-4', 'propertysupport', 'link-4');">propertysupport</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Function propertysupport.defineOption()=propertysupport-module.html#defineOption"><a title="propertysupport.defineOption" class="py-name" href="#" onclick="return doclink('link-5', 'defineOption', 'link-5');">defineOption</a></tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-6" class="py-name" targets="Module pathsets=pathsets-module.html"><a title="pathsets" class="py-name" href="#" onclick="return doclink('link-6', 'pathsets', 'link-6');">pathsets</a></tt> <tt class="py-keyword">import</tt> <tt id="link-7" class="py-name" targets="Class pathsets.PathSet=pathsets.PathSet-class.html"><a title="pathsets.PathSet" class="py-name" href="#" onclick="return doclink('link-7', 'PathSet', 'link-7');">PathSet</a></tt><tt class="py-op">,</tt> <tt id="link-8" class="py-name" targets="Class pathsets.FilteredPathSet=pathsets.FilteredPathSet-class.html"><a title="pathsets.FilteredPathSet" class="py-name" href="#" onclick="return doclink('link-8', 'FilteredPathSet', 'link-8');">FilteredPathSet</a></tt><tt class="py-op">,</tt> <tt id="link-9" class="py-name" targets="Class pathsets.BasePathSet=pathsets.BasePathSet-class.html"><a title="pathsets.BasePathSet" class="py-name" href="#" onclick="return doclink('link-9', 'BasePathSet', 'link-9');">BasePathSet</a></tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-10" class="py-name" targets="Package utils=utils-module.html"><a title="utils" class="py-name" href="#" onclick="return doclink('link-10', 'utils', 'link-10');">utils</a></tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Module utils.fileutils=utils.fileutils-module.html"><a title="utils.fileutils" class="py-name" href="#" onclick="return doclink('link-11', 'fileutils', 'link-11');">fileutils</a></tt> <tt class="py-keyword">import</tt> <tt id="link-12" class="py-name" targets="Function utils.fileutils.mkdir()=utils.fileutils-module.html#mkdir"><a title="utils.fileutils.mkdir" class="py-name" href="#" onclick="return doclink('link-12', 'mkdir', 'link-12');">mkdir</a></tt><tt class="py-op">,</tt> <tt id="link-13" class="py-name" targets="Function utils.fileutils.deleteDir()=utils.fileutils-module.html#deleteDir"><a title="utils.fileutils.deleteDir" class="py-name" href="#" onclick="return doclink('link-13', 'deleteDir', 'link-13');">deleteDir</a></tt><tt class="py-op">,</tt> <tt class="py-name">openForWrite</tt><tt class="py-op">,</tt> <tt id="link-14" class="py-name" targets="Function utils.fileutils.normLongPath()=utils.fileutils-module.html#normLongPath"><a title="utils.fileutils.normLongPath" class="py-name" href="#" onclick="return doclink('link-14', 'normLongPath', 'link-14');">normLongPath</a></tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-15" class="py-name"><a title="utils" class="py-name" href="#" onclick="return doclink('link-15', 'utils', 'link-10');">utils</a></tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Module targets.java=targets.java-module.html,Module utils.java=utils.java-module.html"><a title="targets.java
+utils.java" class="py-name" href="#" onclick="return doclink('link-16', 'java', 'link-16');">java</a></tt> <tt class="py-keyword">import</tt> <tt id="link-17" class="py-name" targets="Function utils.java.jar()=utils.java-module.html#jar"><a title="utils.java.jar" class="py-name" href="#" onclick="return doclink('link-17', 'jar', 'link-17');">jar</a></tt><tt class="py-op">,</tt> <tt id="link-18" class="py-name" targets="Function utils.java.javac()=utils.java-module.html#javac"><a title="utils.java.javac" class="py-name" href="#" onclick="return doclink('link-18', 'javac', 'link-18');">javac</a></tt><tt class="py-op">,</tt> <tt id="link-19" class="py-name" targets="Function utils.java.create_manifest()=utils.java-module.html#create_manifest"><a title="utils.java.create_manifest" class="py-name" href="#" onclick="return doclink('link-19', 'create_manifest', 'link-19');">create_manifest</a></tt><tt class="py-op">,</tt> <tt id="link-20" class="py-name" targets="Function utils.java.javadoc()=utils.java-module.html#javadoc"><a title="utils.java.javadoc" class="py-name" href="#" onclick="return doclink('link-20', 'javadoc', 'link-20');">javadoc</a></tt><tt class="py-op">,</tt> <tt id="link-21" class="py-name" targets="Function utils.java.signjar()=utils.java-module.html#signjar"><a title="utils.java.signjar" class="py-name" href="#" onclick="return doclink('link-21', 'signjar', 'link-21');">signjar</a></tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-22" class="py-name"><a title="utils" class="py-name" href="#" onclick="return doclink('link-22', 'utils', 'link-10');">utils</a></tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Module utils.flatten=utils.flatten-module.html,Function utils.flatten.flatten()=utils.flatten-module.html#flatten"><a title="utils.flatten
+utils.flatten.flatten" class="py-name" href="#" onclick="return doclink('link-23', 'flatten', 'link-23');">flatten</a></tt> <tt class="py-keyword">import</tt> <tt id="link-24" class="py-name"><a title="utils.flatten
+utils.flatten.flatten" class="py-name" href="#" onclick="return doclink('link-24', 'flatten', 'link-23');">flatten</a></tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-25" class="py-name"><a title="utils" class="py-name" href="#" onclick="return doclink('link-25', 'utils', 'link-10');">utils</a></tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Module utils.outputhandler=utils.outputhandler-module.html"><a title="utils.outputhandler" class="py-name" href="#" onclick="return doclink('link-26', 'outputhandler', 'link-26');">outputhandler</a></tt> <tt class="py-keyword">import</tt> <tt id="link-27" class="py-name" targets="Class utils.outputhandler.ProcessOutputHandler=utils.outputhandler.ProcessOutputHandler-class.html"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-27', 'ProcessOutputHandler', 'link-27');">ProcessOutputHandler</a></tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-28" class="py-name" targets="Module buildexceptions=buildexceptions-module.html"><a title="buildexceptions" class="py-name" href="#" onclick="return doclink('link-28', 'buildexceptions', 'link-28');">buildexceptions</a></tt> <tt class="py-keyword">import</tt> <tt id="link-29" class="py-name" targets="Class buildexceptions.BuildException=buildexceptions.BuildException-class.html"><a title="buildexceptions.BuildException" class="py-name" href="#" onclick="return doclink('link-29', 'BuildException', 'link-29');">BuildException</a></tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">logging</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">zipfile</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">collections</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt class="py-comment"># Options specific to this target</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"><tt id="link-30" class="py-name"><a title="propertysupport.defineOption" class="py-name" href="#" onclick="return doclink('link-30', 'defineOption', 'link-5');">defineOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'jar.manifest.classpathAppend'</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt id="link-31" class="py-name"><a title="propertysupport.defineOption" class="py-name" href="#" onclick="return doclink('link-31', 'defineOption', 'link-5');">defineOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'javac.logs'</tt><tt class="py-op">,</tt> <tt class="py-string">'${BUILD_WORK_DIR}/javac_logs'</tt><tt class="py-op">)</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"> </tt>
+<a name="_isJavaFile"></a><div id="_isJavaFile-def"><a name="L39"></a><tt class="py-lineno"> 39</tt> <a class="py-toggle" href="#" id="_isJavaFile-toggle" onclick="return toggle('_isJavaFile');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.java-module.html#_isJavaFile">_isJavaFile</a><tt class="py-op">(</tt><tt class="py-param">p</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt class="py-name">p</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">endswith</tt><tt class="py-op">(</tt><tt class="py-string">'.java'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"> </tt>
+<a name="SignJars"></a><div id="SignJars-def"><a name="L41"></a><tt class="py-lineno"> 41</tt> <a class="py-toggle" href="#" id="SignJars-toggle" onclick="return toggle('SignJars');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="targets.java.SignJars-class.html">SignJars</a><tt class="py-op">(</tt><tt class="py-base-class">BaseTarget</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SignJars-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="SignJars-expanded"><a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">        <tt class="py-docstring">""" Copy jars into a target directory and sign them with the supplied keystore, optionally also updating their manifests</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="SignJars.__init__"></a><div id="SignJars.__init__-def"><a name="L44"></a><tt class="py-lineno"> 44</tt> <a class="py-toggle" href="#" id="SignJars.__init__-toggle" onclick="return toggle('SignJars.__init__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.java.SignJars-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">output</tt><tt class="py-op">,</tt> <tt class="py-param">jars</tt><tt class="py-op">,</tt> <tt class="py-param">keystore</tt><tt class="py-op">,</tt> <tt class="py-param">alias</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">storepass</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">manifestDefaults</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SignJars.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="SignJars.__init__-expanded"><a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">                <tt class="py-docstring">""" </tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"><tt class="py-docstring">                @param output: The output directory in which to put the signed jars</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"><tt class="py-docstring">                @param jars: The list (or PathSet) of input jars to copy and sign</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-docstring">                @param keystore: The path to the keystore</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"><tt class="py-docstring">                @param alias: The alias for the keystore (optional)</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"><tt class="py-docstring">                @param storepass: The password for the store file (optional)</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"><tt class="py-docstring">                @param manifestDefaults: a dictionary of manifest entries to add to the existing manifest.mf file</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"><tt class="py-docstring">                of each jar before signing.  Entries in this dictionary will be ignored if the same entry</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"><tt class="py-docstring">                is found in the original manifest.mf file already.</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">jars</tt> <tt class="py-op">=</tt> <tt id="link-32" class="py-name"><a title="pathsets.PathSet" class="py-name" href="#" onclick="return doclink('link-32', 'PathSet', 'link-7');">PathSet</a></tt><tt class="py-op">(</tt><tt class="py-name">jars</tt><tt class="py-op">)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">keystore</tt> <tt class="py-op">=</tt> <tt class="py-name">keystore</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">alias</tt> <tt class="py-op">=</tt> <tt class="py-name">alias</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">storepass</tt> <tt class="py-op">=</tt> <tt class="py-name">storepass</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">manifestDefaults</tt> <tt class="py-op">=</tt> <tt class="py-name">manifestDefaults</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">                <tt id="link-33" class="py-name"><a title="basetarget.BaseTarget" class="py-name" href="#" onclick="return doclink('link-33', 'BaseTarget', 'link-2');">BaseTarget</a></tt><tt class="py-op">.</tt><tt id="link-34" class="py-name" targets="Method basetarget.BaseTarget.__init__()=basetarget.BaseTarget-class.html#__init__,Method buildcommon.FilenameStringFormatter.__init__()=buildcommon.FilenameStringFormatter-class.html#__init__,Method buildcommon.StringFormatter.__init__()=buildcommon.StringFormatter-class.html#__init__,Method buildcontext.BaseContext.__init__()=buildcontext.BaseContext-class.html#__init__,Method buildcontext.BuildContext.__init__()=buildcontext.BuildContext-class.html#__init__,Method buildcontext.BuildInitializationContext.__init__()=buildcontext.BuildInitializationContext-class.html#__init__,Method buildexceptions.BuildException.__init__()=buildexceptions.BuildException-class.html#__init__,Method pathsets.AddDestPrefix.__init__()=pathsets.AddDestPrefix-class.html#__init__,Method pathsets.BasePathSet.__init__()=pathsets.BasePathSet-class.html#__init__,Method pathsets.DirBasedPathSet.__init__()=pathsets.DirBasedPathSet-class.html#__init__,Method pathsets.DirGeneratedByTarget.__init__()=pathsets.DirGeneratedByTarget-class.html#__init__,Method pathsets.FilteredPathSet.__init__()=pathsets.FilteredPathSet-class.html#__init__,Method pathsets.FindPaths.__init__()=pathsets.FindPaths-class.html#__init__,Method pathsets.FlattenDest.__init__()=pathsets.FlattenDest-class.html#__init__,Method pathsets.MapDest.__init__()=pathsets.MapDest-class.html#__init__,Method pathsets.MapSrc.__init__()=pathsets.MapSrc-class.html#__init__,Method pathsets.PathSet.__init__()=pathsets.PathSet-class.html#__init__,Method pathsets.RemoveDestParents.__init__()=pathsets.RemoveDestParents-class.html#__init__,Method pathsets.SingletonDestRenameMapper.__init__()=pathsets.SingletonDestRenameMapper-class.html#__init__,Method pathsets.TargetsWithTag.__init__()=pathsets.TargetsWithTag-class.html#__init__,Method propertyfunctors.basename.__init__()=propertyfunctors.basename-class.html#__init__,Method propertyfunctors.dirname.__init__()=propertyfunctors.dirname-class.html#__init__,Method propertyfunctors.joinPaths.__init__()=propertyfunctors.joinPaths-class.html#__init__,Method propertyfunctors.sub.__init__()=propertyfunctors.sub-class.html#__init__,Method targets.copy.AddFileFooter.__init__()=targets.copy.AddFileFooter-class.html#__init__,Method targets.copy.AddFileHeader.__init__()=targets.copy.AddFileHeader-class.html#__init__,Method targets.copy.Copy.__init__()=targets.copy.Copy-class.html#__init__,Method targets.copy.FilteredCopy.__init__()=targets.copy.FilteredCopy-class.html#__init__,Method targets.copy.InsertFileContentsLineMapper.__init__()=targets.copy.InsertFileContentsLineMapper-class.html#__init__,Method targets.copy.OmitLines.__init__()=targets.copy.OmitLines-class.html#__init__,Method targets.copy.RegexLineMapper.__init__()=targets.copy.RegexLineMapper-class.html#__init__,Method targets.copy.StringReplaceLineMapper.__init__()=targets.copy.StringReplaceLineMapper-class.html#__init__,Method targets.csharp.CSharp.__init__()=targets.csharp.CSharp-class.html#__init__,Method targets.custom.Custom.__init__()=targets.custom.Custom-class.html#__init__,Method targets.custom.CustomCommand.__init__()=targets.custom.CustomCommand-class.html#__init__,Method targets.custom.CustomCommandWithCopy.__init__()=targets.custom.CustomCommandWithCopy-class.html#__init__,Method targets.custom.ResolvePath.__init__()=targets.custom.ResolvePath-class.html#__init__,Method targets.docker.DockerBase.__init__()=targets.docker.DockerBase-class.html#__init__,Method targets.docker.DockerBuild.__init__()=targets.docker.DockerBuild-class.html#__init__,Method targets.docker.DockerPushTag.__init__()=targets.docker.DockerPushTag-class.html#__init__,Method targets.download.Download.__init__()=targets.download.Download-class.html#__init__,Method targets.java.Jar.__init__()=targets.java.Jar-class.html#__init__,Method targets.java.Javac.__init__()=targets.java.Javac-class.html#__init__,Method targets.java.Javadoc.__init__()=targets.java.Javadoc-class.html#__init__,Method targets.java.SignJars.__init__()=targets.java.SignJars-class.html#__init__,Method targets.native.Ar.__init__()=targets.native.Ar-class.html#__init__,Method targets.native.C.__init__()=targets.native.C-class.html#__init__,Method targets.native.CompilerMakeDependsPathSet.__init__()=targets.native.CompilerMakeDependsPathSet-class.html#__init__,Method targets.native.Cpp.__init__()=targets.native.Cpp-class.html#__init__,Method targets.native.Link.__init__()=targets.native.Link-class.html#__init__,Method targets.symlink.SymLink.__init__()=targets.symlink.SymLink-class.html#__init__,Method targets.tar.Tarball.__init__()=targets.tar.Tarball-class.html#__init__,Method targets.touch.Touch.__init__()=targets.touch.Touch-class.html#__init__,Method targets.unpack.FilteredArchiveContents.__init__()=targets.unpack.FilteredArchiveContents-class.html#__init__,Method targets.unpack.Unpack.__init__()=targets.unpack.Unpack-class.html#__init__,Method targets.writefile.WriteFile.__init__()=targets.writefile.WriteFile-class.html#__init__,Method targets.zip.Zip.__init__()=targets.zip.Zip-class.html#__init__,Method utils.antglob.GlobUnusedPatternTracker.__init__()=utils.antglob.GlobUnusedPatternTracker-class.html#__init__,Method utils.buildfilelocation.BuildFileLocation.__init__()=utils.buildfilelocation.BuildFileLocation-class.html#__init__,Method utils.compilers.Archiver.__init__()=utils.compilers.Archiver-class.html#__init__,Method utils.compilers.Compiler.__init__()=utils.compilers.Compiler-class.html#__init__,Method utils.compilers.Depends.__init__()=utils.compilers.Depends-class.html#__init__,Method utils.compilers.GCC.__init__()=utils.compilers.GCC-class.html#__init__,Method utils.compilers.Linker.__init__()=utils.compilers.Linker-class.html#__init__,Method utils.compilers.Process.__init__()=utils.compilers.Process-class.html#__init__,Method utils.compilers.ToolChain.__init__()=utils.compilers.ToolChain-class.html#__init__,Method utils.compilers.UnixArchiver.__init__()=utils.compilers.UnixArchiver-class.html#__init__,Method utils.compilers.UnixCompiler.__init__()=utils.compilers.UnixCompiler-class.html#__init__,Method utils.compilers.UnixLinker.__init__()=utils.compilers.UnixLinker-class.html#__init__,Method utils.compilers.VisualStudio.__init__()=utils.compilers.VisualStudio-class.html#__init__,Method utils.consoleformatter.ConsoleFormatter.__init__()=utils.consoleformatter.ConsoleFormatter-class.html#__init__,Method utils.consoleformatter.DefaultConsoleFormatter.__init__()=utils.consoleformatter.DefaultConsoleFormatter-class.html#__init__,Method utils.functors.ComposableFn.__init__()=utils.functors.ComposableFn-class.html#__init__,Method utils.functors.ComposableWrapper.__init__()=utils.functors.ComposableWrapper-class.html#__init__,Method utils.functors.Compose.__init__()=utils.functors.Compose-class.html#__init__,Method utils.java.JavacProcessOutputHandler.__init__()=utils.java.JavacProcessOutputHandler-class.html#__init__,Method utils.make.MakeConsoleFormatter.__init__()=utils.make.MakeConsoleFormatter-class.html#__init__,Method utils.outputhandler.ProcessOutputHandler.__init__()=utils.outputhandler.ProcessOutputHandler-class.html#__init__,Method utils.outputhandler.StdoutRedirector.__init__()=utils.outputhandler.StdoutRedirector-class.html#__init__,Method utils.progress.ProgressBarConsoleFormatter.__init__()=utils.progress.ProgressBarConsoleFormatter-class.html#__init__,Method utils.progress.VT100ProgressBarConsoleFormatter.__init__()=utils.progress.VT100ProgressBarConsoleFormatter-class.html#__init__,Method utils.teamcity.TeamcityHandler.__init__()=utils.teamcity.TeamcityHandler-class.html#__init__,Method utils.visualstudio.VisualStudioConsoleFormatter.__init__()=utils.visualstudio.VisualStudioConsoleFormatter-class.html#__init__"><a title="basetarget.BaseTarget.__init__
+buildcommon.FilenameStringFormatter.__init__
+buildcommon.StringFormatter.__init__
+buildcontext.BaseContext.__init__
+buildcontext.BuildContext.__init__
+buildcontext.BuildInitializationContext.__init__
+buildexceptions.BuildException.__init__
+pathsets.AddDestPrefix.__init__
+pathsets.BasePathSet.__init__
+pathsets.DirBasedPathSet.__init__
+pathsets.DirGeneratedByTarget.__init__
+pathsets.FilteredPathSet.__init__
+pathsets.FindPaths.__init__
+pathsets.FlattenDest.__init__
+pathsets.MapDest.__init__
+pathsets.MapSrc.__init__
+pathsets.PathSet.__init__
+pathsets.RemoveDestParents.__init__
+pathsets.SingletonDestRenameMapper.__init__
+pathsets.TargetsWithTag.__init__
+propertyfunctors.basename.__init__
+propertyfunctors.dirname.__init__
+propertyfunctors.joinPaths.__init__
+propertyfunctors.sub.__init__
+targets.copy.AddFileFooter.__init__
+targets.copy.AddFileHeader.__init__
+targets.copy.Copy.__init__
+targets.copy.FilteredCopy.__init__
+targets.copy.InsertFileContentsLineMapper.__init__
+targets.copy.OmitLines.__init__
+targets.copy.RegexLineMapper.__init__
+targets.copy.StringReplaceLineMapper.__init__
+targets.csharp.CSharp.__init__
+targets.custom.Custom.__init__
+targets.custom.CustomCommand.__init__
+targets.custom.CustomCommandWithCopy.__init__
+targets.custom.ResolvePath.__init__
+targets.docker.DockerBase.__init__
+targets.docker.DockerBuild.__init__
+targets.docker.DockerPushTag.__init__
+targets.download.Download.__init__
+targets.java.Jar.__init__
+targets.java.Javac.__init__
+targets.java.Javadoc.__init__
+targets.java.SignJars.__init__
+targets.native.Ar.__init__
+targets.native.C.__init__
+targets.native.CompilerMakeDependsPathSet.__init__
+targets.native.Cpp.__init__
+targets.native.Link.__init__
+targets.symlink.SymLink.__init__
+targets.tar.Tarball.__init__
+targets.touch.Touch.__init__
+targets.unpack.FilteredArchiveContents.__init__
+targets.unpack.Unpack.__init__
+targets.writefile.WriteFile.__init__
+targets.zip.Zip.__init__
+utils.antglob.GlobUnusedPatternTracker.__init__
+utils.buildfilelocation.BuildFileLocation.__init__
+utils.compilers.Archiver.__init__
+utils.compilers.Compiler.__init__
+utils.compilers.Depends.__init__
+utils.compilers.GCC.__init__
+utils.compilers.Linker.__init__
+utils.compilers.Process.__init__
+utils.compilers.ToolChain.__init__
+utils.compilers.UnixArchiver.__init__
+utils.compilers.UnixCompiler.__init__
+utils.compilers.UnixLinker.__init__
+utils.compilers.VisualStudio.__init__
+utils.consoleformatter.ConsoleFormatter.__init__
+utils.consoleformatter.DefaultConsoleFormatter.__init__
+utils.functors.ComposableFn.__init__
+utils.functors.ComposableWrapper.__init__
+utils.functors.Compose.__init__
+utils.java.JavacProcessOutputHandler.__init__
+utils.make.MakeConsoleFormatter.__init__
+utils.outputhandler.ProcessOutputHandler.__init__
+utils.outputhandler.StdoutRedirector.__init__
+utils.progress.ProgressBarConsoleFormatter.__init__
+utils.progress.VT100ProgressBarConsoleFormatter.__init__
+utils.teamcity.TeamcityHandler.__init__
+utils.visualstudio.VisualStudioConsoleFormatter.__init__" class="py-name" href="#" onclick="return doclink('link-34', '__init__', 'link-34');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-35" class="py-name" targets="Variable utils.make.MakeConsoleFormatter.output=utils.make.MakeConsoleFormatter-class.html#output,Variable utils.progress.ProgressBarConsoleFormatter.output=utils.progress.ProgressBarConsoleFormatter-class.html#output,Variable utils.progress.VT100ProgressBarConsoleFormatter.output=utils.progress.VT100ProgressBarConsoleFormatter-class.html#output,Variable utils.teamcity.TeamcityHandler.output=utils.teamcity.TeamcityHandler-class.html#output,Variable utils.visualstudio.VisualStudioConsoleFormatter.output=utils.visualstudio.VisualStudioConsoleFormatter-class.html#output"><a title="utils.make.MakeConsoleFormatter.output
+utils.progress.ProgressBarConsoleFormatter.output
+utils.progress.VT100ProgressBarConsoleFormatter.output
+utils.teamcity.TeamcityHandler.output
+utils.visualstudio.VisualStudioConsoleFormatter.output" class="py-name" href="#" onclick="return doclink('link-35', 'output', 'link-35');">output</a></tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">jars</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">keystore</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"> </tt>
+<a name="SignJars.run"></a><div id="SignJars.run-def"><a name="L67"></a><tt class="py-lineno"> 67</tt> <a class="py-toggle" href="#" id="SignJars.run-toggle" onclick="return toggle('SignJars.run');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.java.SignJars-class.html#run">run</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SignJars.run-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="SignJars.run-expanded"><a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">keystore</tt> <tt class="py-op">=</tt> <tt class="py-name">context</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name" targets="Method buildcontext.BaseContext.expandPropertyValues()=buildcontext.BaseContext-class.html#expandPropertyValues"><a title="buildcontext.BaseContext.expandPropertyValues" class="py-name" href="#" onclick="return doclink('link-36', 'expandPropertyValues', 'link-36');">expandPropertyValues</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">keystore</tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">                <tt class="py-name">options</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">                <tt id="link-37" class="py-name"><a title="utils.fileutils.mkdir" class="py-name" href="#" onclick="return doclink('link-37', 'mkdir', 'link-12');">mkdir</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">                <tt class="py-keyword">for</tt> <tt class="py-name">src</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">jars</tt><tt class="py-op">.</tt><tt id="link-38" class="py-name" targets="Method pathsets.AddDestPrefix.resolveWithDestinations()=pathsets.AddDestPrefix-class.html#resolveWithDestinations,Method pathsets.BasePathSet.resolveWithDestinations()=pathsets.BasePathSet-class.html#resolveWithDestinations,Method pathsets.DirBasedPathSet.resolveWithDestinations()=pathsets.DirBasedPathSet-class.html#resolveWithDestinations,Method pathsets.DirGeneratedByTarget.resolveWithDestinations()=pathsets.DirGeneratedByTarget-class.html#resolveWithDestinations,Method pathsets.FilteredPathSet.resolveWithDestinations()=pathsets.FilteredPathSet-class.html#resolveWithDestinations,Method pathsets.FindPaths.resolveWithDestinations()=pathsets.FindPaths-class.html#resolveWithDestinations,Method pathsets.FlattenDest.resolveWithDestinations()=pathsets.FlattenDest-class.html#resolveWithDestinations,Method pathsets.MapDest.resolveWithDestinations()=pathsets.MapDest-class.html#resolveWithDestinations,Method pathsets.MapSrc.resolveWithDestinations()=pathsets.MapSrc-class.html#resolveWithDestinations,Method pathsets.PathSet.resolveWithDestinations()=pathsets.PathSet-class.html#resolveWithDestinations,Method pathsets.RemoveDestParents.resolveWithDestinations()=pathsets.RemoveDestParents-class.html#resolveWithDestinations,Method pathsets.SingletonDestRenameMapper.resolveWithDestinations()=pathsets.SingletonDestRenameMapper-class.html#resolveWithDestinations,Method pathsets.TargetsWithTag.resolveWithDestinations()=pathsets.TargetsWithTag-class.html#resolveWithDestinations,Method targets.native.CompilerMakeDependsPathSet.resolveWithDestinations()=targets.native.CompilerMakeDependsPathSet-class.html#resolveWithDestinations"><a title="pathsets.AddDestPrefix.resolveWithDestinations
+pathsets.BasePathSet.resolveWithDestinations
+pathsets.DirBasedPathSet.resolveWithDestinations
+pathsets.DirGeneratedByTarget.resolveWithDestinations
+pathsets.FilteredPathSet.resolveWithDestinations
+pathsets.FindPaths.resolveWithDestinations
+pathsets.FlattenDest.resolveWithDestinations
+pathsets.MapDest.resolveWithDestinations
+pathsets.MapSrc.resolveWithDestinations
+pathsets.PathSet.resolveWithDestinations
+pathsets.RemoveDestParents.resolveWithDestinations
+pathsets.SingletonDestRenameMapper.resolveWithDestinations
+pathsets.TargetsWithTag.resolveWithDestinations
+targets.native.CompilerMakeDependsPathSet.resolveWithDestinations" class="py-name" href="#" onclick="return doclink('link-38', 'resolveWithDestinations', 'link-38');">resolveWithDestinations</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-string">'..'</tt> <tt class="py-keyword">in</tt> <tt class="py-name">dest</tt><tt class="py-op">:</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">                                        <tt class="py-comment"># to avoid people abusing this to copy files outside the dest directory!</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">                                        <tt class="py-keyword">raise</tt> <tt class="py-name">Exception</tt><tt class="py-op">(</tt><tt class="py-string">'This target does not permit destination paths to contain ".." relative path expressions'</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">                        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">                                <tt class="py-keyword">with</tt> <tt class="py-name">open</tt><tt class="py-op">(</tt><tt class="py-name">src</tt><tt class="py-op">,</tt> <tt class="py-string">'rb'</tt><tt class="py-op">)</tt> <tt class="py-keyword">as</tt> <tt class="py-name">s</tt><tt class="py-op">:</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">                                        <tt class="py-keyword">with</tt> <tt class="py-name">openForWrite</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">'wb'</tt><tt class="py-op">)</tt> <tt class="py-keyword">as</tt> <tt class="py-name">d</tt><tt class="py-op">:</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">                                                <tt class="py-name">d</tt><tt class="py-op">.</tt><tt class="py-name">write</tt><tt class="py-op">(</tt><tt class="py-name">s</tt><tt class="py-op">.</tt><tt class="py-name">read</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">                                <tt class="py-name">shutil</tt><tt class="py-op">.</tt><tt class="py-name">copystat</tt><tt class="py-op">(</tt><tt class="py-name">src</tt><tt class="py-op">,</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">                                 </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">                                <tt class="py-comment"># When we re-jar with the user specified manifest entries, jar will complain</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">                                <tt class="py-comment"># about duplicate attributes IF the original MANIFEST.MF already has those entries.</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">                                <tt class="py-comment"># This is happening for latest version of SL where Application-Name, Permission etc</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">                                <tt class="py-comment"># were already there.</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">                                <tt class="py-comment">#</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">                                <tt class="py-comment"># The block of code below will first extract the original MANIFEST.MF from the source</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">                                <tt class="py-comment"># jar file, read all manifest entry to a list.  When constructing the new manifest entries,</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">                                <tt class="py-comment"># make sure the old MANIFEST.MF doesn't have that entry before putting the new manifest entry</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">                                <tt class="py-comment"># to the list.  This will avoid the duplicate attribute error.</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">                                <tt class="py-comment">#  </tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">                         </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">                                <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">manifestDefaults</tt><tt class="py-op">:</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">                                         </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">                                        <tt class="py-name">lines</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">                                         </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">                                        <tt class="py-comment"># read each line of MANIFEST.MF of the original jar and put them in lines</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">                                        <tt class="py-keyword">with</tt> <tt class="py-name">zipfile</tt><tt class="py-op">.</tt><tt class="py-name">ZipFile</tt><tt class="py-op">(</tt><tt class="py-name">src</tt><tt class="py-op">,</tt> <tt class="py-string">'r'</tt><tt class="py-op">)</tt> <tt class="py-keyword">as</tt> <tt class="py-name">zf</tt><tt class="py-op">:</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">                                                <tt class="py-name">lst</tt> <tt class="py-op">=</tt> <tt class="py-name">zf</tt><tt class="py-op">.</tt><tt class="py-name">infolist</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">                                                <tt class="py-keyword">for</tt> <tt class="py-name">zi</tt> <tt class="py-keyword">in</tt> <tt class="py-name">lst</tt><tt class="py-op">:</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">                                                        <tt id="link-39" class="py-name" targets="Variable targets.custom.Custom.fn=targets.custom.Custom-class.html#fn"><a title="targets.custom.Custom.fn" class="py-name" href="#" onclick="return doclink('link-39', 'fn', 'link-39');">fn</a></tt> <tt class="py-op">=</tt> <tt class="py-name">zi</tt><tt class="py-op">.</tt><tt class="py-name">filename</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">                                                        <tt class="py-keyword">if</tt> <tt id="link-40" class="py-name"><a title="targets.custom.Custom.fn" class="py-name" href="#" onclick="return doclink('link-40', 'fn', 'link-39');">fn</a></tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">endswith</tt><tt class="py-op">(</tt><tt class="py-string">'manifest.mf'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">                                                                <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">                                                                        <tt class="py-name">manifest_txt</tt> <tt class="py-op">=</tt> <tt class="py-name">zf</tt><tt class="py-op">.</tt><tt class="py-name">read</tt><tt class="py-op">(</tt><tt class="py-name">zi</tt><tt class="py-op">.</tt><tt class="py-name">filename</tt><tt class="py-op">)</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">                                                                <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">                                                                        <tt class="py-keyword">raise</tt> <tt id="link-41" class="py-name"><a title="buildexceptions.BuildException" class="py-name" href="#" onclick="return doclink('link-41', 'BuildException', 'link-29');">BuildException</a></tt><tt class="py-op">(</tt><tt class="py-string">'Failed reading the manifest file %s with exception:%s'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-42" class="py-name"><a title="targets.custom.Custom.fn" class="py-name" href="#" onclick="return doclink('link-42', 'fn', 'link-39');">fn</a></tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">                                                                <tt class="py-comment"># if we have all manifest text, parse and save each line</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">                                                                <tt class="py-keyword">if</tt> <tt class="py-name">manifest_txt</tt><tt class="py-op">:</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">                                                                        <tt class="py-comment"># CR LF | LF | CR  can be there as line feed and hence the code below</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">                                                                        <tt class="py-name">lines</tt> <tt class="py-op">=</tt> <tt class="py-name">manifest_txt</tt><tt class="py-op">.</tt><tt class="py-name">replace</tt><tt class="py-op">(</tt><tt class="py-string">'\r\n'</tt><tt class="py-op">,</tt> <tt class="py-string">'\n'</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">replace</tt><tt class="py-op">(</tt><tt class="py-string">'\r'</tt><tt class="py-op">,</tt><tt class="py-string">'\n'</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">'\n'</tt><tt class="py-op">)</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">                                                                                 </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">                                                                <tt class="py-comment"># done</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">                                                                <tt class="py-keyword">break</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">                                                 </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">                                         </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">                                        <tt class="py-name">original_entries</tt> <tt class="py-op">=</tt> <tt class="py-name">collections</tt><tt class="py-op">.</tt><tt class="py-name">OrderedDict</tt><tt class="py-op">(</tt><tt class="py-op">)</tt>  <tt class="py-comment"># to ensure we don't overwrite/duplicate these</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">                                        <tt class="py-comment"># populate the manifest_entries with original values from original manifest</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">                                        <tt class="py-keyword">for</tt> <tt class="py-name">l</tt> <tt class="py-keyword">in</tt> <tt class="py-name">lines</tt><tt class="py-op">:</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">                                                <tt class="py-keyword">if</tt> <tt class="py-string">':'</tt> <tt class="py-keyword">in</tt> <tt class="py-name">l</tt> <tt class="py-keyword">and</tt> <tt class="py-keyword">not</tt> <tt class="py-name">l</tt><tt class="py-op">.</tt><tt class="py-name">startswith</tt><tt class="py-op">(</tt><tt class="py-string">' '</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-comment"># ignore continuation lines etc because keys are all we care about</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">                                                        <tt class="py-name">key</tt><tt class="py-op">,</tt><tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">l</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">':'</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">                                                        <tt class="py-name">original_entries</tt><tt class="py-op">[</tt><tt class="py-name">key</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">value</tt><tt class="py-op">.</tt><tt class="py-name">strip</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">                                         </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">                                        <tt class="py-comment"># build up a list of the new manifest entries (will be merged into any existing manifest by jar)</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">                                        <tt class="py-name">manifest_entries</tt> <tt class="py-op">=</tt> <tt class="py-name">collections</tt><tt class="py-op">.</tt><tt class="py-name">OrderedDict</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">                                        <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">manifestDefaults</tt><tt class="py-op">:</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">                                                <tt class="py-comment"># if entry isn't there yet, add to the list</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">                                                <tt class="py-keyword">if</tt> <tt class="py-name">i</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-name">original_entries</tt><tt class="py-op">:</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">                                                        <tt class="py-name">manifest_entries</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">context</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name"><a title="buildcontext.BaseContext.expandPropertyValues" class="py-name" href="#" onclick="return doclink('link-43', 'expandPropertyValues', 'link-36');">expandPropertyValues</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">manifestDefaults</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">                 </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">                                        <tt class="py-comment"># create the manifest file</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">                                        <tt class="py-comment"># we want to add the manifest entries explicitly specified here but </tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">                                        <tt class="py-comment"># NOT the 'default' manifest entries we usually add, since these </tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">                                        <tt class="py-comment"># are likely to have been set already, and we do not want duplicates</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">                                        <tt id="link-44" class="py-name"><a title="utils.fileutils.mkdir" class="py-name" href="#" onclick="return doclink('link-44', 'mkdir', 'link-12');">mkdir</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">workDir</tt><tt class="py-op">)</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">                                        <tt id="link-45" class="py-name" targets="Variable targets.java.Jar.manifest=targets.java.Jar-class.html#manifest"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-45', 'manifest', 'link-45');">manifest</a></tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">workDir</tt><tt class="py-op">,</tt> <tt class="py-string">"MANIFEST.MF"</tt><tt class="py-op">)</tt> <tt class="py-comment"># manifest file</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">                                        <tt class="py-name">options</tt> <tt class="py-op">=</tt> <tt class="py-name">dict</tt><tt class="py-op">(</tt><tt class="py-name">options</tt><tt class="py-op">)</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">                                        <tt class="py-name">options</tt><tt class="py-op">[</tt><tt class="py-string">'jar.manifest.defaults'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">                                        <tt id="link-46" class="py-name"><a title="utils.java.create_manifest" class="py-name" href="#" onclick="return doclink('link-46', 'create_manifest', 'link-19');">create_manifest</a></tt><tt class="py-op">(</tt><tt id="link-47" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-47', 'manifest', 'link-45');">manifest</a></tt><tt class="py-op">,</tt> <tt class="py-name">manifest_entries</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">)</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">         </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">                                        <tt class="py-comment"># update the EXISTING jar file with the new manifest entries, which will be merged into </tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">                                        <tt class="py-comment"># existing manifest by the jar tool</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">                                        <tt id="link-48" class="py-name"><a title="utils.java.jar" class="py-name" href="#" onclick="return doclink('link-48', 'jar', 'link-17');">jar</a></tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt id="link-49" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-49', 'manifest', 'link-45');">manifest</a></tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">,</tt> <tt class="py-name">update</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">         </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">                                <tt id="link-50" class="py-name"><a title="utils.java.signjar" class="py-name" href="#" onclick="return doclink('link-50', 'signjar', 'link-21');">signjar</a></tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">keystore</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">,</tt> <tt class="py-name">alias</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">alias</tt><tt class="py-op">,</tt> <tt class="py-name">storepass</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">storepass</tt><tt class="py-op">,</tt>  </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">                                        <tt class="py-name">outputHandler</tt><tt class="py-op">=</tt><tt id="link-51" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-51', 'ProcessOutputHandler', 'link-27');">ProcessOutputHandler</a></tt><tt class="py-op">.</tt><tt id="link-52" class="py-name" targets="Static Method utils.antglob.GlobPatternSet.create()=utils.antglob.GlobPatternSet-class.html#create,Static Method utils.outputhandler.ProcessOutputHandler.create()=utils.outputhandler.ProcessOutputHandler-class.html#create"><a title="utils.antglob.GlobPatternSet.create
+utils.outputhandler.ProcessOutputHandler.create" class="py-name" href="#" onclick="return doclink('link-52', 'create', 'link-52');">create</a></tt><tt class="py-op">(</tt><tt class="py-string">'signjars'</tt><tt class="py-op">,</tt> <tt class="py-name">treatStdErrAsErrors</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">=</tt><tt class="py-name">options</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">                        <tt class="py-keyword">except</tt> <tt id="link-53" class="py-name"><a title="buildexceptions.BuildException" class="py-name" href="#" onclick="return doclink('link-53', 'BuildException', 'link-29');">BuildException</a></tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">                                <tt class="py-keyword">raise</tt> <tt id="link-54" class="py-name"><a title="buildexceptions.BuildException" class="py-name" href="#" onclick="return doclink('link-54', 'BuildException', 'link-29');">BuildException</a></tt><tt class="py-op">(</tt><tt class="py-string">'Error processing %s: %s'</tt><tt class="py-op">%</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name" targets="Class propertyfunctors.basename=propertyfunctors.basename-class.html"><a title="propertyfunctors.basename" class="py-name" href="#" onclick="return doclink('link-55', 'basename', 'link-55');">basename</a></tt><tt class="py-op">(</tt><tt class="py-name">dest</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line"> </tt>
+<a name="Javac"></a><div id="Javac-def"><a name="L153"></a><tt class="py-lineno">153</tt> <a class="py-toggle" href="#" id="Javac-toggle" onclick="return toggle('Javac');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="targets.java.Javac-class.html">Javac</a><tt class="py-op">(</tt><tt class="py-base-class">BaseTarget</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Javac-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Javac-expanded"><a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">        <tt class="py-docstring">""" Compile java source to a directory (without jarring it)</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">        <tt id="link-56" class="py-name" targets="Variable targets.csharp.CSharp.compile=targets.csharp.CSharp-class.html#compile,Variable targets.java.Jar.compile=targets.java.Jar-class.html#compile,Variable targets.java.Javac.compile=targets.java.Javac-class.html#compile,Method utils.compilers.Compiler.compile()=utils.compilers.Compiler-class.html#compile,Method utils.compilers.UnixCompiler.compile()=utils.compilers.UnixCompiler-class.html#compile,Method utils.compilers.VisualStudio.compile()=utils.compilers.VisualStudio-class.html#compile"><a title="targets.csharp.CSharp.compile
+targets.java.Jar.compile
+targets.java.Javac.compile
+utils.compilers.Compiler.compile
+utils.compilers.UnixCompiler.compile
+utils.compilers.VisualStudio.compile" class="py-name" href="#" onclick="return doclink('link-56', 'compile', 'link-56');">compile</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">        <tt id="link-57" class="py-name" targets="Variable targets.java.Jar.classpath=targets.java.Jar-class.html#classpath,Variable targets.java.Javac.classpath=targets.java.Javac-class.html#classpath"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-57', 'classpath', 'link-57');">classpath</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="Javac.__init__"></a><div id="Javac.__init__-def"><a name="L158"></a><tt class="py-lineno">158</tt> <a class="py-toggle" href="#" id="Javac.__init__-toggle" onclick="return toggle('Javac.__init__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.java.Javac-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">output</tt><tt class="py-op">,</tt> <tt class="py-param">compile</tt><tt class="py-op">,</tt> <tt class="py-param">classpath</tt><tt class="py-op">,</tt> <tt class="py-param">options</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Javac.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="Javac.__init__-expanded"><a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">                <tt class="py-docstring">""" </tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line"><tt class="py-docstring">                @param output: output dir for class files</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line"><tt class="py-docstring">                @param compile: PathSet (or list)  of things to compile</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line"><tt class="py-docstring">                @param classpath: PathSet (or list) of things to be on the classpath; </tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line"><tt class="py-docstring">                @param options: [DEPRECATED - use .option() instead]</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name"><a title="targets.csharp.CSharp.compile
+targets.java.Jar.compile
+targets.java.Javac.compile
+utils.compilers.Compiler.compile
+utils.compilers.UnixCompiler.compile
+utils.compilers.VisualStudio.compile" class="py-name" href="#" onclick="return doclink('link-58', 'compile', 'link-56');">compile</a></tt> <tt class="py-op">=</tt> <tt id="link-59" class="py-name"><a title="pathsets.FilteredPathSet" class="py-name" href="#" onclick="return doclink('link-59', 'FilteredPathSet', 'link-8');">FilteredPathSet</a></tt><tt class="py-op">(</tt><tt class="py-name">_isJavaFile</tt><tt class="py-op">,</tt> <tt id="link-60" class="py-name"><a title="pathsets.PathSet" class="py-name" href="#" onclick="return doclink('link-60', 'PathSet', 'link-7');">PathSet</a></tt><tt class="py-op">(</tt><tt id="link-61" class="py-name"><a title="targets.csharp.CSharp.compile
+targets.java.Jar.compile
+targets.java.Javac.compile
+utils.compilers.Compiler.compile
+utils.compilers.UnixCompiler.compile
+utils.compilers.VisualStudio.compile" class="py-name" href="#" onclick="return doclink('link-61', 'compile', 'link-56');">compile</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">                         </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-62" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-62', 'classpath', 'link-57');">classpath</a></tt> <tt class="py-op">=</tt> <tt id="link-63" class="py-name"><a title="pathsets.PathSet" class="py-name" href="#" onclick="return doclink('link-63', 'PathSet', 'link-7');">PathSet</a></tt><tt class="py-op">(</tt><tt id="link-64" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-64', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">                 </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">                <tt id="link-65" class="py-name"><a title="basetarget.BaseTarget" class="py-name" href="#" onclick="return doclink('link-65', 'BaseTarget', 'link-2');">BaseTarget</a></tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="basetarget.BaseTarget.__init__
+buildcommon.FilenameStringFormatter.__init__
+buildcommon.StringFormatter.__init__
+buildcontext.BaseContext.__init__
+buildcontext.BuildContext.__init__
+buildcontext.BuildInitializationContext.__init__
+buildexceptions.BuildException.__init__
+pathsets.AddDestPrefix.__init__
+pathsets.BasePathSet.__init__
+pathsets.DirBasedPathSet.__init__
+pathsets.DirGeneratedByTarget.__init__
+pathsets.FilteredPathSet.__init__
+pathsets.FindPaths.__init__
+pathsets.FlattenDest.__init__
+pathsets.MapDest.__init__
+pathsets.MapSrc.__init__
+pathsets.PathSet.__init__
+pathsets.RemoveDestParents.__init__
+pathsets.SingletonDestRenameMapper.__init__
+pathsets.TargetsWithTag.__init__
+propertyfunctors.basename.__init__
+propertyfunctors.dirname.__init__
+propertyfunctors.joinPaths.__init__
+propertyfunctors.sub.__init__
+targets.copy.AddFileFooter.__init__
+targets.copy.AddFileHeader.__init__
+targets.copy.Copy.__init__
+targets.copy.FilteredCopy.__init__
+targets.copy.InsertFileContentsLineMapper.__init__
+targets.copy.OmitLines.__init__
+targets.copy.RegexLineMapper.__init__
+targets.copy.StringReplaceLineMapper.__init__
+targets.csharp.CSharp.__init__
+targets.custom.Custom.__init__
+targets.custom.CustomCommand.__init__
+targets.custom.CustomCommandWithCopy.__init__
+targets.custom.ResolvePath.__init__
+targets.docker.DockerBase.__init__
+targets.docker.DockerBuild.__init__
+targets.docker.DockerPushTag.__init__
+targets.download.Download.__init__
+targets.java.Jar.__init__
+targets.java.Javac.__init__
+targets.java.Javadoc.__init__
+targets.java.SignJars.__init__
+targets.native.Ar.__init__
+targets.native.C.__init__
+targets.native.CompilerMakeDependsPathSet.__init__
+targets.native.Cpp.__init__
+targets.native.Link.__init__
+targets.symlink.SymLink.__init__
+targets.tar.Tarball.__init__
+targets.touch.Touch.__init__
+targets.unpack.FilteredArchiveContents.__init__
+targets.unpack.Unpack.__init__
+targets.writefile.WriteFile.__init__
+targets.zip.Zip.__init__
+utils.antglob.GlobUnusedPatternTracker.__init__
+utils.buildfilelocation.BuildFileLocation.__init__
+utils.compilers.Archiver.__init__
+utils.compilers.Compiler.__init__
+utils.compilers.Depends.__init__
+utils.compilers.GCC.__init__
+utils.compilers.Linker.__init__
+utils.compilers.Process.__init__
+utils.compilers.ToolChain.__init__
+utils.compilers.UnixArchiver.__init__
+utils.compilers.UnixCompiler.__init__
+utils.compilers.UnixLinker.__init__
+utils.compilers.VisualStudio.__init__
+utils.consoleformatter.ConsoleFormatter.__init__
+utils.consoleformatter.DefaultConsoleFormatter.__init__
+utils.functors.ComposableFn.__init__
+utils.functors.ComposableWrapper.__init__
+utils.functors.Compose.__init__
+utils.java.JavacProcessOutputHandler.__init__
+utils.make.MakeConsoleFormatter.__init__
+utils.outputhandler.ProcessOutputHandler.__init__
+utils.outputhandler.StdoutRedirector.__init__
+utils.progress.ProgressBarConsoleFormatter.__init__
+utils.progress.VT100ProgressBarConsoleFormatter.__init__
+utils.teamcity.TeamcityHandler.__init__
+utils.visualstudio.VisualStudioConsoleFormatter.__init__" class="py-name" href="#" onclick="return doclink('link-66', '__init__', 'link-34');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-67" class="py-name"><a title="utils.make.MakeConsoleFormatter.output
+utils.progress.ProgressBarConsoleFormatter.output
+utils.progress.VT100ProgressBarConsoleFormatter.output
+utils.teamcity.TeamcityHandler.output
+utils.visualstudio.VisualStudioConsoleFormatter.output" class="py-name" href="#" onclick="return doclink('link-67', 'output', 'link-35');">output</a></tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-68" class="py-name"><a title="targets.csharp.CSharp.compile
+targets.java.Jar.compile
+targets.java.Javac.compile
+utils.compilers.Compiler.compile
+utils.compilers.UnixCompiler.compile
+utils.compilers.VisualStudio.compile" class="py-name" href="#" onclick="return doclink('link-68', 'compile', 'link-56');">compile</a></tt><tt class="py-op">,</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-69" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-69', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">                <tt class="py-keyword">for</tt> <tt class="py-name">k</tt><tt class="py-op">,</tt><tt class="py-name">v</tt> <tt class="py-keyword">in</tt> <tt class="py-op">(</tt><tt class="py-name">options</tt> <tt class="py-keyword">or</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-70" class="py-name" targets="Method basetarget.BaseTarget.option()=basetarget.BaseTarget-class.html#option"><a title="basetarget.BaseTarget.option" class="py-name" href="#" onclick="return doclink('link-70', 'option', 'link-70');">option</a></tt><tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">,</tt> <tt class="py-name">v</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line"> </tt>
+<a name="Javac.run"></a><div id="Javac.run-def"><a name="L175"></a><tt class="py-lineno">175</tt> <a class="py-toggle" href="#" id="Javac.run-toggle" onclick="return toggle('Javac.run');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.java.Javac-class.html#run">run</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Javac.run-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="Javac.run-expanded"><a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">                <tt class="py-comment"># make sure outputdir exists</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">                <tt id="link-71" class="py-name"><a title="utils.fileutils.mkdir" class="py-name" href="#" onclick="return doclink('link-71', 'mkdir', 'link-12');">mkdir</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line"> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">                <tt class="py-comment"># create the classpath, sorting within PathSet (for determinism), but retaining original order of </tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">                <tt class="py-comment"># PathSet elements in the list</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">                <tt id="link-72" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-72', 'classpath', 'link-57');">classpath</a></tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">pathsep</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-73" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-73', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">.</tt><tt id="link-74" class="py-name" targets="Method pathsets.BasePathSet.resolve()=pathsets.BasePathSet-class.html#resolve,Method targets.custom.ResolvePath.resolve()=targets.custom.ResolvePath-class.html#resolve"><a title="pathsets.BasePathSet.resolve
+targets.custom.ResolvePath.resolve" class="py-name" href="#" onclick="return doclink('link-74', 'resolve', 'link-74');">resolve</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt><tt class="py-op">)</tt>  </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line"> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">                <tt class="py-comment"># compile everything</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line">                <tt id="link-75" class="py-name"><a title="utils.fileutils.mkdir" class="py-name" href="#" onclick="return doclink('link-75', 'mkdir', 'link-12');">mkdir</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-76" class="py-name" targets="Method basetarget.BaseTarget.getOption()=basetarget.BaseTarget-class.html#getOption"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-76', 'getOption', 'link-76');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'javac.logs'</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line">                <tt id="link-77" class="py-name"><a title="utils.java.javac" class="py-name" href="#" onclick="return doclink('link-77', 'javac', 'link-18');">javac</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-78" class="py-name"><a title="targets.csharp.CSharp.compile
+targets.java.Jar.compile
+targets.java.Javac.compile
+utils.compilers.Compiler.compile
+utils.compilers.UnixCompiler.compile
+utils.compilers.VisualStudio.compile" class="py-name" href="#" onclick="return doclink('link-78', 'compile', 'link-56');">compile</a></tt><tt class="py-op">.</tt><tt id="link-79" class="py-name"><a title="pathsets.BasePathSet.resolve
+targets.custom.ResolvePath.resolve" class="py-name" href="#" onclick="return doclink('link-79', 'resolve', 'link-74');">resolve</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt id="link-80" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-80', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt><tt class="py-op">,</tt> <tt class="py-name">logbasename</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt><tt class="py-op">[</tt><tt class="py-string">'javac.logs'</tt><tt class="py-op">]</tt><tt class="py-op">+</tt><tt class="py-string">'/'</tt><tt class="py-op">+</tt><tt id="link-81" class="py-name"><a title="basetarget.targetNameToUniqueId" class="py-name" href="#" onclick="return doclink('link-81', 'targetNameToUniqueId', 'link-3');">targetNameToUniqueId</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">name</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">targetname</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line"> </tt>
+<a name="Javac.getHashableImplicitInputs"></a><div id="Javac.getHashableImplicitInputs-def"><a name="L187"></a><tt class="py-lineno">187</tt> <a class="py-toggle" href="#" id="Javac.getHashableImplicitInputs-toggle" onclick="return toggle('Javac.getHashableImplicitInputs');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.java.Javac-class.html#getHashableImplicitInputs">getHashableImplicitInputs</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Javac.getHashableImplicitInputs-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="Javac.getHashableImplicitInputs-expanded"><a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">                <tt class="py-comment"># changes in the manifest text should cause a rebuild</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line">                <tt class="py-comment"># for now, don't bother factoring global jar.manifest.defaults option </tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">                <tt class="py-comment"># in here (it'll almost never change anyway)</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-82" class="py-name" targets="Class targets.java.Javac=targets.java.Javac-class.html"><a title="targets.java.Javac" class="py-name" href="#" onclick="return doclink('link-82', 'Javac', 'link-82');">Javac</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-83" class="py-name" targets="Method basetarget.BaseTarget.getHashableImplicitInputs()=basetarget.BaseTarget-class.html#getHashableImplicitInputs,Method targets.copy.Copy.getHashableImplicitInputs()=targets.copy.Copy-class.html#getHashableImplicitInputs,Method targets.copy.FilteredCopy.getHashableImplicitInputs()=targets.copy.FilteredCopy-class.html#getHashableImplicitInputs,Method targets.csharp.CSharp.getHashableImplicitInputs()=targets.csharp.CSharp-class.html#getHashableImplicitInputs,Method targets.custom.CustomCommand.getHashableImplicitInputs()=targets.custom.CustomCommand-class.html#getHashableImplicitInputs,Method targets.java.Jar.getHashableImplicitInputs()=targets.java.Jar-class.html#getHashableImplicitInputs,Method targets.java.Javac.getHashableImplicitInputs()=targets.java.Javac-class.html#getHashableImplicitInputs,Method targets.java.Javadoc.getHashableImplicitInputs()=targets.java.Javadoc-class.html#getHashableImplicitInputs,Method targets.native.Ar.getHashableImplicitInputs()=targets.native.Ar-class.html#getHashableImplicitInputs,Method targets.native.C.getHashableImplicitInputs()=targets.native.C-class.html#getHashableImplicitInputs,Method targets.native.Cpp.getHashableImplicitInputs()=targets.native.Cpp-class.html#getHashableImplicitInputs,Method targets.native.Link.getHashableImplicitInputs()=targets.native.Link-class.html#getHashableImplicitInputs,Method targets.tar.Tarball.getHashableImplicitInputs()=targets.tar.Tarball-class.html#getHashableImplicitInputs,Method targets.unpack.Unpack.getHashableImplicitInputs()=targets.unpack.Unpack-class.html#getHashableImplicitInputs,Method targets.writefile.WriteFile.getHashableImplicitInputs()=targets.writefile.WriteFile-class.html#getHashableImplicitInputs,Method targets.zip.Zip.getHashableImplicitInputs()=targets.zip.Zip-class.html#getHashableImplicitInputs"><a title="basetarget.BaseTarget.getHashableImplicitInputs
+targets.copy.Copy.getHashableImplicitInputs
+targets.copy.FilteredCopy.getHashableImplicitInputs
+targets.csharp.CSharp.getHashableImplicitInputs
+targets.custom.CustomCommand.getHashableImplicitInputs
+targets.java.Jar.getHashableImplicitInputs
+targets.java.Javac.getHashableImplicitInputs
+targets.java.Javadoc.getHashableImplicitInputs
+targets.native.Ar.getHashableImplicitInputs
+targets.native.C.getHashableImplicitInputs
+targets.native.Cpp.getHashableImplicitInputs
+targets.native.Link.getHashableImplicitInputs
+targets.tar.Tarball.getHashableImplicitInputs
+targets.unpack.Unpack.getHashableImplicitInputs
+targets.writefile.WriteFile.getHashableImplicitInputs
+targets.zip.Zip.getHashableImplicitInputs" class="py-name" href="#" onclick="return doclink('link-83', 'getHashableImplicitInputs', 'link-83');">getHashableImplicitInputs</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-name">sorted</tt><tt class="py-op">(</tt><tt class="py-op">[</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">                        <tt class="py-string">'option: %s = "%s"'</tt><tt class="py-op">%</tt><tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">,</tt><tt class="py-name">v</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">,</tt><tt class="py-name">v</tt><tt class="py-op">)</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt>  </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">                                <tt class="py-keyword">if</tt> <tt class="py-name">v</tt> <tt class="py-keyword">and</tt> <tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">.</tt><tt class="py-name">startswith</tt><tt class="py-op">(</tt><tt class="py-string">'javac.'</tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-name">k</tt> <tt class="py-op">==</tt> <tt class="py-string">'java.home'</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line"> </tt>
+<a name="Jar"></a><div id="Jar-def"><a name="L195"></a><tt class="py-lineno">195</tt> <a class="py-toggle" href="#" id="Jar-toggle" onclick="return toggle('Jar');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="targets.java.Jar-class.html">Jar</a><tt class="py-op">(</tt><tt class="py-base-class">BaseTarget</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Jar-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Jar-expanded"><a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">        <tt class="py-docstring">""" Create a Jar, first compiling some java, then packing it all up</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line">        <tt id="link-84" class="py-name"><a title="targets.csharp.CSharp.compile
+targets.java.Jar.compile
+targets.java.Javac.compile
+utils.compilers.Compiler.compile
+utils.compilers.UnixCompiler.compile
+utils.compilers.VisualStudio.compile" class="py-name" href="#" onclick="return doclink('link-84', 'compile', 'link-56');">compile</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">        <tt id="link-85" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-85', 'classpath', 'link-57');">classpath</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">        <tt id="link-86" class="py-name" targets="Variable targets.java.Jar.package=targets.java.Jar-class.html#package"><a title="targets.java.Jar.package" class="py-name" href="#" onclick="return doclink('link-86', 'package', 'link-86');">package</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line">        <tt id="link-87" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-87', 'manifest', 'link-45');">manifest</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="Jar.__init__"></a><div id="Jar.__init__-def"><a name="L202"></a><tt class="py-lineno">202</tt> <a class="py-toggle" href="#" id="Jar.__init__-toggle" onclick="return toggle('Jar.__init__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.java.Jar-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">jar</tt><tt class="py-op">,</tt> <tt class="py-param">compile</tt><tt class="py-op">,</tt> <tt class="py-param">classpath</tt><tt class="py-op">,</tt> <tt class="py-param">manifest</tt><tt class="py-op">,</tt> <tt class="py-param">options</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">package</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">preserveManifestFormatting</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Jar.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="Jar.__init__-expanded"><a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">                <tt class="py-docstring">""" </tt> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line"><tt class="py-docstring">                To add additional entries to the manifest's classpath which are needed at runtime </tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line"><tt class="py-docstring">                but not during compilation, use .option('jar.manifest.classpathAppend', [...])</tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line"><tt class="py-docstring">                @param jar: path to jar to create</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line"><tt class="py-docstring">                @param compile: PathSet (or list)  of things to compile</tt> </tt>
+<a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line"><tt class="py-docstring">                @param classpath: PathSet (or list) of things to be on the classpath; </tt> </tt>
+<a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line"><tt class="py-docstring">                destination mapping indicates how they will appear in the manifest</tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line"><tt class="py-docstring">                @param manifest: map of manifest entries, OR a string with the filename to use </tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line"><tt class="py-docstring">                OR None to disable manifest generation and just produce a normal zip</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line"><tt class="py-docstring">                @param options: [DEPRECATED - use .option() instead]</tt> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line"><tt class="py-docstring">                @param package: PathSet (or list) of other files to include in the jar; </tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line"><tt class="py-docstring">                        destination mapping indicates where they will appear in the jar</tt> </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line"><tt class="py-docstring">                @param preserveManifestFormatting: an advanced option that prevents the jar tool from </tt> </tt>
+<a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line"><tt class="py-docstring">                        reformatting the specified manifest file to comply with Java conventions </tt> </tt>
+<a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line"><tt class="py-docstring">                        (also prevents manifest merging if jar already exists)</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line"><tt class="py-docstring">                </tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-88" class="py-name"><a title="targets.csharp.CSharp.compile
+targets.java.Jar.compile
+targets.java.Javac.compile
+utils.compilers.Compiler.compile
+utils.compilers.UnixCompiler.compile
+utils.compilers.VisualStudio.compile" class="py-name" href="#" onclick="return doclink('link-88', 'compile', 'link-56');">compile</a></tt> <tt class="py-op">=</tt> <tt id="link-89" class="py-name"><a title="pathsets.FilteredPathSet" class="py-name" href="#" onclick="return doclink('link-89', 'FilteredPathSet', 'link-8');">FilteredPathSet</a></tt><tt class="py-op">(</tt><tt class="py-name">_isJavaFile</tt><tt class="py-op">,</tt> <tt id="link-90" class="py-name"><a title="pathsets.PathSet" class="py-name" href="#" onclick="return doclink('link-90', 'PathSet', 'link-7');">PathSet</a></tt><tt class="py-op">(</tt><tt id="link-91" class="py-name"><a title="targets.csharp.CSharp.compile
+targets.java.Jar.compile
+targets.java.Javac.compile
+utils.compilers.Compiler.compile
+utils.compilers.UnixCompiler.compile
+utils.compilers.VisualStudio.compile" class="py-name" href="#" onclick="return doclink('link-91', 'compile', 'link-56');">compile</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> <tt class="py-keyword">if</tt> <tt id="link-92" class="py-name"><a title="targets.csharp.CSharp.compile
+targets.java.Jar.compile
+targets.java.Javac.compile
+utils.compilers.Compiler.compile
+utils.compilers.UnixCompiler.compile
+utils.compilers.VisualStudio.compile" class="py-name" href="#" onclick="return doclink('link-92', 'compile', 'link-56');">compile</a></tt> <tt class="py-keyword">else</tt> <tt class="py-name">None</tt> </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line">                         </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-93" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-93', 'classpath', 'link-57');">classpath</a></tt> <tt class="py-op">=</tt> <tt id="link-94" class="py-name"><a title="pathsets.PathSet" class="py-name" href="#" onclick="return doclink('link-94', 'PathSet', 'link-7');">PathSet</a></tt><tt class="py-op">(</tt><tt id="link-95" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-95', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line">                 </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-96" class="py-name"><a title="targets.java.Jar.package" class="py-name" href="#" onclick="return doclink('link-96', 'package', 'link-86');">package</a></tt> <tt class="py-op">=</tt> <tt id="link-97" class="py-name"><a title="pathsets.PathSet" class="py-name" href="#" onclick="return doclink('link-97', 'PathSet', 'link-7');">PathSet</a></tt><tt class="py-op">(</tt><tt id="link-98" class="py-name"><a title="targets.java.Jar.package" class="py-name" href="#" onclick="return doclink('link-98', 'package', 'link-86');">package</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-99" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-99', 'manifest', 'link-45');">manifest</a></tt> <tt class="py-op">=</tt> <tt id="link-100" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-100', 'manifest', 'link-45');">manifest</a></tt> </tt>
+<a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line">                <tt id="link-101" class="py-name"><a title="basetarget.BaseTarget" class="py-name" href="#" onclick="return doclink('link-101', 'BaseTarget', 'link-2');">BaseTarget</a></tt><tt class="py-op">.</tt><tt id="link-102" class="py-name"><a title="basetarget.BaseTarget.__init__
+buildcommon.FilenameStringFormatter.__init__
+buildcommon.StringFormatter.__init__
+buildcontext.BaseContext.__init__
+buildcontext.BuildContext.__init__
+buildcontext.BuildInitializationContext.__init__
+buildexceptions.BuildException.__init__
+pathsets.AddDestPrefix.__init__
+pathsets.BasePathSet.__init__
+pathsets.DirBasedPathSet.__init__
+pathsets.DirGeneratedByTarget.__init__
+pathsets.FilteredPathSet.__init__
+pathsets.FindPaths.__init__
+pathsets.FlattenDest.__init__
+pathsets.MapDest.__init__
+pathsets.MapSrc.__init__
+pathsets.PathSet.__init__
+pathsets.RemoveDestParents.__init__
+pathsets.SingletonDestRenameMapper.__init__
+pathsets.TargetsWithTag.__init__
+propertyfunctors.basename.__init__
+propertyfunctors.dirname.__init__
+propertyfunctors.joinPaths.__init__
+propertyfunctors.sub.__init__
+targets.copy.AddFileFooter.__init__
+targets.copy.AddFileHeader.__init__
+targets.copy.Copy.__init__
+targets.copy.FilteredCopy.__init__
+targets.copy.InsertFileContentsLineMapper.__init__
+targets.copy.OmitLines.__init__
+targets.copy.RegexLineMapper.__init__
+targets.copy.StringReplaceLineMapper.__init__
+targets.csharp.CSharp.__init__
+targets.custom.Custom.__init__
+targets.custom.CustomCommand.__init__
+targets.custom.CustomCommandWithCopy.__init__
+targets.custom.ResolvePath.__init__
+targets.docker.DockerBase.__init__
+targets.docker.DockerBuild.__init__
+targets.docker.DockerPushTag.__init__
+targets.download.Download.__init__
+targets.java.Jar.__init__
+targets.java.Javac.__init__
+targets.java.Javadoc.__init__
+targets.java.SignJars.__init__
+targets.native.Ar.__init__
+targets.native.C.__init__
+targets.native.CompilerMakeDependsPathSet.__init__
+targets.native.Cpp.__init__
+targets.native.Link.__init__
+targets.symlink.SymLink.__init__
+targets.tar.Tarball.__init__
+targets.touch.Touch.__init__
+targets.unpack.FilteredArchiveContents.__init__
+targets.unpack.Unpack.__init__
+targets.writefile.WriteFile.__init__
+targets.zip.Zip.__init__
+utils.antglob.GlobUnusedPatternTracker.__init__
+utils.buildfilelocation.BuildFileLocation.__init__
+utils.compilers.Archiver.__init__
+utils.compilers.Compiler.__init__
+utils.compilers.Depends.__init__
+utils.compilers.GCC.__init__
+utils.compilers.Linker.__init__
+utils.compilers.Process.__init__
+utils.compilers.ToolChain.__init__
+utils.compilers.UnixArchiver.__init__
+utils.compilers.UnixCompiler.__init__
+utils.compilers.UnixLinker.__init__
+utils.compilers.VisualStudio.__init__
+utils.consoleformatter.ConsoleFormatter.__init__
+utils.consoleformatter.DefaultConsoleFormatter.__init__
+utils.functors.ComposableFn.__init__
+utils.functors.ComposableWrapper.__init__
+utils.functors.Compose.__init__
+utils.java.JavacProcessOutputHandler.__init__
+utils.make.MakeConsoleFormatter.__init__
+utils.outputhandler.ProcessOutputHandler.__init__
+utils.outputhandler.StdoutRedirector.__init__
+utils.progress.ProgressBarConsoleFormatter.__init__
+utils.progress.VT100ProgressBarConsoleFormatter.__init__
+utils.teamcity.TeamcityHandler.__init__
+utils.visualstudio.VisualStudioConsoleFormatter.__init__" class="py-name" href="#" onclick="return doclink('link-102', '__init__', 'link-34');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-103" class="py-name"><a title="utils.java.jar" class="py-name" href="#" onclick="return doclink('link-103', 'jar', 'link-17');">jar</a></tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-104" class="py-name"><a title="targets.csharp.CSharp.compile
+targets.java.Jar.compile
+targets.java.Javac.compile
+utils.compilers.Compiler.compile
+utils.compilers.UnixCompiler.compile
+utils.compilers.VisualStudio.compile" class="py-name" href="#" onclick="return doclink('link-104', 'compile', 'link-56');">compile</a></tt><tt class="py-op">,</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-105" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-105', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">,</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-106" class="py-name"><a title="targets.java.Jar.package" class="py-name" href="#" onclick="return doclink('link-106', 'package', 'link-86');">package</a></tt><tt class="py-op">,</tt>  </tt>
+<a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line">                        <tt id="link-107" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-107', 'manifest', 'link-45');">manifest</a></tt> <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt id="link-108" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-108', 'manifest', 'link-45');">manifest</a></tt><tt class="py-op">,</tt> <tt class="py-name">basestring</tt><tt class="py-op">)</tt> <tt class="py-keyword">else</tt> <tt class="py-name">None</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line">                         </tt>
+<a name="L237"></a><tt class="py-lineno">237</tt>  <tt class="py-line">                <tt class="py-keyword">for</tt> <tt class="py-name">k</tt><tt class="py-op">,</tt><tt class="py-name">v</tt> <tt class="py-keyword">in</tt> <tt class="py-op">(</tt><tt class="py-name">options</tt> <tt class="py-keyword">or</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-109" class="py-name"><a title="basetarget.BaseTarget.option" class="py-name" href="#" onclick="return doclink('link-109', 'option', 'link-70');">option</a></tt><tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">,</tt> <tt class="py-name">v</tt><tt class="py-op">)</tt> </tt>
+<a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">preserveManifestFormatting</tt> <tt class="py-op">=</tt> <tt class="py-name">preserveManifestFormatting</tt> </tt>
+</div><a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line"> </tt>
+<a name="Jar.run"></a><div id="Jar.run-def"><a name="L240"></a><tt class="py-lineno">240</tt> <a class="py-toggle" href="#" id="Jar.run-toggle" onclick="return toggle('Jar.run');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.java.Jar-class.html#run">run</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Jar.run-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="Jar.run-expanded"><a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line">                <tt class="py-name">options</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt> </tt>
+<a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line"> </tt>
+<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line">                <tt class="py-comment"># make sure temp dir exists</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line">                <tt id="link-110" class="py-name"><a title="utils.fileutils.mkdir" class="py-name" href="#" onclick="return doclink('link-110', 'mkdir', 'link-12');">mkdir</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">workDir</tt><tt class="py-op">)</tt> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line"> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line">                <tt class="py-name">classes</tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">workDir</tt><tt class="py-op">,</tt> <tt class="py-string">"classes"</tt><tt class="py-op">)</tt> <tt class="py-comment"># output dir for classes</tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line">                 </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line">                <tt class="py-comment"># create the classpath, sorting within PathSet (for determinism), but retaining original order of </tt> </tt>
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line">                <tt class="py-comment"># PathSet elements in the list</tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line">                <tt id="link-111" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-111', 'classpath', 'link-57');">classpath</a></tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">pathsep</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-112" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-112', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">.</tt><tt id="link-113" class="py-name"><a title="pathsets.BasePathSet.resolve
+targets.custom.ResolvePath.resolve" class="py-name" href="#" onclick="return doclink('link-113', 'resolve', 'link-74');">resolve</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt><tt class="py-op">)</tt>  </tt>
+<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line"> </tt>
+<a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line">                <tt class="py-comment"># compile everything</tt> </tt>
+<a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line">                <tt id="link-114" class="py-name"><a title="utils.fileutils.mkdir" class="py-name" href="#" onclick="return doclink('link-114', 'mkdir', 'link-12');">mkdir</a></tt><tt class="py-op">(</tt><tt class="py-name">classes</tt><tt class="py-op">)</tt> <tt class="py-comment"># (need this for assembling other files to package later on, even if we don't do any javac)</tt> </tt>
+<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-115" class="py-name"><a title="targets.csharp.CSharp.compile
+targets.java.Jar.compile
+targets.java.Javac.compile
+utils.compilers.Compiler.compile
+utils.compilers.UnixCompiler.compile
+utils.compilers.VisualStudio.compile" class="py-name" href="#" onclick="return doclink('link-115', 'compile', 'link-56');">compile</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line">                        <tt id="link-116" class="py-name"><a title="utils.fileutils.mkdir" class="py-name" href="#" onclick="return doclink('link-116', 'mkdir', 'link-12');">mkdir</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-117" class="py-name"><a title="basetarget.BaseTarget.getOption" class="py-name" href="#" onclick="return doclink('link-117', 'getOption', 'link-76');">getOption</a></tt><tt class="py-op">(</tt><tt class="py-string">'javac.logs'</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line">                        <tt id="link-118" class="py-name"><a title="utils.java.javac" class="py-name" href="#" onclick="return doclink('link-118', 'javac', 'link-18');">javac</a></tt><tt class="py-op">(</tt><tt class="py-name">classes</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-119" class="py-name"><a title="targets.csharp.CSharp.compile
+targets.java.Jar.compile
+targets.java.Javac.compile
+utils.compilers.Compiler.compile
+utils.compilers.UnixCompiler.compile
+utils.compilers.VisualStudio.compile" class="py-name" href="#" onclick="return doclink('link-119', 'compile', 'link-56');">compile</a></tt><tt class="py-op">.</tt><tt id="link-120" class="py-name"><a title="pathsets.BasePathSet.resolve
+targets.custom.ResolvePath.resolve" class="py-name" href="#" onclick="return doclink('link-120', 'resolve', 'link-74');">resolve</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt id="link-121" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-121', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">=</tt><tt class="py-name">options</tt><tt class="py-op">,</tt> <tt class="py-name">logbasename</tt><tt class="py-op">=</tt><tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-string">'javac.logs'</tt><tt class="py-op">)</tt><tt class="py-op">+</tt><tt class="py-string">'/'</tt><tt class="py-op">+</tt><tt id="link-122" class="py-name"><a title="basetarget.targetNameToUniqueId" class="py-name" href="#" onclick="return doclink('link-122', 'targetNameToUniqueId', 'link-3');">targetNameToUniqueId</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">name</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">targetname</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line"> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line">                <tt id="link-123" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-123', 'manifest', 'link-45');">manifest</a></tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">workDir</tt><tt class="py-op">,</tt> <tt class="py-string">"MANIFEST.MF"</tt><tt class="py-op">)</tt> <tt class="py-comment"># manifest file</tt> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line">         </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-124" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-124', 'manifest', 'link-45');">manifest</a></tt><tt class="py-op">,</tt> <tt class="py-name">basestring</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line">                        <tt id="link-125" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-125', 'manifest', 'link-45');">manifest</a></tt> <tt class="py-op">=</tt> <tt class="py-name">context</tt><tt class="py-op">.</tt><tt id="link-126" class="py-name" targets="Method buildcontext.BaseContext.getFullPath()=buildcontext.BaseContext-class.html#getFullPath"><a title="buildcontext.BaseContext.getFullPath" class="py-name" href="#" onclick="return doclink('link-126', 'getFullPath', 'link-126');">getFullPath</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-127" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-127', 'manifest', 'link-45');">manifest</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">baseDir</tt><tt class="py-op">)</tt> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">                <tt class="py-keyword">elif</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-128" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-128', 'manifest', 'link-45');">manifest</a></tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">                        <tt id="link-129" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-129', 'manifest', 'link-45');">manifest</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> <tt class="py-comment"># generate one</tt> </tt>
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">                        <tt class="py-comment"># rewrite property values in the manifest</tt> </tt>
+<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line">                        <tt class="py-name">manifest_entries</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line">                        <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-130" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-130', 'manifest', 'link-45');">manifest</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line">                                <tt class="py-name">manifest_entries</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">context</tt><tt class="py-op">.</tt><tt id="link-131" class="py-name"><a title="buildcontext.BaseContext.expandPropertyValues" class="py-name" href="#" onclick="return doclink('link-131', 'expandPropertyValues', 'link-36');">expandPropertyValues</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-132" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-132', 'manifest', 'link-45');">manifest</a></tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line">         </tt>
+<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line">                        <tt class="py-comment"># determine classpath for manifest</tt> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line">                        <tt class="py-name">classpath_entries</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">                         </tt>
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-string">"Class-path"</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-name">manifest_entries</tt><tt class="py-op">:</tt> <tt class="py-comment"># assuming it wasn't hardcoded, set it here</tt> </tt>
+<a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line">                                <tt class="py-keyword">for</tt> <tt class="py-name">src</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-133" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-133', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">.</tt><tt id="link-134" class="py-name"><a title="pathsets.AddDestPrefix.resolveWithDestinations
+pathsets.BasePathSet.resolveWithDestinations
+pathsets.DirBasedPathSet.resolveWithDestinations
+pathsets.DirGeneratedByTarget.resolveWithDestinations
+pathsets.FilteredPathSet.resolveWithDestinations
+pathsets.FindPaths.resolveWithDestinations
+pathsets.FlattenDest.resolveWithDestinations
+pathsets.MapDest.resolveWithDestinations
+pathsets.MapSrc.resolveWithDestinations
+pathsets.PathSet.resolveWithDestinations
+pathsets.RemoveDestParents.resolveWithDestinations
+pathsets.SingletonDestRenameMapper.resolveWithDestinations
+pathsets.TargetsWithTag.resolveWithDestinations
+targets.native.CompilerMakeDependsPathSet.resolveWithDestinations" class="py-name" href="#" onclick="return doclink('link-134', 'resolveWithDestinations', 'link-38');">resolveWithDestinations</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line">                                        <tt class="py-comment"># we definitely do want to support use of ".." in destinations here, it can be very useful</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line">                                        <tt class="py-name">classpath_entries</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">dest</tt><tt class="py-op">)</tt> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line">                                <tt class="py-keyword">assert</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">options</tt><tt class="py-op">[</tt><tt class="py-string">'jar.manifest.classpathAppend'</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">list</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">[</tt><tt class="py-string">'jar.manifest.classpathAppend'</tt><tt class="py-op">]</tt> <tt class="py-comment"># must not be a string</tt> </tt>
+<a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line">                                <tt class="py-name">classpath_entries</tt><tt class="py-op">.</tt><tt class="py-name">extend</tt><tt class="py-op">(</tt><tt class="py-name">options</tt><tt class="py-op">[</tt><tt class="py-string">'jar.manifest.classpathAppend'</tt><tt class="py-op">]</tt> <tt class="py-keyword">or</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">                                 </tt>
+<a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line">                                <tt class="py-comment"># need to always use / not \ for these to be valid</tt> </tt>
+<a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line">                                <tt class="py-name">classpath_entries</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">p</tt><tt class="py-op">.</tt><tt class="py-name">replace</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">sep</tt><tt class="py-op">,</tt> <tt class="py-string">'/'</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">replace</tt><tt class="py-op">(</tt><tt class="py-string">'\\'</tt><tt class="py-op">,</tt> <tt class="py-string">'/'</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">p</tt> <tt class="py-keyword">in</tt> <tt class="py-name">classpath_entries</tt> <tt class="py-keyword">if</tt> <tt class="py-name">p</tt><tt class="py-op">]</tt> </tt>
+<a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line">                                 </tt>
+<a name="L283"></a><tt class="py-lineno">283</tt>  <tt class="py-line">                                <tt class="py-keyword">if</tt> <tt class="py-name">classpath_entries</tt><tt class="py-op">:</tt> </tt>
+<a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line">                                        <tt class="py-name">manifest_entries</tt><tt class="py-op">[</tt><tt class="py-string">"Class-path"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-string">" "</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">classpath_entries</tt><tt class="py-op">)</tt> <tt class="py-comment"># include the classpath from here</tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">manifest_entries</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-string">'Class-path'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-comment"># suppress this element entirely if not needed, otherwise there would be no way to have an empty classpath</tt> </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line">                                <tt class="py-name">manifest_entries</tt><tt class="py-op">.</tt><tt class="py-name">pop</tt><tt class="py-op">(</tt><tt class="py-string">'Class-path'</tt><tt class="py-op">,</tt><tt class="py-string">''</tt><tt class="py-op">)</tt> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line">                         </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line">                        <tt class="py-comment"># create the manifest file</tt> </tt>
+<a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line">                        <tt id="link-135" class="py-name"><a title="utils.java.create_manifest" class="py-name" href="#" onclick="return doclink('link-135', 'create_manifest', 'link-19');">create_manifest</a></tt><tt class="py-op">(</tt><tt id="link-136" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-136', 'manifest', 'link-45');">manifest</a></tt><tt class="py-op">,</tt> <tt class="py-name">manifest_entries</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">=</tt><tt class="py-name">options</tt><tt class="py-op">)</tt> </tt>
+<a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line"> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line">                <tt class="py-comment"># copy in the additional things to include</tt> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line">                <tt class="py-keyword">for</tt> <tt class="py-op">(</tt><tt class="py-name">src</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">)</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-137" class="py-name"><a title="targets.java.Jar.package" class="py-name" href="#" onclick="return doclink('link-137', 'package', 'link-86');">package</a></tt><tt class="py-op">.</tt><tt id="link-138" class="py-name"><a title="pathsets.AddDestPrefix.resolveWithDestinations
+pathsets.BasePathSet.resolveWithDestinations
+pathsets.DirBasedPathSet.resolveWithDestinations
+pathsets.DirGeneratedByTarget.resolveWithDestinations
+pathsets.FilteredPathSet.resolveWithDestinations
+pathsets.FindPaths.resolveWithDestinations
+pathsets.FlattenDest.resolveWithDestinations
+pathsets.MapDest.resolveWithDestinations
+pathsets.MapSrc.resolveWithDestinations
+pathsets.PathSet.resolveWithDestinations
+pathsets.RemoveDestParents.resolveWithDestinations
+pathsets.SingletonDestRenameMapper.resolveWithDestinations
+pathsets.TargetsWithTag.resolveWithDestinations
+targets.native.CompilerMakeDependsPathSet.resolveWithDestinations" class="py-name" href="#" onclick="return doclink('link-138', 'resolveWithDestinations', 'link-38');">resolveWithDestinations</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-string">'..'</tt> <tt class="py-keyword">in</tt> <tt class="py-name">dest</tt><tt class="py-op">:</tt> <tt class="py-keyword">raise</tt> <tt class="py-name">Exception</tt><tt class="py-op">(</tt><tt class="py-string">'This target does not permit packaged destination paths to contain ".." relative path expressions'</tt><tt class="py-op">)</tt> </tt>
+<a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line">                        <tt id="link-139" class="py-name"><a title="utils.fileutils.mkdir" class="py-name" href="#" onclick="return doclink('link-139', 'mkdir', 'link-12');">mkdir</a></tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-140" class="py-name" targets="Class propertyfunctors.dirname=propertyfunctors.dirname-class.html"><a title="propertyfunctors.dirname" class="py-name" href="#" onclick="return doclink('link-140', 'dirname', 'link-140');">dirname</a></tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">classes</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line">                        <tt class="py-name">destpath</tt> <tt class="py-op">=</tt> <tt id="link-141" class="py-name"><a title="utils.fileutils.normLongPath" class="py-name" href="#" onclick="return doclink('link-141', 'normLongPath', 'link-14');">normLongPath</a></tt><tt class="py-op">(</tt><tt class="py-name">classes</tt><tt class="py-op">+</tt><tt class="py-string">'/'</tt><tt class="py-op">+</tt><tt class="py-name">dest</tt><tt class="py-op">)</tt> </tt>
+<a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line">                        <tt class="py-name">srcpath</tt> <tt class="py-op">=</tt> <tt id="link-142" class="py-name"><a title="utils.fileutils.normLongPath" class="py-name" href="#" onclick="return doclink('link-142', 'normLongPath', 'link-14');">normLongPath</a></tt><tt class="py-op">(</tt><tt class="py-name">src</tt><tt class="py-op">)</tt> </tt>
+<a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line"> </tt>
+<a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-143" class="py-name" targets="Function utils.fileutils.isdir()=utils.fileutils-module.html#isdir"><a title="utils.fileutils.isdir" class="py-name" href="#" onclick="return doclink('link-143', 'isdir', 'link-143');">isdir</a></tt><tt class="py-op">(</tt><tt class="py-name">srcpath</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line">                                <tt id="link-144" class="py-name"><a title="utils.fileutils.mkdir" class="py-name" href="#" onclick="return doclink('link-144', 'mkdir', 'link-12');">mkdir</a></tt><tt class="py-op">(</tt><tt class="py-name">destpath</tt><tt class="py-op">)</tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line">                        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line">                                <tt class="py-keyword">with</tt> <tt class="py-name">open</tt><tt class="py-op">(</tt><tt class="py-name">srcpath</tt><tt class="py-op">,</tt> <tt class="py-string">'rb'</tt><tt class="py-op">)</tt> <tt class="py-keyword">as</tt> <tt class="py-name">s</tt><tt class="py-op">:</tt> </tt>
+<a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line">                                        <tt class="py-keyword">with</tt> <tt class="py-name">openForWrite</tt><tt class="py-op">(</tt><tt class="py-name">destpath</tt><tt class="py-op">,</tt> <tt class="py-string">'wb'</tt><tt class="py-op">)</tt> <tt class="py-keyword">as</tt> <tt class="py-name">d</tt><tt class="py-op">:</tt> </tt>
+<a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line">                                                <tt class="py-name">d</tt><tt class="py-op">.</tt><tt class="py-name">write</tt><tt class="py-op">(</tt><tt class="py-name">s</tt><tt class="py-op">.</tt><tt class="py-name">read</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line"> </tt>
+<a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line">                <tt class="py-comment"># create the jar</tt> </tt>
+<a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line">                <tt id="link-145" class="py-name"><a title="utils.java.jar" class="py-name" href="#" onclick="return doclink('link-145', 'jar', 'link-17');">jar</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt id="link-146" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-146', 'manifest', 'link-45');">manifest</a></tt><tt class="py-op">,</tt> <tt class="py-name">classes</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">=</tt><tt class="py-name">options</tt><tt class="py-op">,</tt> <tt class="py-name">preserveManifestFormatting</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">preserveManifestFormatting</tt><tt class="py-op">,</tt>  </tt>
+<a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line">                        <tt class="py-name">outputHandler</tt><tt class="py-op">=</tt><tt id="link-147" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-147', 'ProcessOutputHandler', 'link-27');">ProcessOutputHandler</a></tt><tt class="py-op">.</tt><tt id="link-148" class="py-name"><a title="utils.antglob.GlobPatternSet.create
+utils.outputhandler.ProcessOutputHandler.create" class="py-name" href="#" onclick="return doclink('link-148', 'create', 'link-52');">create</a></tt><tt class="py-op">(</tt><tt class="py-string">'jar'</tt><tt class="py-op">,</tt> <tt class="py-name">treatStdErrAsErrors</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt><tt class="py-name">options</tt><tt class="py-op">=</tt><tt class="py-name">options</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L308"></a><tt class="py-lineno">308</tt>  <tt class="py-line"> </tt>
+<a name="Jar.getHashableImplicitInputs"></a><div id="Jar.getHashableImplicitInputs-def"><a name="L309"></a><tt class="py-lineno">309</tt> <a class="py-toggle" href="#" id="Jar.getHashableImplicitInputs-toggle" onclick="return toggle('Jar.getHashableImplicitInputs');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.java.Jar-class.html#getHashableImplicitInputs">getHashableImplicitInputs</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Jar.getHashableImplicitInputs-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="Jar.getHashableImplicitInputs-expanded"><a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line">                <tt class="py-comment"># changes in the manifest text should cause a rebuild</tt> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line">                <tt class="py-comment"># for now, don't bother factoring global jar.manifest.defaults option </tt> </tt>
+<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line">                <tt class="py-comment"># in here (it'll almost never change anyway)</tt> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-149" class="py-name" targets="Class targets.java.Jar=targets.java.Jar-class.html"><a title="targets.java.Jar" class="py-name" href="#" onclick="return doclink('link-149', 'Jar', 'link-149');">Jar</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-150" class="py-name"><a title="basetarget.BaseTarget.getHashableImplicitInputs
+targets.copy.Copy.getHashableImplicitInputs
+targets.copy.FilteredCopy.getHashableImplicitInputs
+targets.csharp.CSharp.getHashableImplicitInputs
+targets.custom.CustomCommand.getHashableImplicitInputs
+targets.java.Jar.getHashableImplicitInputs
+targets.java.Javac.getHashableImplicitInputs
+targets.java.Javadoc.getHashableImplicitInputs
+targets.native.Ar.getHashableImplicitInputs
+targets.native.C.getHashableImplicitInputs
+targets.native.Cpp.getHashableImplicitInputs
+targets.native.Link.getHashableImplicitInputs
+targets.tar.Tarball.getHashableImplicitInputs
+targets.unpack.Unpack.getHashableImplicitInputs
+targets.writefile.WriteFile.getHashableImplicitInputs
+targets.zip.Zip.getHashableImplicitInputs" class="py-name" href="#" onclick="return doclink('link-150', 'getHashableImplicitInputs', 'link-83');">getHashableImplicitInputs</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-op">[</tt> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line">                        <tt class="py-string">'manifest = '</tt><tt class="py-op">+</tt><tt class="py-name">context</tt><tt class="py-op">.</tt><tt id="link-151" class="py-name"><a title="buildcontext.BaseContext.expandPropertyValues" class="py-name" href="#" onclick="return doclink('link-151', 'expandPropertyValues', 'link-36');">expandPropertyValues</a></tt><tt class="py-op">(</tt><tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-152" class="py-name"><a title="targets.java.Jar.manifest" class="py-name" href="#" onclick="return doclink('link-152', 'manifest', 'link-45');">manifest</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line">                        <tt class="py-string">'classpath = '</tt><tt class="py-op">+</tt><tt class="py-name">context</tt><tt class="py-op">.</tt><tt id="link-153" class="py-name"><a title="buildcontext.BaseContext.expandPropertyValues" class="py-name" href="#" onclick="return doclink('link-153', 'expandPropertyValues', 'link-36');">expandPropertyValues</a></tt><tt class="py-op">(</tt><tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-154" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-154', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-comment"># because classpath destinations affect manifest</tt> </tt>
+<a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line">                        <tt class="py-op">]</tt><tt class="py-op">+</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-string">'preserveManifestFormatting = true'</tt><tt class="py-op">]</tt> <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">preserveManifestFormatting</tt> <tt class="py-keyword">else</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt>\ </tt>
+<a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line">                        <tt class="py-op">+</tt><tt class="py-name">sorted</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-string">'option: %s = "%s"'</tt><tt class="py-op">%</tt><tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">,</tt><tt class="py-name">v</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">,</tt><tt class="py-name">v</tt><tt class="py-op">)</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt>  </tt>
+<a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line">                                <tt class="py-keyword">if</tt> <tt class="py-name">v</tt> <tt class="py-keyword">and</tt> <tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">.</tt><tt class="py-name">startswith</tt><tt class="py-op">(</tt><tt class="py-string">'javac.'</tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-name">k</tt><tt class="py-op">.</tt><tt class="py-name">startswith</tt><tt class="py-op">(</tt><tt class="py-string">'jar.'</tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-name">k</tt> <tt class="py-op">==</tt> <tt class="py-string">'java.home'</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line"> </tt>
+<a name="Javadoc"></a><div id="Javadoc-def"><a name="L320"></a><tt class="py-lineno">320</tt> <a class="py-toggle" href="#" id="Javadoc-toggle" onclick="return toggle('Javadoc');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="targets.java.Javadoc-class.html">Javadoc</a><tt class="py-op">(</tt><tt class="py-base-class">BaseTarget</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Javadoc-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Javadoc-expanded"><a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line">        <tt class="py-docstring">""" Creates javadoc from a set of input files</tt> </tt>
+<a name="L322"></a><tt class="py-lineno">322</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="Javadoc.__init__"></a><div id="Javadoc.__init__-def"><a name="L323"></a><tt class="py-lineno">323</tt> <a class="py-toggle" href="#" id="Javadoc.__init__-toggle" onclick="return toggle('Javadoc.__init__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.java.Javadoc-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">destdir</tt><tt class="py-op">,</tt> <tt class="py-param">source</tt><tt class="py-op">,</tt> <tt class="py-param">classpath</tt><tt class="py-op">,</tt> <tt class="py-param">options</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Javadoc.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="Javadoc.__init__-expanded"><a name="L324"></a><tt class="py-lineno">324</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L325"></a><tt class="py-lineno">325</tt>  <tt class="py-line"><tt class="py-docstring">                @param destdir: directory to create docs in</tt> </tt>
+<a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line"><tt class="py-docstring">                @param source: a set of files to build from</tt> </tt>
+<a name="L328"></a><tt class="py-lineno">328</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L329"></a><tt class="py-lineno">329</tt>  <tt class="py-line"><tt class="py-docstring">                @param classpath: a list of jars needed for the classpath</tt> </tt>
+<a name="L330"></a><tt class="py-lineno">330</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L331"></a><tt class="py-lineno">331</tt>  <tt class="py-line"><tt class="py-docstring">                @param options: [DEPRECATED - use .option() instead]</tt> </tt>
+<a name="L332"></a><tt class="py-lineno">332</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L333"></a><tt class="py-lineno">333</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sources</tt> <tt class="py-op">=</tt> <tt id="link-155" class="py-name"><a title="pathsets.PathSet" class="py-name" href="#" onclick="return doclink('link-155', 'PathSet', 'link-7');">PathSet</a></tt><tt class="py-op">(</tt><tt class="py-name">source</tt><tt class="py-op">)</tt> </tt>
+<a name="L334"></a><tt class="py-lineno">334</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-156" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-156', 'classpath', 'link-57');">classpath</a></tt> <tt class="py-op">=</tt> <tt id="link-157" class="py-name"><a title="pathsets.PathSet" class="py-name" href="#" onclick="return doclink('link-157', 'PathSet', 'link-7');">PathSet</a></tt><tt class="py-op">(</tt><tt id="link-158" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-158', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L335"></a><tt class="py-lineno">335</tt>  <tt class="py-line">                <tt id="link-159" class="py-name"><a title="basetarget.BaseTarget" class="py-name" href="#" onclick="return doclink('link-159', 'BaseTarget', 'link-2');">BaseTarget</a></tt><tt class="py-op">.</tt><tt id="link-160" class="py-name"><a title="basetarget.BaseTarget.__init__
+buildcommon.FilenameStringFormatter.__init__
+buildcommon.StringFormatter.__init__
+buildcontext.BaseContext.__init__
+buildcontext.BuildContext.__init__
+buildcontext.BuildInitializationContext.__init__
+buildexceptions.BuildException.__init__
+pathsets.AddDestPrefix.__init__
+pathsets.BasePathSet.__init__
+pathsets.DirBasedPathSet.__init__
+pathsets.DirGeneratedByTarget.__init__
+pathsets.FilteredPathSet.__init__
+pathsets.FindPaths.__init__
+pathsets.FlattenDest.__init__
+pathsets.MapDest.__init__
+pathsets.MapSrc.__init__
+pathsets.PathSet.__init__
+pathsets.RemoveDestParents.__init__
+pathsets.SingletonDestRenameMapper.__init__
+pathsets.TargetsWithTag.__init__
+propertyfunctors.basename.__init__
+propertyfunctors.dirname.__init__
+propertyfunctors.joinPaths.__init__
+propertyfunctors.sub.__init__
+targets.copy.AddFileFooter.__init__
+targets.copy.AddFileHeader.__init__
+targets.copy.Copy.__init__
+targets.copy.FilteredCopy.__init__
+targets.copy.InsertFileContentsLineMapper.__init__
+targets.copy.OmitLines.__init__
+targets.copy.RegexLineMapper.__init__
+targets.copy.StringReplaceLineMapper.__init__
+targets.csharp.CSharp.__init__
+targets.custom.Custom.__init__
+targets.custom.CustomCommand.__init__
+targets.custom.CustomCommandWithCopy.__init__
+targets.custom.ResolvePath.__init__
+targets.docker.DockerBase.__init__
+targets.docker.DockerBuild.__init__
+targets.docker.DockerPushTag.__init__
+targets.download.Download.__init__
+targets.java.Jar.__init__
+targets.java.Javac.__init__
+targets.java.Javadoc.__init__
+targets.java.SignJars.__init__
+targets.native.Ar.__init__
+targets.native.C.__init__
+targets.native.CompilerMakeDependsPathSet.__init__
+targets.native.Cpp.__init__
+targets.native.Link.__init__
+targets.symlink.SymLink.__init__
+targets.tar.Tarball.__init__
+targets.touch.Touch.__init__
+targets.unpack.FilteredArchiveContents.__init__
+targets.unpack.Unpack.__init__
+targets.writefile.WriteFile.__init__
+targets.zip.Zip.__init__
+utils.antglob.GlobUnusedPatternTracker.__init__
+utils.buildfilelocation.BuildFileLocation.__init__
+utils.compilers.Archiver.__init__
+utils.compilers.Compiler.__init__
+utils.compilers.Depends.__init__
+utils.compilers.GCC.__init__
+utils.compilers.Linker.__init__
+utils.compilers.Process.__init__
+utils.compilers.ToolChain.__init__
+utils.compilers.UnixArchiver.__init__
+utils.compilers.UnixCompiler.__init__
+utils.compilers.UnixLinker.__init__
+utils.compilers.VisualStudio.__init__
+utils.consoleformatter.ConsoleFormatter.__init__
+utils.consoleformatter.DefaultConsoleFormatter.__init__
+utils.functors.ComposableFn.__init__
+utils.functors.ComposableWrapper.__init__
+utils.functors.Compose.__init__
+utils.java.JavacProcessOutputHandler.__init__
+utils.make.MakeConsoleFormatter.__init__
+utils.outputhandler.ProcessOutputHandler.__init__
+utils.outputhandler.StdoutRedirector.__init__
+utils.progress.ProgressBarConsoleFormatter.__init__
+utils.progress.VT100ProgressBarConsoleFormatter.__init__
+utils.teamcity.TeamcityHandler.__init__
+utils.visualstudio.VisualStudioConsoleFormatter.__init__" class="py-name" href="#" onclick="return doclink('link-160', '__init__', 'link-34');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">destdir</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sources</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-161" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-161', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L336"></a><tt class="py-lineno">336</tt>  <tt class="py-line">                <tt class="py-keyword">for</tt> <tt class="py-name">k</tt><tt class="py-op">,</tt><tt class="py-name">v</tt> <tt class="py-keyword">in</tt> <tt class="py-op">(</tt><tt class="py-name">options</tt> <tt class="py-keyword">or</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-162" class="py-name"><a title="basetarget.BaseTarget.option" class="py-name" href="#" onclick="return doclink('link-162', 'option', 'link-70');">option</a></tt><tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">,</tt> <tt class="py-name">v</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L337"></a><tt class="py-lineno">337</tt>  <tt class="py-line"> </tt>
+<a name="Javadoc.run"></a><div id="Javadoc.run-def"><a name="L338"></a><tt class="py-lineno">338</tt> <a class="py-toggle" href="#" id="Javadoc.run-toggle" onclick="return toggle('Javadoc.run');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.java.Javadoc-class.html#run">run</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Javadoc.run-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="Javadoc.run-expanded"><a name="L339"></a><tt class="py-lineno">339</tt>  <tt class="py-line">                <tt class="py-name">options</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt> </tt>
+<a name="L340"></a><tt class="py-lineno">340</tt>  <tt class="py-line">                <tt id="link-163" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-163', 'classpath', 'link-57');">classpath</a></tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">pathsep</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-164" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-164', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">.</tt><tt id="link-165" class="py-name"><a title="pathsets.BasePathSet.resolve
+targets.custom.ResolvePath.resolve" class="py-name" href="#" onclick="return doclink('link-165', 'resolve', 'link-74');">resolve</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L341"></a><tt class="py-lineno">341</tt>  <tt class="py-line">                <tt id="link-166" class="py-name"><a title="utils.java.javadoc" class="py-name" href="#" onclick="return doclink('link-166', 'javadoc', 'link-20');">javadoc</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sources</tt><tt class="py-op">.</tt><tt id="link-167" class="py-name"><a title="pathsets.BasePathSet.resolve
+targets.custom.ResolvePath.resolve" class="py-name" href="#" onclick="return doclink('link-167', 'resolve', 'link-74');">resolve</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt id="link-168" class="py-name"><a title="targets.java.Jar.classpath
+targets.java.Javac.classpath" class="py-name" href="#" onclick="return doclink('link-168', 'classpath', 'link-57');">classpath</a></tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">,</tt>  </tt>
+<a name="L342"></a><tt class="py-lineno">342</tt>  <tt class="py-line">                        <tt class="py-name">outputHandler</tt><tt class="py-op">=</tt><tt id="link-169" class="py-name"><a title="utils.outputhandler.ProcessOutputHandler" class="py-name" href="#" onclick="return doclink('link-169', 'ProcessOutputHandler', 'link-27');">ProcessOutputHandler</a></tt><tt class="py-op">.</tt><tt id="link-170" class="py-name"><a title="utils.antglob.GlobPatternSet.create
+utils.outputhandler.ProcessOutputHandler.create" class="py-name" href="#" onclick="return doclink('link-170', 'create', 'link-52');">create</a></tt><tt class="py-op">(</tt><tt class="py-string">'javadoc'</tt><tt class="py-op">,</tt> <tt class="py-name">treatStdErrAsErrors</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">=</tt><tt class="py-name">options</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L343"></a><tt class="py-lineno">343</tt>  <tt class="py-line"> </tt>
+<a name="Javadoc.getHashableImplicitInputs"></a><div id="Javadoc.getHashableImplicitInputs-def"><a name="L344"></a><tt class="py-lineno">344</tt> <a class="py-toggle" href="#" id="Javadoc.getHashableImplicitInputs-toggle" onclick="return toggle('Javadoc.getHashableImplicitInputs');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="targets.java.Javadoc-class.html#getHashableImplicitInputs">getHashableImplicitInputs</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">context</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Javadoc.getHashableImplicitInputs-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="Javadoc.getHashableImplicitInputs-expanded"><a name="L345"></a><tt class="py-lineno">345</tt>  <tt class="py-line">                <tt class="py-comment"># changes in the manifest text should cause a rebuild</tt> </tt>
+<a name="L346"></a><tt class="py-lineno">346</tt>  <tt class="py-line">                <tt class="py-comment"># for now, don't bother factoring global jar.manifest.defaults option </tt> </tt>
+<a name="L347"></a><tt class="py-lineno">347</tt>  <tt class="py-line">                <tt class="py-comment"># in here (it'll almost never change anyway)</tt> </tt>
+<a name="L348"></a><tt class="py-lineno">348</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-171" class="py-name" targets="Class targets.java.Javadoc=targets.java.Javadoc-class.html"><a title="targets.java.Javadoc" class="py-name" href="#" onclick="return doclink('link-171', 'Javadoc', 'link-171');">Javadoc</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-172" class="py-name"><a title="basetarget.BaseTarget.getHashableImplicitInputs
+targets.copy.Copy.getHashableImplicitInputs
+targets.copy.FilteredCopy.getHashableImplicitInputs
+targets.csharp.CSharp.getHashableImplicitInputs
+targets.custom.CustomCommand.getHashableImplicitInputs
+targets.java.Jar.getHashableImplicitInputs
+targets.java.Javac.getHashableImplicitInputs
+targets.java.Javadoc.getHashableImplicitInputs
+targets.native.Ar.getHashableImplicitInputs
+targets.native.C.getHashableImplicitInputs
+targets.native.Cpp.getHashableImplicitInputs
+targets.native.Link.getHashableImplicitInputs
+targets.tar.Tarball.getHashableImplicitInputs
+targets.unpack.Unpack.getHashableImplicitInputs
+targets.writefile.WriteFile.getHashableImplicitInputs
+targets.zip.Zip.getHashableImplicitInputs" class="py-name" href="#" onclick="return doclink('link-172', 'getHashableImplicitInputs', 'link-83');">getHashableImplicitInputs</a></tt><tt class="py-op">(</tt><tt class="py-name">context</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> \ </tt>
+<a name="L349"></a><tt class="py-lineno">349</tt>  <tt class="py-line">                        <tt class="py-name">sorted</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-string">'option: %s = "%s"'</tt><tt class="py-op">%</tt><tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">,</tt><tt class="py-name">v</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">,</tt><tt class="py-name">v</tt><tt class="py-op">)</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt>  </tt>
+<a name="L350"></a><tt class="py-lineno">350</tt>  <tt class="py-line">                                <tt class="py-keyword">if</tt> <tt class="py-name">k</tt> <tt class="py-keyword">and</tt> <tt class="py-name">k</tt><tt class="py-op">.</tt><tt class="py-name">startswith</tt><tt class="py-op">(</tt><tt class="py-string">'javadoc.'</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L351"></a><tt class="py-lineno">351</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Apr  5 15:17:00 2019
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

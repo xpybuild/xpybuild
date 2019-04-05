@@ -1,0 +1,971 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>basetarget.BaseTarget</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="basetarget-module.html">Module&nbsp;basetarget</a> ::
+        Class&nbsp;BaseTarget
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="basetarget.BaseTarget-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class BaseTarget</h1><p class="nomargin-top"><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget">source&nbsp;code</a></span></p>
+<pre class="base-tree">
+               object --+    
+                        |    
+<a href="utils.functors.Composable-class.html">utils.functors.Composable</a> --+
+                            |
+                           <strong class="uidshort">BaseTarget</strong>
+</pre>
+
+<dl><dt>Known Subclasses:</dt>
+<dd>
+      <ul class="subclass-list">
+<li><a href="targets.copy.Copy-class.html">targets.copy.Copy</a></li><li>, <a href="targets.csharp.CSharp-class.html">targets.csharp.CSharp</a></li><li>, <a href="targets.custom.Custom-class.html">targets.custom.Custom</a></li><li>, <a href="targets.custom.CustomCommand-class.html">targets.custom.CustomCommand</a></li><li>, <a href="targets.docker.DockerBase-class.html">targets.docker.DockerBase</a></li><li>, <a href="targets.download.Download-class.html">targets.download.Download</a></li><li>, <a href="targets.java.Jar-class.html">targets.java.Jar</a></li><li>, <a href="targets.java.Javac-class.html">targets.java.Javac</a></li><li>, <a href="targets.java.Javadoc-class.html">targets.java.Javadoc</a></li><li>, <a href="targets.java.SignJars-class.html">targets.java.SignJars</a></li><li>, <a href="targets.native.Ar-class.html">targets.native.Ar</a></li><li>, <a href="targets.native.C-class.html">targets.native.C</a></li><li>, <a href="targets.native.Cpp-class.html">targets.native.Cpp</a></li><li>, <a href="targets.native.Link-class.html">targets.native.Link</a></li><li>, <a href="targets.symlink.SymLink-class.html">targets.symlink.SymLink</a></li><li>, <a href="targets.tar.Tarball-class.html">targets.tar.Tarball</a></li><li>, <a href="targets.touch.Touch-class.html">targets.touch.Touch</a></li><li>, <a href="targets.unpack.Unpack-class.html">targets.unpack.Unpack</a></li><li>, <a href="targets.writefile.WriteFile-class.html">targets.writefile.WriteFile</a></li><li>, <a href="targets.zip.Zip-class.html">targets.zip.Zip</a></li>  </ul>
+</dd></dl>
+
+<hr />
+<p>The base class for all targets. All targets are uniquely identified by
+  a single name which is a file or a directory (ending with '/').</p>
+  <p>Has public read-only attributes:</p>
+  <ul>
+    <li>
+      name: the unresolved canonical name for the target (containing 
+      unsubstituted properties etc).
+    </li>
+    <li>
+      path: the resolved name with variables expanded etc. Can only be used
+      once target is running or checking up-to-dateness but not during 
+      initialization phase.
+    </li>
+    <li>
+      options: a dict of the resolved options for this target. Can only be 
+      used once target is running or checking up-to-dateness but not during
+      initialization phase. See also <a 
+      href="basetarget.BaseTarget-class.html#getOption" 
+      class="link">getOption()</a>.
+    </li>
+    <li>
+      workDir (a unique dedicated directory where this target can write
+    </li>
+  </ul>
+  <p>temporary/working files).</p>
+  <p>The methods that may be overridden by subclasses are:</p>
+  <ul>
+    <li>
+      <a href="basetarget.BaseTarget-class.html#run" class="link">run</a>
+    </li>
+    <li>
+      <a href="basetarget.BaseTarget-class.html#clean" 
+      class="link">clean</a>
+    </li>
+    <li>
+      <a href="basetarget.BaseTarget-class.html#getHashableImplicitInputs" 
+      class="link">getHashableImplicitInputs</a>
+    </li>
+  </ul>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__getattr__"></a><span class="summary-sig-name">__getattr__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Getter for read-only attributes</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.__getattr__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="basetarget.BaseTarget-class.html#__hash__" class="summary-sig-name">__hash__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Uses the target name to generate a hash.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.__hash__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="basetarget.BaseTarget-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">dependencies</span>)</span><br />
+      Normal constructor, should only be called from sub-classes since this
+      is a stub.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="basetarget.BaseTarget-class.html#__setattr__" class="summary-sig-name">__setattr__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      x.__setattr__('name', value) &lt;==&gt; x.name = value</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.__setattr__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="basetarget.BaseTarget-class.html#__str__" class="summary-sig-name">__str__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns a display name including the target name and the target type 
+      (class)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.__str__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="basetarget.BaseTarget-class.html#addHashableImplicitInput" class="summary-sig-name">addHashableImplicitInput</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">item</span>)</span><br />
+      Adds a target-specific string giving information about an implicit 
+      input of this target to the list that will be returned by 
+      getHashableImplicitInputs to help detect when the target should be 
+      rebuilt.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.addHashableImplicitInput">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="basetarget.BaseTarget-class.html#addHashableImplicitInputOption" class="summary-sig-name">addHashableImplicitInputOption</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">optionKey</span>)</span><br />
+      Adds a target-specific string giving information about an implicit 
+      input of this target, to the list that will be returned 
+      getHashableImplicitInputs to help detect when the target should be 
+      rebuilt.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.addHashableImplicitInputOption">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="basetarget.BaseTarget-class.html#clean" class="summary-sig-name">clean</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">context</span>)</span><br />
+      Clean this target.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.clean">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="clearTags"></a><span class="summary-sig-name">clearTags</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Removes any tags other than &quot;all&quot; from this target</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.clearTags">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="disableInFullBuild"></a><span class="summary-sig-name">disableInFullBuild</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Stops this target from building in 'all' mode, therefore it must be 
+      called explicitly or via a tag.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.disableInFullBuild">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="basetarget.BaseTarget-class.html#getHashableImplicitInputs" class="summary-sig-name">getHashableImplicitInputs</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">context</span>)</span><br />
+      Return a target-specific token (a list of strings) representing the 
+      implicit inputs of this target that cannot be detected using normal 
+      timestamp up-to-date checking.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.getHashableImplicitInputs">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getOption"></a><span class="summary-sig-name">getOption</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>,
+        <span class="summary-sig-arg">errorIfNone</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">errorIfEmptyString</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Gets the resolved value of a specified option for this target, with 
+      optional checking to give a friendly error message if the value is an
+      empty string or None.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.getOption">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getPriority"></a><span class="summary-sig-name">getPriority</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return the current priority of this target</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.getPriority">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getTags"></a><span class="summary-sig-name">getTags</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return the list of tags associated with this target</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.getTags">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="basetarget.BaseTarget-class.html#option" class="summary-sig-name">option</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set an option on this target, overriding any default value provided 
+      by setGlobalOption.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.option">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="basetarget.BaseTarget-class.html#priority" class="summary-sig-name">priority</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pri</span>)</span><br />
+      Set the priority of this target it encourage it (and its deps) to be 
+      built earlier in the process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.priority">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="basetarget.BaseTarget-class.html#resolveToString" class="summary-sig-name">resolveToString</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">context</span>)</span><br />
+      Resolves this target's path and returns as a string.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.resolveToString">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="basetarget.BaseTarget-class.html#run" class="summary-sig-name">run</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">context</span>)</span><br />
+      Build this target.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.run">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="basetarget.BaseTarget-class.html#tags" class="summary-sig-name">tags</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*tags</span>)</span><br />
+      Append one or more 'tag' strings that will be associated with this 
+      target.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.tags">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="updateStampFile"></a><span class="summary-sig-name">updateStampFile</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Assumes self.path is a stamp file that just needs creating / 
+      timestamp updating and does so</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.updateStampFile">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="utils.functors.Composable-class.html">utils.functors.Composable</a></code></b>:
+      <code><a href="utils.functors.Composable-class.html#__add__">__add__</a></code>,
+      <code><a href="utils.functors.Composable-class.html#__radd__">__radd__</a></code>,
+      <code><a href="utils.functors.Composable-class.html#__repr__">__repr__</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__sizeof__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__hash__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__hash__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Hashing function)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.__hash__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Uses the target name to generate a hash. Targets are required to 
+  produce unique outputs.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__hash__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">dependencies</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Normal constructor, should only be called from sub-classes since this 
+  is a stub.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> - a unique name for this target (may contain unexpanded ${...} 
+          variables). Should correspond to the file or directory which is 
+          created as a result of running this target.</li>
+        <li><strong class="pname"><code>dependencies</code></strong> - a list of dependencies, which may need to be flattened/expanded 
+          by the build system; may be any combination of strings, PathSets 
+          and lists and may also contain unexpanded variables.</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__setattr__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__setattr__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.__setattr__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>x.__setattr__('name', value) &lt;==&gt; x.name = value</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__setattr__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__str__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__str__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Informal representation operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.__str__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns a display name including the target name and the target type 
+  (class)</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__str__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addHashableImplicitInput"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addHashableImplicitInput</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">item</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.addHashableImplicitInput">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Adds a target-specific string giving information about an implicit 
+  input of this target to the list that will be returned by 
+  getHashableImplicitInputs to help detect when the target should be 
+  rebuilt.</p>
+  <p>This can include options, property values (e.g. changes in build 
+  number, release/debug mode) and glob results (e.g. addition or removal of
+  a file should trigger a rebuild).</p>
+  <p>See <a 
+  href="basetarget.BaseTarget-class.html#getHashableImplicitInputs" 
+  class="link">getHashableImplicitInputs</a> for more information.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>item</code></strong> - a string (which may contain substitution variables), or a 
+          function that accepts a context parameter and returns a string. 
+          The item will converted to a string using <a 
+          href="buildcontext.BaseContext-class.html#expandPropertyValues" 
+          class="link">buildcontext.BuildContext.expandPropertyValues</a>. 
+          For example, 'myparameter=&quot;foobar&quot;'.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addHashableImplicitInputOption"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addHashableImplicitInputOption</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">optionKey</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.addHashableImplicitInputOption">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Adds a target-specific string giving information about an implicit 
+  input of this target, to the list that will be returned 
+  getHashableImplicitInputs to help detect when the target should be 
+  rebuilt.</p>
+  <p>Call this for each option that this target is affected by.</p>
+  <p>See <a 
+  href="basetarget.BaseTarget-class.html#getHashableImplicitInputs" 
+  class="link">getHashableImplicitInputs</a> for more information.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>optionKey</code></strong> - the name of an option.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="clean"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">clean</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">context</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.clean">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Clean this target.</p>
+  <p>Default implementation will simply delete the target, and any target 
+  workdir, but can be overridden to delete additional temporary files if 
+  needed (shouldn't be).</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getHashableImplicitInputs"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getHashableImplicitInputs</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">context</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.getHashableImplicitInputs">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a target-specific token (a list of strings) representing the 
+  implicit inputs of this target that cannot be detected using normal 
+  timestamp up-to-date checking.</p>
+  <p>This can include options, property values (e.g. changes in build 
+  number, release/debug mode) and glob results (e.g. addition or removal of
+  a file should trigger a rebuild).</p>
+  <p>This list will be written to disk (possibly hashed) after the target 
+  builds successfully, and compared with its recorded value when 
+  subsequently checking the up-to-date-ness of the target.</p>
+  <p>The default implementation returns nothing, unless <a 
+  href="basetarget.BaseTarget-class.html#addHashableImplicitInput" 
+  class="link">addHashableImplicitInput</a> or <a 
+  href="basetarget.BaseTarget-class.html#addHashableImplicitInputOption" 
+  class="link">addHashableImplicitInputOption</a> have been called, so only
+  the globbed and resolved paths of any pathsets in the dependency list 
+  will be used.</p>
+  <p>Some targets should override this to append additional information, 
+  such as relevant property or option values. Alternatively, for simple 
+  cases call <a 
+  href="basetarget.BaseTarget-class.html#addHashableImplicitInput" 
+  class="link">addHashableImplicitInput</a> or <a 
+  href="basetarget.BaseTarget-class.html#addHashableImplicitInputOption" 
+  class="link">addHashableImplicitInputOption</a>.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="option"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">option</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">key</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.option">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set an option on this target, overriding any default value provided by
+  setGlobalOption. If the value contains any property values these will be 
+  expanded before the option value is passed to the target.</p>
+  <p>Use self.options or <a 
+  href="basetarget.BaseTarget-class.html#getOption" 
+  class="link">getOption</a> to get resolved option values.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="priority"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">priority</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pri</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.priority">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set the priority of this target it encourage it (and its deps) to be 
+  built earlier in the process. The default priority is 0.0</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pri</code></strong> - a float representing the priority. Higher numbers will be built 
+          first where possible.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="resolveToString"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">resolveToString</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">context</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.resolveToString">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Resolves this target's path and returns as a string.</p>
+  <p>It is acceptable to call this while the build files are still being 
+  parsed (before the dependency checking phase), but an error will result 
+  if resolution depends on anything that has not yet been defined.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="utils.functors.Composable-class.html#resolveToString">utils.functors.Composable.resolveToString</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="run"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">run</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">context</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.run">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Build this target.</p>
+  <p>Called after a failed up-to-date check to build this target. It's 
+  possible that execution will show that the target did not really need to 
+  execute, in which case False should be returned (so that dependent tasks 
+  do not necessarily get rebuilt).</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="tags"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">tags</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*tags</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="basetarget-pysrc.html#BaseTarget.tags">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Append one or more 'tag' strings that will be associated with this 
+  target.</p>
+  <p>These tags can be supplied on the command line to build associated 
+  groups of targets, or just provide a shorter, well-known, name.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>tags</code></strong> - the tag, tags or list of tags to add to the target.
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>BaseTarget(<span class="py-string">'a'</span>,[]).tags(<span class="py-string">'abc'</span>).getTags()
+<span class="py-output">&lt;using test initialization context&gt; &lt;using test initialization context&gt;</span>
+<span class="py-output">['abc', 'all']</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseTarget(<span class="py-string">'a'</span>,[]).tags([<span class="py-string">'abc'</span>, <span class="py-string">'def'</span>]).getTags()
+<span class="py-output">&lt;using test initialization context&gt; &lt;using test initialization context&gt;</span>
+<span class="py-output">['abc', 'def', 'all']</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseTarget(<span class="py-string">'a'</span>,[]).tags(<span class="py-string">'abc'</span>, <span class="py-string">'def'</span>).tags(<span class="py-string">'ghi'</span>).getTags()
+<span class="py-output">&lt;using test initialization context&gt; &lt;using test initialization context&gt; &lt;using test initialization context&gt;</span>
+<span class="py-output">['ghi', 'abc', 'def', 'all']</span></pre></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Apr  5 15:17:00 2019
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

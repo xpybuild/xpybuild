@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>buildcontext.BaseContext</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="buildcontext-module.html">Module&nbsp;buildcontext</a> ::
+        Class&nbsp;BaseContext
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="buildcontext.BaseContext-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class BaseContext</h1><p class="nomargin-top"><span class="codelink"><a href="buildcontext-pysrc.html#BaseContext">source&nbsp;code</a></span></p>
+<pre class="base-tree">
+object --+
+         |
+        <strong class="uidshort">BaseContext</strong>
+</pre>
+
+<dl><dt>Known Subclasses:</dt>
+<dd>
+      <ul class="subclass-list">
+<li><a href="buildcontext.BuildContext-class.html">BuildContext</a></li><li>, <a href="buildcontext.BuildInitializationContext-class.html">BuildInitializationContext</a></li>  </ul>
+</dd></dl>
+
+<hr />
+<p>Common functionality needed during initialization and build 
+  phases.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="buildcontext.BaseContext-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">initialProperties</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Initializes a BaseContext object.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="buildcontext.BaseContext-class.html#publishArtifact" class="summary-sig-name">publishArtifact</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">displayName</span>,
+        <span class="summary-sig-arg">path</span>)</span><br />
+      Publishes the specified local path as an artifact, if supported by 
+      the configured output format.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.publishArtifact">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="buildcontext.BaseContext-class.html#getPropertyValue" class="summary-sig-name">getPropertyValue</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Get the value of the specified property or raise a BuildException if 
+      it doesn't exist.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.getPropertyValue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="buildcontext.BaseContext-class.html#expandPropertyValues" class="summary-sig-name">expandPropertyValues</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">string</span>,
+        <span class="summary-sig-arg">expandList</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Expand all ${PROP_NAME} properties in the specified string.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.expandPropertyValues">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="buildcontext.BaseContext-class.html#expandListPropertyValue" class="summary-sig-name">expandListPropertyValue</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">propertyName</span>)</span><br />
+      Get the list represented by the specified property or raise a 
+      BuildException if it doesn't exist.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.expandListPropertyValue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="buildcontext.BaseContext-class.html#getProperties" class="summary-sig-name">getProperties</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a new copy of the properties dictionary (values may be of any 
+      type).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.getProperties">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="defaultOptions"></a><span class="summary-sig-name">defaultOptions</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns a map of all the defined options and their default values.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.defaultOptions">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="buildcontext.BaseContext-class.html#mergeOptions" class="summary-sig-name">mergeOptions</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">target</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">options</span>=<span class="summary-sig-default">None</span>)</span><br />
+      [DEPRECATED] Merges together the default options, the globally 
+      overridden options and any set on the target.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.mergeOptions">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="buildcontext.BaseContext-class.html#getFullPath" class="summary-sig-name">getFullPath</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">path</span>,
+        <span class="summary-sig-arg">defaultDir</span>,
+        <span class="summary-sig-arg">expandList</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Expands any properties in the specified path, then removes trailing 
+      path separators, normalizes it for this platform and then makes it an
+      absolute path if necessary, using the specified default directory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.getFullPath">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">initialProperties</span>=<span class="sig-default">None</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initializes a BaseContext object.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>initialProperties</code></strong> - a dictionary of initial property values; used by doc tests.</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="publishArtifact"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">publishArtifact</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">displayName</span>,
+        <span class="sig-arg">path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.publishArtifact">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Publishes the specified local path as an artifact, if supported by the
+  configured output format.</p>
+  <p>For example this can be used to publish log and error output if a 
+  target fails.</p>
+  <p>Equivalent to calling <a 
+  href="utils.consoleformatter-module.html#publishArtifact" 
+  class="link">utils.consoleformatter.publishArtifact</a></p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getPropertyValue"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getPropertyValue</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.getPropertyValue">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the value of the specified property or raise a BuildException if 
+  it doesn't exist.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> - the property name (without ${...}) to retrieve. Must be a string.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>For Boolean properties this will be a python Boolean, for 
+          everything else it will be a string.
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'b'</span>,<span class="py-string">'BUILD_MODE'</span>:<span class="py-string">'release'</span>}).getPropertyValue(<span class="py-string">'BUILD_MODE'</span>)
+<span class="py-output">'release'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:False}).getPropertyValue(<span class="py-string">'A'</span>)
+<span class="py-output">False</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:True}).getPropertyValue(<span class="py-string">'A'</span>)
+<span class="py-output">True</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'b'</span>}).getPropertyValue(<span class="py-string">'UNDEFINED_PROPERTY'</span>)
+<span class="py-except">Traceback (most recent call last):</span>
+<span class="py-except">...</span>
+<span class="py-except">BuildException: Property &quot;UNDEFINED_PROPERTY&quot; is not defined</span>
+<span class="py-except"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'b'</span>}).getPropertyValue(None)
+<span class="py-except">Traceback (most recent call last):</span>
+<span class="py-except">...</span>
+<span class="py-except">BuildException: Property &quot;None&quot; is not defined</span>
+<span class="py-except"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'b'</span>}).getPropertyValue(<span class="py-string">''</span>)
+<span class="py-except">Traceback (most recent call last):</span>
+<span class="py-except">...</span>
+<span class="py-except">BuildException: Property &quot;&quot; is not defined</span></pre></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="expandPropertyValues"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">expandPropertyValues</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">string</span>,
+        <span class="sig-arg">expandList</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.expandPropertyValues">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Expand all ${PROP_NAME} properties in the specified string.</p>
+  <p>Use a double dollar to escape if needed, e.g. &quot;$${foo}&quot; will
+  end up as &quot;${foo}&quot; unescaped. This assumes expandPropertyValues
+  is not called more than once on the same string (it is not 
+  idempotent).</p>
+  <p>Boolean values are expanded to &quot;true&quot; or 
+  &quot;false&quot;</p>
+  <p>Returns the expanded string, or raises BuildException if expansion 
+  fails.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>string</code></strong> - The string with unexpanded properties in ${...} to expand. May 
+          alternatively be a Composable object which will be later 
+          evaluated using its resolveToString method, or a function that 
+          accepts a single argument containing the context.</li>
+        <li><strong class="pname"><code>expandList</code></strong> - return a list not a string and expand exactly one ${VAR[]} to 
+          multiple list items.
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'b'</span>}).expandPropertyValues(None)
+<span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'b'</span>}).expandPropertyValues(<span class="py-string">''</span>)
+<span class="py-output">''</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'b'</span>,<span class="py-string">'BUILD_MODE'</span>:<span class="py-string">'release'</span>}).expandPropertyValues(<span class="py-string">' ${BUILD_MODE} x ${BUILD_MODE} '</span>)
+<span class="py-output">' release x release '</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'b'</span>,<span class="py-string">'BUILD_MODE'</span>:<span class="py-string">'release'</span>}).expandPropertyValues(<span class="py-string">' ${BUILD_MODE} x ${BUILD_MODE} '</span>, expandList=True)
+<span class="py-output">[' release x release ']</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'DIR'</span>:<span class="py-string">'dir'</span>, <span class="py-string">'NAMES[]'</span>:<span class="py-string">'a, b, c'</span>, <span class="py-string">'SUFFIX'</span>:<span class="py-string">'.jar'</span>}).expandPropertyValues(<span class="py-string">'${DIR}/${NAMES[]}${SUFFIX}'</span>, expandList=True)
+<span class="py-output">['dir/a.jar', 'dir/b.jar', 'dir/c.jar']</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'DIR'</span>:<span class="py-string">'dir'</span>, <span class="py-string">'NAMES[]'</span>:<span class="py-string">'a, ${NAMES2[]}'</span>, <span class="py-string">'NAMES2[]'</span>:<span class="py-string">'b, c'</span>, <span class="py-string">'SUFFIX'</span>:<span class="py-string">'.jar'</span>}).expandPropertyValues(<span class="py-string">'${DIR}/${NAMES[]}${SUFFIX}'</span>, expandList=True)
+<span class="py-output">['dir/a.jar', 'dir/b.jar', 'dir/c.jar']</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'NAMES[]'</span>:<span class="py-string">'a, b, c'</span>}).expandPropertyValues(<span class="py-string">'$${${NAMES[]}}'</span>, expandList=True)
+<span class="py-output">['${a}', '${b}', '${c}']</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">''</span>}).expandPropertyValues(<span class="py-string">'${A}'</span>, expandList=True)
+<span class="py-output">[]</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'b'</span>}).expandPropertyValues(<span class="py-string">''</span>, expandList=True)
+<span class="py-output">[]</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'a'</span>,<span class="py-string">'B'</span>:<span class="py-string">'b'</span>}).expandPropertyValues(Compose(<span class="py-string">'${A}'</span>, <span class="py-string">'${B}'</span>))
+<span class="py-output">'ab'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'a'</span>}).expandPropertyValues(<span class="py-string">'x${A}x$${A}x${A}x$$${A}x'</span>)
+<span class="py-output">'xax${A}xax$${A}x'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'a'</span>,<span class="py-string">'B'</span>:<span class="py-string">'b'</span>,<span class="py-string">'C'</span>:<span class="py-string">'c'</span>}).expandPropertyValues(Compose(<span class="py-string">'${A}'</span>, <span class="py-string">'${B}'</span>)+<span class="py-string">'${C}'</span>)
+<span class="py-output">'abc'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'b'</span>}).expandPropertyValues(<span class="py-string">'${UNDEFINED_PROPERTY}'</span>)
+<span class="py-except">Traceback (most recent call last):</span>
+<span class="py-except">...</span>
+<span class="py-except">BuildException: Property &quot;UNDEFINED_PROPERTY&quot; is not defined</span>
+<span class="py-except"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'b'</span>}).expandPropertyValues(<span class="py-string">'${A'</span>)
+<span class="py-except">Traceback (most recent call last):</span>
+<span class="py-except">...</span>
+<span class="py-except">BuildException: Incorrectly formatted property string &quot;${A&quot;</span>
+<span class="py-except"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A[]'</span>:<span class="py-string">'a, b'</span>}).expandPropertyValues(<span class="py-string">'${A[]}${A[]}'</span>, expandList=True)
+<span class="py-except">Traceback (most recent call last):</span>
+<span class="py-except">...</span>
+<span class="py-except">BuildException: Cannot expand as a list a string containing multiple list variables</span></pre></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="expandListPropertyValue"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">expandListPropertyValue</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">propertyName</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.expandListPropertyValue">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the list represented by the specified property or raise a 
+  BuildException if it doesn't exist.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>propertyName</code></strong> - the property name (without ${...}) to retrieve. Must be a string 
+          and end with &quot;[]&quot;.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getProperties"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getProperties</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.getProperties">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a new copy of the properties dictionary (values may be of any 
+  type). Do not use this method unless really necessary (e.g. for keyword 
+  substitution) - in almost all cases it is better to simply specify the 
+  required properties explicitly to getPropertyValue or 
+  expandPropertyValues.</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'A'</span>:<span class="py-string">'b'</span>}).getProperties()
+<span class="py-output">{'A': 'b'}</span></pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="mergeOptions"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">mergeOptions</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">target</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">options</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.mergeOptions">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>[DEPRECATED] Merges together the default options, the globally 
+  overridden options and any set on the target.</p>
+  <p>DEPRECATED: Use the target's self.options to get the resolved 
+  dictionary of options instead of this method.</p>
+  <p>This is usually called from within a target run() method. Any options 
+  provided on the target will take priority, followed by anything 
+  overridden globally, finally anything left is taken from the option 
+  defaults.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>target</code></strong> - the target from which to take default options. If target is set 
+          then the map will also contain a 'tmpdir' option pointing at the 
+          target-specific work directory.</li>
+        <li><strong class="pname"><code>options</code></strong> - options to override directly - this is retained for backwards 
+          compatibility only and should not be used.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Returns a map of the merged options and their correct values.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getFullPath"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getFullPath</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">path</span>,
+        <span class="sig-arg">defaultDir</span>,
+        <span class="sig-arg">expandList</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="buildcontext-pysrc.html#BaseContext.getFullPath">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Expands any properties in the specified path, then removes trailing 
+  path separators, normalizes it for this platform and then makes it an 
+  absolute path if necessary, using the specified default directory.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>path</code></strong> - a string representing a relative or absolute path. May be a 
+          string or a Composable</li>
+        <li><strong class="pname"><code>defaultDir</code></strong> - the default parent directory to use if this is a relative path; 
+          it is invalid to pass None for this parameter. It is permitted to
+          pass a BuildFileLocation for the defaultDir instead of a string, 
+          in which case an exception will be thrown if it is an empty 
+          location object and the path is relative; this is primarily used 
+          for objects like PathSets that capture location when they are 
+          instantiated.</li>
+        <li><strong class="pname"><code>expandList</code></strong> - passed to expandPropertyValues, returns a list of paths instead 
+          of a single path.
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'DEF'</span>:<span class="py-string">'output'</span>, <span class="py-string">'EL'</span>:<span class="py-string">'element'</span>}).getFullPath(<span class="py-string">'path/${EL}'</span>, <span class="py-string">'${DEF}'</span>).replace(<span class="py-string">'\\','</span>/')
+<span class="py-output">'output/path/element'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'DEF'</span>:<span class="py-string">'output'</span>, <span class="py-string">'EL'</span>:<span class="py-string">'element'</span>}).getFullPath(<span class="py-string">'/path/${EL}'</span>, <span class="py-string">'${DEF}'</span>).replace(<span class="py-string">'\\','</span>/')
+<span class="py-output">'/path/element'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'DEF'</span>:<span class="py-string">'output/'</span>, <span class="py-string">'EL'</span>:<span class="py-string">'element'</span>}).getFullPath(<span class="py-string">'path/${EL}'</span>, <span class="py-string">'${DEF}'</span>).replace(<span class="py-string">'\\','</span>/')
+<span class="py-output">'output/path/element'</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>BaseContext({<span class="py-string">'DEF'</span>:<span class="py-string">'output/'</span>, <span class="py-string">'EL'</span>:<span class="py-string">'element'</span>}).getFullPath(<span class="py-string">'path/../path/${EL}'</span>, <span class="py-string">'${DEF}'</span>).replace(<span class="py-string">'\\','</span>/')
+<span class="py-output">'output/path/element'</span></pre></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Apr  5 15:17:00 2019
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

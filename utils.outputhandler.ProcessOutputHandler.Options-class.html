@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>utils.outputhandler.ProcessOutputHandler.Options</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="utils-module.html">Package&nbsp;utils</a> ::
+        <a href="utils.outputhandler-module.html">Module&nbsp;outputhandler</a> ::
+        <a href="utils.outputhandler.ProcessOutputHandler-class.html">Class&nbsp;ProcessOutputHandler</a> ::
+        Class&nbsp;Options
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="utils.outputhandler.ProcessOutputHandler.Options-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Options</h1><p class="nomargin-top"><span class="codelink"><a href="utils.outputhandler-pysrc.html#ProcessOutputHandler.Options">source&nbsp;code</a></span></p>
+<p>This class may be renamed or removed, please do not use it 
+  directly.</p>
+
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="utils.outputhandler.ProcessOutputHandler.Options-class.html#ignoreReturnCode" class="summary-name">ignoreReturnCode</a> = <code title="'ProcessOutputHandler.ignoreReturnCode'"><code class="variable-quote">'</code><code class="variable-string">ProcessOutputHandler.ignoreReturnCode</code><code class="variable-quote">'</code></code><br />
+      If True, non-zero return codes are not treated as errors.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="utils.outputhandler.ProcessOutputHandler.Options-class.html#regexIgnore" class="summary-name">regexIgnore</a> = <code title="'ProcessOutputHandler.regexIgnore'"><code class="variable-quote">'</code><code class="variable-string">ProcessOutputHandler.regexIgnore</code><code class="variable-quote">'</code></code><br />
+      Optional regular expression; any lines matching this will not be 
+      treated as errors, or warnings, or logged.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="utils.outputhandler.ProcessOutputHandler.Options-class.html#factory" class="summary-name">factory</a> = <code title="'ProcessOutputHandler.factory'"><code class="variable-quote">'</code><code class="variable-string">ProcessOutputHandler.factory</code><code class="variable-quote">'</code></code><br />
+      The ProcessOutputHandler class or subclass that will be instantiated;
+      must have a constructor with the same signature as the 
+      ProcessOutputHandler constructor.
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variable Details</span></td>
+</tr>
+</table>
+<a name="ignoreReturnCode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">ignoreReturnCode</h3>
+  <p>If True, non-zero return codes are not treated as errors.</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>h = ProcessOutputHandler.create(<span class="py-string">'myhandler'</span>, options={ProcessOutputHandler.Options.ignoreReturnCode:True})
+<span class="py-prompt">&gt;&gt;&gt; </span>h.handleLine(u<span class="py-string">'some message'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>h.handleEnd(5)</pre>
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">ProcessOutputHandler.ignoreReturnCode</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="regexIgnore"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">regexIgnore</h3>
+  <p>Optional regular expression; any lines matching this will not be 
+  treated as errors, or warnings, or logged.</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>h = ProcessOutputHandler.create(<span class="py-string">'myhandler'</span>, options={ProcessOutputHandler.Options.regexIgnore:<span class="py-string">'(.*ignorable.*|foobar)'</span>})
+<span class="py-prompt">&gt;&gt;&gt; </span>h.handleLine(u<span class="py-string">'error: an ignorable error'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>h.handleLine(u<span class="py-string">'error: another error'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>h.handleLine(u<span class="py-string">'warning: an ignorable warning'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>h.handleLine(u<span class="py-string">'warning: another warning'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>h.handleLine(u<span class="py-string">'warning: another other warning'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>len(h.getErrors())
+<span class="py-output">1</span></pre>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>len(h.getWarnings())
+<span class="py-output">2</span></pre>
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">ProcessOutputHandler.regexIgnore</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="factory"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">factory</h3>
+  <p>The ProcessOutputHandler class or subclass that will be instantiated; 
+  must have a constructor with the same signature as the 
+  ProcessOutputHandler constructor. This option exists to allow per-target 
+  customizations; it is not recommended to set a global factory override 
+  that applies to all targets, as such a generic output handler would 
+  replace more specific output handlers that are needed for some targets. 
+  See <a href="utils.outputhandler.ProcessOutputHandler-class.html#create" 
+  class="link">ProcessOutputHandler.create</a>.</p>
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">ProcessOutputHandler.factory</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Apr  5 15:17:00 2019
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

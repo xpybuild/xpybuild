@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>buildcommon</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Module&nbsp;buildcommon
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="buildcommon-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="buildcommon-module.html">Module buildcommon</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># xpyBuild - eXtensible Python-based Build System</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"># This module holds definitions that are used throughout the build system, and </tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"># typically all names from this module will be imported. </tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#   Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment">#   you may not use this file except in compliance with the License.</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment">#   You may obtain a copy of the License at</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment">#       http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment">#   Unless required by applicable law or agreed to in writing, software</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment">#   distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment">#   See the License for the specific language governing permissions and</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment">#   limitations under the License.</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"># $Id: buildcommon.py 301527 2017-02-06 15:31:43Z matj $</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">traceback</tt><tt class="py-op">,</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt> <tt class="py-name">sys</tt><tt class="py-op">,</tt> <tt class="py-name">locale</tt><tt class="py-op">,</tt> <tt class="py-name">inspect</tt><tt class="py-op">,</tt> <tt class="py-name">io</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">platform</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">logging</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-comment"># do NOT define a 'log' variable here or targets will use it by mistake</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package utils=utils-module.html"><a title="utils" class="py-name" href="#" onclick="return doclink('link-0', 'utils', 'link-0');">utils</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module utils.flatten=utils.flatten-module.html,Function utils.flatten.flatten()=utils.flatten-module.html#flatten"><a title="utils.flatten
+utils.flatten.flatten" class="py-name" href="#" onclick="return doclink('link-1', 'flatten', 'link-1');">flatten</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name"><a title="utils.flatten
+utils.flatten.flatten" class="py-name" href="#" onclick="return doclink('link-2', 'flatten', 'link-1');">flatten</a></tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-3" class="py-name"><a title="utils" class="py-name" href="#" onclick="return doclink('link-3', 'utils', 'link-0');">utils</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module utils.fileutils=utils.fileutils-module.html"><a title="utils.fileutils" class="py-name" href="#" onclick="return doclink('link-4', 'fileutils', 'link-4');">fileutils</a></tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-5" class="py-name"><a title="utils" class="py-name" href="#" onclick="return doclink('link-5', 'utils', 'link-0');">utils</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name"><a title="utils.fileutils" class="py-name" href="#" onclick="return doclink('link-6', 'fileutils', 'link-4');">fileutils</a></tt> <tt class="py-keyword">import</tt> <tt id="link-7" class="py-name" targets="Function utils.fileutils.parsePropertiesFile()=utils.fileutils-module.html#parsePropertiesFile"><a title="utils.fileutils.parsePropertiesFile" class="py-name" href="#" onclick="return doclink('link-7', 'parsePropertiesFile', 'link-7');">parsePropertiesFile</a></tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"> </tt>
+<a name="__getXpybuildVersion"></a><div id="__getXpybuildVersion-def"><a name="L35"></a><tt class="py-lineno"> 35</tt> <a class="py-toggle" href="#" id="__getXpybuildVersion-toggle" onclick="return toggle('__getXpybuildVersion');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon-module.html#__getXpybuildVersion">__getXpybuildVersion</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="__getXpybuildVersion-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="__getXpybuildVersion-expanded"><a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">                <tt class="py-keyword">with</tt> <tt class="py-name">open</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Class propertyfunctors.dirname=propertyfunctors.dirname-class.html"><a title="propertyfunctors.dirname" class="py-name" href="#" onclick="return doclink('link-8', 'dirname', 'link-8');">dirname</a></tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">abspath</tt><tt class="py-op">(</tt><tt class="py-name">inspect</tt><tt class="py-op">.</tt><tt class="py-name">getfile</tt><tt class="py-op">(</tt><tt class="py-name">inspect</tt><tt class="py-op">.</tt><tt class="py-name">currentframe</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"XPYBUILD_VERSION"</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> <tt class="py-keyword">as</tt> <tt class="py-name">f</tt><tt class="py-op">:</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">                        <tt class="py-keyword">return</tt> <tt class="py-name">f</tt><tt class="py-op">.</tt><tt class="py-name">read</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">strip</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt><tt class="py-op">:</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">                <tt class="py-keyword">raise</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-string">"&lt;unknown&gt;"</tt> </tt>
+</div><a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt id="link-9" class="py-name" targets="Variable buildcommon._XPYBUILD_VERSION=buildcommon-module.html#_XPYBUILD_VERSION"><a title="buildcommon._XPYBUILD_VERSION" class="py-name" href="#" onclick="return doclink('link-9', '_XPYBUILD_VERSION', 'link-9');">_XPYBUILD_VERSION</a></tt> <tt class="py-op">=</tt> <tt class="py-name">__getXpybuildVersion</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"> </tt>
+<a name="include"></a><div id="include-def"><a name="L47"></a><tt class="py-lineno"> 47</tt> <a class="py-toggle" href="#" id="include-toggle" onclick="return toggle('include');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon-module.html#include">include</a><tt class="py-op">(</tt><tt class="py-param">file</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="include-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="include-expanded"><a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-docstring">""" Parse and register the targets and properties in in the specified </tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-docstring">        xpybuild.py file. </tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-docstring">        Targets should only be defined in files included using this method, </tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"><tt class="py-docstring">        not using python import statements. </tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"><tt class="py-docstring">        @param file: a path relative to the directory containing this file. </tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">        <tt class="py-keyword">from</tt> <tt id="link-10" class="py-name" targets="Module buildcontext=buildcontext-module.html"><a title="buildcontext" class="py-name" href="#" onclick="return doclink('link-10', 'buildcontext', 'link-10');">buildcontext</a></tt> <tt class="py-keyword">import</tt> <tt id="link-11" class="py-name" targets="Function buildcontext.getBuildInitializationContext()=buildcontext-module.html#getBuildInitializationContext"><a title="buildcontext.getBuildInitializationContext" class="py-name" href="#" onclick="return doclink('link-11', 'getBuildInitializationContext', 'link-11');">getBuildInitializationContext</a></tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt class="py-keyword">from</tt> <tt id="link-12" class="py-name"><a title="utils" class="py-name" href="#" onclick="return doclink('link-12', 'utils', 'link-0');">utils</a></tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Module utils.buildfilelocation=utils.buildfilelocation-module.html"><a title="utils.buildfilelocation" class="py-name" href="#" onclick="return doclink('link-13', 'buildfilelocation', 'link-13');">buildfilelocation</a></tt> <tt class="py-keyword">import</tt> <tt id="link-14" class="py-name" targets="Class utils.buildfilelocation.BuildFileLocation=utils.buildfilelocation.BuildFileLocation-class.html"><a title="utils.buildfilelocation.BuildFileLocation" class="py-name" href="#" onclick="return doclink('link-14', 'BuildFileLocation', 'link-14');">BuildFileLocation</a></tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">        <tt class="py-name">file</tt> <tt class="py-op">=</tt> <tt id="link-15" class="py-name"><a title="buildcontext.getBuildInitializationContext" class="py-name" href="#" onclick="return doclink('link-15', 'getBuildInitializationContext', 'link-11');">getBuildInitializationContext</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Method buildcontext.BaseContext.expandPropertyValues()=buildcontext.BaseContext-class.html#expandPropertyValues"><a title="buildcontext.BaseContext.expandPropertyValues" class="py-name" href="#" onclick="return doclink('link-16', 'expandPropertyValues', 'link-16');">expandPropertyValues</a></tt><tt class="py-op">(</tt><tt class="py-name">file</tt><tt class="py-op">)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">file</tt><tt class="py-op">.</tt><tt class="py-name">endswith</tt><tt class="py-op">(</tt><tt class="py-string">'.xpybuild.py'</tt><tt class="py-op">)</tt> <tt class="py-comment"># enforce recommended naming convention</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">         </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-name">filepath</tt> <tt class="py-op">=</tt> <tt id="link-17" class="py-name"><a title="buildcontext.getBuildInitializationContext" class="py-name" href="#" onclick="return doclink('link-17', 'getBuildInitializationContext', 'link-11');">getBuildInitializationContext</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Method buildcontext.BaseContext.getFullPath()=buildcontext.BaseContext-class.html#getFullPath"><a title="buildcontext.BaseContext.getFullPath" class="py-name" href="#" onclick="return doclink('link-18', 'getFullPath', 'link-18');">getFullPath</a></tt><tt class="py-op">(</tt><tt class="py-name">file</tt><tt class="py-op">,</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name"><a title="propertyfunctors.dirname" class="py-name" href="#" onclick="return doclink('link-19', 'dirname', 'link-8');">dirname</a></tt><tt class="py-op">(</tt><tt id="link-20" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation" class="py-name" href="#" onclick="return doclink('link-20', 'BuildFileLocation', 'link-14');">BuildFileLocation</a></tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Variable utils.buildfilelocation.BuildFileLocation._currentBuildFile=utils.buildfilelocation.BuildFileLocation-class.html#_currentBuildFile"><a title="utils.buildfilelocation.BuildFileLocation._currentBuildFile" class="py-name" href="#" onclick="return doclink('link-21', '_currentBuildFile', 'link-21');">_currentBuildFile</a></tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">         </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt id="link-22" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation" class="py-name" href="#" onclick="return doclink('link-22', 'BuildFileLocation', 'link-14');">BuildFileLocation</a></tt><tt class="py-op">.</tt><tt id="link-23" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation._currentBuildFile" class="py-name" href="#" onclick="return doclink('link-23', '_currentBuildFile', 'link-21');">_currentBuildFile</a></tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">filepath</tt><tt class="py-op">)</tt> <tt class="py-comment"># add to stack of files being parsed</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">         </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-name">namespace</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">        <tt class="py-name">execfile</tt><tt class="py-op">(</tt><tt class="py-name">filepath</tt><tt class="py-op">,</tt> <tt class="py-name">namespace</tt><tt class="py-op">,</tt> <tt class="py-name">namespace</tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">         </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt class="py-keyword">del</tt> <tt id="link-24" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation" class="py-name" href="#" onclick="return doclink('link-24', 'BuildFileLocation', 'link-14');">BuildFileLocation</a></tt><tt class="py-op">.</tt><tt id="link-25" class="py-name"><a title="utils.buildfilelocation.BuildFileLocation._currentBuildFile" class="py-name" href="#" onclick="return doclink('link-25', '_currentBuildFile', 'link-21');">_currentBuildFile</a></tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">         </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">namespace</tt> </tt>
+</div><a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"> </tt>
+<a name="_compareVersion"></a><div id="_compareVersion-def"><a name="L75"></a><tt class="py-lineno"> 75</tt> <a class="py-toggle" href="#" id="_compareVersion-toggle" onclick="return toggle('_compareVersion');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon-module.html#_compareVersion">_compareVersion</a><tt class="py-op">(</tt><tt class="py-param">version</tt><tt class="py-op">,</tt> <tt class="py-param">ref</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_compareVersion-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="_compareVersion-expanded"><a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-docstring">""" returns true if version &gt;= ref """</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">        <tt class="py-name">version</tt> <tt class="py-op">=</tt> <tt class="py-name">version</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">'.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-name">ref</tt> <tt class="py-op">=</tt> <tt class="py-name">ref</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">'.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">        <tt class="py-name">equal</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-name">min</tt><tt class="py-op">(</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">version</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">ref</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-op">(</tt><tt class="py-name">version</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">+</tt><tt class="py-name">ref</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">isdigit</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-keyword">and</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">version</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> <tt class="py-op">&lt;</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">ref</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">                        <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">version</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">&lt;</tt> <tt class="py-name">ref</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> <tt class="py-comment"># fall back to lexical comparison for thigns like .beta1</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">                        <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">                <tt class="py-keyword">elif</tt> <tt class="py-name">version</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">!=</tt> <tt class="py-name">ref</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">                        <tt class="py-name">equal</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">version</tt><tt class="py-op">)</tt> <tt class="py-op">&gt;=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">ref</tt><tt class="py-op">)</tt> <tt class="py-keyword">if</tt> <tt class="py-name">equal</tt> <tt class="py-keyword">else</tt> <tt class="py-name">True</tt> </tt>
+</div><a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"> </tt>
+<a name="requireXpyBuildVersion"></a><div id="requireXpyBuildVersion-def"><a name="L89"></a><tt class="py-lineno"> 89</tt> <a class="py-toggle" href="#" id="requireXpyBuildVersion-toggle" onclick="return toggle('requireXpyBuildVersion');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon-module.html#requireXpyBuildVersion">requireXpyBuildVersion</a><tt class="py-op">(</tt><tt class="py-param">version</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="requireXpyBuildVersion-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="requireXpyBuildVersion-expanded"><a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-docstring">""" Checks that this xpybuild is at least a certain version number """</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">_compareVersion</tt><tt class="py-op">(</tt><tt id="link-26" class="py-name"><a title="buildcommon._XPYBUILD_VERSION" class="py-name" href="#" onclick="return doclink('link-26', '_XPYBUILD_VERSION', 'link-9');">_XPYBUILD_VERSION</a></tt><tt class="py-op">,</tt> <tt class="py-name">version</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">raise</tt> <tt class="py-name">Exception</tt><tt class="py-op">(</tt><tt class="py-string">"This build file requires xpyBuild at least version "</tt><tt class="py-op">+</tt><tt class="py-name">version</tt><tt class="py-op">+</tt><tt class="py-string">" but this is xpyBuild "</tt><tt class="py-op">+</tt><tt id="link-27" class="py-name"><a title="buildcommon._XPYBUILD_VERSION" class="py-name" href="#" onclick="return doclink('link-27', '_XPYBUILD_VERSION', 'link-9');">_XPYBUILD_VERSION</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"><tt class="py-string">""" Returns true if the path is a directory (ends with / or \\). """</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"><tt id="link-28" class="py-name" targets="Function utils.fileutils.isDirPath()=utils.fileutils-module.html#isDirPath"><a title="utils.fileutils.isDirPath" class="py-name" href="#" onclick="return doclink('link-28', 'isDirPath', 'link-28');">isDirPath</a></tt> <tt class="py-op">=</tt> <tt id="link-29" class="py-name"><a title="utils" class="py-name" href="#" onclick="return doclink('link-29', 'utils', 'link-0');">utils</a></tt><tt class="py-op">.</tt><tt id="link-30" class="py-name"><a title="utils.fileutils" class="py-name" href="#" onclick="return doclink('link-30', 'fileutils', 'link-4');">fileutils</a></tt><tt class="py-op">.</tt><tt id="link-31" class="py-name"><a title="utils.fileutils.isDirPath" class="py-name" href="#" onclick="return doclink('link-31', 'isDirPath', 'link-28');">isDirPath</a></tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"> </tt>
+<a name="normpath"></a><div id="normpath-def"><a name="L96"></a><tt class="py-lineno"> 96</tt> <a class="py-toggle" href="#" id="normpath-toggle" onclick="return toggle('normpath');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon-module.html#normpath">normpath</a><tt class="py-op">(</tt><tt class="py-param">path</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="normpath-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="normpath-expanded"><a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-docstring">""" Normalizes the specified file or dir path to remove ".." sequences and </tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"><tt class="py-docstring">        differences in the capitalization of Windows drive letters. </tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"><tt class="py-docstring">        Does not add Windows long-path safety or absolutization. </tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line"><tt class="py-docstring">        Leaves in place any  trailing platform-appropriate character to indicate </tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line"><tt class="py-docstring">        directory if appropriate.</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line"><tt class="py-docstring">        See also L{utils.fileutils.normLongPath} and L{utils.fileutils.toLongPathSafe}. </tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">unicode</tt><tt class="py-op">)</tt> <tt class="py-keyword">and</tt> <tt class="py-keyword">not</tt> <tt class="py-op">(</tt><tt id="link-32" class="py-name" targets="Variable basetarget.IS_WINDOWS=basetarget-module.html#IS_WINDOWS,Variable buildcommon.IS_WINDOWS=buildcommon-module.html#IS_WINDOWS,Variable buildcontext.IS_WINDOWS=buildcontext-module.html#IS_WINDOWS,Variable propertysupport.IS_WINDOWS=propertysupport-module.html#IS_WINDOWS,Variable targets.copy.IS_WINDOWS=targets.copy-module.html#IS_WINDOWS,Variable targets.csharp.IS_WINDOWS=targets.csharp-module.html#IS_WINDOWS,Variable targets.custom.IS_WINDOWS=targets.custom-module.html#IS_WINDOWS,Variable targets.docker.IS_WINDOWS=targets.docker-module.html#IS_WINDOWS,Variable targets.download.IS_WINDOWS=targets.download-module.html#IS_WINDOWS,Variable targets.java.IS_WINDOWS=targets.java-module.html#IS_WINDOWS,Variable targets.native.IS_WINDOWS=targets.native-module.html#IS_WINDOWS,Variable targets.symlink.IS_WINDOWS=targets.symlink-module.html#IS_WINDOWS,Variable targets.tar.IS_WINDOWS=targets.tar-module.html#IS_WINDOWS,Variable targets.touch.IS_WINDOWS=targets.touch-module.html#IS_WINDOWS,Variable targets.unpack.IS_WINDOWS=targets.unpack-module.html#IS_WINDOWS,Variable targets.writefile.IS_WINDOWS=targets.writefile-module.html#IS_WINDOWS,Variable targets.zip.IS_WINDOWS=targets.zip-module.html#IS_WINDOWS,Variable utils.compilers.IS_WINDOWS=utils.compilers-module.html#IS_WINDOWS,Variable utils.java.IS_WINDOWS=utils.java-module.html#IS_WINDOWS,Variable utils.process.IS_WINDOWS=utils.process-module.html#IS_WINDOWS,Variable utils.progress.IS_WINDOWS=utils.progress-module.html#IS_WINDOWS"><a title="basetarget.IS_WINDOWS
+buildcommon.IS_WINDOWS
+buildcontext.IS_WINDOWS
+propertysupport.IS_WINDOWS
+targets.copy.IS_WINDOWS
+targets.csharp.IS_WINDOWS
+targets.custom.IS_WINDOWS
+targets.docker.IS_WINDOWS
+targets.download.IS_WINDOWS
+targets.java.IS_WINDOWS
+targets.native.IS_WINDOWS
+targets.symlink.IS_WINDOWS
+targets.tar.IS_WINDOWS
+targets.touch.IS_WINDOWS
+targets.unpack.IS_WINDOWS
+targets.writefile.IS_WINDOWS
+targets.zip.IS_WINDOWS
+utils.compilers.IS_WINDOWS
+utils.java.IS_WINDOWS
+utils.process.IS_WINDOWS
+utils.progress.IS_WINDOWS" class="py-name" href="#" onclick="return doclink('link-32', 'IS_WINDOWS', 'link-32');">IS_WINDOWS</a></tt> <tt class="py-keyword">and</tt> <tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">startswith</tt><tt class="py-op">(</tt><tt class="py-string">'\\\\?'</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">                <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">encode</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">        <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name" targets="Function buildcommon.normpath()=buildcommon-module.html#normpath"><a title="buildcommon.normpath" class="py-name" href="#" onclick="return doclink('link-33', 'normpath', 'link-33');">normpath</a></tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt><tt class="py-op">+</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">sep</tt> <tt class="py-keyword">if</tt> <tt id="link-34" class="py-name"><a title="utils.fileutils.isDirPath" class="py-name" href="#" onclick="return doclink('link-34', 'isDirPath', 'link-28');">isDirPath</a></tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> <tt class="py-keyword">else</tt> <tt class="py-string">''</tt><tt class="py-op">)</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">         </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt class="py-comment"># normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case </tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">        <tt class="py-comment"># for drive letters (more so than directory names), with different cmd prompts frequently using different </tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">        <tt class="py-comment"># capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt><tt class="py-op">&gt;</tt><tt class="py-number">2</tt> <tt class="py-keyword">and</tt> <tt id="link-35" class="py-name"><a title="basetarget.IS_WINDOWS
+buildcommon.IS_WINDOWS
+buildcontext.IS_WINDOWS
+propertysupport.IS_WINDOWS
+targets.copy.IS_WINDOWS
+targets.csharp.IS_WINDOWS
+targets.custom.IS_WINDOWS
+targets.docker.IS_WINDOWS
+targets.download.IS_WINDOWS
+targets.java.IS_WINDOWS
+targets.native.IS_WINDOWS
+targets.symlink.IS_WINDOWS
+targets.tar.IS_WINDOWS
+targets.touch.IS_WINDOWS
+targets.unpack.IS_WINDOWS
+targets.writefile.IS_WINDOWS
+targets.zip.IS_WINDOWS
+utils.compilers.IS_WINDOWS
+utils.java.IS_WINDOWS
+utils.process.IS_WINDOWS
+utils.progress.IS_WINDOWS" class="py-name" href="#" onclick="return doclink('link-35', 'IS_WINDOWS', 'link-32');">IS_WINDOWS</a></tt> <tt class="py-keyword">and</tt> <tt class="py-name">path</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-string">':'</tt><tt class="py-op">:</tt>  </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">                <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt class="py-name">path</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">+</tt><tt class="py-name">path</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">:</tt><tt class="py-op">]</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">                         </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">path</tt> </tt>
+</div><a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"><tt class="py-string">""" A boolean that specifies whether this is Windows or some other operating system. """</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"><tt id="link-36" class="py-name"><a title="basetarget.IS_WINDOWS
+buildcommon.IS_WINDOWS
+buildcontext.IS_WINDOWS
+propertysupport.IS_WINDOWS
+targets.copy.IS_WINDOWS
+targets.csharp.IS_WINDOWS
+targets.custom.IS_WINDOWS
+targets.docker.IS_WINDOWS
+targets.download.IS_WINDOWS
+targets.java.IS_WINDOWS
+targets.native.IS_WINDOWS
+targets.symlink.IS_WINDOWS
+targets.tar.IS_WINDOWS
+targets.touch.IS_WINDOWS
+targets.unpack.IS_WINDOWS
+targets.writefile.IS_WINDOWS
+targets.zip.IS_WINDOWS
+utils.compilers.IS_WINDOWS
+utils.java.IS_WINDOWS
+utils.process.IS_WINDOWS
+utils.progress.IS_WINDOWS" class="py-name" href="#" onclick="return doclink('link-36', 'IS_WINDOWS', 'link-32');">IS_WINDOWS</a></tt> <tt class="py-op">=</tt> <tt class="py-name">platform</tt><tt class="py-op">.</tt><tt class="py-name">system</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">==</tt><tt class="py-string">'Windows'</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"><tt class="py-comment"># (we won't want constants for every possible OS here, but since there is so much conditionalization between </tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line"><tt class="py-comment"># windows and unix-based systems, much of it on the critical path, it is worthwhile having a constant for this). </tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line"> </tt>
+<a name="isWindows"></a><div id="isWindows-def"><a name="L125"></a><tt class="py-lineno">125</tt> <a class="py-toggle" href="#" id="isWindows-toggle" onclick="return toggle('isWindows');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon-module.html#isWindows">isWindows</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="isWindows-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="isWindows-expanded"><a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">        <tt class="py-docstring">""" Returns True if this is a windows platform. </tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line"><tt class="py-docstring">        @deprecated: Use the IS_WINDOWS constant instead. </tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-37" class="py-name"><a title="basetarget.IS_WINDOWS
+buildcommon.IS_WINDOWS
+buildcontext.IS_WINDOWS
+propertysupport.IS_WINDOWS
+targets.copy.IS_WINDOWS
+targets.csharp.IS_WINDOWS
+targets.custom.IS_WINDOWS
+targets.docker.IS_WINDOWS
+targets.download.IS_WINDOWS
+targets.java.IS_WINDOWS
+targets.native.IS_WINDOWS
+targets.symlink.IS_WINDOWS
+targets.tar.IS_WINDOWS
+targets.touch.IS_WINDOWS
+targets.unpack.IS_WINDOWS
+targets.writefile.IS_WINDOWS
+targets.zip.IS_WINDOWS
+utils.compilers.IS_WINDOWS
+utils.java.IS_WINDOWS
+utils.process.IS_WINDOWS
+utils.progress.IS_WINDOWS" class="py-name" href="#" onclick="return doclink('link-37', 'IS_WINDOWS', 'link-32');">IS_WINDOWS</a></tt> </tt>
+</div><a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"><tt id="link-38" class="py-name" targets="Variable buildcommon._stdoutEncoding=buildcommon-module.html#_stdoutEncoding"><a title="buildcommon._stdoutEncoding" class="py-name" href="#" onclick="return doclink('link-38', '_stdoutEncoding', 'link-38');">_stdoutEncoding</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"><tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">        <tt id="link-39" class="py-name"><a title="buildcommon._stdoutEncoding" class="py-name" href="#" onclick="return doclink('link-39', '_stdoutEncoding', 'link-38');">_stdoutEncoding</a></tt> <tt class="py-op">=</tt> <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">stdout</tt><tt class="py-op">.</tt><tt class="py-name">encoding</tt> <tt class="py-keyword">or</tt> <tt class="py-name">locale</tt><tt class="py-op">.</tt><tt class="py-name">getpreferredencoding</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-comment"># stdout encoding will be None unless in a terminal</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line"><tt class="py-keyword">except</tt><tt class="py-op">:</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> <tt class="py-comment"># probably in epydoc</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line"> </tt>
+<a name="getStdoutEncoding"></a><div id="getStdoutEncoding-def"><a name="L137"></a><tt class="py-lineno">137</tt> <a class="py-toggle" href="#" id="getStdoutEncoding-toggle" onclick="return toggle('getStdoutEncoding');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon-module.html#getStdoutEncoding">getStdoutEncoding</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt>  </tt>
+</div><a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">        <tt class="py-docstring">""" Returns the most likely encoding used by subprocesses, based on </tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"><tt class="py-docstring">        whether the build is running in a console, etc </tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line"><tt class="py-docstring">        which is typically what should be used for converting byte strings from </tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"><tt class="py-docstring">        subprocesses to python unicode.</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-40" class="py-name"><a title="buildcommon._stdoutEncoding" class="py-name" href="#" onclick="return doclink('link-40', '_stdoutEncoding', 'link-38');">_stdoutEncoding</a></tt> </tt>
+</div><a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line"> </tt>
+<a name="formatFileLocation"></a><div id="formatFileLocation-def"><a name="L145"></a><tt class="py-lineno">145</tt> <a class="py-toggle" href="#" id="formatFileLocation-toggle" onclick="return toggle('formatFileLocation');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon-module.html#formatFileLocation">formatFileLocation</a><tt class="py-op">(</tt><tt class="py-param">path</tt><tt class="py-op">,</tt> <tt class="py-param">lineNumber</tt><tt class="py-op">)</tt><tt class="py-op">:</tt>  </tt>
+</div><a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">        <tt class="py-docstring">""" A functor to format a file and a line number for output. """</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">        <tt class="py-comment"># use format vim uses for opening file at line number; easy enough to convert to ultra edit path/linenumber syntax</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-string">'"%s" +%d'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="buildcommon.normpath" class="py-name" href="#" onclick="return doclink('link-41', 'normpath', 'link-33');">normpath</a></tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt id="link-42" class="py-name" targets="Variable utils.buildfilelocation.BuildFileLocation.lineNumber=utils.buildfilelocation.BuildFileLocation-class.html#lineNumber"><a title="utils.buildfilelocation.BuildFileLocation.lineNumber" class="py-name" href="#" onclick="return doclink('link-42', 'lineNumber', 'link-42');">lineNumber</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"> </tt>
+<a name="defineAtomicTargetGroup"></a><div id="defineAtomicTargetGroup-def"><a name="L150"></a><tt class="py-lineno">150</tt> <a class="py-toggle" href="#" id="defineAtomicTargetGroup-toggle" onclick="return toggle('defineAtomicTargetGroup');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon-module.html#defineAtomicTargetGroup">defineAtomicTargetGroup</a><tt class="py-op">(</tt><tt class="py-op">*</tt><tt class="py-param">targets</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="defineAtomicTargetGroup-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="defineAtomicTargetGroup-expanded"><a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">        <tt class="py-docstring">""" The given targets must all be built before anything which depends on any of those targets.</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line"><tt class="py-docstring">        Returns the flattened list of targets. </tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">         </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">        <tt class="py-keyword">from</tt> <tt id="link-43" class="py-name"><a title="buildcontext" class="py-name" href="#" onclick="return doclink('link-43', 'buildcontext', 'link-10');">buildcontext</a></tt> <tt class="py-keyword">import</tt> <tt id="link-44" class="py-name"><a title="buildcontext.getBuildInitializationContext" class="py-name" href="#" onclick="return doclink('link-44', 'getBuildInitializationContext', 'link-11');">getBuildInitializationContext</a></tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">        <tt id="link-45" class="py-name" targets="Method buildcontext.BuildInitializationContext.targets()=buildcontext.BuildInitializationContext-class.html#targets,Package targets=targets-module.html"><a title="buildcontext.BuildInitializationContext.targets
+targets" class="py-name" href="#" onclick="return doclink('link-45', 'targets', 'link-45');">targets</a></tt> <tt class="py-op">=</tt> <tt id="link-46" class="py-name"><a title="utils.flatten
+utils.flatten.flatten" class="py-name" href="#" onclick="return doclink('link-46', 'flatten', 'link-1');">flatten</a></tt><tt class="py-op">(</tt><tt id="link-47" class="py-name"><a title="buildcontext.BuildInitializationContext.targets
+targets" class="py-name" href="#" onclick="return doclink('link-47', 'targets', 'link-45');">targets</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">        <tt id="link-48" class="py-name"><a title="buildcontext.getBuildInitializationContext" class="py-name" href="#" onclick="return doclink('link-48', 'getBuildInitializationContext', 'link-11');">getBuildInitializationContext</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-49" class="py-name" targets="Function buildcommon.defineAtomicTargetGroup()=buildcommon-module.html#defineAtomicTargetGroup,Method buildcontext.BuildInitializationContext.defineAtomicTargetGroup()=buildcontext.BuildInitializationContext-class.html#defineAtomicTargetGroup"><a title="buildcommon.defineAtomicTargetGroup
+buildcontext.BuildInitializationContext.defineAtomicTargetGroup" class="py-name" href="#" onclick="return doclink('link-49', 'defineAtomicTargetGroup', 'link-49');">defineAtomicTargetGroup</a></tt><tt class="py-op">(</tt><tt id="link-50" class="py-name"><a title="buildcontext.BuildInitializationContext.targets
+targets" class="py-name" href="#" onclick="return doclink('link-50', 'targets', 'link-45');">targets</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-51" class="py-name"><a title="buildcontext.BuildInitializationContext.targets
+targets" class="py-name" href="#" onclick="return doclink('link-51', 'targets', 'link-45');">targets</a></tt> </tt>
+</div><a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line"> </tt>
+<a name="registerPreBuildCheck"></a><div id="registerPreBuildCheck-def"><a name="L161"></a><tt class="py-lineno">161</tt> <a class="py-toggle" href="#" id="registerPreBuildCheck-toggle" onclick="return toggle('registerPreBuildCheck');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon-module.html#registerPreBuildCheck">registerPreBuildCheck</a><tt class="py-op">(</tt><tt class="py-param">fn</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="registerPreBuildCheck-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="registerPreBuildCheck-expanded"><a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">        <tt class="py-docstring">""" Defines a check which will be called after any clean but before any build actions take place.</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line"><tt class="py-docstring">            fn should be a functor that takes a context and raises a BuildException if the check fails. """</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">        <tt class="py-keyword">from</tt> <tt id="link-52" class="py-name"><a title="buildcontext" class="py-name" href="#" onclick="return doclink('link-52', 'buildcontext', 'link-10');">buildcontext</a></tt> <tt class="py-keyword">import</tt> <tt id="link-53" class="py-name"><a title="buildcontext.getBuildInitializationContext" class="py-name" href="#" onclick="return doclink('link-53', 'getBuildInitializationContext', 'link-11');">getBuildInitializationContext</a></tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">        <tt id="link-54" class="py-name"><a title="buildcontext.getBuildInitializationContext" class="py-name" href="#" onclick="return doclink('link-54', 'getBuildInitializationContext', 'link-11');">getBuildInitializationContext</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name" targets="Function buildcommon.registerPreBuildCheck()=buildcommon-module.html#registerPreBuildCheck,Method buildcontext.BuildInitializationContext.registerPreBuildCheck()=buildcontext.BuildInitializationContext-class.html#registerPreBuildCheck"><a title="buildcommon.registerPreBuildCheck
+buildcontext.BuildInitializationContext.registerPreBuildCheck" class="py-name" href="#" onclick="return doclink('link-55', 'registerPreBuildCheck', 'link-55');">registerPreBuildCheck</a></tt><tt class="py-op">(</tt><tt id="link-56" class="py-name" targets="Variable targets.custom.Custom.fn=targets.custom.Custom-class.html#fn"><a title="targets.custom.Custom.fn" class="py-name" href="#" onclick="return doclink('link-56', 'fn', 'link-56');">fn</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line"> </tt>
+<a name="StringFormatter"></a><div id="StringFormatter-def"><a name="L167"></a><tt class="py-lineno">167</tt> <a class="py-toggle" href="#" id="StringFormatter-toggle" onclick="return toggle('StringFormatter');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="buildcommon.StringFormatter-class.html">StringFormatter</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StringFormatter-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="StringFormatter-expanded"><a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">        <tt class="py-docstring">""" A simple named functor for applying a %s-style string format, useful </tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line"><tt class="py-docstring">        in situations where a function is needed to add a suffix/prefix for the </tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line"><tt class="py-docstring">        value of an option. </tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="StringFormatter.__init__"></a><div id="StringFormatter.__init__-def"><a name="L172"></a><tt class="py-lineno">172</tt> <a class="py-toggle" href="#" id="StringFormatter.__init__-toggle" onclick="return toggle('StringFormatter.__init__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon.StringFormatter-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">formatstring</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StringFormatter.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="StringFormatter.__init__-expanded"><a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fmt</tt> <tt class="py-op">=</tt> <tt class="py-name">formatstring</tt> </tt>
+</div><a name="StringFormatter.__repr__"></a><div id="StringFormatter.__repr__-def"><a name="L174"></a><tt class="py-lineno">174</tt> <a class="py-toggle" href="#" id="StringFormatter.__repr__-toggle" onclick="return toggle('StringFormatter.__repr__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon.StringFormatter-class.html#__repr__">__repr__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StringFormatter.__repr__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="StringFormatter.__repr__-expanded"><a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-string">'StringFormatter&lt;"%s"&gt;'</tt><tt class="py-op">%</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fmt</tt> </tt>
+</div><a name="StringFormatter.__call__"></a><div id="StringFormatter.__call__-def"><a name="L176"></a><tt class="py-lineno">176</tt> <a class="py-toggle" href="#" id="StringFormatter.__call__-toggle" onclick="return toggle('StringFormatter.__call__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon.StringFormatter-class.html#__call__">__call__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StringFormatter.__call__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="StringFormatter.__call__-expanded"><a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">                <tt class="py-keyword">assert</tt> <tt class="py-keyword">not</tt> <tt class="py-name">kwargs</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">                <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">)</tt><tt class="py-op">==</tt><tt class="py-number">1</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fmt</tt> <tt class="py-op">%</tt> <tt class="py-name">args</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+</div></div><a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">         </tt>
+<a name="FilenameStringFormatter"></a><div id="FilenameStringFormatter-def"><a name="L181"></a><tt class="py-lineno">181</tt> <a class="py-toggle" href="#" id="FilenameStringFormatter-toggle" onclick="return toggle('FilenameStringFormatter');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="buildcommon.FilenameStringFormatter-class.html">FilenameStringFormatter</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FilenameStringFormatter-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="FilenameStringFormatter-expanded"><a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">        <tt class="py-docstring">""" A simple named functor for applying a %s-style string format. </tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line"><tt class="py-docstring">                 Formatter is just applied to the basename part of the filename,</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line"><tt class="py-docstring">                 the dirname part is preserved as-is.</tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="FilenameStringFormatter.__init__"></a><div id="FilenameStringFormatter.__init__-def"><a name="L186"></a><tt class="py-lineno">186</tt> <a class="py-toggle" href="#" id="FilenameStringFormatter.__init__-toggle" onclick="return toggle('FilenameStringFormatter.__init__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon.FilenameStringFormatter-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">formatstring</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FilenameStringFormatter.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="FilenameStringFormatter.__init__-expanded"><a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fmt</tt> <tt class="py-op">=</tt> <tt class="py-name">formatstring</tt> </tt>
+</div><a name="FilenameStringFormatter.__repr__"></a><div id="FilenameStringFormatter.__repr__-def"><a name="L188"></a><tt class="py-lineno">188</tt> <a class="py-toggle" href="#" id="FilenameStringFormatter.__repr__-toggle" onclick="return toggle('FilenameStringFormatter.__repr__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon.FilenameStringFormatter-class.html#__repr__">__repr__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FilenameStringFormatter.__repr__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="FilenameStringFormatter.__repr__-expanded"><a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-string">'FilenameStringFormatter&lt;"%s"&gt;'</tt><tt class="py-op">%</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fmt</tt> </tt>
+</div><a name="FilenameStringFormatter.__call__"></a><div id="FilenameStringFormatter.__call__-def"><a name="L190"></a><tt class="py-lineno">190</tt> <a class="py-toggle" href="#" id="FilenameStringFormatter.__call__-toggle" onclick="return toggle('FilenameStringFormatter.__call__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="buildcommon.FilenameStringFormatter-class.html#__call__">__call__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FilenameStringFormatter.__call__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="FilenameStringFormatter.__call__-expanded"><a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line">                <tt class="py-keyword">assert</tt> <tt class="py-keyword">not</tt> <tt class="py-name">kwargs</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">                <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">)</tt><tt class="py-op">==</tt><tt class="py-number">1</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-57" class="py-name"><a title="propertyfunctors.dirname" class="py-name" href="#" onclick="return doclink('link-57', 'dirname', 'link-8');">dirname</a></tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fmt</tt> <tt class="py-op">%</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name" targets="Class propertyfunctors.basename=propertyfunctors.basename-class.html"><a title="propertyfunctors.basename" class="py-name" href="#" onclick="return doclink('link-58', 'basename', 'link-58');">basename</a></tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >xpybuild v1.15.beta1</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Apr  5 15:17:00 2019
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
