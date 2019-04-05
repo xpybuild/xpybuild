@@ -2,46 +2,16 @@
 
 <pysysproject>
 
-	<!-- 
-	Get a reference to the environment, which can then be used as a substitution variable 
-	within the project file, e.g. ${env.PROCESSORS} would be substituted with the value of
-	the PROCESSORS environment variable if it is specified within the environment
-	-->
-	<property environment="env"/>
-
+	<requires-pysys>1.4.0</requires-pysys>
+	<requires-python>2.7.13</requires-python>
 	
-	<!-- 
-	Get a reference to the osfamily, which can then be used as a substitution variable 
-	within the project file, e.g. ${osfamily} would take the value windows on win32 systems,
-	and unix on Linux or Solaris.
-	-->
+	<property root="testRootDir"/>
+	<property environment="env"/>
 	<property osfamily="osfamily"/>
 
-
-	<!-- 
-	Get a reference to project root location (the location of this file), which can then be used 
-	as a substitution variable within the project file. Note that this is only for local expansion 
-	within the project file, where the project root location is required for full paths, e.g. 
-	stylesheets etc. Within a test class, the root location can be referenced using the 
-	PROJECT.root class variable. If not specified, defaults to "root".
-	-->
-	<property root="rootdir"/>
 	
-	<property name="XPYBUILD_ROOT" value="${env.XPYBUILD_ROOT}" default="${rootdir}/.."/>
-
+	<property name="XPYBUILD_ROOT" value="${env.XPYBUILD_ROOT}" default="${testRootDir}/.."/>
 	<property name="XPYBUILD" value="${XPYBUILD_ROOT}/xpybuild.py" />
-
-	<!-- 
-	Set a property on the project class. The property can then be used as a substitution variable 
-	within the project file, and is also set as an attribute to the project class so it's value 
-	can be reference internally within the PySys framework, e.g. in the below example, user would 
-	be set on the project class referenced by pysys.constants.PROJECT, such that PROJECT.user is 
-	the USERNAME taken from the environment, or guest if the variable is not defined within the 
-	environment. The literal value can be set directly on the property, in which case the default 
-	attribute is not required, e.g. <property name="maxFails" value="100"/>	
-	 -->
-	<property name="user" value="${env.USERNAME}" default="guest"/>	
-
 
 	<!-- 
 	Controls whether tests will abort as a fail as soon as an assert, process, or wait operation
@@ -50,29 +20,12 @@
 	-->
 	<property name="defaultAbortOnError" value="true"/>	
 	<property name="defaultIgnoreExitStatus" value="false"/>
-	
-	<!-- 
-	Import properties from file (fails silently if the file does not exist). The imported 
-	file should be of the format name=value (one pair specified per line). Any imported names
-	can again be used as a substitution variables within the project file, and are also set as 
-	attributes to the project class. The value in the imported file can be defined to use 
-	substitution through the ${variable} syntax (where variable must be defined before the import
-	 -->
-	<property file="${osfamily}.properties" />
+	<property name="defaultEnvironsTempDir" value="self.output"/>
 
-	<!-- 
-	Add a path to the python path to allow importing custom modules, e.g. extensions to the 
-	BaseTest or BaseRunner classes, or customer test output writers. If the relative attribute 
-	is set to true, then the path is treated as relative to the project root location; otherwise 
-	the path is treated as absolute, e.g. to add the src directory to the python path at runtime 
-	use -->
-	
+	<!--<property file="${osfamily}.properties" /> -->
+
+	<!-- Custom test framework extensions, if needed -->
 	<path value="./test_framework" relative="true" />
-
-
-	<requires-pysys>1.3.0</requires-pysys>>	
-	
-	<requires-python>2.7.0</requires-python>
 
 	<!-- 
 	Use a custom maker class for constructing new testcases. Custom maker classes can extend from the 
@@ -83,88 +36,33 @@
 	-->
 
 
-	<!--
-	Set the test writers to write the test summary at runtime when the -r option is 
-	passed to the run mode of the pysys launcher. Multiple test writers can be configured
-	and properties can be set on the writers using a nested property tag; these are then set 
-	as attributes of the class. PySys ships the XMLResultsWriter, TextResultsWriter and 
-	JUnitXMLResultsWriter class as three example writers, though custom writers can be created 
-	e.g. to insert into a relational database etc (see pysys.writers.__init__.py for the source 
-	code for the distributed writers). If no writer is specified in the project file, the 
-	XMLResultsWriter is used. 
-	
-	The writer tag details the classname (which should be added to the pythonpath using the 
-	path tag) and the module of the writer class. Where single file output is produced by the 
-	writer, the optional filename attribute is used to denote the filename template for the output 
-	logging. The filename template is processed through time.strftime so that time information can 
-	be set into the filename, e.g. a filename template of 'testsummary-%Y%m%d%H%M%S.xml' will result 
-	in a file created with a name of  testsummary-20081025213308.xml etc.
-	-->
 	<writers>
-		<!--
-		Add in the JUnit results writer if output in the Apache Ant JUnit XML format is required. Use the 
-		outputDir property to define the output directory for the JUnit test summary files (the writer will 
-		produce one file per test into this output directory). If not specified this defaults to the current 
-		working directory.
-		-->
+		<writer classname="TravisCIWriter" module="pysys.writer.ci"></writer>
 		<writer classname="JUnitXMLResultsWriter" module="pysys.writer">
-			<property name="outputDir" value="${rootdir}/target/pysys-reports"/>
+			<property name="outputDir" value="${testRootDir}/pysys-junit-report"/>
 		</writer>
-		
 
-		<!-- The ConsoleSummaryResultsWriter displays a summary of non-passed outcomes at the end of the test run, 
-			optionally including outcome reason. The ConsoleSummaryResultsWriter is automatically added to the writers 
-			list if no other "summary" writer is explicitly configured. 
-		-->		
 		<writer classname="ConsoleSummaryResultsWriter" module="pysys.writer">
 			<property name="showOutputDir" value="true"/>
 			<property name="showOutcomeReason" value="true"/>
 		</writer>
-		<!--
-		Add in the test results writer if straight text output is required 
+	</writers>
+
+	<default-file-encodings>
+		<default-file-encoding pattern="run.log" encoding="utf-8"/>
 		
-		<writer classname="TextResultsWriter" module="pysys.writer" file="testsummary-%Y%m%d%H%M%S.log">
-			<property name="outputDir" value="${rootdir}"/>
-		</writer>
-		-->
-
-        	<!--
-		Add in the CSV results writer if CSV text output is required. This outputs the test results
-		in a column separated list, with headings id, title, cycle, startTime, duration, outcome
-
-		<writer classname="CSVResultsWriter" module="pysys.writer" file="testsummary-%Y%m%d%H%M%S.csv">
-			<property name="outputDir" value="${rootdir}"/>
-		</writer>
-		-->
-
-		<!--
-		Add in the JUnit results writer if output in the Apache Ant JUnit XML format is required. Use the 
-		outputDir property to define the output directory for the JUnit test summary files (the writer will 
-		produce one file per test into this output directory). If not specified this defaults to the current 
-		working directory.
-		
-		<writer classname="JUnitXMLResultsWriter" module="pysys.writer">
-			<property name="outputDir" value="${rootdir}/target/pysys-reports"/>
-		</writer>
-		-->
-	</writers>		
+		<default-file-encoding pattern="*.xml"  encoding="utf-8"/>
+		<default-file-encoding pattern="*.json" encoding="utf-8"/>
+		<default-file-encoding pattern="*.yaml" encoding="utf-8"/>
+	</default-file-encodings>	
 	
-	
-	<!--
-	Allow setting the message and date format of the python logging handlers for the test output to stdout, 
-	and to the run log of a testcase. The messagefmt atribute allows setting of the message format and 
-	defaults to '%(asctime)s %(levelname)-5s %(message)s' when not specified - see the Python logging module 
-	documentation for more information on the specifiers. The datefmt attribute allows setting of the date 
-	format when the %(asctime)s message format specifier is set - see the Python time.strftime module 
-	documentation for a full description of the time format specifiers.
-	-->
 	<formatters>
-		<!--<formatter name="stdout" messagefmt="%(asctime)s %(levelname)-5s %(message)s" datefmt="%H:%M:%S"/>	-->
+		<formatter classname="ColorLogFormatter" module="pysys.utils.logutils" 
+			name="stdout" messagefmt="%(asctime)s %(levelname)-5s %(message)s" datefmt="%H:%M:%S">
+		</formatter>
 		
-		<!--
-		Example setting the format for the run log messages. 
-		<formatter name="runlog" messagefmt="%(asctime)s %(levelname)-5s %(message)s" datefmt=""/>
-		-->
+		<formatter classname="BaseLogFormatter" module="pysys.utils.logutils" 
+			name="runlog" messagefmt="%(asctime)s %(levelname)-5s %(message)s" datefmt=""/>
 	</formatters>
 
 	<performance-reporter classname="xpybuild.customperfreporter.XpybuildPerfReporter"/>
