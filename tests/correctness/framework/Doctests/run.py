@@ -12,7 +12,7 @@ class PySysTest(XpybuildBaseTest):
 		failedModules = []
 		
 		DIR = PROJECT.XPYBUILD_ROOT
-		allScripts = []
+		allScripts = []c
 		for dirpath, dirnames, filenames in os.walk(DIR):
 			for excl in ['.svn', 'tests', 'release-output', 
 					# doesn't contain any
@@ -56,7 +56,7 @@ class PySysTest(XpybuildBaseTest):
 				stdout=moduleName+'.out', stderr=moduleName+'.err', displayName='doctest '+moduleName, 
 				abortOnError=True, ignoreExitStatus=True)
 
-			if pythoncoverage:
+			if getattr(self, 'PYTHON_COVERAGE_REPORT', '')=='true':
 				self.startProcess(sys.executable, ['-m', 'coverage', 'html'], 
 				environs=environs, 
 				stdout='python-coverage.out', stderr='python-coverage.err', displayName='python coverage', 

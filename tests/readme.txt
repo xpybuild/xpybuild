@@ -12,3 +12,4 @@ set XPYBUILD_PPROFILE=<path to pprofile>\pprofile.py
 
 - to enable coverage reporting:
 pysys run -X PYTHON_COVERAGE=true
+pysys run -X PYTHON_COVERAGE_REPORT=true (to also generate an HTML report)

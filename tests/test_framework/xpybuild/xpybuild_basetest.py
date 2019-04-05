@@ -45,7 +45,7 @@ class XpybuildBaseTest(BaseTest):
 					stdout=stdout, stderr=stderr, displayName=('xpybuild %s'%' '.join(args)).strip(), 
 					abortOnError=True, ignoreExitStatus=shouldFail)
 				if shouldFail and result != 0: raise Exception('Build failed as expected')
-				if pythoncoverage:
+				if getattr(self, 'PYTHON_COVERAGE_REPORT', '')=='true':
 					self.startProcess(sys.executable, ['-m', 'coverage', 'html'], 
 					environs=environs, 
 					stdout='python-coverage.out', stderr='python-coverage.err', displayName='python coverage', 

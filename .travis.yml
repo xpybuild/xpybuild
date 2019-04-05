@@ -56,12 +56,9 @@ script:
 after_script:
   # upload Python code coverage
   - cd tests
-  - ls -a
   - echo Uploading code coverage
   - codecov
   - cd ..
-  - ls release-output/*
-  - ls release-output/doc/api/
   
 deploy:
   - provider: releases
@@ -92,3 +89,5 @@ deploy:
     on: 
        branch: master
        condition: $XPYBUILD_DOC_AND_DEPLOY = true
+       tags: true
+
