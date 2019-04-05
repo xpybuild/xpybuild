@@ -20,8 +20,8 @@ matrix:
     before_install: 
       - unset GITHUB_API_KEY
       - choco install python2 vcredist2008 -i vcpython27
-      - choco install jdk8
-      - export PATH=/c/Python27:/c/Python27/Scripts:/c/Program Files/Java/jdk1.8.0_191/bin:$PATH
+      - choco install jdk8 -params 'installdir=c:\\jdk1.8'
+      - export "PATH=/c/Python27:/c/Python27/Scripts:/c/jdk1.8/bin:$PATH"
     filter_secrets: false
 
 # Default Linux build runs on Ubuntu
@@ -29,6 +29,9 @@ language: python
 cache: pip
 
 install:
+  - export XPYBUILD_VERSION=`cat XPYBUILD_VERSION`
+  - export "TRAVIS_TAG=$XPYBUILD_VERSION"
+
   - if [[ -z $PY ]]; then export PY=python$TRAVIS_PYTHON_VERSION; fi
   - $PY -m pip --version
   - $PY -m pip install coverage codecov
@@ -37,19 +40,18 @@ install:
 
 # for running tests and building documentation:
 script:
+  # build documentation - fails if there are warnings
   - |
     if [[ -n $XPYBUILD_DOC_AND_DEPLOY ]]; then (
        set -e
        $PY -m pip install epydoc
        $PY ./xpybuild.py EPYDOC_ROOT=.
-       export XPYBUILD_VERSION=`cat release-output/VERSION.txt`
-       export "TRAVIS_TAG=$XPYBUILD_VERSION"
     )
     fi
 
+  # run tests
   - cd tests/correctness
   - pysys.py run --purge --threads auto -X PYTHON_COVERAGE=true --exclude skip_ci
-
   - cd ../..
 
 after_script:
@@ -81,7 +83,7 @@ deploy:
   - provider: pages
     github-token: $GITHUB_API_KEY
     target-branch: gh-pages
-    local-dir: release-output\doc\api
+    local-dir: release-output/doc/api/*
     skip_cleanup: true
     keep-history: true
     project-name: "XPyBuild $XPYBUILD_VERSION"

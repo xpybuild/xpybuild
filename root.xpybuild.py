@@ -20,7 +20,6 @@
 
 
 # xpybuild release build file. Creates pydoc API docs and versioned zip file for releases.
-
 from propertysupport import *
 from buildcommon import *
 from pathsets import *
@@ -37,11 +36,9 @@ requireXpyBuildVersion('1.12')
 # Need the caller to provide the path to epydoc
 definePathProperty('EPYDOC_ROOT', None, mustExist=True) # parent of the /lib directory; used for local builds but not Travis
 defineOutputDirProperty('OUTPUT_DIR', 'release-output')
-definePropertiesFromFile('release.properties')
+with open('XPYBUILD_VERSION') as f: defineStringProperty('VERSION', f.read().strip())
 
 def markdownToTxt(f): return f.replace('.md', '.txt')
-
-WriteFile('${OUTPUT_DIR}/VERSION.txt', '${VERSION}')
 
 CustomCommand('${OUTPUT_DIR}/doc/api/', 
 	command=[ 
@@ -63,7 +60,7 @@ Zip('${OUTPUT_DIR}/xpybuild_${VERSION}.zip', [
 		AddDestPrefix('doc/api/', FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/doc/api/'))),
 		AddDestPrefix('doc/', MapDest(markdownToTxt, FindPaths('doc/', includes=['*.md']))),
 		FindPaths('./', includes='**/*.py', excludes=['tests/**', 'root.xpybuild.py']),
-		'release.properties',
+		'XPYBUILD_VERSION',
 		MapDest(markdownToTxt, 'README.md'),
 		'LICENSE.txt',
 		])

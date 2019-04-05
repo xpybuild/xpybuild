@@ -20,7 +20,7 @@
 # $Id: buildcommon.py 301527 2017-02-06 15:31:43Z matj $
 #
 
-import traceback, os, sys, locale, inspect
+import traceback, os, sys, locale, inspect, io
 
 
 import platform
@@ -35,10 +35,8 @@ from utils.fileutils import parsePropertiesFile
 def __getXpybuildVersion():
 
 	try:
-		with open(os.path.join(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))), "release.properties")) as f:
-			_RELEASE_PROPERTIES=parsePropertiesFile(f)
-	
-		return [value for (key, value, line) in _RELEASE_PROPERTIES if key == "VERSION"][0]
+		with open(os.path.join(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))), "XPYBUILD_VERSION")) as f:
+			return f.read().strip()
 	except Exception:
 		raise
 		return "<unknown>"
