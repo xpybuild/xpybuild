@@ -211,7 +211,7 @@ class Jar(BaseTarget):
 		@param classpath: PathSet (or list) of things to be on the classpath; 
 		destination mapping indicates how they will appear in the manifest
 
-		@param manifest: map of manifest entries, OR a string with the filename to use 
+		@param manifest: map of manifest entries (can be empty), OR a string with the filename to use 
 		OR None to disable manifest generation and just produce a normal zip
 
 		@param options: [DEPRECATED - use .option() instead]

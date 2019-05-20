@@ -107,7 +107,8 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 		self._logbasename = path
 		return self
 	
-	def handleLine(self, l, isstderr=False):
+	def handleLine(self, l, isstderr=True):
+		if not isstderr: return # ignore stdout messages, we only care about warnings and errors
 		if l.strip().startswith('Note:'): return # annoying and pointless messages
 		self._contents += l+'\n'
 		
@@ -115,6 +116,9 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 		if re.match('\d+ (errors|warnings)',l): return
 		if l.startswith('error: warnings found'): return
 		if l.startswith('Picked up _JAVA_OPTIONS'): return
+		
+		# support for ProcessOutputHandler.Options.regexIgnore
+		if self._regexIgnore is not None and self._regexIgnore.match(l): return
 			
 		# assume everything else is an error or a warning
 			
@@ -156,8 +160,9 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 					del c[i]
 				else: 
 					i += 1
-					
-			iswarning = re.match('.*\.java:\d+: warning: .*', c[0]) or (len(c) > 1 and 'to suppress this warning' in c[1])
+				
+			# check returncode since we must never treat stderr output as an error if it returned success, as annotation processes can output all kinds of stuff
+			iswarning = returnCode==0 or (re.match('.*\.java:\d+: warning: .*', c[0]) or (len(c) > 1 and 'to suppress this warning' in c[1]))
 			addto = warns if iswarning else errs
 			existing = next((x[1] for x in addto if x[0] == msg), None)
 			if not existing:
@@ -200,7 +205,7 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 			publishArtifact('javac %s errors'%self._targetName, self._logbasename+'-errors.txt')
 			
 		if warns:
-			self._log(logging.WARNING, '%d javac WARNINGS in %s - see %s'%(sum([len(x[1]) for x in warns]), self._targetName, self._logbasename+'-warnings.txt'), 
+			self._log(logging.WARNING, '%d javac WARNINGS in %s - see %s; first is: %s'%(sum([len(x[1]) for x in warns]), self._targetName, self._logbasename+'-warnings.txt', warns[0][0]), 
 				self._logbasename+'-warnings.txt')
 			with open(self._logbasename+'-warnings.txt', 'w') as fo:
 				for x in warns:
