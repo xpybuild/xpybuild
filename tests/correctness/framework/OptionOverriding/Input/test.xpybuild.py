@@ -19,17 +19,18 @@ defineOption('testoption.legacyTargetOverride', 'defaultval')
 
 defineOption('testoption2.empty', '')
 
-class CustomPathSet(PathSet):
-	def __init__(self, *args, **kwargs):
-		PathSet.__init__(self, *args, **kwargs)
+class CustomPathSet(BasePathSet):
+	def __init__(self, *args):
+		BasePathSet.__init__(self)
+		self.delegate = PathSet(*args)
 	def resolveWithDestinations(self, context):
 		assert self.target.options
-		return PathSet.resolveWithDestinations(self, context)
+		return self.delegate.resolveWithDestinations(context)
 	def _resolveUnderlyingDependencies(self, context):
 		# this might be needed in some targets, so check it works
 		assert self.target.options
 		logging.getLogger('custompathset').critical('PathSet._resolveUnderlyingDependencies got options: %s', self.target.options)
-		return PathSet._resolveUnderlyingDependencies(self, context)
+		return self.delegate._resolveUnderlyingDependencies(context)
 
 class MyTarget(basetarget.BaseTarget):
 	def __init__(self, name, options=None, deps=[]):

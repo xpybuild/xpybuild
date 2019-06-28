@@ -125,42 +125,12 @@ class BasePathSet(object):
 		"""
 		raise Exception('TODO: must implement _resolveUnderlyingDependencies for %s'%self.__class__)
 
-
-class PathSet(BasePathSet):
-	""" A generic/compound PathSet taking as input any combination of strings and 
+class __SimplePathSet(BasePathSet):
+	""" The most basic PathSet which holds any combination of strings and 
 	other PathSets. 
 	"""
 	def __init__(self, *inputs):
-		"""
-		Construct a PathSet from the specified strings and other pathsets. 
-		
-		@param inputs: contains strings, targets and PathSet objects, nested as deeply as 
-		you like within lists and tuples. 
-		The strings must be absolute paths, or paths relative to the build file 
-		where this PathSet is defined, in which case the PathSet must be 
-		instantiated during the build file parsing phase (relative paths cannot 
-		be used in a PathSet that is instantiated while building or resolving 
-		dependencies for a target). 
-		Paths may not contain the '*' character, and directory 
-		paths must end with an explicit '/'. 
-			
-		>>> str(PathSet('a', [('b/', PathSet('1/2/3/', '4/5/6/'), ['d/e'])], 'e/f/${x}').resolveWithDestinations(BaseContext({'x':'X/'}))).replace('\\\\\\\\','/')
-		"[('BUILD_DIR/a', 'a'), ('BUILD_DIR/b/', 'b/'), ('BUILD_DIR/1/2/3/', '3/'), ('BUILD_DIR/4/5/6/', '6/'), ('BUILD_DIR/d/e', 'e'), ('BUILD_DIR/e/f/X/', 'X/')]"
 
-		>>> str(PathSet('a', [('b/', PathSet('1/2/3/', '4/5/6/'), ['d/e'])], 'e/f/${x}').resolve(BaseContext({'x':'X/'}))).replace('\\\\\\\\','/')
-		"['BUILD_DIR/a', 'BUILD_DIR/b/', 'BUILD_DIR/1/2/3/', 'BUILD_DIR/4/5/6/', 'BUILD_DIR/d/e', 'BUILD_DIR/e/f/X/']"
-		
-		>>> str(PathSet('a', [('b/', PathSet('1/2/3/', '4/5/6/'), ['d/e'])], 'e/f/${x}'))
-		'PathSet("a", "b/", PathSet("1/2/3/", "4/5/6/"), "d/e", "e/f/${x}")'
-
-		>>> str(PathSet('a', [[PathSet('1/2/3/', DirGeneratedByTarget('4/5/6/'), '7/8/')]], DirGeneratedByTarget('9/'))._resolveUnderlyingDependencies(BaseContext({}))).replace('\\\\\\\\','/')
-		"['BUILD_DIR/a', 'BUILD_DIR/1/2/3/', 'BUILD_DIR/4/5/6/', 'BUILD_DIR/7/8/', 'BUILD_DIR/9/']"
-
-		>>> PathSet('a/*').resolve(BaseContext({})) #doctest: +IGNORE_EXCEPTION_DETAIL
-		Traceback (most recent call last):
-		...
-		BuildException:
-		"""
 		super(BasePathSet, self).__init__()
 		self.contents = flatten(inputs)
 		
@@ -228,6 +198,63 @@ class PathSet(BasePathSet):
 					return x.resolveWithDestinations(context)
 				r.extend(x.resolveWithDestinations(context))
 		return r
+
+NULL_PATH_SET = __SimplePathSet()
+"""
+A singleton PathSet containing no items. 
+"""
+
+def PathSet(*items):
+	"""Factory method that creates a single BasePathSet instance containing 
+	the specified strings and/or other PathSets. 
+	
+	An additional composite pathset instance will be constructed to hold them if 
+	needed. 
+	
+	@param items: contains strings, targets and PathSet objects, nested as deeply as 
+	you like within lists and tuples. 
+	The strings must be absolute paths, or paths relative to the build file 
+	where this PathSet is defined, in which case the PathSet must be 
+	instantiated during the build file parsing phase (relative paths cannot 
+	be used in a PathSet that is instantiated while building or resolving 
+	dependencies for a target). 
+	Paths may not contain the '*' character, and directory 
+	paths must end with an explicit '/'. 
+		
+	@return: A BasePathSet instance. 
+	
+	>>> str(PathSet('a', [('b/', PathSet('1/2/3/', '4/5/6/'), ['d/e'])], 'e/f/${x}').resolveWithDestinations(BaseContext({'x':'X/'}))).replace('\\\\\\\\','/')
+	"[('BUILD_DIR/a', 'a'), ('BUILD_DIR/b/', 'b/'), ('BUILD_DIR/1/2/3/', '3/'), ('BUILD_DIR/4/5/6/', '6/'), ('BUILD_DIR/d/e', 'e'), ('BUILD_DIR/e/f/X/', 'X/')]"
+
+	>>> str(PathSet('a', [('b/', PathSet('1/2/3/', '4/5/6/'), ['d/e'])], 'e/f/${x}').resolve(BaseContext({'x':'X/'}))).replace('\\\\\\\\','/')
+	"['BUILD_DIR/a', 'BUILD_DIR/b/', 'BUILD_DIR/1/2/3/', 'BUILD_DIR/4/5/6/', 'BUILD_DIR/d/e', 'BUILD_DIR/e/f/X/']"
+	
+	>>> str(PathSet('a', [('b/', PathSet('1/2/3/', '4/5/6/'), ['d/e'])], 'e/f/${x}'))
+	'PathSet("a", "b/", PathSet("1/2/3/", "4/5/6/"), "d/e", "e/f/${x}")'
+
+	>>> str(PathSet('a', [[PathSet('1/2/3/', DirGeneratedByTarget('4/5/6/'), '7/8/')]], DirGeneratedByTarget('9/'))._resolveUnderlyingDependencies(BaseContext({}))).replace('\\\\\\\\','/')
+	"['BUILD_DIR/a', 'BUILD_DIR/1/2/3/', 'BUILD_DIR/4/5/6/', 'BUILD_DIR/7/8/', 'BUILD_DIR/9/']"
+
+	>>> PathSet('a/*').resolve(BaseContext({})) #doctest: +IGNORE_EXCEPTION_DETAIL
+	Traceback (most recent call last):
+	...
+	BuildException:
+	"""
+	# This function is called a lot so its performance matters
+	
+	# Avoid creating a new SimplePathSet if we can
+	
+	if not items: 
+		return NULL_PATH_SET
+
+	if len(items) == 1 and isinstance(items[0], list): # flatten a nested list
+		items = items[0]
+	
+	if items[0] is NULL_PATH_SET or items[-1] is NULL_PATH_SET: # common case would be empty at beginning or end
+		items = [i for i in items if (i is not NULL_PATH_SET)]
+	if len(items) == 1 and isinstance(items[0], BasePathSet): return items[0]
+	return __SimplePathSet(items)
+
 		
 def _resolveDirPath(dir, context, location):
 	"""

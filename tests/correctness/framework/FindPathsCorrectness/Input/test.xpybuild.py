@@ -6,12 +6,16 @@ from targets.copy import Copy
 
 defineOutputDirProperty('OUTPUT_DIR', None)
 
-Copy('${OUTPUT_DIR}/target%d/'%1, [FindPaths('${OUTPUT_DIR}/../findpathsroot/', 
-		includes=[
-			'1/*/*iii*', # deep - so that first directory excluder doesn't fire for it
-			'*1/**', '2/a*/**/'],  # do not navigate into 3  (nb: avoid no ** prefixes since that disables unmatched dir handler)
-		excludes=['**/b/**', '1/c/**/'] # do not navigate into b\
-		)])
+Copy('${OUTPUT_DIR}/target%d/'%1, PathSet([
+		PathSet(),
+		FindPaths('${OUTPUT_DIR}/../findpathsroot/', 
+			includes=[
+				'1/*/*iii*', # deep - so that first directory excluder doesn't fire for it
+				'*1/**', '2/a*/**/'],  # do not navigate into 3  (nb: avoid no ** prefixes since that disables unmatched dir handler)
+			excludes=['**/b/**', '1/c/**/'] # do not navigate into b\
+			)
+		])
+	)
 
 Copy('${OUTPUT_DIR}/target%d/'%2, [FindPaths('${OUTPUT_DIR}/../findpathsroot/', 
 		includes=['1/*/*', # this is to check for a path longer than non-doublestar pattern, with somefile

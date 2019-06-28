@@ -1,6 +1,6 @@
 # 1.15 - current release
 ## Breaking changes
-None
+- PathSet class no longer exists, replaced by a function of the same name that creates a new instance only if needed. If you have code that subclasses PathSet change it to subclass BasePathSet. 
 
 ## Deprecation
 None
