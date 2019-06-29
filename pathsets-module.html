@@ -75,15 +75,6 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="pathsets.PathSet-class.html" class="summary-name">PathSet</a><br />
-      A generic/compound PathSet taking as input any combination of 
-        strings and other PathSets.
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
         <a href="pathsets.DirBasedPathSet-class.html" class="summary-name">DirBasedPathSet</a><br />
       Constructs a pathset using a basedir and a list of (statically 
         defined, non-globbed) basedir-relative paths within it.
@@ -182,6 +173,33 @@
     </td>
   </tr>
 </table>
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Functions</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pathsets-module.html#PathSet" class="summary-sig-name">PathSet</a>(<span class="summary-sig-arg">*items</span>)</span><br />
+      Factory method that creates a single BasePathSet instance containing 
+      the specified strings and/or other PathSets.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pathsets-pysrc.html#PathSet">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
 <!-- ==================== VARIABLES ==================== -->
 <a name="section-Variables"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -194,10 +212,80 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
+        <a name="NULL_PATH_SET"></a><span class="summary-name">NULL_PATH_SET</span> = <code title="PathSet()">PathSet()</code><br />
+      A singleton PathSet containing no items.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
         <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="None">None</code>
     </td>
   </tr>
 </table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Function Details</span></td>
+</tr>
+</table>
+<a name="PathSet"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">PathSet</span>(<span class="sig-arg">*items</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pathsets-pysrc.html#PathSet">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Factory method that creates a single BasePathSet instance containing 
+  the specified strings and/or other PathSets.</p>
+  <p>An additional composite pathset instance will be constructed to hold 
+  them if needed.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>items</code></strong> - contains strings, targets and PathSet objects, nested as deeply 
+          as you like within lists and tuples. The strings must be absolute
+          paths, or paths relative to the build file where this PathSet is 
+          defined, in which case the PathSet must be instantiated during 
+          the build file parsing phase (relative paths cannot be used in a 
+          PathSet that is instantiated while building or resolving 
+          dependencies for a target). Paths may not contain the '*' 
+          character, and directory paths must end with an explicit '/'.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>A BasePathSet instance.
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>str(PathSet(<span class="py-string">'a'</span>, [(<span class="py-string">'b/'</span>, PathSet(<span class="py-string">'1/2/3/'</span>, <span class="py-string">'4/5/6/'</span>), [<span class="py-string">'d/e'</span>])], <span class="py-string">'e/f/${x}'</span>).resolveWithDestinations(BaseContext({<span class="py-string">'x'</span>:<span class="py-string">'X/'</span>}))).replace(<span class="py-string">'\\\\','</span>/')
+<span class="py-output">&quot;[('BUILD_DIR/a', 'a'), ('BUILD_DIR/b/', 'b/'), ('BUILD_DIR/1/2/3/', '3/'), ('BUILD_DIR/4/5/6/', '6/'), ('BUILD_DIR/d/e', 'e'), ('BUILD_DIR/e/f/X/', 'X/')]&quot;</span></pre>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>str(PathSet(<span class="py-string">'a'</span>, [(<span class="py-string">'b/'</span>, PathSet(<span class="py-string">'1/2/3/'</span>, <span class="py-string">'4/5/6/'</span>), [<span class="py-string">'d/e'</span>])], <span class="py-string">'e/f/${x}'</span>).resolve(BaseContext({<span class="py-string">'x'</span>:<span class="py-string">'X/'</span>}))).replace(<span class="py-string">'\\\\','</span>/')
+<span class="py-output">&quot;['BUILD_DIR/a', 'BUILD_DIR/b/', 'BUILD_DIR/1/2/3/', 'BUILD_DIR/4/5/6/', 'BUILD_DIR/d/e', 'BUILD_DIR/e/f/X/']&quot;</span></pre>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>str(PathSet(<span class="py-string">'a'</span>, [(<span class="py-string">'b/'</span>, PathSet(<span class="py-string">'1/2/3/'</span>, <span class="py-string">'4/5/6/'</span>), [<span class="py-string">'d/e'</span>])], <span class="py-string">'e/f/${x}'</span>))
+<span class="py-output">'PathSet(&quot;a&quot;, &quot;b/&quot;, PathSet(&quot;1/2/3/&quot;, &quot;4/5/6/&quot;), &quot;d/e&quot;, &quot;e/f/${x}&quot;)'</span></pre>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>str(PathSet(<span class="py-string">'a'</span>, [[PathSet(<span class="py-string">'1/2/3/'</span>, DirGeneratedByTarget(<span class="py-string">'4/5/6/'</span>), <span class="py-string">'7/8/'</span>)]], DirGeneratedByTarget(<span class="py-string">'9/'</span>))._resolveUnderlyingDependencies(BaseContext({}))).replace(<span class="py-string">'\\\\','</span>/')
+<span class="py-output">&quot;['BUILD_DIR/a', 'BUILD_DIR/1/2/3/', 'BUILD_DIR/4/5/6/', 'BUILD_DIR/7/8/', 'BUILD_DIR/9/']&quot;</span></pre>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>PathSet(<span class="py-string">'a/*'</span>).resolve(BaseContext({})) <span class="py-comment">#doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="py-except">Traceback (most recent call last):</span>
+<span class="py-except">...</span>
+<span class="py-except">BuildException:</span></pre></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -226,7 +314,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon May 20 18:34:41 2019
+    Generated by Epydoc 3.0.1 on Sat Jun 29 11:21:43 2019
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

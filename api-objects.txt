@@ -1,6 +1,7 @@
 basetarget	basetarget-module.html
 basetarget.openForWrite	utils.java-module.html#openForWrite
 basetarget.targetNameToUniqueId	basetarget-module.html#targetNameToUniqueId
+basetarget.PathSet	pathsets-module.html#PathSet
 basetarget.mkdir	utils.fileutils-module.html#mkdir
 basetarget.__package__	basetarget-module.html#__package__
 basetarget.getStringList	utils.flatten-module.html#getStringList
@@ -38,7 +39,9 @@ buildcontext.flatten	utils.flatten-module.html#flatten
 buildexceptions	buildexceptions-module.html
 buildexceptions.__package__	buildexceptions-module.html#__package__
 pathsets	pathsets-module.html
+pathsets.PathSet	pathsets-module.html#PathSet
 pathsets.__package__	pathsets-module.html#__package__
+pathsets.NULL_PATH_SET	pathsets-module.html#NULL_PATH_SET
 pathsets.getBuildInitializationContext	buildcontext-module.html#getBuildInitializationContext
 pathsets.isDirPath	utils.fileutils-module.html#isDirPath
 pathsets._resolveDirPath	pathsets-module.html#_resolveDirPath
@@ -47,6 +50,7 @@ pathsets.normpath	buildcommon-module.html#normpath
 pathsets.flatten	utils.flatten-module.html#flatten
 propertyfunctors	propertyfunctors-module.html
 propertyfunctors.make_functor	propertyfunctors-module.html#make_functor
+propertyfunctors.PathSet	pathsets-module.html#PathSet
 propertyfunctors.__package__	propertyfunctors-module.html#__package__
 propertysupport	propertysupport-module.html
 propertysupport.definePathProperty	propertysupport-module.html#definePathProperty
@@ -73,12 +77,14 @@ targets.copy	targets.copy-module.html
 targets.copy.createReplaceDictLineMappers	targets.copy-module.html#createReplaceDictLineMappers
 targets.copy.openForWrite	utils.java-module.html#openForWrite
 targets.copy.flatten	utils.flatten-module.html#flatten
+targets.copy.PathSet	pathsets-module.html#PathSet
 targets.copy.mkdir	utils.fileutils-module.html#mkdir
 targets.copy.__package__	targets.copy-module.html#__package__
 targets.copy.deleteDir	utils.fileutils-module.html#deleteDir
 targets.copy.normLongPath	utils.fileutils-module.html#normLongPath
 targets.copy.IS_WINDOWS	targets.copy-module.html#IS_WINDOWS
 targets.csharp	targets.csharp-module.html
+targets.csharp.PathSet	pathsets-module.html#PathSet
 targets.csharp.mkdir	utils.fileutils-module.html#mkdir
 targets.csharp.__package__	targets.csharp-module.html#__package__
 targets.csharp.call	utils.process-module.html#call
@@ -89,6 +95,7 @@ targets.csharp.defineOption	propertysupport-module.html#defineOption
 targets.custom	targets.custom-module.html
 targets.custom.targetNameToUniqueId	basetarget-module.html#targetNameToUniqueId
 targets.custom.deleteFile	utils.fileutils-module.html#deleteFile
+targets.custom.PathSet	pathsets-module.html#PathSet
 targets.custom.mkdir	utils.fileutils-module.html#mkdir
 targets.custom.__package__	targets.custom-module.html#__package__
 targets.custom.deleteDir	utils.fileutils-module.html#deleteDir
@@ -96,6 +103,7 @@ targets.custom.IS_WINDOWS	targets.custom-module.html#IS_WINDOWS
 targets.custom._wait_with_timeout	utils.process-module.html#_wait_with_timeout
 targets.docker	targets.docker-module.html
 targets.docker.openForWrite	utils.java-module.html#openForWrite
+targets.docker.PathSet	pathsets-module.html#PathSet
 targets.docker.mkdir	utils.fileutils-module.html#mkdir
 targets.docker.__package__	targets.docker-module.html#__package__
 targets.docker.call	utils.process-module.html#call
@@ -112,6 +120,7 @@ targets.java.targetNameToUniqueId	basetarget-module.html#targetNameToUniqueId
 targets.java.openForWrite	utils.java-module.html#openForWrite
 targets.java.create_manifest	utils.java-module.html#create_manifest
 targets.java._isJavaFile	targets.java-module.html#_isJavaFile
+targets.java.PathSet	pathsets-module.html#PathSet
 targets.java.jar	utils.java-module.html#jar
 targets.java.__package__	targets.java-module.html#__package__
 targets.java.javadoc	utils.java-module.html#javadoc
@@ -130,6 +139,7 @@ targets.native.makedeplog	targets.native-module.html#makedeplog
 targets.native.make_functor	propertyfunctors-module.html#make_functor
 targets.native.deleteFile	utils.fileutils-module.html#deleteFile
 targets.native.objectname	targets.native-module.html#objectname
+targets.native.PathSet	pathsets-module.html#PathSet
 targets.native.__package__	targets.native-module.html#__package__
 targets.native.call	utils.process-module.html#call
 targets.native.libname	targets.native-module.html#libname
@@ -142,9 +152,11 @@ targets.native.defineOption	propertysupport-module.html#defineOption
 targets.symlink	targets.symlink-module.html
 targets.symlink.mkdir	utils.fileutils-module.html#mkdir
 targets.symlink.__package__	targets.symlink-module.html#__package__
+targets.symlink.NULL_PATH_SET	targets.symlink-module.html#NULL_PATH_SET
 targets.symlink.IS_WINDOWS	targets.symlink-module.html#IS_WINDOWS
 targets.tar	targets.tar-module.html
 targets.tar.flatten	utils.flatten-module.html#flatten
+targets.tar.PathSet	pathsets-module.html#PathSet
 targets.tar.mkdir	utils.fileutils-module.html#mkdir
 targets.tar.__package__	targets.tar-module.html#__package__
 targets.tar.deleteDir	utils.fileutils-module.html#deleteDir
@@ -164,6 +176,7 @@ targets.unpack._setfilename	targets.unpack-module.html#_setfilename
 targets.unpack.__package__	targets.unpack-module.html#__package__
 targets.unpack.deleteDir	utils.fileutils-module.html#deleteDir
 targets.unpack.normLongPath	utils.fileutils-module.html#normLongPath
+targets.unpack.PathSet	pathsets-module.html#PathSet
 targets.unpack.IS_WINDOWS	targets.unpack-module.html#IS_WINDOWS
 targets.writefile	targets.writefile-module.html
 targets.writefile.openForWrite	utils.java-module.html#openForWrite
@@ -172,6 +185,7 @@ targets.writefile.__package__	targets.writefile-module.html#__package__
 targets.writefile.normLongPath	utils.fileutils-module.html#normLongPath
 targets.writefile.IS_WINDOWS	targets.writefile-module.html#IS_WINDOWS
 targets.zip	targets.zip-module.html
+targets.zip.PathSet	pathsets-module.html#PathSet
 targets.zip.mkdir	utils.fileutils-module.html#mkdir
 targets.zip.__package__	targets.zip-module.html#__package__
 targets.zip.deleteDir	utils.fileutils-module.html#deleteDir
@@ -439,13 +453,6 @@ pathsets.MapSrc.resolveWithDestinations	pathsets.MapSrc-class.html#resolveWithDe
 pathsets.BasePathSet.resolve	pathsets.BasePathSet-class.html#resolve
 pathsets.MapSrc.__repr__	pathsets.MapSrc-class.html#__repr__
 pathsets.MapSrc.__init__	pathsets.MapSrc-class.html#__init__
-pathsets.PathSet	pathsets.PathSet-class.html
-pathsets.PathSet.resolveWithDestinations	pathsets.PathSet-class.html#resolveWithDestinations
-pathsets.BasePathSet.resolve	pathsets.BasePathSet-class.html#resolve
-pathsets.PathSet._resolveUnderlyingDependencies	pathsets.PathSet-class.html#_resolveUnderlyingDependencies
-pathsets.PathSet.__resolveStringPath	pathsets.PathSet-class.html#__resolveStringPath
-pathsets.PathSet.__repr__	pathsets.PathSet-class.html#__repr__
-pathsets.PathSet.__init__	pathsets.PathSet-class.html#__init__
 pathsets.RemoveDestParents	pathsets.RemoveDestParents-class.html
 pathsets.RemoveDestParents.resolveWithDestinations	pathsets.RemoveDestParents-class.html#resolveWithDestinations
 pathsets.BasePathSet.resolve	pathsets.BasePathSet-class.html#resolve
