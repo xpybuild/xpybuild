@@ -249,6 +249,7 @@ def PathSet(*items):
 
 	if len(items) == 1 and isinstance(items[0], list): # flatten a nested list
 		items = items[0]
+		if not items: return NULL_PATH_SET
 	
 	if items[0] is NULL_PATH_SET or items[-1] is NULL_PATH_SET: # common case would be empty at beginning or end
 		items = [i for i in items if (i is not NULL_PATH_SET)]
