@@ -36,10 +36,8 @@ class TargetWrapper(object):
 		Internal wrapper for a target which contains all the state needed by the 
 		scheduler during builds. 
 	"""
-	target = None
 	depcount = 0
 	isdirty = False
-	lock = None
 	_rdeps = None
 	fdeps = None
 	deps = None
@@ -49,34 +47,31 @@ class TargetWrapper(object):
 			which is taken for some of the functions
 		"""
 		self.target = target
+		self.path = target.path
+		self.name = target.name
+
 		self.lock = Lock()
 		self._rdeps = []
 		self.fdeps = []
 		self.__implicitInputs = None
-		#self.path = target.path
-		#self.options = target.__options
-		#self.name = target.name
-		#self.location = target.location
-		#self.isDirPath = isDirPath(target.name)
+
 		#self.priority = -target.getPriority() # may be mutated to an effective priority
+		
+		self.isDirPath = isDirPath(target.name)
+		self._implicitInputsFile = self.__getImplicitInputsFile()
+		if self.isDirPath: 
+			self.stampfile = self._implicitInputsFile # might as well re-use this for dirs
+		else:
+			self.stampfile = self.target.path
+		
 
 	def __hash__ (self): return hash(self.target) # delegate
 	
-	def __str__(self): return '%s'%self.target
+	def __str__(self): return '%s'%self.target # display string for the underlying target
 	def __repr__(self): return 'TargetWrapper.%s'%str(self)
 	
 	def __getattr__(self, name):
-		if name == 'path': return self.target.path
-		if name == 'options': return self.target.__options
-		if name == 'name': return self.target.name
-		if name == 'location': return self.target.location
 		if name == 'priority': return -self.target.getPriority()
-		if name == '_implicitInputsFile': return self.__getImplicitInputsFile()
-		if name == 'stampfile': 
-			if isDirPath(self.target.name):
-				return self.__getImplicitInputsFile() # might as well re-use this for dirs
-			else:
-				return self.target.path
 				
 		raise AttributeError('Unknown attribute %s' % name)
 	
@@ -213,7 +208,7 @@ class TargetWrapper(object):
 			
 			# assume that by this point our explicit dependencies at least exist, so it's safe to call getHashableImplicitDependencies
 			implicitInputs = self.__getImplicitInputs(context)
-			if implicitInputs or isDirPath(self.target.name):
+			if implicitInputs or self.isDirPath:
 				# this is to cope with targets that have implicit inputs (e.g. globbed pathsets); might as well use the same mechanism for directories (which need a stamp file anyway)
 				if not exists(self._implicitInputsFile):
 					log.info('Up-to-date check: %s must be rebuilt because implicit inputs/stamp file does not exist: "%s"', self.name, self._implicitInputsFile)
@@ -261,14 +256,14 @@ class TargetWrapper(object):
 			Calls the wrapped run method
 		"""
 		implicitInputs = self.__getImplicitInputs(context)
-		if implicitInputs or isDirPath(self.target.name):
+		if implicitInputs or self.isDirPath:
 			deleteFile(self._implicitInputsFile)
 		
 		self.target.run(context)
 		
 		# if target built successfully, record what the implicit inputs were to help with the next up to date 
 		# check and ensure incremental build is correct
-		if implicitInputs or isDirPath(self.target.name):
+		if implicitInputs or self.isDirPath:
 			log.debug('writing implicitInputsFile: %s', self._implicitInputsFile)
 			mkdir(os.path.dirname(self._implicitInputsFile))
 			with openForWrite(toLongPathSafe(self._implicitInputsFile), 'wb') as f:

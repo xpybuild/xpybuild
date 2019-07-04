@@ -109,7 +109,7 @@ class BuildScheduler(object):
 				for t in self.targetwrappers:
 					if t.lower().startswith(dtarget.lower()) and t != dtarget: # we compare using the resolved paths
 						raise BuildException('Multiple targets are not permitted to write output to the same directory: "%s" and "%s" (this would break the build as dependency tracking and parallelism rely on each target\'s output being isolated to a unique location)'%(
-							self.targetwrappers[dtarget].name, self.targetwrappers[t].name), location=self.targetwrappers[t].location)
+							self.targetwrappers[dtarget].name, self.targetwrappers[t].name), location=self.targetwrappers[t].target.location)
 		
 		self.context._resolveTargetGroups()
 
@@ -486,7 +486,8 @@ class BuildScheduler(object):
 			for dep in underlyingdeps:
 				for outdir in self.outputDirs:
 					if dep.startswith(outdir) and dep not in self.targetwrappers:
-						raise BuildException('Target %s depends on output %s which is implicitly created by some other directory target - please use DirGeneratedByTarget to explicitly name the directory target that it depends on'%(self.targetwrappers[t], dep), location=self.targetwrappers[t].location) # e.g. FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/foo/')+'bar/') # or similar
+						raise BuildException('Target %s depends on output %s which is implicitly created by some other directory target - please use DirGeneratedByTarget to explicitly name the directory target that it depends on'%(self.targetwrappers[t], dep), 
+							location=self.targetwrappers[t].target.location) # e.g. FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/foo/')+'bar/') # or similar
 		checktime = time.time()-checktime
 		log.info('Spent %0.1fs checking for undeclared implicit directory dependencies - none found', checktime)
 	
