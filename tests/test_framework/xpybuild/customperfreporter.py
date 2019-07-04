@@ -1,6 +1,9 @@
-from pysys.utils.perfreporter import *
-from pysys.constants import PROJECT
+import glob
 import logging, io, sys
+from pysys.utils.perfreporter import *
+from pysys.utils.logutils import ColorLogFormatter
+from pysys.utils.logutils import stdoutPrint
+from pysys.constants import PROJECT
 
 def getXpybuildVersion(project):
 	assert project, 'not initialized yet'
@@ -39,7 +42,7 @@ class XpybuildPerfReporter(CSVPerformanceReporter):
 			if comp and thisRun.results:
 				comp = comp.split(',')
 				for l in comparePerformanceFiles(comp+[thisRun], sortby='comparison%').strip().split('\n'):
-					sys.stdout.write(l+'\n') # need to keep separate for coloring to work
+					stdoutPrint(l) # need to keep separate for coloring to work
 			
 		finally:
 			super(XpybuildPerfReporter, self).cleanup()
