@@ -71,7 +71,11 @@ class TargetWrapper(object):
 	def __repr__(self): return 'TargetWrapper.%s'%str(self)
 	
 	def __getattr__(self, name):
+		# note: getattr is very inefficient so don't use this for anything performance-critical
 		if name == 'priority': return -self.target.getPriority()
+
+		# sometimes a TargetWrapper is passed to BuildException which calls .location on it
+		if name == 'location': return self.target.location
 				
 		raise AttributeError('Unknown attribute %s' % name)
 	
