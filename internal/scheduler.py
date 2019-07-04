@@ -3,7 +3,7 @@
 # This class is responsible for working out what tasks need to run, and for 
 # scheduling them
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ class BuildScheduler(object):
 			options - the options for the build (map of string:variable)
 		"""
 		self.targetTimes = {} # map of {name : (path, seconds)}
-		self.targets = None # map of targetPath:TargetWrapper where targetPath is the canonical resolved path (from getFullPath)
+		self.targetwrappers = None # map of targetPath:TargetWrapper where targetPath is the canonical resolved path (from getFullPath)
 		self.context = None
 		self.pending = None # list of targetPaths
 		self.options = None
@@ -70,7 +70,7 @@ class BuildScheduler(object):
 
 		resetStatCache() # at this point reread the stats of files, rather than using potentially stale cached ones
 
-		self.targets = {}
+		self.targetwrappers = {}
 		caseInsensitivePaths = set()
 		
 		self.progressFormat = str(len(str(len(init.targets()))))
@@ -94,22 +94,22 @@ class BuildScheduler(object):
 					if t.path.rstrip('\\/') == o.rstrip('\\/'):
 						raise BuildException('Cannot use shared output directory for target: directory targets must always build to a dedicated directory')
 						
-				self.targets[t.path] = TargetWrapper(t)
+				self.targetwrappers[t.path] = TargetWrapper(t)
 			except Exception, e:
 				if not isinstance(e, IOError):
 					log.exception('FAILED to prepare target %s: '%t) # include python stack trace in case it's an xpybuild bug
 				# ensure all exceptions from here are annotated with the location and target name
 				raise BuildException('FAILED to prepare target %s'%t, causedBy=True, location=t.location)
 		
-		self.context = BuildContext(init, set(self.targets.keys()))
+		self.context = BuildContext(init, set(self.targetwrappers.keys()))
 		self.context._buildOptions = options # occasionally targets may need to know e.g. whether it's a dry-run (during dep checking)
 		
-		for dtarget in self.targets:
+		for dtarget in self.targetwrappers:
 			if isDirPath(dtarget):
-				for t in self.targets:
+				for t in self.targetwrappers:
 					if t.lower().startswith(dtarget.lower()) and t != dtarget: # we compare using the resolved paths
 						raise BuildException('Multiple targets are not permitted to write output to the same directory: "%s" and "%s" (this would break the build as dependency tracking and parallelism rely on each target\'s output being isolated to a unique location)'%(
-							self.targets[dtarget].name, self.targets[t].name), location=self.targets[t].location)
+							self.targetwrappers[dtarget].name, self.targetwrappers[t].name), location=self.targetwrappers[t].location)
 		
 		self.context._resolveTargetGroups()
 
@@ -260,7 +260,7 @@ class BuildScheduler(object):
 	def _updatePriority(self, targetwrapper):
 		if targetwrapper.deps:
 			targetpriority = targetwrapper.priority
-			targets_get = self.targets.get
+			targets_get = self.targetwrappers.get
 			for d in targetwrapper.deps:
 				dt = targets_get(d, None) # a TargetWrapper
 				if dt is not None: 
@@ -282,7 +282,7 @@ class BuildScheduler(object):
 		errors = []
 		pending = [] # list of new jobs to done as part of dependency resolution
 		log.debug("Inspecting dependencies of target %s", tname)			
-		targetwrapper = self.targets.get(tname, None) # a TargetWrapper object
+		targetwrapper = self.targetwrappers.get(tname, None) # a TargetWrapper object
 
 		# only log dependency status periodically since usually its very quick
 		# and not worthwhile
@@ -322,10 +322,10 @@ class BuildScheduler(object):
 					dpath = toLongPathSafe(dname)
 					dnameIsDirPath = isDirPath(dname)
 					
-					if dname in self.targets:
+					if dname in self.targetwrappers:
 						leaf = False
 						
-						dtarget = self.targets[dname] # also a target wrapper
+						dtarget = self.targetwrappers[dname] # also a target wrapper
 						if dtarget in targetwrapper.rdeps(): raise Exception('Circular dependency between targets: %s and %s'%(dtarget.name, targetwrapper.name))
 						
 						dtarget.rdep(targetwrapper)
@@ -339,7 +339,7 @@ class BuildScheduler(object):
 							# special case directory target deps - must use stamp file not dir, to avoid re-walking 
 							# the directory needlessly, and possibly making a wrong decision if the dir pathset is 
 							# from a filtered pathset
-							targetwrapper.filedep(self.targets[dname].stampfile)						
+							targetwrapper.filedep(self.targetwrappers[dname].stampfile)						
 					
 						with self.lock:
 							if not dname in self.pending:
@@ -482,11 +482,11 @@ class BuildScheduler(object):
 				x = os.path.dirname(x)
 	
 		for t in self.pending:
-			underlyingdeps = self.targets[t].resolveDependencies(self.context)
+			underlyingdeps = self.targetwrappers[t].resolveDependencies(self.context)
 			for dep in underlyingdeps:
 				for outdir in self.outputDirs:
-					if dep.startswith(outdir) and dep not in self.targets:
-						raise BuildException('Target %s depends on output %s which is implicitly created by some other directory target - please use DirGeneratedByTarget to explicitly name the directory target that it depends on'%(self.targets[t], dep), location=self.targets[t].location) # e.g. FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/foo/')+'bar/') # or similar
+					if dep.startswith(outdir) and dep not in self.targetwrappers:
+						raise BuildException('Target %s depends on output %s which is implicitly created by some other directory target - please use DirGeneratedByTarget to explicitly name the directory target that it depends on'%(self.targetwrappers[t], dep), location=self.targetwrappers[t].location) # e.g. FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/foo/')+'bar/') # or similar
 		checktime = time.time()-checktime
 		log.info('Spent %0.1fs checking for undeclared implicit directory dependencies - none found', checktime)
 	
@@ -520,7 +520,7 @@ class BuildScheduler(object):
 		builderrors.extend(self.verificationerrors)
 				
 		if not deperrors and not builderrors and self.index != self.total:
-			bad = [self.targets[dname] for dname in self.pending if self.targets[dname].depcount != 0]
+			bad = [self.targetwrappers[dname] for dname in self.pending if self.targetwrappers[dname].depcount != 0]
 			log.info('Unexpected build error - some scheduled targets did not execute, possible dependency graph cycle; unexecuted targets are: %s'%
 				', '.join([bt.name for bt in bad]))
 			
