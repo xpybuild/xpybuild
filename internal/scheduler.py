@@ -32,6 +32,8 @@ from utils.fileutils import deleteFile, exists, isfile, isdir, resetStatCache, g
 from utils.timeutils import formatTimePeriod
 from threading import Lock
 
+from stat import S_ISREG, S_ISDIR # fast access for these is useful
+
 import time
 import thread
 import logging
@@ -257,16 +259,18 @@ class BuildScheduler(object):
 
 	def _updatePriority(self, target):
 		if target.deps:
+			targetpriority = target.priority
+			targets_get = self.targets.get
 			for d in target.deps:
-				dt = self.targets.get(d, None)
+				dt = targets_get(d, None)
 				if dt: 
 						# should be safe to read priority without lock due to GIL, and this is on critical path so worth doing quickly
 						# especially as in most cases there is no priority change required
-						if dt.priority > target.priority:
+						if dt.priority > targetpriority:
 							with dt.lock:
-								if dt.priority > target.priority:
-									log.debug("Setting priority=%s on target %s", target.priority, dt.name)
-									dt.setPriority(target.priority)
+								if dt.priority > targetpriority:
+									log.debug("Setting priority=%s on target %s", targetpriority, dt.name)
+									dt.setPriority(targetpriority)
 									self._updatePriority(dt)
 
 	def _deps_target(self, tname):
@@ -345,7 +349,7 @@ class BuildScheduler(object):
 						targetDeps.append(str(self.targets[dname]))
 					else:
 						dstat = getstat(dpath)
-						if dstat and ( (dnameIsDirPath and stat.S_ISDIR(dstat.st_mode)) or (not dnameIsDirPath and stat.S_ISREG(dstat.st_mode)) ):
+						if dstat and ( (dnameIsDirPath and S_ISDIR(dstat.st_mode)) or (not dnameIsDirPath and S_ISREG(dstat.st_mode)) ):
 							if not dnameIsDirPath:
 								# do not need to record directories as useless for uptodate checking (they just need to appear 
 								# in the implicit inputs file, but that's already happened in BuildTarget.__getImplicitInputs)
