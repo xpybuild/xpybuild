@@ -29,11 +29,12 @@ from buildexceptions import BuildException
 from utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, isfile, isdir, toLongPathSafe
 
 import logging
-log = logging.getLogger('xpybuild.buildtarget')
+log = logging.getLogger('xpybuild.scheduler.targetwrapper')
 
-class BuildTarget(object):
+class TargetWrapper(object):
 	"""
-		Internal wrapper for a target which contains all the state needed during builds
+		Internal wrapper for a target which contains all the state needed by the 
+		scheduler during builds. 
 	"""
 	target = None
 	depcount = 0
@@ -52,11 +53,17 @@ class BuildTarget(object):
 		self._rdeps = []
 		self.fdeps = []
 		self.__implicitInputs = None
+		#self.path = target.path
+		#self.options = target.__options
+		#self.name = target.name
+		#self.location = target.location
+		#self.isDirPath = isDirPath(target.name)
+		#self.priority = -target.getPriority() # may be mutated to an effective priority
 
 	def __hash__ (self): return hash(self.target) # delegate
 	
 	def __str__(self): return '%s'%self.target
-	def __repr__(self): return 'BuildTarget.%s'%str(self)
+	def __repr__(self): return 'TargetWrapper.%s'%str(self)
 	
 	def __getattr__(self, name):
 		if name == 'path': return self.target.path

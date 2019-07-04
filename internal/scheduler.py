@@ -25,7 +25,7 @@ from basetarget import BaseTarget
 from buildcommon import *
 from buildcontext import BuildContext
 from buildexceptions import BuildException
-from internal.buildtarget import BuildTarget
+from internal.buildtarget import TargetWrapper
 from internal.threadpool import ThreadPool, Utilisation
 from internal.outputbuffering import outputBufferingManager
 from utils.fileutils import deleteFile, exists, isfile, isdir, resetStatCache, getstat, toLongPathSafe
@@ -58,11 +58,11 @@ class BuildScheduler(object):
 			options - the options for the build (map of string:variable)
 		"""
 		self.targetTimes = {} # map of {name : (path, seconds)}
-		self.targets = None # map of targetPath:BuildTarget where targetPath is the canonical resolved path (from getFullPath)
+		self.targets = None # map of targetPath:TargetWrapper where targetPath is the canonical resolved path (from getFullPath)
 		self.context = None
 		self.pending = None # list of targetPaths
 		self.options = None
-		self.leaves = None
+		self.leaves = None # list of targetwrappers
 		self.lock = None
 		self.built = 0
 		self.completed = 0 # include built plus any deemed to be up to date
@@ -94,7 +94,7 @@ class BuildScheduler(object):
 					if t.path.rstrip('\\/') == o.rstrip('\\/'):
 						raise BuildException('Cannot use shared output directory for target: directory targets must always build to a dedicated directory')
 						
-				self.targets[t.path] = BuildTarget(t)
+				self.targets[t.path] = TargetWrapper(t)
 			except Exception, e:
 				if not isinstance(e, IOError):
 					log.exception('FAILED to prepare target %s: '%t) # include python stack trace in case it's an xpybuild bug
@@ -126,7 +126,7 @@ class BuildScheduler(object):
 		""" Perform logging for the exception on the stack, and return an array of 
 		string to be appended to the global build errors list. 
 		
-		target - should be a BaseTarget (not a BuildTarget)
+		target - should be a BaseTarget (not a TargetWrapper)
 		prefix - Prefix of exception, describing what we were doing at the time
 		"""
 		e = sys.exc_info()[1]
@@ -163,7 +163,7 @@ class BuildScheduler(object):
 	def _run_target(self, target):
 		"""
 			Run a single target, calling clean or run appropriately and counting the time taken
-			target - the BuildTarget holding the target to build
+			target - the TargetWrapper holding the target to build
 			number - how far through the build are we
 			total - the total number of targets to (potentially) build
 			Returns a list of error(s) encountered during the build
@@ -257,13 +257,13 @@ class BuildScheduler(object):
 		#assert (not pool.errors) or (self.total == self.index), (self.total, self.index) #disabled because assertion triggers during ctrl+c
 		return pool.errors
 
-	def _updatePriority(self, target):
-		if target.deps:
-			targetpriority = target.priority
+	def _updatePriority(self, targetwrapper):
+		if targetwrapper.deps:
+			targetpriority = targetwrapper.priority
 			targets_get = self.targets.get
-			for d in target.deps:
-				dt = targets_get(d, None)
-				if dt: 
+			for d in targetwrapper.deps:
+				dt = targets_get(d, None) # a TargetWrapper
+				if dt is not None: 
 						# should be safe to read priority without lock due to GIL, and this is on critical path so worth doing quickly
 						# especially as in most cases there is no priority change required
 						if dt.priority > targetpriority:
@@ -282,21 +282,21 @@ class BuildScheduler(object):
 		errors = []
 		pending = [] # list of new jobs to done as part of dependency resolution
 		log.debug("Inspecting dependencies of target %s", tname)			
-		target = self.targets.get(tname, None) # a BuildTarget object
+		targetwrapper = self.targets.get(tname, None) # a TargetWrapper object
 
 		# only log dependency status periodically since usually its very quick
 		# and not worthwhile
 		with self.lock:
 			self.index += 1
-			log.critical(self.progressFormat+"Resolving dependencies for %s", self.index, self.total, target)
+			log.critical(self.progressFormat+"Resolving dependencies for %s", self.index, self.total, targetwrapper)
 
-		if not target:
+		if targetwrapper is None:
 			assert False # I'm not sure how we can get here, think it should actually be impossible
 			if not exists(tname):
 				errors.append("Unknown target %s" % tname)
 			else:
-				log.debug('Scheduler cannot find target in build file or on disk: %s', target) # is this a problem? maybe assert False here?
-		elif self.options['ignore-deps'] and exists(target.path): 
+				log.debug('Scheduler cannot find target in build file or on disk: %s', targetwrapper) # is this a problem? maybe assert False here?
+		elif self.options['ignore-deps'] and exists(targetwrapper.path): 
 			# in this mode, any target that already exists should be treated as 
 			# a leaf with no deps which means it won't be built under any 
 			# circumstances (even if a target it depends on is rebuilt), 
@@ -307,12 +307,12 @@ class BuildScheduler(object):
 			# order to ensure we never rebuild a target at the same time as 
 			# a target that depends on it. We're essentially deleting the entire 
 			# dependency subtree for all nodes that exist already
-			log.debug('Scheduler is treating existing target as a leaf and will not rebuild it: %s', target)
-			self.leaves.append(target)
+			log.debug('Scheduler is treating existing target as a leaf and will not rebuild it: %s', targetwrapper)
+			self.leaves.append(targetwrapper)
 		elif not (self.options['ignore-deps'] and self.options['clean']): 
 			try:
-				deps = target.resolveDependencies(self.context) # this list is sorted
-				if deps: log.debug('%s has %d dependencies', target.target, len(deps))
+				deps = targetwrapper.resolveDependencies(self.context) # this list is sorted
+				if deps: log.debug('%s has %d dependencies', targetwrapper.target, len(deps))
 				
 				targetDeps = [] # just for logging
 				
@@ -325,59 +325,59 @@ class BuildScheduler(object):
 					if dname in self.targets:
 						leaf = False
 						
-						dtarget = self.targets[dname]
-						if dtarget in target.rdeps(): raise Exception('Circular dependency between targets: %s and %s'%(dtarget.name, target.name))
+						dtarget = self.targets[dname] # also a target wrapper
+						if dtarget in targetwrapper.rdeps(): raise Exception('Circular dependency between targets: %s and %s'%(dtarget.name, targetwrapper.name))
 						
-						dtarget.rdep(target)
-						self._updatePriority(target)
-						target.increment()
+						dtarget.rdep(targetwrapper)
+						self._updatePriority(targetwrapper)
+						targetwrapper.increment()
 						
 						
 						if not dnameIsDirPath:
-							target.filedep(dname) # might have an already built target dependency which is still newer
+							targetwrapper.filedep(dname) # might have an already built target dependency which is still newer
 						else:
 							# special case directory target deps - must use stamp file not dir, to avoid re-walking 
 							# the directory needlessly, and possibly making a wrong decision if the dir pathset is 
 							# from a filtered pathset
-							target.filedep(self.targets[dname].stampfile)						
+							targetwrapper.filedep(self.targets[dname].stampfile)						
 					
 						with self.lock:
 							if not dname in self.pending:
 								self.pending.append(dname)
 								pending.append((0, dname))
 						
-						targetDeps.append(str(self.targets[dname]))
+						targetDeps.append(str(dtarget)) # just for logging
 					else:
 						dstat = getstat(dpath)
 						if dstat and ( (dnameIsDirPath and S_ISDIR(dstat.st_mode)) or (not dnameIsDirPath and S_ISREG(dstat.st_mode)) ):
 							if not dnameIsDirPath:
 								# do not need to record directories as useless for uptodate checking (they just need to appear 
-								# in the implicit inputs file, but that's already happened in BuildTarget.__getImplicitInputs)
+								# in the implicit inputs file, but that's already happened in TargetWrapper.__getImplicitInputs)
 								# FindPaths(...) must be used if directory contents matter
-								target.filedep(dname)
+								targetwrapper.filedep(dname)
 							else:
 								log.debug('Ignoring directory for dependency-checking purposes (use FindPaths if you care about the contents): %s', dname)
 						else:
 							# in the specific case of a dependency error, build will definitely fail immediately so we should log line number 
 							# at ERROR log level not just at info
 							ex = BuildException("Cannot find dependency %s" % dname)
-							log.error('FAILED during dependency resolution: %s', ex.toMultiLineString(target, includeStack=False), extra=ex.getLoggerExtraArgDict(target))
+							log.error('FAILED during dependency resolution: %s', ex.toMultiLineString(targetwrapper, includeStack=False), extra=ex.getLoggerExtraArgDict(targetwrapper))
 							assert not os.path.exists(dpath), dname
-							errors.append(ex.toSingleLineString(target))
+							errors.append(ex.toSingleLineString(targetwrapper))
 							
 							break
 						
 				if leaf:
-					log.info('Target dependencies of %s (priority %s) are: <no dependencies>', target, -target.priority)
-					self.leaves.append(target)
+					log.info('Target dependencies of %s (priority %s) are: <no dependencies>', targetwrapper, -targetwrapper.priority)
+					self.leaves.append(targetwrapper)
 				else:
-					log.info('Target dependencies of %s (priority %s) are: %s', target, -target.priority, ', '.join(targetDeps)) # this is important for debugging missing dependencies etc
+					log.info('Target dependencies of %s (priority %s) are: %s', targetwrapper, -targetwrapper.priority, ', '.join(targetDeps)) # this is important for debugging missing dependencies etc
 					
 			except Exception as e:
-				errors.extend(self._handle_error(target.target, prefix="Target FAILED during dependency resolution"))
+				errors.extend(self._handle_error(targetwrapper.target, prefix="Target FAILED during dependency resolution"))
 		else:
 			# For clean ignoring deps we want to be as light-weight as possible
-			self.leaves.append(target)
+			self.leaves.append(targetwrapper)
 		
 		if pending:
 			# if we're adding some new jobs
@@ -397,7 +397,7 @@ class BuildScheduler(object):
 		self.total = len(self.pending)
 		self.index = 0 # identifies thread pool item n out of total, protected by lock
 
-		leaves = self.leaves
+		leaves = self.leaves # list of targetwrappers
 		self.leaves = Queue.PriorityQueue()
 		for l in leaves:
 			if 'randomizePriorities' in self.options:
