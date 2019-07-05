@@ -3,7 +3,7 @@
 # This class is responsible for working out what tasks need to run, and for 
 # scheduling them
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -46,19 +46,19 @@ class TargetWrapper(object):
 		self.name = target.name
 
 		self.lock = Lock()
-		self._rdeps = []
-		self.fdeps = []
 		self.depcount = 0
-		self.isdirty = False
 		self.deps = None
+		self._rdeps = []
+		self.__fdeps = []
+		self.__isdirty = False
 		
 		self.__implicitInputs = None
 
 		
 		self.isDirPath = isDirPath(target.name)
-		self._implicitInputsFile = self.__getImplicitInputsFile()
+		self.__implicitInputsFile = self.__getImplicitInputsFile()
 		if self.isDirPath: 
-			self.stampfile = self._implicitInputsFile # might as well re-use this for dirs
+			self.stampfile = self.__implicitInputsFile # might as well re-use this for dirs
 		else:
 			self.stampfile = self.target.path
 
@@ -153,11 +153,11 @@ class TargetWrapper(object):
 			Marks the object as explicitly dirty to avoid doing uptodate checks
 			Holds the object lock
 			
-			Returns the previous value of isdirty, i.e. True if this was a no-op. 
+			Returns the previous value of __isdirty, i.e. True if this was a no-op. 
 		"""
 		with self.lock:
-			r = self.isdirty
-			self.isdirty = True
+			r = self.__isdirty
+			self.__isdirty = True
 			return r
 			
 	def rdep(self, target):
@@ -180,7 +180,7 @@ class TargetWrapper(object):
 			Holds the object lock
 		"""
 		with self.lock:
-			self.fdeps.append(path)
+			self.__fdeps.append(path)
 	def uptodate(self, context, ignoreDeps):
 		"""
 			Checks whether the target needs to be rebuilt.
@@ -192,14 +192,14 @@ class TargetWrapper(object):
 		with self.lock:
 			log.debug('Up-to-date check for %s', self.name)
 			
-			if self.isdirty: 
+			if self.__isdirty: 
 				# no need to log at info, will already have been done when it was marked dirty
 				log.debug('Up-to-date check: %s has been marked dirty', self.name)
 				return False
 
 			if not exists(self.path):
 				log.debug('Up-to-date check: %s must be built because file does not exist: "%s"', self.name, self.path)
-				self.isdirty = True # make sure we don't log this again
+				self.__isdirty = True # make sure we don't log this again
 				return False
 			
 			if ignoreDeps: return True
@@ -213,10 +213,10 @@ class TargetWrapper(object):
 			implicitInputs = self.__getImplicitInputs(context)
 			if implicitInputs or self.isDirPath:
 				# this is to cope with targets that have implicit inputs (e.g. globbed pathsets); might as well use the same mechanism for directories (which need a stamp file anyway)
-				if not exists(self._implicitInputsFile):
-					log.info('Up-to-date check: %s must be rebuilt because implicit inputs/stamp file does not exist: "%s"', self.name, self._implicitInputsFile)
+				if not exists(self.__implicitInputsFile):
+					log.info('Up-to-date check: %s must be rebuilt because implicit inputs/stamp file does not exist: "%s"', self.name, self.__implicitInputsFile)
 					return False
-				with open(toLongPathSafe(self._implicitInputsFile), 'rb') as f:
+				with open(toLongPathSafe(self.__implicitInputsFile), 'rb') as f:
 					latestImplicitInputs = f.read().split(os.linesep)
 					if latestImplicitInputs != implicitInputs:
 						maxdifflines = int(os.getenv('XPYBUILD_IMPLICIT_INPUTS_MAX_DIFF_LINES', '30'))/2
@@ -226,13 +226,13 @@ class TargetWrapper(object):
 						if len(added) > maxdifflines: added = ['...']+added[len(added)-maxdifflines:] 
 						if len(removed) > maxdifflines: removed = ['...']+removed[len(removed)-maxdifflines:]
 						if not added and not removed: added = ['N/A']
-						log.info('Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self._implicitInputsFile, 
+						log.info('Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self.__implicitInputsFile, 
 							'\n\t'.join(
 								['previous build had %d lines, current build has %d lines'%(len(latestImplicitInputs), len(implicitInputs))]+removed+added
 							).replace('\r','\\r\r'))
 						return False
 					else:
-						log.debug("Up-to-date check: implicit inputs file contents has not changed: %s", self._implicitInputsFile)
+						log.debug("Up-to-date check: implicit inputs file contents has not changed: %s", self.__implicitInputsFile)
 			else:
 				log.debug("Up-to-date check: target has no implicitInputs data: %s", self)
 			
@@ -250,7 +250,7 @@ class TargetWrapper(object):
 					log.info('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" (by %0.1f seconds)', self.name, path, self.stampfile, pathmodtime-stampmodtime)
 				return True
 
-			for f in self.fdeps:
+			for f in self.__fdeps:
 				if isNewer(f): return False
 		return True
 		
@@ -260,16 +260,16 @@ class TargetWrapper(object):
 		"""
 		implicitInputs = self.__getImplicitInputs(context)
 		if implicitInputs or self.isDirPath:
-			deleteFile(self._implicitInputsFile)
+			deleteFile(self.__implicitInputsFile)
 		
 		self.target.run(context)
 		
 		# if target built successfully, record what the implicit inputs were to help with the next up to date 
 		# check and ensure incremental build is correct
 		if implicitInputs or self.isDirPath:
-			log.debug('writing implicitInputsFile: %s', self._implicitInputsFile)
-			mkdir(os.path.dirname(self._implicitInputsFile))
-			with openForWrite(toLongPathSafe(self._implicitInputsFile), 'wb') as f:
+			log.debug('writing implicitInputsFile: %s', self.__implicitInputsFile)
+			mkdir(os.path.dirname(self.__implicitInputsFile))
+			with openForWrite(toLongPathSafe(self.__implicitInputsFile), 'wb') as f:
 				f.write(os.linesep.join(implicitInputs))
 		
 	def clean(self, context):
@@ -277,10 +277,10 @@ class TargetWrapper(object):
 			Calls the wrapped clean method
 		"""
 		try:
-			deleteFile(self._implicitInputsFile)
+			deleteFile(self.__implicitInputsFile)
 		except Exception:
 			time.sleep(10.0)
-			deleteFile(self._implicitInputsFile)
+			deleteFile(self.__implicitInputsFile)
 		self.target.clean(context)
 
 	def internal_clean(self, context):
@@ -288,9 +288,9 @@ class TargetWrapper(object):
 			Calls the BaseTarget clean, not the target-specific clean
 		"""
 		try:
-			deleteFile(self._implicitInputsFile)
+			deleteFile(self.__implicitInputsFile)
 		except Exception:
 			time.sleep(10.0)
-			deleteFile(self._implicitInputsFile)
+			deleteFile(self.__implicitInputsFile)
 		BaseTarget.clean(self.target, context)
 
