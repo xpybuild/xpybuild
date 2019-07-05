@@ -1,0 +1,24 @@
+<?xml version="1.0" standalone="yes"?>
+<pysystest type="auto" state="runnable">
+    
+  <description> 
+    <title>Framework - priority</title>
+    <purpose><![CDATA[
+Check priority values can be inherited and that targets are executed in the right order
+]]>
+    </purpose>
+  </description>
+
+  <classification>
+  </classification>
+
+  <data>
+    <class name="PySysTest" module="run"/>
+  </data>
+  
+  <traceability>
+    <requirements>    
+    </requirements>
+  </traceability>
+</pysystest>
+

@@ -58,7 +58,7 @@ class BuildScheduler(object):
 			options - the options for the build (map of string:variable)
 		"""
 		self.targetTimes = {} # map of {name : (path, seconds)}
-		self.targetwrappers = None # map of targetPath:TargetWrapper where targetPath is the canonical resolved path (from getFullPath)
+		self.targetwrappers = {} # map of targetPath:TargetWrapper where targetPath is the canonical resolved path (from getFullPath)
 		self.context = None
 		self.pending = None # list of targetPaths
 		self.options = None
@@ -67,10 +67,11 @@ class BuildScheduler(object):
 		self.built = 0
 		self.completed = 0 # include built plus any deemed to be up to date
 		self.verificationerrors = []
+		
+		self.selectedtargetwrappers = [] # holds tuples of wrapper,depslist just for logging purposes
 
 		resetStatCache() # at this point reread the stats of files, rather than using potentially stale cached ones
 
-		self.targetwrappers = {}
 		caseInsensitivePaths = set()
 		
 		self.progressFormat = str(len(str(len(init.targets()))))
@@ -254,6 +255,19 @@ class BuildScheduler(object):
 		pool.wait()
 
 		pool.stop()
+
+		if not pool.errors:
+			# this is the only place we can list all targets since only here are final priorities known
+			# printing the deps in one place is important for debugging missing dependencies etc
+			# might move this to a separate file at some point
+			self.selectedtargetwrappers.sort(key=lambda (targetwrapper, targetdeps): (targetwrapper.priority, targetwrapper.name) )
+			summary = '\n'.join( 
+				'  Target %s with priority %s depends on: %s'%(targetwrapper, -targetwrapper.priority, 
+					', '.join(str(d) for d in targetdeps) if len(targetdeps)>0 else '<no dependencies>')
+				for targetwrapper,targetdeps in self.selectedtargetwrappers
+			 )
+			log.info('Selected targets: \n%s'%summary)
+	
 		#assert (not pool.errors) or (self.total == self.index), (self.total, self.index) #disabled because assertion triggers during ctrl+c
 		return pool.errors
 
@@ -366,12 +380,12 @@ class BuildScheduler(object):
 							errors.append(ex.toSingleLineString(targetwrapper))
 							
 							break
+				
+				# Stash this for logging later. Can't log priority here because it might change as more rdeps are found
+				self.selectedtargetwrappers.append( (targetwrapper, targetDeps) )
 						
 				if leaf:
-					log.info('Target dependencies of %s (priority %s) are: <no dependencies>', targetwrapper, -targetwrapper.priority)
 					self.leaves.append(targetwrapper)
-				else:
-					log.info('Target dependencies of %s (priority %s) are: %s', targetwrapper, -targetwrapper.priority, ', '.join(targetDeps)) # this is important for debugging missing dependencies etc
 					
 			except Exception as e:
 				errors.extend(self._handle_error(targetwrapper.target, prefix="Target FAILED during dependency resolution"))
