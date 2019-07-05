@@ -284,7 +284,7 @@ class BuildScheduler(object):
 							with dt.lock:
 								if dt.effectivePriority < targetpriority:
 									log.debug("Setting priority=%s on target %s", targetpriority, dt.name)
-									dt.setPriority(targetpriority)
+									dt.setEffectivePriority(targetpriority)
 									self._updatePriority(dt)
 
 	def _deps_target(self, tname):

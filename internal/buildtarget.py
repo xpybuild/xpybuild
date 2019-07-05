@@ -36,11 +36,6 @@ class TargetWrapper(object):
 		Internal wrapper for a target which contains all the state needed by the 
 		scheduler during builds. 
 	"""
-	depcount = 0
-	isdirty = False
-	_rdeps = None
-	fdeps = None
-	deps = None
 	def __init__(self, target):
 		"""
 			Create a BuildTarget from a target. This target has an internal lock
@@ -53,9 +48,12 @@ class TargetWrapper(object):
 		self.lock = Lock()
 		self._rdeps = []
 		self.fdeps = []
+		self.depcount = 0
+		self.isdirty = False
+		self.deps = None
+		
 		self.__implicitInputs = None
 
-		#self.priority = -target.getPriority() # may be mutated to an effective priority
 		
 		self.isDirPath = isDirPath(target.name)
 		self._implicitInputsFile = self.__getImplicitInputsFile()
@@ -63,7 +61,9 @@ class TargetWrapper(object):
 			self.stampfile = self._implicitInputsFile # might as well re-use this for dirs
 		else:
 			self.stampfile = self.target.path
-		
+
+		self.effectivePriority = target.getPriority() # may be mutated to an effective priority
+
 
 	def __hash__ (self): return hash(self.target) # delegate
 	
@@ -72,15 +72,14 @@ class TargetWrapper(object):
 	
 	def __getattr__(self, name):
 		# note: getattr is very inefficient so don't use this for anything performance-critical
-		if name == 'effectivePriority': return self.target.getPriority()
 
 		# sometimes a TargetWrapper is passed to BuildException which calls .location on it
 		if name == 'location': return self.target.location
 				
 		raise AttributeError('Unknown attribute %s' % name)
 	
-	def setPriority(self, pri):
-		self.target.priority(pri)
+	def setEffectivePriority(self, pri):
+		self.effectivePriority = pri
 	
 	def __getImplicitInputsFile(self):
 		x = self.target.workDir.replace('\\','/').split('/')
