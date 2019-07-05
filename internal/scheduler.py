@@ -260,9 +260,9 @@ class BuildScheduler(object):
 			# this is the only place we can list all targets since only here are final priorities known
 			# printing the deps in one place is important for debugging missing dependencies etc
 			# might move this to a separate file at some point
-			self.selectedtargetwrappers.sort(key=lambda (targetwrapper, targetdeps): (targetwrapper.priority, targetwrapper.name) )
+			self.selectedtargetwrappers.sort(key=lambda (targetwrapper, targetdeps): (-targetwrapper.effectivePriority, targetwrapper.name) )
 			summary = '\n'.join( 
-				'  Target %s with priority %s depends on: %s'%(targetwrapper, -targetwrapper.priority, 
+				'  Target %s with priority %s depends on: %s'%(targetwrapper, targetwrapper.effectivePriority, 
 					', '.join(str(d) for d in targetdeps) if len(targetdeps)>0 else '<no dependencies>')
 				for targetwrapper,targetdeps in self.selectedtargetwrappers
 			 )
@@ -273,16 +273,16 @@ class BuildScheduler(object):
 
 	def _updatePriority(self, targetwrapper):
 		if targetwrapper.deps:
-			targetpriority = targetwrapper.priority
+			targetpriority = targetwrapper.effectivePriority
 			targets_get = self.targetwrappers.get
 			for d in targetwrapper.deps:
 				dt = targets_get(d, None) # a TargetWrapper
 				if dt is not None: 
 						# should be safe to read priority without lock due to GIL, and this is on critical path so worth doing quickly
 						# especially as in most cases there is no priority change required
-						if dt.priority > targetpriority:
+						if dt.effectivePriority < targetpriority:
 							with dt.lock:
-								if dt.priority > targetpriority:
+								if dt.effectivePriority < targetpriority:
 									log.debug("Setting priority=%s on target %s", targetpriority, dt.name)
 									dt.setPriority(targetpriority)
 									self._updatePriority(dt)
@@ -418,8 +418,8 @@ class BuildScheduler(object):
 		for l in leaves:
 			if randomizePriorities:
 				buildqueue.put_nowait((random.random(), l))
-			else:
-				buildqueue.put_nowait((l.priority, l))
+			else: # negate priority since we want higher priorities handled first
+				buildqueue.put_nowait((-l.effectivePriority, l))
 
 		pool = ThreadPool('building', self.options["workers"], buildqueue, self._process_target, self.utilisation, profile=self.options["profile"])
 
@@ -474,7 +474,7 @@ class BuildScheduler(object):
 				for rd in target.rdeps():
 					if 0 == rd.decrement():
 						log.debug("%s is now leaf", rd.name)
-						newleaves.append((rd.priority, rd))
+						newleaves.append((-rd.effectivePriority, rd))
 		except Exception as e:
 			errors.extend(self._handle_error(target.target, prefix="Target FAILED"))
 		return (newleaves, errors, 0 == len(errors) or self.options["keep-going"])

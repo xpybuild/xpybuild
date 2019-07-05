@@ -72,7 +72,7 @@ class TargetWrapper(object):
 	
 	def __getattr__(self, name):
 		# note: getattr is very inefficient so don't use this for anything performance-critical
-		if name == 'priority': return -self.target.getPriority()
+		if name == 'effectivePriority': return self.target.getPriority()
 
 		# sometimes a TargetWrapper is passed to BuildException which calls .location on it
 		if name == 'location': return self.target.location
@@ -80,7 +80,7 @@ class TargetWrapper(object):
 		raise AttributeError('Unknown attribute %s' % name)
 	
 	def setPriority(self, pri):
-		self.target.priority(-pri)
+		self.target.priority(pri)
 	
 	def __getImplicitInputsFile(self):
 		x = self.target.workDir.replace('\\','/').split('/')
