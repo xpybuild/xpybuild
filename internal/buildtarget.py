@@ -36,6 +36,9 @@ class TargetWrapper(object):
 		Internal wrapper for a target which contains all the state needed by the 
 		scheduler during builds. 
 	"""
+	
+	__slots__ = 'target', 'path', 'name', 'isDirPath', 'lock', 'depcount', 'deps', '__rdeps', '__fdeps', '__isdirty', '__implicitInputs', '__implicitInputsFile', 'stampfile', 'effectivePriority'
+	
 	def __init__(self, target):
 		"""
 			Create a BuildTarget from a target. This target has an internal lock
@@ -44,18 +47,18 @@ class TargetWrapper(object):
 		self.target = target
 		self.path = target.path
 		self.name = target.name
+		self.isDirPath = isDirPath(target.name)
 
 		self.lock = Lock()
 		self.depcount = 0
 		self.deps = None
-		self._rdeps = []
+		self.__rdeps = []
 		self.__fdeps = []
 		self.__isdirty = False
 		
 		self.__implicitInputs = None
 
 		
-		self.isDirPath = isDirPath(target.name)
 		self.__implicitInputsFile = self.__getImplicitInputsFile()
 		if self.isDirPath: 
 			self.stampfile = self.__implicitInputsFile # might as well re-use this for dirs
@@ -166,14 +169,14 @@ class TargetWrapper(object):
 			Holds the object lock
 		"""
 		with self.lock:
-			self._rdeps.append(target)
+			self.__rdeps.append(target)
 	def rdeps(self):
 		"""
 			Returns the list of reverse dependencies.
 			Holds the object lock
 		"""
 		with self.lock:
-			return self._rdeps
+			return self.__rdeps
 	def filedep(self, path):
 		"""
 			Adds to the list of file dependencies. Not called for directories. 
