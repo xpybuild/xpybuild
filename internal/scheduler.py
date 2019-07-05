@@ -398,14 +398,16 @@ class BuildScheduler(object):
 		self.index = 0 # identifies thread pool item n out of total, protected by lock
 
 		leaves = self.leaves # list of targetwrappers
-		self.leaves = Queue.PriorityQueue()
+		self.leaves = None
+		buildqueue = Queue.PriorityQueue()
+		randomizePriorities = 'randomizePriorities' in self.options
 		for l in leaves:
-			if 'randomizePriorities' in self.options:
-				self.leaves.put_nowait((random.random(), l))
+			if randomizePriorities:
+				buildqueue.put_nowait((random.random(), l))
 			else:
-				self.leaves.put_nowait((l.priority, l))
+				buildqueue.put_nowait((l.priority, l))
 
-		pool = ThreadPool('building', self.options["workers"], self.leaves, self._process_target, self.utilisation, profile=self.options["profile"])
+		pool = ThreadPool('building', self.options["workers"], buildqueue, self._process_target, self.utilisation, profile=self.options["profile"])
 
 		pool.start()
 
