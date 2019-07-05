@@ -29,7 +29,7 @@ from buildexceptions import BuildException
 from utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, isfile, isdir, toLongPathSafe
 
 import logging
-log = logging.getLogger('xpybuild.scheduler.targetwrapper')
+log = logging.getLogger('scheduler.targetwrapper')
 
 class TargetWrapper(object):
 	"""
@@ -199,7 +199,7 @@ class TargetWrapper(object):
 				return False
 
 			if not exists(self.path):
-				log.info('Up-to-date check: %s must be rebuilt because file does not exist: "%s"', self.name, self.path)
+				log.debug('Up-to-date check: %s must be built because file does not exist: "%s"', self.name, self.path)
 				self.isdirty = True # make sure we don't log this again
 				return False
 			
