@@ -1,5 +1,6 @@
 <?xml version="1.0" standalone="yes"?>
-<pysystest type="auto" state="runnable">
+<pysystest type="auto" state="skipped">
+  <skipped reason="Download test needs rewriting to start its own server as the one it relies on no longer works"/>
     
   <description> 
     <title>Download - functionality of download targets</title>
