@@ -123,39 +123,41 @@ class CompilerMakeDependsPathSet(BasePathSet):
 			elif not needsRebuild:
 				return deplist
 
-		# generate them again
+		# generate them again; allow other threads to execute dep checking while we 
+		# do this as makedepends benefits a lot from parallelism
 		startt = time.time()
-		self.log.info("*** Generating native dependencies for %s" % self.target)
-		
-		generatedIncludeDirs = []
-		for d in self.includes._resolveUnderlyingDependencies(context):
-			if not d.endswith(os.sep): d += os.sep # includes are always directories
-			if context._isValidTarget(d) and (d not in generatedIncludeDirs):
-				generatedIncludeDirs.append(d)
-		def isGeneratedIncludeFile(e):
-			for generated in generatedIncludeDirs:
-				if e.startswith(generated): 
-					return True
-			return False
-		try:
-			deplist = options['native.compilers'].dependencies.depends(context=context, src=testsources, options=options, flags=flatten(options['native.cxx.flags']+[context.expandPropertyValues(x).split(' ') for x in self.flags]), includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']]))
+		with context._dependencyCheckingEnableParallelism():
+			self.log.info("*** Generating native dependencies for %s" % self.target)
 			
-			# remove paths inside generated directories and replace with the targets themselves
-			deplist = [d for d in deplist if not isGeneratedIncludeFile(d)] + generatedIncludeDirs
+			generatedIncludeDirs = []
+			for d in self.includes._resolveUnderlyingDependencies(context):
+				if not d.endswith(os.sep): d += os.sep # includes are always directories
+				if context._isValidTarget(d) and (d not in generatedIncludeDirs):
+					generatedIncludeDirs.append(d)
+			def isGeneratedIncludeFile(e):
+				for generated in generatedIncludeDirs:
+					if e.startswith(generated): 
+						return True
+				return False
+			try:
+				deplist = options['native.compilers'].dependencies.depends(context=context, src=testsources, options=options, flags=flatten(options['native.cxx.flags']+[context.expandPropertyValues(x).split(' ') for x in self.flags]), includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']]))
+				
+				# remove paths inside generated directories and replace with the targets themselves
+				deplist = [d for d in deplist if not isGeneratedIncludeFile(d)] + generatedIncludeDirs
+				
+			except BuildException, e:
+				if len(testsources)==1 and testsources[0] not in str(e):
+					raise BuildException('Dependency resolution failed for %s: %s'%(testsources[0], e))
+				raise
 			
-		except BuildException, e:
-			if len(testsources)==1 and testsources[0] not in str(e):
-				raise BuildException('Dependency resolution failed for %s: %s'%(testsources[0], e))
-			raise
-		
-		mkdir(os.path.dirname(dfile))
-		with openForWrite(dfile, 'wb') as f:
-			assert not os.linesep in str(self)
-			f.write(str(self)+os.linesep)
-			for d in deplist+['']+depsources: # spacer to make it easier to see what's going on - distinction between depsources and deplist
-				f.write(d.encode('UTF-8')+os.linesep)
-		if time.time()-startt > 5: # this should usually be pretty quick, so may indicate a real build file mistake
-			self.log.warn('Dependency generation took a long time: %0.1f s to evaluate %s', time.time()-startt, self)
+			mkdir(os.path.dirname(dfile))
+			with openForWrite(dfile, 'wb') as f:
+				assert not os.linesep in str(self)
+				f.write(str(self)+os.linesep)
+				for d in deplist+['']+depsources: # spacer to make it easier to see what's going on - distinction between depsources and deplist
+					f.write(d.encode('UTF-8')+os.linesep)
+			if time.time()-startt > 5: # this should usually be pretty quick, so may indicate a real build file mistake
+				self.log.warn('Dependency generation took a long time: %0.1f s to evaluate %s', time.time()-startt, self)
 		
 		return deplist+depsources
 

@@ -3,7 +3,7 @@
 # Defines the classes used to hold build context during the initialization and 
 # build stages
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 # $Id: buildcontext.py 301527 2017-02-06 15:31:43Z matj $
 #
 import sys, os, getopt, time, traceback, types
+import threading
 from buildcommon import *
 from utils.flatten import flatten
 from utils.buildfilelocation import BuildFileLocation
@@ -434,8 +435,7 @@ class BuildInitializationContext(BaseContext):
 		self._initializationCompleted = False
 		self._envPropertyOverrides = {}
 		self._preBuildCallbacks = []
-		
-	
+			
 	def initializeFromBuildFile(self, buildFile, isRealBuild=True):
 		""" Load the specified build file, which is the initialization phase during which properties are defined and 
 		the build file target definitions will register themselves with this object. 
@@ -712,6 +712,9 @@ class BuildContext(BaseContext):
 		self.init = initializationContext
 		self._globalOptions = initializationContext._globalOptions
 		self.__targetPaths = targetPaths
+
+		self._dependencyCheckingSerializationLock = threading.Lock()
+		"""Internal, may change at any time do not use. """
 	
 	def _resolveTargetGroups(self):
 		""" Turns the list of groups of targets into a map of paths to target groups """
@@ -745,6 +748,28 @@ class BuildContext(BaseContext):
 	def _expandAtomicDeps(self, _deps):
 		""" Takes a list of targets and adds in any extras due to atomic grouping """
 		return self.init._expandAtomicDeps(_deps)
+
+	def _dependencyCheckingEnableParallelism(self):
+		"""
+		Enables an advanced optimization during the dependency resolution 
+		phase whereby extra threads can be used. 
+		
+		Most dependency checking is serialized to maximize performance and 
+		avoid Python GIL contention, but call this method 
+		(wrapped in a with clause) if you are starting a separate process 
+		so that dep checking can continue on other threads while we wait 
+		for it to complete. 
+		
+		"""
+		lock = self._dependencyCheckingSerializationLock
+		class DepCheckingParallelism(object):
+			def __enter__(self): return None
+			def __exit__(self, type, value, traceback):
+				lock.acquire()
+		
+		# assume it's already held
+		lock.release()
+		return DepCheckingParallelism()
 
 # hold option definitions outside of init context object, to support re-loading 
 # build file (with a new init context) without losing definitions from 

@@ -21,6 +21,7 @@
 #
 
 import traceback, os, re, stat
+import threading
 from basetarget import BaseTarget
 from buildcommon import *
 from buildcontext import BuildContext
@@ -256,6 +257,9 @@ class BuildScheduler(object):
 
 		pool.stop()
 
+		# make this this can't be access by mistake later
+		del self.context._dependencyCheckingSerializationLock
+		
 		if not pool.errors:
 			# this is the only place we can list all targets since only here are final priorities known
 			# printing the deps in one place is important for debugging missing dependencies etc
@@ -293,110 +297,114 @@ class BuildScheduler(object):
 			
 			tname - this is the canonical PATH of the target, not the name
 		"""
-		errors = []
-		pending = [] # list of new jobs to done as part of dependency resolution
-		log.debug("Inspecting dependencies of target %s", tname)			
-		targetwrapper = self.targetwrappers.get(tname, None) # a TargetWrapper object
-
-		# only log dependency status periodically since usually its very quick
-		# and not worthwhile
-		with self.lock:
-			self.index += 1
-			log.critical(self.progressFormat+"Resolving dependencies for %s", self.index, self.total, targetwrapper)
-
-		if targetwrapper is None:
-			assert False # I'm not sure how we can get here, think it should actually be impossible
-			if not exists(tname):
-				errors.append("Unknown target %s" % tname)
-			else:
-				log.debug('Scheduler cannot find target in build file or on disk: %s', targetwrapper) # is this a problem? maybe assert False here?
-		elif self.options['ignore-deps'] and exists(targetwrapper.path): 
-			# in this mode, any target that already exists should be treated as 
-			# a leaf with no deps which means it won't be built under any 
-			# circumstances (even if a target it depends on is rebuilt), 
-			# and allows us to avoid the time-consuming transitive resolution 
-			# of dependencies. Has to be implemented this way, since if we were 
-			# to allow ANY already-existing target to be re-built in the normal 
-			# way, we would have to resolve dependencies for all targets in 
-			# order to ensure we never rebuild a target at the same time as 
-			# a target that depends on it. We're essentially deleting the entire 
-			# dependency subtree for all nodes that exist already
-			log.debug('Scheduler is treating existing target as a leaf and will not rebuild it: %s', targetwrapper)
-			self.leaves.append(targetwrapper)
-		elif not (self.options['ignore-deps'] and self.options['clean']): 
-			try:
-				deps = targetwrapper.resolveDependencies(self.context) # this list is sorted
-				if deps: log.debug('%s has %d dependencies', targetwrapper.target, len(deps))
-				
-				targetDeps = [] # just for logging
-				
-				leaf = True
-				for dname in deps:
-					#log.debug('Processing dependency: %s -> %s', tname, dname)
-					dpath = toLongPathSafe(dname)
-					dnameIsDirPath = isDirPath(dname)
-					
-					if dname in self.targetwrappers:
-						leaf = False
-						
-						dtarget = self.targetwrappers[dname] # also a target wrapper
-						if dtarget in targetwrapper.rdeps(): raise Exception('Circular dependency between targets: %s and %s'%(dtarget.name, targetwrapper.name))
-						
-						dtarget.rdep(targetwrapper)
-						self._updatePriority(targetwrapper)
-						targetwrapper.increment()
-						
-						
-						if not dnameIsDirPath:
-							targetwrapper.filedep(dname) # might have an already built target dependency which is still newer
-						else:
-							# special case directory target deps - must use stamp file not dir, to avoid re-walking 
-							# the directory needlessly, and possibly making a wrong decision if the dir pathset is 
-							# from a filtered pathset
-							targetwrapper.filedep(self.targetwrappers[dname].stampfile)						
-					
-						with self.lock:
-							if not dname in self.pending:
-								self.pending.append(dname)
-								pending.append((0, dname))
-						
-						targetDeps.append(str(dtarget)) # just for logging
-					else:
-						dstat = getstat(dpath)
-						if dstat and ( (dnameIsDirPath and S_ISDIR(dstat.st_mode)) or (not dnameIsDirPath and S_ISREG(dstat.st_mode)) ):
-							if not dnameIsDirPath:
-								# do not need to record directories as useless for uptodate checking (they just need to appear 
-								# in the implicit inputs file, but that's already happened in TargetWrapper.__getImplicitInputs)
-								# FindPaths(...) must be used if directory contents matter
-								targetwrapper.filedep(dname)
-							else:
-								log.debug('Ignoring directory for dependency-checking purposes (use FindPaths if you care about the contents): %s', dname)
-						else:
-							# in the specific case of a dependency error, build will definitely fail immediately so we should log line number 
-							# at ERROR log level not just at info
-							ex = BuildException("Cannot find dependency %s" % dname)
-							log.error('FAILED during dependency resolution: %s', ex.toMultiLineString(targetwrapper, includeStack=False), extra=ex.getLoggerExtraArgDict(targetwrapper))
-							assert not os.path.exists(dpath), dname
-							errors.append(ex.toSingleLineString(targetwrapper))
-							
-							break
-				
-				# Stash this for logging later. Can't log priority here because it might change as more rdeps are found
-				self.selectedtargetwrappers.append( (targetwrapper, targetDeps) )
-						
-				if leaf:
-					self.leaves.append(targetwrapper)
-					
-			except Exception as e:
-				errors.extend(self._handle_error(targetwrapper.target, prefix="Target FAILED during dependency resolution"))
-		else:
-			# For clean ignoring deps we want to be as light-weight as possible
-			self.leaves.append(targetwrapper)
+		# serialize all dep checking by default since it's GIL-bound and we slower performance with 2 or more threads; 
+		# however lock can be dropped (and then required) during some aspects of this such as native makedepends
 		
-		if pending:
-			# if we're adding some new jobs
+		with self.context._dependencyCheckingSerializationLock:
+			errors = []
+			pending = [] # list of new jobs to done as part of dependency resolution
+			log.debug("Inspecting dependencies of target %s", tname)			
+			targetwrapper = self.targetwrappers.get(tname, None) # a TargetWrapper object
+
+			# only log dependency status periodically since usually its very quick
+			# and not worthwhile
 			with self.lock:
-				self.total += len(pending)
+				self.index += 1
+				log.critical(self.progressFormat+"Resolving dependencies for %s", self.index, self.total, targetwrapper)
+
+			if targetwrapper is None:
+				assert False # I'm not sure how we can get here, think it should actually be impossible
+				if not exists(tname):
+					errors.append("Unknown target %s" % tname)
+				else:
+					log.debug('Scheduler cannot find target in build file or on disk: %s', targetwrapper) # is this a problem? maybe assert False here?
+			elif self.options['ignore-deps'] and exists(targetwrapper.path): 
+				# in this mode, any target that already exists should be treated as 
+				# a leaf with no deps which means it won't be built under any 
+				# circumstances (even if a target it depends on is rebuilt), 
+				# and allows us to avoid the time-consuming transitive resolution 
+				# of dependencies. Has to be implemented this way, since if we were 
+				# to allow ANY already-existing target to be re-built in the normal 
+				# way, we would have to resolve dependencies for all targets in 
+				# order to ensure we never rebuild a target at the same time as 
+				# a target that depends on it. We're essentially deleting the entire 
+				# dependency subtree for all nodes that exist already
+				log.debug('Scheduler is treating existing target as a leaf and will not rebuild it: %s', targetwrapper)
+				self.leaves.append(targetwrapper)
+			elif not (self.options['ignore-deps'] and self.options['clean']): 
+				try:
+					deps = targetwrapper.resolveDependencies(self.context) # this list is sorted
+					if deps: log.debug('%s has %d dependencies', targetwrapper.target, len(deps))
+					
+					targetDeps = [] # just for logging
+					
+					leaf = True
+					for dname in deps:
+						#log.debug('Processing dependency: %s -> %s', tname, dname)
+						dpath = toLongPathSafe(dname)
+						dnameIsDirPath = isDirPath(dname)
+						
+						if dname in self.targetwrappers:
+							leaf = False
+							
+							dtarget = self.targetwrappers[dname] # also a target wrapper
+							if dtarget in targetwrapper.rdeps(): raise Exception('Circular dependency between targets: %s and %s'%(dtarget.name, targetwrapper.name))
+							
+							dtarget.rdep(targetwrapper)
+							self._updatePriority(targetwrapper)
+							targetwrapper.increment()
+							
+							
+							if not dnameIsDirPath:
+								targetwrapper.filedep(dname) # might have an already built target dependency which is still newer
+							else:
+								# special case directory target deps - must use stamp file not dir, to avoid re-walking 
+								# the directory needlessly, and possibly making a wrong decision if the dir pathset is 
+								# from a filtered pathset
+								targetwrapper.filedep(self.targetwrappers[dname].stampfile)						
+						
+							with self.lock:
+								if not dname in self.pending:
+									self.pending.append(dname)
+									pending.append((0, dname))
+							
+							targetDeps.append(str(dtarget)) # just for logging
+						else:
+							dstat = getstat(dpath)
+							if dstat and ( (dnameIsDirPath and S_ISDIR(dstat.st_mode)) or (not dnameIsDirPath and S_ISREG(dstat.st_mode)) ):
+								if not dnameIsDirPath:
+									# do not need to record directories as useless for uptodate checking (they just need to appear 
+									# in the implicit inputs file, but that's already happened in TargetWrapper.__getImplicitInputs)
+									# FindPaths(...) must be used if directory contents matter
+									targetwrapper.filedep(dname)
+								else:
+									log.debug('Ignoring directory for dependency-checking purposes (use FindPaths if you care about the contents): %s', dname)
+							else:
+								# in the specific case of a dependency error, build will definitely fail immediately so we should log line number 
+								# at ERROR log level not just at info
+								ex = BuildException("Cannot find dependency %s" % dname)
+								log.error('FAILED during dependency resolution: %s', ex.toMultiLineString(targetwrapper, includeStack=False), extra=ex.getLoggerExtraArgDict(targetwrapper))
+								assert not os.path.exists(dpath), dname
+								errors.append(ex.toSingleLineString(targetwrapper))
+								
+								break
+					
+					# Stash this for logging later. Can't log priority here because it might change as more rdeps are found
+					self.selectedtargetwrappers.append( (targetwrapper, targetDeps) )
+							
+					if leaf:
+						self.leaves.append(targetwrapper)
+						
+				except Exception as e:
+					errors.extend(self._handle_error(targetwrapper.target, prefix="Target FAILED during dependency resolution"))
+			else:
+				# For clean ignoring deps we want to be as light-weight as possible
+				self.leaves.append(targetwrapper)
+			
+			if pending:
+				# if we're adding some new jobs
+				with self.lock:
+					self.total += len(pending)
 			
 		# NB: the keep-going option does NOT apply to dependency failures 
 		return (pending, errors, 0 == len(errors))
