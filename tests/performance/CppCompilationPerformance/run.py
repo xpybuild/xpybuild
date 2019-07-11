@@ -20,7 +20,7 @@ class PySysTest(XpybuildBaseTest):
 	def validate(self):
 		results = {}
 		for f in ['xpybuild-dep-check', 'xpybuild-dep-check-no-op', 'xpybuild-build', 'xpybuild-build-no-op']:
-			self.assertGrep(file=f+'.log', expr="ERROR .*", contains=False)
+			#self.assertGrep(file=f+'.log', expr="ERROR .*", contains=False)
 			self.logFileContents(f+'.out', tail=True, maxLines=2)
 			deps = float(self.getExprFromFile(f+'.out', 'dependency resolution took ([0-9.]+) s'))
 			build = float(self.getExprFromFile(f+'.out', 'Completed .*build .*after ([0-9.]+) s'))-deps
@@ -30,12 +30,16 @@ class PySysTest(XpybuildBaseTest):
 			results[f+'.deps'] = deps
 			results[f+'.build'] = build
 		self.assertGrep(file='xpybuild-build-no-op.log', expr="<NO TARGETS> built")
-		
-		# get a per-target per-thread number
-		normfactor = self.TARGETS/(float(self.THREADS)*1000*1000*1000)
 
+		self.reportPerformanceResult(self.TARGETS / results['xpybuild-dep-check.deps'], 'Dependency resolution rate for C++ target', '/s')
+		self.reportPerformanceResult(self.TARGETS / results['xpybuild-build.build'], 'Build rate for C++ target', '/s')
+
+		# should be pretty good
+		self.reportPerformanceResult(self.TARGETS / (results['xpybuild-build-no-op.deps']+results['xpybuild-build-no-op.build']), 'Dependency resolution and uptodate checking no-op incremental build rate for C++ target', '/s')
+		self.log.info('')
+
+		# legacy numbers for comparison with old versions (per thread is actually not that helpful given it scales little if not at all, so ignore that)
+		normfactor = self.TARGETS/(float(self.THREADS)*1000*1000*1000)
 		self.reportPerformanceResult(results['xpybuild-dep-check.deps']/normfactor, 'Dependency resolution time per C++ target', 'ns')
 		self.reportPerformanceResult(results['xpybuild-build.build']/normfactor, 'Build time per C++ target', 'ns')
-
-		# should be very small
 		self.reportPerformanceResult((results['xpybuild-build-no-op.deps']+results['xpybuild-build-no-op.build'])/normfactor, 'Incremental build and dependency resolution time per C++ target', 'ns')
