@@ -21,6 +21,8 @@ class XpybuildBaseTest(BaseTest):
 			try:
 				environs = self.createEnvirons(env, command=sys.executable)
 				environs['COVERAGE_FILE'] = '.coverage.%s'%stdouterr # use unique names to avoid overwriting
+				environs['PYSYS_TEST_ROOT_DIR'] = self.project.testRootDir
+				
 				args = 	[
 #					PROJECT.rootdir+'/../xpybuild.py', 
 					PROJECT.XPYBUILD,

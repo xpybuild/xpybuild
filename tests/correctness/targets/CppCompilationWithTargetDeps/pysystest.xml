@@ -1,0 +1,23 @@
+<?xml version="1.0" standalone="yes"?>
+<pysystest type="auto" state="runnable">
+    
+  <description> 
+    <title>Native Cpp compilation - include and source target dependencies</title>
+    <purpose><![CDATA[
+To check we can handle advanced dependency situations
+]]>
+    </purpose>
+  </description>
+
+  <classification>
+  </classification>
+
+  <data>
+    <class name="PySysTest" module="run"/>
+  </data>
+  
+  <traceability>
+    <requirements>    
+    </requirements>
+  </traceability>
+</pysystest>

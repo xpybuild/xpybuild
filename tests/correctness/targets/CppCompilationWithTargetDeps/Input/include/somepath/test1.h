@@ -1,0 +1,1 @@
+#define STRING1 "STRING1"
