@@ -1,0 +1,18 @@
+digraph targets {
+_Copy____OUTPUT_DIR__testtarget1[label=" $OUTPUT_DIR/testtarget1"];
+_Copy____OUTPUT_DIR__testtarget2_[label=" $OUTPUT_DIR/testtarget2/"];
+_Copy____OUTPUT_DIR__testtarget2a -> _Copy____OUTPUT_DIR__testtarget2_;
+_Copy____OUTPUT_DIR__testtarget2b -> _Copy____OUTPUT_DIR__testtarget2_;
+_Copy____OUTPUT_DIR__testtarget2a[label=" $OUTPUT_DIR/testtarget2a"];
+_Copy____OUTPUT_DIR__testtarget2a_dep -> _Copy____OUTPUT_DIR__testtarget2a;
+_Copy____OUTPUT_DIR__testtarget2a_dep[label=" $OUTPUT_DIR/testtarget2a-dep"];
+_Copy____OUTPUT_DIR__testtarget2b[label=" $OUTPUT_DIR/testtarget2b"];
+_Copy____OUTPUT_DIR__testtarget3_[label=" $OUTPUT_DIR/testtarget3/"];
+_Copy____OUTPUT_DIR__testtarget2a -> _Copy____OUTPUT_DIR__testtarget3_;
+_Copy____OUTPUT_DIR__testtarget2b -> _Copy____OUTPUT_DIR__testtarget3_;
+_Copy____OUTPUT_DIR__testtarget4_[label=" $OUTPUT_DIR/testtarget4/"];
+_Copy____OUTPUT_DIR__testtarget2a -> _Copy____OUTPUT_DIR__testtarget4_;
+_Copy____OUTPUT_DIR__testtarget2b -> _Copy____OUTPUT_DIR__testtarget4_;
+_Copy____OUTPUT_DIR__testtarget5[label=" $OUTPUT_DIR/testtarget5"];
+_Copy____OUTPUT_DIR__testtarget6[label=" $OUTPUT_DIR/testtarget6"];
+}
