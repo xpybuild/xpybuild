@@ -26,7 +26,7 @@ from basetarget import BaseTarget
 from buildcommon import *
 from buildcontext import BuildContext
 from buildexceptions import BuildException
-from internal.buildtarget import TargetWrapper
+from internal.targetwrapper import TargetWrapper
 from internal.threadpool import ThreadPool, Utilisation
 from internal.outputbuffering import outputBufferingManager
 from utils.fileutils import deleteFile, exists, isfile, isdir, resetStatCache, getstat, toLongPathSafe

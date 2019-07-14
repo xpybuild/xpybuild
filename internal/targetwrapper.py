@@ -48,7 +48,7 @@ class TargetWrapper(object):
 	
 	def __init__(self, target, scheduler):
 		"""
-			Create a BuildTarget from a target. This target has an internal lock
+			Create a TargetWrapper from a target. This target has an internal lock
 			which is taken for some of the functions
 		"""
 		self.target = target
