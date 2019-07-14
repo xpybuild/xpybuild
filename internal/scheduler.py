@@ -259,6 +259,13 @@ class BuildScheduler(object):
 		# make this this can't be access by mistake later
 		del self.context._dependencyCheckingSerializationLock
 		
+		# definintely do these GIL-intensive operation single-threaded so we don't need to 
+		# keep grabbing and dropping locks
+		if (not self.options['clean']) and len(pool.errors) == 0:
+			for targetwrapper, _ in self.selectedtargetwrappers:
+				targetwrapper.updatePriority()
+				targetwrapper.checkForNonTargetDependenciesUnderOutputDirs()
+		
 		if not pool.errors:
 			# this is the only place we can list all targets since only here are final priorities known
 			# printing the deps in one place is important for debugging missing dependencies etc
@@ -273,21 +280,6 @@ class BuildScheduler(object):
 	
 		#assert (not pool.errors) or (self.total == self.index), (self.total, self.index) #disabled because assertion triggers during ctrl+c
 		return pool.errors
-
-	def _updatePriority(self, targetwrapper):
-		deps = targetwrapper.getTargetDependencies()
-		if len(deps)>0:
-			targetpriority = targetwrapper.effectivePriority
-			targets_get = self.targetwrappers.get
-			for dt in deps:
-					# should be safe to read priority without lock due to GIL, and this is on critical path so worth doing quickly
-					# especially as in most cases there is no priority change required
-					if targetpriority > dt.effectivePriority:
-						with dt.lock:
-							if targetpriority > dt.effectivePriority:
-								log.debug("Setting priority=%s on target %s", targetpriority, dt.name)
-								dt.setEffectivePriority(targetpriority)
-								self._updatePriority(dt)
 
 	def _deps_target(self, tname):
 		"""
@@ -342,8 +334,6 @@ class BuildScheduler(object):
 						
 						if dtargetwrapper in targetwrapper.rdeps(): 
 							raise Exception('Circular dependency between targets: %s and %s'%(dtargetwrapper.name, targetwrapper.name))
-
-						self._updatePriority(targetwrapper)
 						
 						with self.lock:
 							if not dtargetwrapper.path in self.pending:
@@ -476,10 +466,6 @@ class BuildScheduler(object):
 		deperrors = self._expand_deps()
 		depstime = time.time()-depstime
 		
-		if (not self.options['clean']) and len(deperrors) == 0:
-			for targetwrapper, _ in self.selectedtargetwrappers:
-				targetwrapper.checkForNonTargetDependenciesUnderOutputDirs()
-
 		if self.options.get("depGraphFile", None):
 			createDepGraph(self.options["depGraphFile"], self, self.context)
 			return deperrors+builderrors, built, completed, total

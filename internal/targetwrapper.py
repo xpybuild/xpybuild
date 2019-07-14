@@ -107,9 +107,6 @@ class TargetWrapper(object):
 				
 		raise AttributeError('Unknown attribute %s' % name)
 	
-	def setEffectivePriority(self, priority):
-		self.effectivePriority = priority
-	
 	def __getImplicitInputsFile(self):
 		x = self.target.workDir.replace('\\','/').split('/')
 		# relies on basetarget._resolveTargetPath having been called
@@ -369,7 +366,24 @@ class TargetWrapper(object):
 				if depflags & TargetWrapper.DEP_IS_DIR_PATH == 0: # ignore directories as timestamp is meaningless
 					if isNewer(abslongpath): return False
 		return True
+
+
+	def updatePriority(self):
+		"""
+		Push the priority from this target down to its dependencies. 
 		
+		This method is not thread-safe and should be called from only one thread 
+		before the build phase begins. 
+		"""
+		deps = self.getTargetDependencies()
+		if len(deps)>0:
+			targetpriority = self.effectivePriority
+			for dt in deps:
+				if targetpriority > dt.effectivePriority:
+					log.debug("Setting priority=%s on target %s", targetpriority, dt.name)
+					dt.effectivePriority = targetpriority
+					dt.updatePriority()
+							
 	def run(self, context):
 		"""
 			Calls the wrapped run method
