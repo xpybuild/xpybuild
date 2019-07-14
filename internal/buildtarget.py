@@ -185,9 +185,10 @@ class TargetWrapper(object):
 				abspath = toLongPathSafe(abspath)
 				nontargetdeps.append( (abspath, flags) )
 			else: 
+				if abspath in targetdeps: continue # avoid adding dups
 				targetdeps[abspath] = dtargetwrapper
 				dtargetwrapper.__rdep(self)
-		
+
 		# add additional dependencies from target groups of our deps
 		if len(targetdeps) > 0:
 			for t in list(targetdeps.values()):
@@ -198,13 +199,14 @@ class TargetWrapper(object):
 					for groupmembertarget in targetsingroup: # these are BaseTarget instances
 						if groupmembertarget == t.target: continue
 						groupmembertargetpath = groupmembertarget.path
+						if groupmembertargetpath in targetdeps: continue
 						targetdeps[groupmembertargetpath] = scheduler.targetwrappers[groupmembertargetpath]
 						scheduler.targetwrappers[groupmembertargetpath].__rdep(self)
 
-		self.depcount = len(targetdeps)
-
 		if self.path in targetdeps: 
 			del targetdeps[self.path]
+
+		self.depcount = len(targetdeps)
 		
 		# sort for deterministic order (as there are some sets and dicts involved)
 		nontargetdeps.sort()
