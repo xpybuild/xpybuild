@@ -21,12 +21,15 @@
 #
 
 import traceback, os, time
+import io
 import difflib
+from stat import S_ISREG, S_ISDIR # fast access for these is useful
+
 from basetarget import BaseTarget
 from buildcommon import *
 from threading import Lock
 from buildexceptions import BuildException
-from utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, isfile, isdir, toLongPathSafe
+from utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, isfile, isdir, toLongPathSafe, getstat
 
 import logging
 log = logging.getLogger('scheduler.targetwrapper')
@@ -37,9 +40,13 @@ class TargetWrapper(object):
 		scheduler during builds. 
 	"""
 	
-	__slots__ = 'target', 'path', 'name', 'isDirPath', 'lock', 'depcount', 'deps', '__rdeps', '__fdeps', '__isdirty', '__implicitInputs', '__implicitInputsFile', 'stampfile', 'effectivePriority'
+	__slots__ = 'target', 'path', 'name', 'isDirPath', 'lock', 'depcount', '__targetdeps', '__nontargetdeps', '__rdeps', '__isdirty', '__implicitInputs', '__implicitInputsFile', 'stampfile', 'effectivePriority', '__scheduler'
 	
-	def __init__(self, target):
+	# flags
+	DEP_IS_DIR_PATH = 2**1
+	#DEP_SKIP_EXISTENCE_CHECK = 2**2 # TODO: make this work
+	
+	def __init__(self, target, scheduler):
 		"""
 			Create a BuildTarget from a target. This target has an internal lock
 			which is taken for some of the functions
@@ -50,14 +57,34 @@ class TargetWrapper(object):
 		self.isDirPath = isDirPath(target.name)
 
 		self.lock = Lock()
+
+		self.__scheduler = scheduler
+
 		self.depcount = 0
-		self.deps = None
+		"""Counts the number of outstanding target dependencies yet to be built
+		"""
+
 		self.__rdeps = []
-		self.__fdeps = []
+		"""A list of TargetWrappers that depend on this one"""
+
 		self.__isdirty = False
 		
 		self.__implicitInputs = None
 
+		self.__targetdeps = None
+		""" A list of TargetWrappers that this one depends upon. 
+		Can only be used after resolveUnderlyingDependencies has been called. """
+		
+		self.__nontargetdeps = None
+		""" A sorted list of dependencies that aren't targets. Each item is a tuple
+		(longpathsafepath, dep flags)
+		
+		longpathsafepath is a unicode string on Windows (on Python 3: also linux)
+		
+		flags includes: DEP_IS_DIR_PATH, DEP_SKIP_EXISTENCE_CHECK, DEP_SHORTCUT_UPTODATE_CHECK
+		
+		Can only be used after resolveUnderlyingDependencies has been called. 
+		"""
 		
 		self.__implicitInputsFile = self.__getImplicitInputsFile()
 		if self.isDirPath: 
@@ -66,7 +93,6 @@ class TargetWrapper(object):
 			self.stampfile = self.target.path
 
 		self.effectivePriority = target.getPriority() # may be mutated to an effective priority
-
 
 	def __hash__ (self): return hash(self.target) # delegate
 	
@@ -81,8 +107,8 @@ class TargetWrapper(object):
 				
 		raise AttributeError('Unknown attribute %s' % name)
 	
-	def setEffectivePriority(self, pri):
-		self.effectivePriority = pri
+	def setEffectivePriority(self, priority):
+		self.effectivePriority = priority
 	
 	def __getImplicitInputsFile(self):
 		x = self.target.workDir.replace('\\','/').split('/')
@@ -90,56 +116,132 @@ class TargetWrapper(object):
 		return '/'.join(x[:-1])+'/implicit-inputs/'+x[-1]+'.txt' # since workDir is already unique (but don't contaminate work dir by putting this inside it)
 	
 	def __getImplicitInputs(self, context):
+	
 		# this is typically called in either uptodate or run, but never during dependency resolution 
 		# since we don't have all our inputs yet at that point
-		if self.__implicitInputs != None: return self.__implicitInputs
+		if self.__implicitInputs is not None: return self.__implicitInputs
 
 		# we could optimize this by not writing the file if all the 
 		# dependencies are explicit i.e. no FindPathSets are present
 
-		# list os already sorted (in case of determinism problems with filesystem walk order)
+		# list is already sorted (in case of determinism problems with filesystem walk order)
 		# take a copy here since it is used from other places
-		x = list(self.resolveDependencies(context))
-		
+		x = [wrapper.path for wrapper in self.__targetdeps] + [abspath for abspath,flags in self.__nontargetdeps]
+
 		# since this is meant to be a list of lines, normalize with a split->join
 		# also make any non-linesep \r or \n chars explicit to avoid confusion when diffing
 		x += [x.replace('\r','\\r').replace('\n','\\n') for x in os.linesep.join(self.target.getHashableImplicitInputs(context)).split(os.linesep)]
-		
+
+		if isinstance(x, unicode): x = x.encode('utf-8') # TODO: remove when we switch to Python 3
 		self.__implicitInputs = x
 		return x
 
+	def getTargetDependencies(self):
+		"""
+		Get a list of this object's dependencies that are targets, as TargetWrapper objects. 
+		
+		Can only be called after resolveUnderlyingDependencies. 
+
+		Do not modify the returned list.
+		"""
+		self.resolveUnderlyingDependencies() # in case not yet done
+		return self.__targetdeps
 	
-	def resolveDependencies(self, context):
+	def resolveUnderlyingDependencies(self):
 		"""
 			Calls through to the wrapped target, which does the expansion/replacement
 			of dependency strings here.
 			
-			Returns a SORTED list of dependencies as strings (paths). Either files or targets.
+			Populates the list of target deps and non target deps
 			
-			Not not modify the returned list.
-		"""
-		if self.deps is not None: return self.deps
+			Returns a tuple (targetdeps, nontargetdeps). where each is 
+			a SORTED list of dependencies as strings (paths). Either files or targets.
+			
+			Idempotent. Not safe for concurrent access without locking.
+		"""		
+		if self.__nontargetdeps is not None: return # already called, maybe while changing priorities
 
-		# note that some of these may be PathSetGeneratedByTarget path sets where 
-		# the real list of dependencies is not yet known, and the target that 
-		# will generate them is specified instead
-		deps = self.target._resolveUnderlyingDependencies(context)
-		
-		deps = context._expandAtomicDeps(deps)
+		scheduler = self.__scheduler
+		context = scheduler.context
 
-		if self.path in deps: deps.remove(self.path)
+		targetdeps = {} # path:instance (we use a dict for de-duplication)
+		""" A list of TargetWrapper objects for the targets this one depends upon"""
+		nontargetdeps = []
 		
-		deps.sort()
-		self.deps = deps
-		return self.deps
+		for abspath, pathset in self.target._resolveUnderlyingDependencies(context):
+			# TODO: should we canonicalize the abspath? e.g. for capitalization
+			try:
+				dtargetwrapper = scheduler.targetwrappers[abspath]
+			except KeyError:
+				# non target dep
+
+				flags = 0
+				if isDirPath(abspath): flags |= TargetWrapper.DEP_IS_DIR_PATH
+				
+				# TODO: DEP_SKIP_EXISTENCE_CHECK
+				
+				# convert to long path at this point, so we know later checks will work; 
+				# unlike targetdeps, nontargetdeps are sometimes deeply nested
+				abspath = toLongPathSafe(abspath)
+				nontargetdeps.append( (abspath, flags) )
+			else: 
+				targetdeps[abspath] = dtargetwrapper
+				dtargetwrapper.__rdep(self)
 		
-	def increment(self):
+		# add additional dependencies from target groups of our deps
+		if len(targetdeps) > 0:
+			for t in list(targetdeps.values()):
+				try:
+					targetsingroup = context.init._targetGroups[t.path]
+				except KeyError: pass
+				else:
+					for groupmembertarget in targetsingroup: # these are BaseTarget instances
+						if groupmembertarget == t.target: continue
+						groupmembertargetpath = groupmembertarget.path
+						targetdeps[groupmembertargetpath] = scheduler.targetwrappers[groupmembertargetpath]
+						scheduler.targetwrappers[groupmembertargetpath].__rdep(self)
+
+		self.depcount = len(targetdeps)
+
+		if self.path in targetdeps: 
+			del targetdeps[self.path]
+		
+		# sort for deterministic order (as there are some sets and dicts involved)
+		nontargetdeps.sort()
+		self.__nontargetdeps, self.__targetdeps = nontargetdeps, sorted(targetdeps.values(), key=lambda wrapper: wrapper.name)
+	
+	def checkForNonTargetDependenciesUnderOutputDirs(self):
 		"""
-			Increments the number of outstanding dependencies to be built.
-			Holds the object lock
+		Iterate over the dependencies that are not targets and return 
+		the name of one that's under an output dir (suggests a missing target 
+		dep), or None. 
 		"""
-		with self.lock:
-			self.depcount = self.depcount + 1
+		for dpath, flags in self.__nontargetdeps:
+			for outdir in self.__scheduler.context.getTopLevelOutputDirs():
+				if dpath.startswith(outdir):
+					raise BuildException('Target %s depends on output %s which is implicitly created by some other directory target - please use DirGeneratedByTarget to explicitly name the directory target that it depends on'%(self, dpath), 
+					location=self.target.location) # e.g. FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/foo/')+'bar/') # or similar
+		
+	def findMissingNonTargetDependencies(self):
+		"""
+		Iterate over the dependencies that are not targets and check 
+		the files and dirs exist, and for directories, have the correct 
+		trailing slash. Returns the path of first one that's missing or None. 
+		
+		"""
+		
+		for dpath, flags in self.__nontargetdeps:
+			dnameIsDirPath = (flags & TargetWrapper.DEP_IS_DIR_PATH)!=0
+			
+			dstat = getstat(dpath)
+			# TODO: optimization, could compute latest file here too (i.e. only do uptodate checking for FindPaths items)
+			
+			if dstat is False or not ( (dnameIsDirPath and S_ISDIR(dstat.st_mode)) or (not dnameIsDirPath and S_ISREG(dstat.st_mode)) ):
+				# just before we throw the exception, check it's not some other weird type of thing
+				assert not os.path.exists(dpath), dpath
+				return dpath
+		return None
+		
 	def decrement(self):
 		"""
 			Decrements the number of outstanding dependencies to be built
@@ -163,28 +265,22 @@ class TargetWrapper(object):
 			self.__isdirty = True
 			return r
 			
-	def rdep(self, target):
+	def __rdep(self, targetwrapper):
 		"""
 			Adds a reverse dependency to this target
 			Holds the object lock
 		"""
 		with self.lock:
-			self.__rdeps.append(target)
+			self.__rdeps.append(targetwrapper)
 	def rdeps(self):
 		"""
-			Returns the list of reverse dependencies.
+			Returns the list of reverse target dependencies as TargetWrapper objects.
 			Holds the object lock
 		"""
 		with self.lock:
 			return self.__rdeps
-	def filedep(self, path):
-		"""
-			Adds to the list of file dependencies. Not called for directories. 
-			Holds the object lock
-		"""
-		with self.lock:
-			self.__fdeps.append(path)
-	def uptodate(self, context, ignoreDeps):
+
+	def uptodate(self, context, ignoreDeps): 
 		"""
 			Checks whether the target needs to be rebuilt.
 			Returns true if the target is up to date and does not need a rebuild
@@ -214,12 +310,14 @@ class TargetWrapper(object):
 			
 			# assume that by this point our explicit dependencies at least exist, so it's safe to call getHashableImplicitDependencies
 			implicitInputs = self.__getImplicitInputs(context)
+			
+			# read implicit inputs file
 			if implicitInputs or self.isDirPath:
 				# this is to cope with targets that have implicit inputs (e.g. globbed pathsets); might as well use the same mechanism for directories (which need a stamp file anyway)
 				if not exists(self.__implicitInputsFile):
 					log.info('Up-to-date check: %s must be rebuilt because implicit inputs/stamp file does not exist: "%s"', self.name, self.__implicitInputsFile)
 					return False
-				with open(toLongPathSafe(self.__implicitInputsFile), 'rb') as f:
+				with io.open(toLongPathSafe(self.__implicitInputsFile), 'rb') as f:
 					latestImplicitInputs = f.read().split(os.linesep)
 					if latestImplicitInputs != implicitInputs:
 						maxdifflines = int(os.getenv('XPYBUILD_IMPLICIT_INPUTS_MAX_DIFF_LINES', '30'))/2
@@ -229,10 +327,10 @@ class TargetWrapper(object):
 						if len(added) > maxdifflines: added = ['...']+added[len(added)-maxdifflines:] 
 						if len(removed) > maxdifflines: removed = ['...']+removed[len(removed)-maxdifflines:]
 						if not added and not removed: added = ['N/A']
-						log.info('Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self.__implicitInputsFile, 
+						log.info(u'Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self.__implicitInputsFile, 
 							'\n\t'.join(
 								['previous build had %d lines, current build has %d lines'%(len(latestImplicitInputs), len(implicitInputs))]+removed+added
-							).replace('\r','\\r\r'))
+							).replace(u'\r',u'\\r\r'))
 						return False
 					else:
 						log.debug("Up-to-date check: implicit inputs file contents has not changed: %s", self.__implicitInputsFile)
@@ -245,7 +343,8 @@ class TargetWrapper(object):
 			stampmodtime = getmtime(self.stampfile)
 
 			def isNewer(path):
-				pathmodtime = getmtime(toLongPathSafe(path))
+				# assumes already long path safe
+				pathmodtime = getmtime(path)
 				if pathmodtime <= stampmodtime: return False
 				if pathmodtime-stampmodtime < 1: # such a small time gap seems dodgy
 					log.warn('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" by just %0.1f seconds', self.name, path, self.stampfile, pathmodtime-stampmodtime)
@@ -253,8 +352,20 @@ class TargetWrapper(object):
 					log.info('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" (by %0.1f seconds)', self.name, path, self.stampfile, pathmodtime-stampmodtime)
 				return True
 
-			for f in self.__fdeps:
-				if isNewer(f): return False
+			# things to check:
+			for dtargetwrapper in self.__targetdeps:
+				if not dtargetwrapper.isDirPath:
+					f = dtargetwrapper.path # might have an already built target dependency which is still newer
+				else:
+					# special case directory target deps - must use stamp file not dir, to avoid re-walking 
+					# the directory needlessly, and possibly making a wrong decision if the dir pathset is 
+					# from a filtered pathset
+					f = dtargetwrapper.stampfile
+				if isNewer(toLongPathSafe(f)): return False
+
+			for abslongpath, depflags in self.__nontargetdeps: 
+				if depflags & TargetWrapper.DEP_IS_DIR_PATH == 0: # ignore directories as timestamp is meaningless
+					if isNewer(abslongpath): return False
 		return True
 		
 	def run(self, context):

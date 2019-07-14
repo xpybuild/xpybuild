@@ -1,0 +1,4 @@
+build-output/nested2/
+build-output/nested3/
+build-output/out1/
+build-output/outputdir2/

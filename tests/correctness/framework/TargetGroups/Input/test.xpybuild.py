@@ -7,9 +7,22 @@ from targets.copy import *
 defineOutputDirProperty('OUTPUT_DIR', None)
 
 defineAtomicTargetGroup([
-	Copy('${OUTPUT_DIR}/testtarget1', 'input.txt'),
-	Copy('${OUTPUT_DIR}/testtarget2', 'input.txt'),
+	Copy('${OUTPUT_DIR}/testtarget1a', 'input.txt'),
+	Copy('${OUTPUT_DIR}/testtarget1b', 'input.txt'),
 ])
-Copy('${OUTPUT_DIR}/testtarget3', 'input.txt')
 
-Copy('${OUTPUT_DIR}/testtarget4', '${OUTPUT_DIR}/testtarget1')
+defineAtomicTargetGroup([
+	Copy('${OUTPUT_DIR}/testtarget2a', 'input.txt'),
+	Copy('${OUTPUT_DIR}/testtarget2b', 'input.txt'),
+])
+
+defineAtomicTargetGroup([
+	Copy('${OUTPUT_DIR}/testtarget-not-in-group', 'input.txt')
+])
+
+Copy('${OUTPUT_DIR}/testtarget/', 
+	['${OUTPUT_DIR}/testtarget1a', 
+	'${OUTPUT_DIR}/testtarget2a',
+	'${OUTPUT_DIR}/testtarget2b',# explicit dep as well as target group dep
+	]
+	)

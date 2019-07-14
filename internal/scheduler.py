@@ -33,8 +33,6 @@ from utils.fileutils import deleteFile, exists, isfile, isdir, resetStatCache, g
 from utils.timeutils import formatTimePeriod
 from threading import Lock
 
-from stat import S_ISREG, S_ISDIR # fast access for these is useful
-
 import time
 import thread
 import logging
@@ -58,6 +56,7 @@ class BuildScheduler(object):
 			targets - the selected targets to build this run (list of target objects)
 			options - the options for the build (map of string:variable)
 		"""
+		self.log = log
 		self.targetTimes = {} # map of {name : (path, seconds)}
 		self.targetwrappers = {} # map of targetPath:TargetWrapper where targetPath is the canonical resolved path (from getFullPath)
 		self.context = None
@@ -78,7 +77,7 @@ class BuildScheduler(object):
 		self.progressFormat = str(len(str(len(init.targets()))))
 		self.progressFormat = '*** %'+self.progressFormat+'d/%'+self.progressFormat+'d '
 		
-		self.outputDirs = init.getOutputDirs()
+		outputDirs = init.getOutputDirs()
 		
 		for t in init.targets().values():
 			try:
@@ -92,11 +91,11 @@ class BuildScheduler(object):
 				
 				assert isDirPath(t.path) == isDirPath(t.name), (repr(t.path), repr(t.name), isDirPath(t.path), isDirPath(t.name)) # must have agreement on whether it's a dir or file target between these different representations
 				
-				for o in init.getOutputDirs():
+				for o in outputDirs:
 					if t.path.rstrip('\\/') == o.rstrip('\\/'):
 						raise BuildException('Cannot use shared output directory for target: directory targets must always build to a dedicated directory')
 						
-				self.targetwrappers[t.path] = TargetWrapper(t)
+				self.targetwrappers[t.path] = TargetWrapper(target=t, scheduler=self)
 			except Exception, e:
 				if not isinstance(e, IOError):
 					log.exception('FAILED to prepare target %s: '%t) # include python stack trace in case it's an xpybuild bug
@@ -276,20 +275,19 @@ class BuildScheduler(object):
 		return pool.errors
 
 	def _updatePriority(self, targetwrapper):
-		if targetwrapper.deps:
+		deps = targetwrapper.getTargetDependencies()
+		if len(deps)>0:
 			targetpriority = targetwrapper.effectivePriority
 			targets_get = self.targetwrappers.get
-			for d in targetwrapper.deps:
-				dt = targets_get(d, None) # a TargetWrapper
-				if dt is not None: 
-						# should be safe to read priority without lock due to GIL, and this is on critical path so worth doing quickly
-						# especially as in most cases there is no priority change required
-						if dt.effectivePriority < targetpriority:
-							with dt.lock:
-								if dt.effectivePriority < targetpriority:
-									log.debug("Setting priority=%s on target %s", targetpriority, dt.name)
-									dt.setEffectivePriority(targetpriority)
-									self._updatePriority(dt)
+			for dt in deps:
+					# should be safe to read priority without lock due to GIL, and this is on critical path so worth doing quickly
+					# especially as in most cases there is no priority change required
+					if targetpriority > dt.effectivePriority:
+						with dt.lock:
+							if targetpriority > dt.effectivePriority:
+								log.debug("Setting priority=%s on target %s", targetpriority, dt.name)
+								dt.setEffectivePriority(targetpriority)
+								self._updatePriority(dt)
 
 	def _deps_target(self, tname):
 		"""
@@ -333,65 +331,41 @@ class BuildScheduler(object):
 				self.leaves.append(targetwrapper)
 			elif not (self.options['ignore-deps'] and self.options['clean']): 
 				try:
-					deps = targetwrapper.resolveDependencies(self.context) # this list is sorted
-					if deps: log.debug('%s has %d dependencies', targetwrapper.target, len(deps))
+					targetwrapper.resolveUnderlyingDependencies()
+					# this list is sorted
 					
 					targetDeps = [] # just for logging
-					
 					leaf = True
-					for dname in deps:
+					for dtargetwrapper in targetwrapper.getTargetDependencies():
 						#log.debug('Processing dependency: %s -> %s', tname, dname)
-						dpath = toLongPathSafe(dname)
-						dnameIsDirPath = isDirPath(dname)
+						leaf = False
 						
-						if dname in self.targetwrappers:
-							leaf = False
-							
-							dtarget = self.targetwrappers[dname] # also a target wrapper
-							if dtarget in targetwrapper.rdeps(): raise Exception('Circular dependency between targets: %s and %s'%(dtarget.name, targetwrapper.name))
-							
-							dtarget.rdep(targetwrapper)
-							self._updatePriority(targetwrapper)
-							targetwrapper.increment()
-							
-							
-							if not dnameIsDirPath:
-								targetwrapper.filedep(dname) # might have an already built target dependency which is still newer
-							else:
-								# special case directory target deps - must use stamp file not dir, to avoid re-walking 
-								# the directory needlessly, and possibly making a wrong decision if the dir pathset is 
-								# from a filtered pathset
-								targetwrapper.filedep(self.targetwrappers[dname].stampfile)						
+						if dtargetwrapper in targetwrapper.rdeps(): 
+							raise Exception('Circular dependency between targets: %s and %s'%(dtargetwrapper.name, targetwrapper.name))
+
+						self._updatePriority(targetwrapper)
 						
-							with self.lock:
-								if not dname in self.pending:
-									self.pending.append(dname)
-									pending.append((0, dname))
-							
-							targetDeps.append(str(dtarget)) # just for logging
-						else:
-							dstat = getstat(dpath)
-							if dstat and ( (dnameIsDirPath and S_ISDIR(dstat.st_mode)) or (not dnameIsDirPath and S_ISREG(dstat.st_mode)) ):
-								if not dnameIsDirPath:
-									# do not need to record directories as useless for uptodate checking (they just need to appear 
-									# in the implicit inputs file, but that's already happened in TargetWrapper.__getImplicitInputs)
-									# FindPaths(...) must be used if directory contents matter
-									targetwrapper.filedep(dname)
-								else:
-									log.debug('Ignoring directory for dependency-checking purposes (use FindPaths if you care about the contents): %s', dname)
-							else:
-								# in the specific case of a dependency error, build will definitely fail immediately so we should log line number 
-								# at ERROR log level not just at info
-								ex = BuildException("Cannot find dependency %s" % dname)
-								log.error('FAILED during dependency resolution: %s', ex.toMultiLineString(targetwrapper, includeStack=False), extra=ex.getLoggerExtraArgDict(targetwrapper))
-								assert not os.path.exists(dpath), dname
-								errors.append(ex.toSingleLineString(targetwrapper))
-								
-								break
+						with self.lock:
+							if not dtargetwrapper.path in self.pending:
+								self.pending.append(dtargetwrapper.path)
+								pending.append((0, dtargetwrapper.path))
+						
+						targetDeps.append(str(dtargetwrapper)) # just for logging
+					# end of target deps loop
+					
+					# must check for missing non-target deps during this phase as if we wait to 
+					# build phase (when uptodate checking happens) we might not detect important race conditions
+					missingdep = targetwrapper.findMissingNonTargetDependencies()
+					if missingdep is not None:
+						# in the specific case of a dependency error, build will definitely fail immediately so we should log line number 
+						# at ERROR log level not just at info
+						ex = BuildException("Cannot find dependency %s" % missingdep)
+						log.error('FAILED during dependency resolution: %s', ex.toMultiLineString(targetwrapper, includeStack=False), extra=ex.getLoggerExtraArgDict(targetwrapper))
+						errors.append(ex.toSingleLineString(targetwrapper))
 					
 					# Stash this for logging later. Can't log priority here because it might change as more rdeps are found
 					self.selectedtargetwrappers.append( (targetwrapper, targetDeps) )
-							
+					
 					if leaf:
 						self.leaves.append(targetwrapper)
 						
@@ -487,34 +461,6 @@ class BuildScheduler(object):
 			errors.extend(self._handle_error(target.target, prefix="Target FAILED"))
 		return (newleaves, errors, 0 == len(errors) or self.options["keep-going"])
 	
-	def checkForUndeclaredDependencies(self):
-		# do a sanity check to ensure we don't have undeclared implicit dependencies on any directory targets 
-		# which is a common source of tricky problems. Only works for targets under an output dir, but 
-		# that's almost all of them so good enough
-		checktime = time.time()
-		
-		# remove children if parent is also an output dir 
-		# (which is common as output dirs are often used to enforce existence), 
-		# which speeds up checking in later part
-		outputDirs = sorted(list(self.outputDirs))
-		for o in list(outputDirs):
-			x = os.path.dirname(o)
-			while x and x != os.path.dirname(x):
-				if x in outputDirs:
-					outputDirs.remove(o)
-					break
-				x = os.path.dirname(x)
-	
-		for t in self.pending:
-			underlyingdeps = self.targetwrappers[t].resolveDependencies(self.context)
-			for dep in underlyingdeps:
-				for outdir in self.outputDirs:
-					if dep.startswith(outdir) and dep not in self.targetwrappers:
-						raise BuildException('Target %s depends on output %s which is implicitly created by some other directory target - please use DirGeneratedByTarget to explicitly name the directory target that it depends on'%(self.targetwrappers[t], dep), 
-							location=self.targetwrappers[t].target.location) # e.g. FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/foo/')+'bar/') # or similar
-		checktime = time.time()-checktime
-		log.info('Spent %0.1fs checking for undeclared implicit directory dependencies - none found', checktime)
-	
 	def run(self):
 		"""
 			Run the build taking the set of requested targets, 
@@ -530,9 +476,10 @@ class BuildScheduler(object):
 		deperrors = self._expand_deps()
 		depstime = time.time()-depstime
 		
-		if not self.options['clean']:
-			self.checkForUndeclaredDependencies()
-		
+		if (not self.options['clean']) and len(deperrors) == 0:
+			for targetwrapper, _ in self.selectedtargetwrappers:
+				targetwrapper.checkForNonTargetDependenciesUnderOutputDirs()
+
 		if self.options.get("depGraphFile", None):
 			createDepGraph(self.options["depGraphFile"], self, self.context)
 			return deperrors+builderrors, built, completed, total
@@ -588,10 +535,11 @@ def createDepGraph(file, scheduler, context):
 	with open(file, 'w') as df:
 		df.write("digraph targets {\n")
 		for t in scheduler.pending:
-			df.write('%s[label="%s"];\n' % (_getKey(scheduler.targets[t]), _getPrintable(scheduler.targets[t])))
-			for d in scheduler.targets[t].resolveDependencies(context):
-				if d in scheduler.targets:
-					df.write('%s -> %s;\n' % (_getKey(scheduler.targets[d]), _getKey(scheduler.targets[t])))
+			df.write('%s[label="%s"];\n' % (_getKey(scheduler.targetwrappers[t]), _getPrintable(scheduler.targetwrappers[t])))
+			targetwrapper = scheduler.targetwrappers[t]
+			targetwrapper.resolveUnderlyingDependencies()
+			for d in targetwrapper.getTargetDependencies():
+				df.write('%s -> %s;\n' % (_getKey(d), _getKey(targetwrapper)))
 		df.write("}\n")
 
 
@@ -640,10 +588,10 @@ def logTargetTimes(file, scheduler, context):
 			critpath.extend(curpath) 
 
 		maxcrit = 0 # find the maximum critical path below us
-		for d in target.resolveDependencies(context):
-			if d in scheduler.targets:
-				(edgecrit, edgesum) = _sumDepTimes(scheduler.targets[d], scheduler, context, dots, curpath, critpath) # get the critical/sum time for this dependency
-				dots.add('%s -> %s[label="%s"];\n' % (_getKey(scheduler.targets[d]), _getKey(target), _formatTime(edgesum)))
+		target.resolveUnderlyingDependencies()
+		for d in target.getTargetDependencies():
+				(edgecrit, edgesum) = _sumDepTimes(d, scheduler, context, dots, curpath, critpath) # get the critical/sum time for this dependency
+				dots.add('%s -> %s[label="%s"];\n' % (_getKey(d), _getKey(target), _formatTime(edgesum)))
 				sum = sum + edgesum
 				if edgecrit > maxcrit:
 					maxcrit = edgecrit # update our maximum
@@ -660,7 +608,7 @@ def logTargetTimes(file, scheduler, context):
 			f.write('Target,Time,Cumulative,Critical Path\n')
 			for name in scheduler.targetTimes: # Iterate over each target
 				(path, time) = scheduler.targetTimes[name]
-				target = scheduler.targets[path]
+				target = scheduler.targetwrappers[path]
 				(crittime, cumtime) = _sumDepTimes(target, scheduler, context, dots, [], critpath) # recurse, summing the times on all the deps
 				f.write(name)
 				f.write(',')

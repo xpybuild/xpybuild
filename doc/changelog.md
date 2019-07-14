@@ -1,6 +1,7 @@
 # 1.15 - current release
 ## Breaking changes
 - PathSet class no longer exists, replaced by a function of the same name that creates a new instance only if needed. If you have code that subclasses PathSet change it to subclass BasePathSet. 
+- BasePathSet._resolveUnderlyingDepenencies() now returns a generator of (path, pathset) instead of a list of [path]. This only affects users with a custom subclass of BasePathSet with an override of this method (and does not affect you if you used DerivedPathSet). 
 
 ## Deprecation
 None

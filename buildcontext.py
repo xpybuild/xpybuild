@@ -654,7 +654,9 @@ class BuildInitializationContext(BaseContext):
 		
 	# methods used by the scheduler
 	def getOutputDirs(self):
-		""" Return the list of registered output dirs """
+		""" Return the list of registered output dirs. 
+		Note that some of these might be nested inside other output dirs. 
+		"""
 		return self._outputDirs
 
 	def _defineOption(self, name, default):
@@ -686,17 +688,6 @@ class BuildInitializationContext(BaseContext):
 		targets = set(targets)
 		self._targetGroups.append(targets)
 
-	def _expandAtomicDeps(self, _deps):
-		""" Takes a list of targets and adds in any extras due to atomic grouping """
-		deps = set()
-		for d in _deps:
-			deps.add(d)
-			if d in self._targetGroups:
-				for t in self._targetGroups[d]:
-					deps.add(t.path)
-		return list(deps)
-
-
 class BuildContext(BaseContext):
 	"""
 	Provides context used only during the build phase of the build (after initialization is complete), 
@@ -715,6 +706,29 @@ class BuildContext(BaseContext):
 
 		self._dependencyCheckingSerializationLock = threading.Lock()
 		"""Internal, may change at any time do not use. """
+		
+		# remove children if parent is also an output dir 
+		# (which is common as output dirs are often used to enforce existence), 
+		# which speeds up checking in later part
+		outputDirs = [o.rstrip(os.sep) for o in initializationContext.getOutputDirs()]
+		outputDirs.sort()
+		for o in list(outputDirs):
+			x = os.path.dirname(o)
+			while x and x != os.path.dirname(x):
+				if x in outputDirs:
+					outputDirs.remove(o)
+					break
+				x = os.path.dirname(x)
+		self.__topLevelOutputDirs = [o+os.sep for o in outputDirs]
+	
+	def getTopLevelOutputDirs(self):
+		""" Returns a list of the absolute path of the defined output 
+		directories, excluding any output dirs that are nested inside another 
+		output directory. 
+		
+		@return: A list of absolute paths each ending in os.sep. 
+		"""
+		return self.__topLevelOutputDirs
 	
 	def _resolveTargetGroups(self):
 		""" Turns the list of groups of targets into a map of paths to target groups """
@@ -744,10 +758,6 @@ class BuildContext(BaseContext):
 			return target.name in self.init.targets()
 		target = str(target)
 		return target in self.init.targets() or target in self.__targetPaths
-
-	def _expandAtomicDeps(self, _deps):
-		""" Takes a list of targets and adds in any extras due to atomic grouping """
-		return self.init._expandAtomicDeps(_deps)
 
 	def _dependencyCheckingEnableParallelism(self):
 		"""

@@ -1,4 +1,4 @@
-# xpyBuild - eXtensible Python-based Build System
+0# xpyBuild - eXtensible Python-based Build System
 #
 # Contains the base classes for creating various kinds of target. 
 #
@@ -185,8 +185,16 @@ class BaseTarget(Composable):
 		if rawdeps: return self.__dependencies.resolve(context)
 		
 		# don't think there's any value in caching this result
-		if not self.__dependencies: return []
 		return self.__dependencies._resolveUnderlyingDependencies(context)
+
+	def _getDependencies(self):
+		"""
+		Provides access to the PathSet instance containing dependencies 
+		for this target. 
+		
+		This method exists for internal use only. 
+		"""
+		return self.__dependencies
 
 	def run(self, context):
 		""" Build this target. 

@@ -16,7 +16,7 @@
 # directory, which forces the evaluation of its contents to be delayed 
 # until the target dependency has actually been built.
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -62,6 +62,10 @@ class BasePathSet(object):
 		""" Use the specified context to resolve the contents of this pathset 
 		to a list of normalized absolute paths (using OS-dependent slashes). 
 		
+		Note that unless you actually need a list it is usually more efficient 
+		to iterate over resolveWithDestinations which avoids taking a copy of 
+		the data structure. 
+		
 		All directory paths must end with "/" or "\". 
 		
 		Some PathSet implementations will cache the results of resolve, if 
@@ -99,8 +103,8 @@ class BasePathSet(object):
 		raise Exception('TODO: must implement resolveWithDestinations for %s'%self.__class__)
 	
 	def _resolveUnderlyingDependencies(self, context):
-		""" Use the specified context to resolve to a list of the absolute source 
-		paths making up this set, for the purposes of target dependency 
+		""" Returns a generator or list that uses the specified context to 
+		resolve the absolute source paths making up this set, for the purposes of target dependency 
 		evaluation. The underlying dependency paths are returned, 
 		i.e. a child-first delegation model in cases where pathsets are wrapped 
 		inside other pathsets, to ensure that where relevant the target 
@@ -111,7 +115,7 @@ class BasePathSet(object):
 		during the dependency evaluation phase. 
 		
 		For pathsets that definitely have no PathSet dependencies, this 
-		can be implemented as return self.resolve(context). 
+		can be implemented as return ((path, self) for (path, _) in self.resolveWithDestinations(context)). 
 		
 		Like the other resolve methods, this returns absolute and normalized 
 		path strings containing no substitution variables, and ending with a 
@@ -122,6 +126,7 @@ class BasePathSet(object):
 		checked during dependency evaluation, so always use FindPaths if you wish
 		to include the contents of a directory. Including non-empty/non-target
 		directories is likely to be an error. 
+		
 		"""
 		raise Exception('TODO: must implement _resolveUnderlyingDependencies for %s'%self.__class__)
 
@@ -159,32 +164,24 @@ class __SimplePathSet(BasePathSet):
 		return p, [os.path.basename(x.rstrip('\\/'))+(os.path.sep if isDirPath(x) else '') for x in p]
 
 	def _resolveUnderlyingDependencies(self, context):
-		r = []
 		for x in self.contents:
 			if not isinstance(x, BasePathSet):
-				r.extend(self.__resolveStringPath(x, context)[0])
+				for item in self.__resolveStringPath(x, context)[0]:
+					if '//' in item: # this could easily confuse things later!
+						raise BuildException('Invalid path with multiple slashes "%s" in %s'%(item, self), location=self.__location)
+					yield item, self
 			else:
 				# for pathsets, delegate to child
 				if len(self.contents)==1:
 					# short-circuit this common case, avoiding an extra copy and search
-					return x._resolveUnderlyingDependencies(context)
-				r.extend(x._resolveUnderlyingDependencies(context))
+					for item in x._resolveUnderlyingDependencies(context):
+						yield item
+					return
+				for item in x._resolveUnderlyingDependencies(context):
+					yield item
 		
-		# check for duplicates here
-		if len(self.contents) > 1: # no point if it's a trivial wrapper around another PathSet
-			seen = set()
-			for x in r:
-				if '//' in x: # this could easily confuse things later!
-					raise BuildException('Invalid path with multiple slashes "%s" in %s'%(x, self), location=self.__location)
-				if x.lower() in seen:
-					# originally we had an exception here, but occasionally you might have a single thing that's 
-					# a dependency in more than one way (e.g. a jar that's on the classpath AND packaged within an OSGI bundle)
-					# so just make this a debug log msg
-					logging.getLogger('PathSet').debug('Duplicate PathSet item found: "%s" in %s from %s', x, self, self.__location)
-					#raise BuildException('Duplicate item "%s" in %s'%(x, self), location=self.__location)
-				seen.add(x.lower())
-		
-		return r
+		# originally we did a duplicates check here, but occasionally you might have a single thing that's 
+		# a dependency in more than one way (e.g. a jar that's on the classpath AND packaged within an OSGI bundle)
 	
 	def resolveWithDestinations(self, context):
 		# Docs inherited from base class
@@ -232,7 +229,7 @@ def PathSet(*items):
 	>>> str(PathSet('a', [('b/', PathSet('1/2/3/', '4/5/6/'), ['d/e'])], 'e/f/${x}'))
 	'PathSet("a", "b/", PathSet("1/2/3/", "4/5/6/"), "d/e", "e/f/${x}")'
 
-	>>> str(PathSet('a', [[PathSet('1/2/3/', DirGeneratedByTarget('4/5/6/'), '7/8/')]], DirGeneratedByTarget('9/'))._resolveUnderlyingDependencies(BaseContext({}))).replace('\\\\\\\\','/')
+	>>> str([path for (path,pathset) in PathSet('a', [[PathSet('1/2/3/', DirGeneratedByTarget('4/5/6/'), '7/8/')]], DirGeneratedByTarget('9/'))._resolveUnderlyingDependencies(BaseContext({}))]).replace('\\\\\\\\','/')
 	"['BUILD_DIR/a', 'BUILD_DIR/1/2/3/', 'BUILD_DIR/4/5/6/', 'BUILD_DIR/7/8/', 'BUILD_DIR/9/']"
 
 	>>> PathSet('a/*').resolve(BaseContext({})) #doctest: +IGNORE_EXCEPTION_DETAIL
@@ -296,7 +293,7 @@ class DirBasedPathSet(BasePathSet):
 	>>> str(PathSet('a', DirBasedPathSet(DirGeneratedByTarget('4/5/6/'), '7/8')))
 	'PathSet("a", DirBasedPathSet(DirGeneratedByTarget("4/5/6/"), [\\'7/8\\']))'
 	
-	>>> str(PathSet('a', DirBasedPathSet(DirGeneratedByTarget('4/5/6/'), '7/8'))._resolveUnderlyingDependencies(BaseContext({}))).replace('\\\\\\\\','/')
+	>>> str([path for (path,pathset) in PathSet('a', DirBasedPathSet(DirGeneratedByTarget('4/5/6/'), '7/8'))._resolveUnderlyingDependencies(BaseContext({}))]).replace('\\\\\\\\','/')
 	"['BUILD_DIR/a', 'BUILD_DIR/4/5/6/']"
 	
 	"""
@@ -323,11 +320,11 @@ class DirBasedPathSet(BasePathSet):
 
 	def _resolveUnderlyingDependencies(self, context):
 		if isinstance(self.__dir, BaseTarget):
-			return [self.__dir.resolveToString(context)] 
+			return [self.__dir.resolveToString(context), self] 
 		elif isinstance(self.__dir, BasePathSet):
 			return self.__dir._resolveUnderlyingDependencies(context)
 		else:
-			return self.resolve(context)
+			return ((abspath, self) for abspath, dest in self.resolveWithDestinations(context))
 	
 	def resolveWithDestinations(self, context):
 		children = flatten([
@@ -448,11 +445,11 @@ class FindPaths(BasePathSet):
 	
 	def _resolveUnderlyingDependencies(self, context):
 		if isinstance(self.__dir, BaseTarget):
-			return [self.__dir.resolveToString(context)] 
-		elif isinstance(self.__dir, BasePathSet):
+			return [self.__dir.resolveToString(context), self] 
+		elif isinstance(self.__dir, BasePathSet): 
 			return self.__dir._resolveUnderlyingDependencies(context)
 		else:
-			return self.resolve(context)
+			return ((abspath, self) for abspath, dest in self.resolveWithDestinations(context))
 		
 	@staticmethod
 	def __removeNamesFromList(l, toberemoved):
@@ -630,7 +627,7 @@ class TargetsWithTag(BasePathSet):
 			targets = context.getTargetsWithTag(self.__targetTag)
 		except BuildException, e: # add location info to exception
 			raise BuildException(str(e), location=self.__location)
-		return [t.path for t in targets]
+		return ( (t.path, self) for t in targets)
 
 	
 # PathSets derived from other PathSets:
@@ -655,10 +652,10 @@ class FilteredPathSet(_DerivedPathSet):
 	>>> str(PathSet('a', FilteredPathSet(lambda x: True, DirGeneratedByTarget('4/5/6/'))))
 	'PathSet("a", FilteredPathSet(<lambda>, DirGeneratedByTarget("4/5/6/")))'
 	
-	>>> str(PathSet('a', FilteredPathSet(isDirPath, DirGeneratedByTarget('4/5/6/')))._resolveUnderlyingDependencies(BaseContext({}))).replace('\\\\\\\\','/')
+	>>> str([path for (path,pathset) in PathSet('a', FilteredPathSet(isDirPath, DirGeneratedByTarget('4/5/6/')))._resolveUnderlyingDependencies(BaseContext({}))]).replace('\\\\\\\\','/')
 	"['BUILD_DIR/a', 'BUILD_DIR/4/5/6/']"
 
-	>>> str(PathSet('a', FilteredPathSet(lambda p:p.endswith('.java'), FindPaths(DirGeneratedByTarget('4/5/6/'))))._resolveUnderlyingDependencies(BaseContext({}))).replace('\\\\\\\\','/')
+	>>> str([path for (path,pathset) in PathSet('a', FilteredPathSet(lambda p:p.endswith('.java'), FindPaths(DirGeneratedByTarget('4/5/6/'))))._resolveUnderlyingDependencies(BaseContext({}))]).replace('\\\\\\\\','/')
 	"['BUILD_DIR/a', 'BUILD_DIR/4/5/6/']"
 
 	
@@ -693,7 +690,7 @@ class FilteredPathSet(_DerivedPathSet):
 		# DirGeneratedByTarget and we might filter out a directory containing 
 		# matching files prematurely
 		result = self._pathSet._resolveUnderlyingDependencies(context)
-		return result if self.__delayFiltration else [src for src in result if isDirPath(src) or self.__includeDecider(src)]
+		return result if self.__delayFiltration else ((src, self) for (src, _) in result if isDirPath(src) or self.__includeDecider(src))
 
 class AddDestPrefix(_DerivedPathSet):
 	""" Adds a specified prefix on to the destinations of the specified PathSet. 
@@ -959,7 +956,7 @@ class DirGeneratedByTarget(BasePathSet):
 		# don't need to do anything complicated here, 
 		# the magic is that all parent pathsets this is wrapped inside 
 		# will always delegate down to this path
-		return self.resolve(context)
+		return ((abspath, self) for abspath, dest in self.resolveWithDestinations(context))
 
 	def resolveWithDestinations(self, context):
 		t = context.getFullPath(self.__target, defaultDir=self.__location)

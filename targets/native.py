@@ -27,7 +27,7 @@ from pathsets import PathSet, BasePathSet
 from buildcontext import getBuildInitializationContext
 from buildexceptions import BuildException
 from propertyfunctors import make_functor, Composable
-from utils.fileutils import openForWrite, mkdir, deleteFile, getmtime, exists, normLongPath
+from utils.fileutils import openForWrite, mkdir, deleteFile, getmtime, exists, toLongPathSafe
 
 class __CompilersNotSpecified(object):
 	def __getattr__(self, attr):
@@ -78,15 +78,16 @@ class CompilerMakeDependsPathSet(BasePathSet):
 	def __repr__(self):
 		return "MakeDepend(%s, %s)" % (self.sources, self.flags)
 	def resolveWithDestinations(self, context):
-		return [(i, os.path.basename(i)) for i in self._resolveUnderlyingDependencies(context)]
+		assert False, 'CompilerMakeDependsPathSet.resolveWithDestinations should never be called'
+		
 	def clean(self):
 		dfile = self.target.workDir+'.makedepend'
 		deleteFile(dfile)
-	def _resolveUnderlyingDependencies(self, context):
+	def _resolveUnderlyingDependencies(self, context):	
 		deplist = None
 		options = self.target.options # get the merged options
 
-		dfile = normLongPath(self.target.workDir+'.makedepend')
+		dfile = toLongPathSafe(self.target.workDir+'.makedepend')
 		testsources = self.sources.resolve(context)
 		depsources = self.sources._resolveUnderlyingDependencies(context)
 
@@ -94,16 +95,21 @@ class CompilerMakeDependsPathSet(BasePathSet):
 		if needsRebuild:
 			self.log.info("Rebuilding dependencies for %s because cached dependencies file does not exist (%s)" % (self.target, dfile))
 		dfiletime = 0 if needsRebuild else getmtime(dfile) 
+		
 		for x in testsources:
+			# TODO: could avoid looking up stat of this file twice
 			if not exists(x):
 				# can't generate any deps if some source files don't yet exist
-				self.log.info("Dependency generation %s postponed because source file does not exist: %s" % (self.target, x))
+				
+				# note that when we do this, we'll be using a potentially old source file
+				self.log.info("Dependency generation %s postponed to next incremental build because source file does not exist: %s" % (self.target, x))
+				# TODO: should add include dirs too
 				return depsources
-			elif getmtime(x) > dfiletime:
-				if not needsRebuild:	self.log.info("Rebuilding dependencies for %s because cached dependencies file is older than %s" % (self.target, x))
+			elif (not needsRebuild) and getmtime(x) > dfiletime:
+				self.log.info("Rebuilding dependencies for %s because cached dependencies file is older than %s" % (self.target, x))
 				needsRebuild = True
 		
-		if not needsRebuild: # read in cached dependencies
+		if not needsRebuild: # read in cached makedepends
 			deplist = []
 			with open(dfile) as f:
 				lines = f.readlines()
@@ -112,8 +118,8 @@ class CompilerMakeDependsPathSet(BasePathSet):
 				for d in lines:
 					d = d.strip()
 					if not d: continue
-					if context._isValidTarget(d) or exists(normLongPath(d)):
-						deplist.append(d)
+					if context._isValidTarget(d) or exists(toLongPathSafe(d)):
+						deplist.append( (d, self) )
 					else:
 						needsRebuild = True
 						self.log.warn("Rebuilding dependencies for %s because dependency %s is missing" % (self.target, d))
@@ -130,7 +136,7 @@ class CompilerMakeDependsPathSet(BasePathSet):
 			self.log.info("*** Generating native dependencies for %s" % self.target)
 			
 			generatedIncludeDirs = []
-			for d in self.includes._resolveUnderlyingDependencies(context):
+			for d, _ in self.includes._resolveUnderlyingDependencies(context):
 				if not d.endswith(os.sep): d += os.sep # includes are always directories
 				if context._isValidTarget(d) and (d not in generatedIncludeDirs):
 					generatedIncludeDirs.append(d)
@@ -140,24 +146,36 @@ class CompilerMakeDependsPathSet(BasePathSet):
 						return True
 				return False
 			try:
-				deplist = options['native.compilers'].dependencies.depends(context=context, src=testsources, options=options, flags=flatten(options['native.cxx.flags']+[context.expandPropertyValues(x).split(' ') for x in self.flags]), includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']]))
+				deplist = options['native.compilers'].dependencies.depends(context=context, src=testsources, options=options, 
+					flags=flatten(options['native.cxx.flags']+[context.expandPropertyValues(x).split(' ') for x in self.flags]), 
+					includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']])
+					)
+				if IS_WINDOWS:
+					deplist = [d.replace('/','\\') for d in deplist]
 				
 				# remove paths inside generated directories and replace with the targets themselves
-				deplist = [d for d in deplist if not isGeneratedIncludeFile(d)] + generatedIncludeDirs
+				# no point using a generator given we have to materialize this to write the dfile below
+				deplist = [ (d, self) for d in deplist if (not isGeneratedIncludeFile(d) and d not in testsources)] + [ (d, self) for d in generatedIncludeDirs ]
+				deplist.sort() # canonical order
 				
 			except BuildException, e:
 				if len(testsources)==1 and testsources[0] not in str(e):
 					raise BuildException('Dependency resolution failed for %s: %s'%(testsources[0], e))
 				raise
 			
+			# materialize this as a list since we need to iterate over it twice and can't do that with a generator
+			depsources = list(depsources)
+
 			mkdir(os.path.dirname(dfile))
 			with openForWrite(dfile, 'wb') as f:
 				assert not os.linesep in str(self)
 				f.write(str(self)+os.linesep)
-				for d in deplist+['']+depsources: # spacer to make it easier to see what's going on - distinction between depsources and deplist
+				for d, _ in deplist+[('', None)]+depsources: # spacer to make it easier to see what's going on - distinction between depsources and deplist
 					f.write(d.encode('UTF-8')+os.linesep)
 			if time.time()-startt > 5: # this should usually be pretty quick, so may indicate a real build file mistake
 				self.log.warn('Dependency generation took a long time: %0.1f s to evaluate %s', time.time()-startt, self)
+		
+		# ideally file existence checking should happen here else (due to postponement above) it may not be possible; not done currently
 		
 		return deplist+depsources
 
