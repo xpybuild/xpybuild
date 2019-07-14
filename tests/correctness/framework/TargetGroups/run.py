@@ -6,6 +6,10 @@ class PySysTest(XpybuildBaseTest):
 	def execute(self):
 		self.xpybuild(args=['${OUTPUT_DIR}/testtarget/'])
 
+		# smoke test that these don't fail horrendously
+		self.xpybuild(args=['${OUTPUT_DIR}/testtarget/', '--verify'], stdouterr='xpybuild-verify')
+		self.xpybuild(args=['${OUTPUT_DIR}/testtarget/', '--rebuild'], stdouterr='xpybuild-rebuild')
+
 	def validate(self):
 		# even though no explicit dependency, target4 depends on this via the target group
 		self.assertGrep('xpybuild.log', expr='Building .*testtarget1b')
