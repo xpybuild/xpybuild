@@ -44,7 +44,10 @@ class TargetWrapper(object):
 	
 	# flags
 	DEP_IS_DIR_PATH = 2**1
-	#DEP_SKIP_EXISTENCE_CHECK = 2**2 # TODO: make this work
+	
+	DEP_SKIP_EXISTENCE_CHECK = 2**2
+	"""Flag for dependencies from a pathset where there's no point checking the existence of 
+	dependencies because they're already known to be present - e.g. FindPaths. """
 	
 	def __init__(self, target, scheduler):
 		"""
@@ -175,7 +178,8 @@ class TargetWrapper(object):
 				flags = 0
 				if isDirPath(abspath): flags |= TargetWrapper.DEP_IS_DIR_PATH
 				
-				# TODO: DEP_SKIP_EXISTENCE_CHECK
+				if pathset._skipDependenciesExistenceCheck:
+					flags |= TargetWrapper.DEP_SKIP_EXISTENCE_CHECK
 				
 				# convert to long path at this point, so we know later checks will work; 
 				# unlike targetdeps, nontargetdeps are sometimes deeply nested
@@ -231,6 +235,10 @@ class TargetWrapper(object):
 		
 		for dpath, flags in self.__nontargetdeps:
 			dnameIsDirPath = (flags & TargetWrapper.DEP_IS_DIR_PATH)!=0
+			
+			if (flags & TargetWrapper.DEP_SKIP_EXISTENCE_CHECK)!=0:
+				# don't bother stat-ing the file if we know it's present e.g. for FindPaths
+				continue
 			
 			dstat = getstat(dpath)
 			# TODO: optimization, could compute latest file here too (i.e. only do uptodate checking for FindPaths items)

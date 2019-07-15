@@ -1,6 +1,6 @@
 # fileutils - helper methods related to the file system
 #
-# Copyright (c) 2013 - 2018 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 #
 # $Id: fileutils.py 301527 2017-02-06 15:31:43Z matj $
 #
+
+"""
+@undocumented: _getStatCacheSize
+"""
 
 import shutil, os, os.path, time, platform, threading
 import stat, sys
@@ -444,6 +448,12 @@ def isdir(path):
 	""" Cached-once os.path.isdir (DO NOT USE if you expect it to change after startup) """
 	st = getstat(path)
 	return (st is not False) and stat.S_ISDIR(st.st_mode)
+
+def _getStatCacheSize():
+	"""
+	Internal diagnostic method for getting the number of entries we've stat'ed so far. 
+	"""
+	return len(__statcache)
 
 def resetStatCache():
 	""" Resets cached stat data """

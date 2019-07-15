@@ -52,6 +52,16 @@ class BasePathSet(object):
 
 	This is a stub class and should not be used directly.
 	"""
+	
+	_skipDependenciesExistenceCheck = False
+	"""
+	Special flag that can be set by implementors of a PathSet to indicate that 
+	all files returned from _resolveUnderlyingDependencies are known to 
+	exist, allowing the scheduler to skip the usual step of checking they are 
+	present before the main build begins. Only set this when sure that this 
+	is the case. 
+	"""
+	
 	def __init__(self):
 		pass
 	
@@ -403,6 +413,8 @@ class FindPaths(BasePathSet):
 	BuildException:
 
 	"""
+	_skipDependenciesExistenceCheck = True # since we only return items we've found on disk, no need to check them again
+	
 	def __init__(self, dir, excludes=None, includes=None):
 		"""
 		@param dir: base directory to search (relative or absolute, may contain ${...} variables). 
