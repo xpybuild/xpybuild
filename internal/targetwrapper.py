@@ -80,7 +80,7 @@ class TargetWrapper(object):
 		
 		self.__nontargetdeps = None
 		""" A sorted list of dependencies that aren't targets. Each item is a tuple
-		(longpathsafepath, dep flags)
+		(longpathsafepath, dep flags, pathset)
 		
 		longpathsafepath is a unicode string on Windows (on Python 3: also linux)
 		
@@ -126,7 +126,7 @@ class TargetWrapper(object):
 
 		# list is already sorted (in case of determinism problems with filesystem walk order)
 		# take a copy here since it is used from other places
-		x = [wrapper.path for wrapper in self.__targetdeps] + [abspath for abspath,flags in self.__nontargetdeps]
+		x = [wrapper.path for wrapper in self.__targetdeps] + [abspath for abspath,flags,pathset in self.__nontargetdeps]
 
 		# since this is meant to be a list of lines, normalize with a split->join
 		# also make any non-linesep \r or \n chars explicit to avoid confusion when diffing
@@ -153,9 +153,6 @@ class TargetWrapper(object):
 			of dependency strings here.
 			
 			Populates the list of target deps and non target deps
-			
-			Returns a tuple (targetdeps, nontargetdeps). where each is 
-			a SORTED list of dependencies as strings (paths). Either files or targets.
 			
 			Idempotent. Not safe for concurrent access without locking.
 		"""		
@@ -184,7 +181,7 @@ class TargetWrapper(object):
 				# convert to long path at this point, so we know later checks will work; 
 				# unlike targetdeps, nontargetdeps are sometimes deeply nested
 				abspath = toLongPathSafe(abspath)
-				nontargetdeps.append( (abspath, flags) )
+				nontargetdeps.append( (abspath, flags, pathset) )
 			else: 
 				if abspath in targetdeps: continue # avoid adding dups
 				targetdeps[abspath] = dtargetwrapper
@@ -210,7 +207,7 @@ class TargetWrapper(object):
 		self.depcount = len(targetdeps)
 		
 		# sort for deterministic order (as there are some sets and dicts involved)
-		nontargetdeps.sort()
+		nontargetdeps.sort(key=lambda (path, flags, pathset): path)
 		self.__nontargetdeps, self.__targetdeps = nontargetdeps, sorted(targetdeps.values(), key=lambda wrapper: wrapper.name)
 	
 	def checkForNonTargetDependenciesUnderOutputDirs(self):
@@ -219,7 +216,7 @@ class TargetWrapper(object):
 		the name of one that's under an output dir (suggests a missing target 
 		dep), or None. 
 		"""
-		for dpath, flags in self.__nontargetdeps:
+		for dpath, flags, pathset in self.__nontargetdeps:
 			for outdir in self.__scheduler.context.getTopLevelOutputDirs():
 				if dpath.startswith(outdir):
 					raise BuildException('Target %s depends on output %s which is implicitly created by some other directory target - please use DirGeneratedByTarget to explicitly name the directory target that it depends on'%(self, dpath), 
@@ -233,7 +230,7 @@ class TargetWrapper(object):
 		
 		"""
 		
-		for dpath, flags in self.__nontargetdeps:
+		for dpath, flags, pathset in self.__nontargetdeps:
 			dnameIsDirPath = (flags & TargetWrapper.DEP_IS_DIR_PATH)!=0
 			
 			if (flags & TargetWrapper.DEP_SKIP_EXISTENCE_CHECK)!=0:
@@ -370,7 +367,7 @@ class TargetWrapper(object):
 					f = dtargetwrapper.stampfile
 				if isNewer(toLongPathSafe(f)): return False
 
-			for abslongpath, depflags in self.__nontargetdeps: 
+			for abslongpath, depflags, pathset in self.__nontargetdeps: 
 				if depflags & TargetWrapper.DEP_IS_DIR_PATH == 0: # ignore directories as timestamp is meaningless
 					if isNewer(abslongpath): return False
 		return True
