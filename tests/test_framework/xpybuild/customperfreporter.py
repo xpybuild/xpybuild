@@ -1,4 +1,5 @@
 import glob
+import subprocess
 import logging, io, sys
 from pysys.utils.perfreporter import *
 from pysys.utils.logutils import ColorLogFormatter
@@ -10,6 +11,8 @@ def getXpybuildVersion(project):
 	with io.open(project.XPYBUILD_ROOT+'/XPYBUILD_VERSION', encoding='ascii') as f:
 		return f.read().strip()
 
+_log = logging.getLogger('perfreporter')
+
 class XpybuildPerfReporter(CSVPerformanceReporter):
 	def __init__(self, project, summaryfile, testoutdir):
 		self.XPYBUILD_VERSION = getXpybuildVersion(project)
@@ -20,11 +23,19 @@ class XpybuildPerfReporter(CSVPerformanceReporter):
 		self.disableRecording = ('XPYBUILD_PPROFILE' in os.environ)# or (getattr(self, 'DISABLE_PERF_RECORDING','')=='true')
 		
 		self.__recordedPerformanceLines = [self.getRunHeader()]
-	
+		
 	def getRunDetails(self):
 		d = super(XpybuildPerfReporter, self).getRunDetails()
-			
 		d['xpybuildVersion'] = self.XPYBUILD_VERSION
+		
+		try:
+			gitcommit = subprocess.check_output(['git', 'show', '-s', '--format=%h']).strip()
+			assert '\n' not in gitcommit, gitcommit
+		except Exception as ex:
+			_log.debug('Failed to get git commit hash: %s', ex)
+		else:
+			d['gitCommit'] = gitcommit
+		
 		d['platform'] = sys.platform
 		return d
 
@@ -49,7 +60,6 @@ class XpybuildPerfReporter(CSVPerformanceReporter):
 
 # The lines below here should probably be contributed to pysys perfreporter.py eventually
 			
-_log = logging.getLogger('perfreporter')
 
 def expandPathSpecifier(pathspecifier): # want a better name for this probably
 	""" Returns {'pathspecifier':..., label:... or None, filenames: [filelist], files=[CSVPerformanceFile...]}. 
@@ -155,7 +165,7 @@ def comparePerformanceFiles(compareList, format='text', sortby='comparison%'):
 		# end iteration over paths
 		commonRunDetails = collections.OrderedDict()
 		for k in list(files[-1].runDetails.keys()):
-			if all([p.runDetails[k] == files[-1].runDetails[k] for p in files]):
+			if all([k in p.runDetails and  p.runDetails[k] == files[-1].runDetails[k] for p in files]):
 				commonRunDetails[k] = files[-1].runDetails[k]
 
 		def formatRunDetails(k, val):
