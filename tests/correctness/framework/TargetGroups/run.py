@@ -20,5 +20,6 @@ class PySysTest(XpybuildBaseTest):
 		self.assertGrep('xpybuild.log', expr='Building .*testtarget-not-in-group', contains=False) 
 
 		# check we don't have any duplicate entries
-		self.assertGrep('xpybuild.log', expr='Target <Copy> .*testtarget/ .*depends on: .*testtarget1a, .*testtarget1b, .*testtarget2a, .*testtarget2b$') 
+		self.assertGrep('build-output/BUILD_WORK/targets/selected-targets.txt', 
+			expr='Target <Copy> .*testtarget/ .*depends on: .*testtarget1a, .*testtarget1b, .*testtarget2a, .*testtarget2b$') 
 		

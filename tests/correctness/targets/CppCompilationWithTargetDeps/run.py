@@ -4,9 +4,15 @@ from xpybuild.xpybuild_basetest import XpybuildBaseTest
 
 class PySysTest(XpybuildBaseTest):
 
+	def xpybuild(self, **kwargs):
+		super(PySysTest, self).xpybuild(**kwargs)
+		selectedtargets = 'build-output/BUILD_WORK/targets/selected-targets.txt'
+		shutil.copyfile(self.output+'/'+selectedtargets, self.output+'/selected-targets-%s.txt'%kwargs['stdouterr'])
+
 	def execute(self):
+
 		shutil.copytree(self.input, self.output+'/input')
-		self.xpybuild(shouldFail=False, args=['--keep-going'], buildfile=self.output+'/input/root.xpybuild.py')
+		self.xpybuild(shouldFail=False, args=['--keep-going'], buildfile=self.output+'/input/root.xpybuild.py', stdouterr='xpybuild')
 		
 		self.xpybuild(shouldFail=False, args=[], buildfile=self.output+'/input/root.xpybuild.py', stdouterr='xpybuild-incremental-noop')
 		# TODO: if this was working properly first incremental build would do nothing
@@ -44,7 +50,7 @@ class PySysTest(XpybuildBaseTest):
 				'target-cpp',
 
 		]:
-			self.assertGrep(file='xpybuild.log', expr='Target <Cpp> .*%s[) ].*depends on: .*OUTPUT_DIR./test-generated.cpp'%t)
+			self.assertGrep(file='selected-targets-xpybuild.txt', expr='Target <Cpp> .*%s[) ].*depends on: .*OUTPUT_DIR./test-generated.cpp'%t)
 
 		for t in [
 				#'target-cpp-and-include-file',
@@ -52,14 +58,14 @@ class PySysTest(XpybuildBaseTest):
 				#'target-include-file',
 
 		]:
-			self.assertGrep(file='xpybuild.log', expr='Target <Cpp> .*%s[) ].*depends on: .*OUTPUT_DIR.*/test3.h'%t)
+			self.assertGrep(file='selected-targets-xpybuild.txt', expr='Target <Cpp> .*%s[) ].*depends on: .*OUTPUT_DIR.*/test3.h'%t)
 		for t in [
 				'target-cpp-and-include-dir',
 				#'target-include-dir',
 
 		]:
 			#self.assertGrep(file='xpybuild.log', expr='Target <Cpp> .*%s[) ].*depends on: .*OUTPUT_DIR.*/my-generated-include-files/'%t)
-			self.assertGrep(file='xpybuild-incremental-noop.log', expr='Target <Cpp> .*%s[) ].*depends on: .*OUTPUT_DIR.*/my-generated-include-files/'%t)
+			self.assertGrep(file='selected-targets-xpybuild-incremental-noop.txt', expr='Target <Cpp> .*%s[) ].*depends on: .*OUTPUT_DIR.*/my-generated-include-files/'%t)
 
 
 		for t in [

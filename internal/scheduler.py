@@ -22,6 +22,8 @@
 
 import traceback, os, re, stat
 import threading
+import io
+
 from basetarget import BaseTarget
 from buildcommon import *
 from buildcontext import BuildContext
@@ -29,7 +31,7 @@ from buildexceptions import BuildException
 from internal.targetwrapper import TargetWrapper
 from internal.threadpool import ThreadPool, Utilisation
 from internal.outputbuffering import outputBufferingManager
-from utils.fileutils import deleteFile, exists, isfile, isdir, resetStatCache, getstat, toLongPathSafe, _getStatCacheSize
+from utils.fileutils import deleteFile, exists, isfile, isdir, resetStatCache, getstat, toLongPathSafe, _getStatCacheSize, mkdir
 from utils.timeutils import formatTimePeriod
 from threading import Lock
 
@@ -271,12 +273,12 @@ class BuildScheduler(object):
 			# printing the deps in one place is important for debugging missing dependencies etc
 			# might move this to a separate file at some point
 			self.selectedtargetwrappers.sort(key=lambda (targetwrapper, targetdeps): (-targetwrapper.effectivePriority, targetwrapper.name) )
-			summary = '\n'.join( 
-				'  Target %s with priority %s depends on: %s'%(targetwrapper, targetwrapper.effectivePriority, 
-					', '.join(str(d) for d in targetdeps) if len(targetdeps)>0 else '<no dependencies>')
-				for targetwrapper,targetdeps in self.selectedtargetwrappers
-			 )
-			log.info('Selected targets: \n%s'%summary)
+			targetinfodir = mkdir(self.context.expandPropertyValues('${BUILD_WORK_DIR}/targets/'))
+			with io.open(targetinfodir+'/selected-targets.txt', 'w', encoding='utf-8') as f:
+				f.write(u'%d targets selected for building:\n'%(len(self.selectedtargetwrappers)))
+				for targetwrapper,targetdeps in self.selectedtargetwrappers:
+					f.write(u'- Target %s with priority %s depends on: %s\n\n'%(targetwrapper, targetwrapper.effectivePriority, 
+						', '.join(str(d) for d in targetdeps) if len(targetdeps)>0 else '<no dependencies>'))
 	
 		#assert (not pool.errors) or (self.total == self.index), (self.total, self.index) #disabled because assertion triggers during ctrl+c
 		return pool.errors
