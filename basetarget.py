@@ -187,15 +187,6 @@ class BaseTarget(Composable):
 		# don't think there's any value in caching this result
 		return self.__dependencies._resolveUnderlyingDependencies(context)
 
-	def _getDependencies(self):
-		"""
-		Provides access to the PathSet instance containing dependencies 
-		for this target. 
-		
-		This method exists for internal use only. 
-		"""
-		return self.__dependencies
-
 	def run(self, context):
 		""" Build this target. 
 		
