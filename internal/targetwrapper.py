@@ -383,6 +383,7 @@ class TargetWrapper(object):
 		deps = self.getTargetDependencies()
 		if len(deps)>0:
 			targetpriority = self.effectivePriority
+			if targetpriority == 0.0: return
 			for dt in deps:
 				if targetpriority > dt.effectivePriority:
 					log.debug("Setting priority=%s on target %s", targetpriority, dt.name)

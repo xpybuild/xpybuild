@@ -15,6 +15,6 @@ Copy('${OUTPUT_DIR}/testtarget2a-dep', 'input.txt').priority(10.1)
 Copy('${OUTPUT_DIR}/testtarget2a', '${OUTPUT_DIR}/testtarget2a-dep')
 Copy('${OUTPUT_DIR}/testtarget2b', 'input.txt').priority(20.2)
 Copy('${OUTPUT_DIR}/testtarget3/', ['${OUTPUT_DIR}/testtarget2a', '${OUTPUT_DIR}/testtarget2b']).priority(16.1) # should affect the priority of dependency 2a
-Copy('${OUTPUT_DIR}/testtarget4/', ['${OUTPUT_DIR}/testtarget2a', '${OUTPUT_DIR}/testtarget2b']).priority(-50.1)
+Copy('${OUTPUT_DIR}/testtarget4/', ['${OUTPUT_DIR}/testtarget2a', '${OUTPUT_DIR}/testtarget2b']).priority(0.5)
 Copy('${OUTPUT_DIR}/testtarget5', 'input.txt').priority(1) # an integer
 Copy('${OUTPUT_DIR}/testtarget6', 'input.txt')

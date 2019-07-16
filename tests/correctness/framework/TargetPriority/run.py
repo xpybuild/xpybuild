@@ -16,7 +16,7 @@ class PySysTest(XpybuildBaseTest):
 			('testtarget2a', '16.1'), # increased by dependency
 			('testtarget2b', '20.2'), # not affected by dependency as already bigger
 			('testtarget3/', '16.1'), 
-			('testtarget4/', '-50.1'),
+			('testtarget4/', '0.5'),
 			('testtarget5', '1'), # an integer
 			('testtarget6', '0.0'),
 		]:
@@ -30,9 +30,9 @@ class PySysTest(XpybuildBaseTest):
 				#'testtarget2a', #16.1
 				'testtarget3/', # 16.1
 				'testtarget2/',#15.1
+				'testtarget4/',#0.5
 				'testtarget1',#0.0
 				#'testtarget6',#0.0
-				'testtarget4/',#-50.1
 			]
 		])
 
@@ -42,8 +42,8 @@ class PySysTest(XpybuildBaseTest):
 				'testtarget2a', #16.1
 				#'testtarget3/', # 16.1
 				'testtarget2/',#15.1
+				'testtarget4/',#0.5
 				#'testtarget1',#0.0
 				'testtarget6',#0.0
-				'testtarget4/',#-50.1
 			]
 		])

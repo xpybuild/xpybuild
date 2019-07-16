@@ -343,15 +343,17 @@ class BaseTarget(Composable):
 		if init: init.registerTags(self, taglist) # init will be None during doctests
 		return self
 
-	def priority(self, pri):
+	def priority(self, priority):
 		"""
 		Set the priority of this target it encourage it (and its deps) to be 
 		built earlier in the process. The default priority is 0.0
 
-		@param pri: a float representing the priority. Higher numbers will be built
-		first where possible.
+		@param priority: a float representing the priority. Higher numbers will be built
+		first where possible. Cannot be negative. 
 		"""
-		self.__priority = pri
+		if priority < 0.0:
+			raise BuildException('Target priority cannot be set to a lower number than 0.0')
+		self.__priority = priority
 		return self
 
 	def updateStampFile(self):
