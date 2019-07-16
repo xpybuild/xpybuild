@@ -24,6 +24,7 @@ import traceback, os, re, stat
 import threading
 import io
 
+from xpybuild import _XPYBUILD_VERSION
 from basetarget import BaseTarget
 from buildcommon import *
 from buildcontext import BuildContext
@@ -274,6 +275,11 @@ class BuildScheduler(object):
 			# might move this to a separate file at some point
 			self.selectedtargetwrappers.sort(key=lambda (targetwrapper, targetdeps): (-targetwrapper.effectivePriority, targetwrapper.name) )
 			targetinfodir = mkdir(self.context.expandPropertyValues('${BUILD_WORK_DIR}/targets/'))
+			with io.open(targetinfodir+'/xpybuild-version.properties', 'w', encoding='utf-8') as f:
+				# write this file in case we want to avoid mixed xpybuild versions in working dir
+				f.write(u'xpybuildVersion=%s\n'%_XPYBUILD_VERSION)
+				f.write(u'workDirVersion=%d\n' % 1) # bump this when we make a breaking change that should force a rebuild
+
 			with io.open(targetinfodir+'/selected-targets.txt', 'w', encoding='utf-8') as f:
 				f.write(u'%d targets selected for building:\n'%(len(self.selectedtargetwrappers)))
 				for targetwrapper,targetdeps in self.selectedtargetwrappers:
