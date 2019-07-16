@@ -221,51 +221,20 @@ class Cpp(BaseTarget):
 		
 		return r
 		
-class C(BaseTarget):
+class C(Cpp):
 	""" A target that compiles a C source file to a .o
 	"""
 	
-	def __init__(self, object, source, includes=None, flags=None, options=None, dependencies=None):
-		"""
-		@param object: the object file to generate
-		@param source: a (list of) source files
-		@param includes: a (list of) include directories. If specifying a subdirectory of a generated directory, use DirGeneratedByTarget. 
-		@param flags: a list of additional compiler flags
-		@param dependencies: a list of additional dependencies that need to be built 
-		before this target
-		@param options: [DEPRECATED - use .option() instead]
-
-		"""
-		self.source = PathSet(source)
-		self.includes = PathSet(includes) 
-		self.flags = flags or []
-		self.makedepend = CompilerMakeDependsPathSet(self, self.source, flags=self.flags, includes=self.includes)
-		BaseTarget.__init__(self, object, [dependencies or [], self.makedepend])
-		for k,v in (options or {}).items(): self.option(k, v)
-		self.tags('native')
+	# identical to Cpp except for actual run method
 	
 	def run(self, context):
 		options = self.options
-
 		mkdir(os.path.dirname(self.path))
 		options['native.compilers'].ccompiler.compile(context, output=self.path,
 				options=options, 
 				flags=flatten((options['native.c.flags'] or options['native.cxx.flags'])+[context.expandPropertyValues(x).split(' ') for x in self.flags]), 
 				src=self.source.resolve(context),
 				includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']]))
-
-	def clean(self, context):
-		self.makedepend.clean()
-		BaseTarget.clean(self, context)
-
-	def getHashableImplicitInputs(self, context):
-		r = super(C, self).getHashableImplicitInputs(context)
-		
-		# include input to makedepends, since even without running makedepends 
-		# we know we're out of date if inputs have changed
-		r.append(context.expandPropertyValues(str(self.makedepend)))
-		
-		return r
 		
 class Link(BaseTarget):
 	""" A target that links object files to binaries
