@@ -418,7 +418,7 @@ def normLongPath(path):
 	
 __statcache = {}
 __statcache_get = __statcache.get
-def getstat(path):
+def getstat(path, errorIfMissing=False):
 	""" Cached-once os.stat (DO NOT USE if you expect it to change after startup). 
 	Returns False if missing.  """
 	st = __statcache_get(path, None)
@@ -429,14 +429,16 @@ def getstat(path):
 			st = False
 
 		__statcache[path] = st
+	if st is False and errorIfMissing:
+		raise Exception('Cannot find path "%s"'%path)
 	return st
 
 def getmtime(path):
 	""" Cached-once os.getmtime (DO NOT USE if you expect it to change after startup) """
-	return getstat(path).st_mtime
+	return getstat(path, errorIfMissing=True).st_mtime
 def getsize(path):
 	""" Cached-once os.path.getsize (DO NOT USE if you expect it to change after startup) """
-	return getstat(path).st_size
+	return getstat(path, errorIfMissing=True).st_size
 def exists(path):
 	""" Cached-once os.path.exists (DO NOT USE if you expect it to change after startup) """
 	return getstat(path) is not False
