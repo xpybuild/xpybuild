@@ -167,6 +167,7 @@ class __SimplePathSet(BasePathSet):
 		p = context.getFullPath(p, defaultDir=self.__location, expandList=True)
 
 		for x in p:
+			assert os.path.isabs(x), x
 			if '*' in x: # sanity check
 				raise BuildException('Cannot specify "*" glob patterns here (consider using FindPaths instead): "%s"'%p, location=self.__location)
 		# destination is always flat path for things specified absolutely
@@ -394,7 +395,10 @@ class FindPaths(BasePathSet):
 	base dir.
 	
 	@param dir: May be a simple string, or a DirGeneratedByTarget to glob under a 
-	directory generated as part of the build. 
+	directory generated as part of the build. To find paths from a set of 
+	targets use dir=TargetsWithinDir (though only use this when that dynamism 
+	is required, as this will be slower than statically listing the targets 
+	individually or using TargetsWithTag). 
 
 	>>> str(FindPaths('a/b/c', includes=['*.x', 'y/**/z/foo.*'], excludes=['xx', '**/y']))
 	'FindPaths("a/b/c", includes=["*.x", "y/**/z/foo.*"], excludes=["xx", "**/y"])'
@@ -588,6 +592,8 @@ class TargetsWithTag(BasePathSet):
 	but only to return the target directory name itself (there is no implicit 
 	FindPaths directory searching, as would be required to copy the contents 
 	of the directory).
+	
+	See also L{TargetsWithinDir}.
 	"""
 	def __init__(self, targetTag, allowDirectories=False, walkDirectories=False):
 		"""
@@ -639,9 +645,53 @@ class TargetsWithTag(BasePathSet):
 			targets = context.getTargetsWithTag(self.__targetTag)
 		except BuildException, e: # add location info to exception
 			raise BuildException(str(e), location=self.__location)
+		if len(targets)==0: raise BuildException('No targets have tag "%s"'%self.__targetTag, location=self.__location)
 		return ( (t.path, self) for t in targets)
 
+
+class TargetsWithinDir(BasePathSet):
+	"""
+	A special PathSet that resolves to all build target output paths that are
+	descendents of the specified parent dir (which is not a target itself, 
+	but somewhere under a build output directory). When resolved, this 
+	pathset returns a single source and destination path which is the parent 
+	directory itself. 
 	
+	This PathSet can be wrapped in FindPaths if the contained files and 
+	directories are needed. 
+	
+	See also L{TargetsWithTag}.
+
+	"""
+	def __init__(self, parentDir):
+		"""
+		@param parentDir: a string identifying the parent dir. When resolved, 
+		must end in a slash. 
+		
+		"""
+		self.__parentDir = parentDir
+		self.__location = BuildFileLocation()
+	
+	def __repr__(self):
+		return 'TargetsWithinDir(%s)' % (self.__parentDir)
+	
+	def __getDir(self, context):
+		dir = context.getFullPath(self.__parentDir, defaultDir=self.__location)
+		if not isDirPath(dir):
+			raise BuildException('Directory paths must end with a slash: "%s"'%dir, location=self.__location)
+		return dir
+	def resolveWithDestinations(self, context):
+		dir = self.__getDir(context)
+		return [(dir, os.path.basename(dir))]
+	def _resolveUnderlyingDependencies(self, context):
+		dir = self.__getDir(context)
+		found = 0
+		for targetpath in context._getTargetPathsWithinDir(dir):
+			found += 1
+			yield targetpath, self
+		if found == 0:
+			raise BuildException('TargetsWithinDir found no targets under parent directory "%s" (%s)'%(self.__parentDir, dir), location=self.__location)
+
 # PathSets derived from other PathSets:
 
 class _DerivedPathSet(BasePathSet):
@@ -781,13 +831,13 @@ class MapDest(_DerivedPathSet):
 		result = self._pathSet.resolveWithDestinations(context)
 		return [(key, os.path.normpath(context.expandPropertyValues(self.__fn(value.replace('\\','/'))))+(os.path.sep if isDirPath(key) else '')) for (key,value) in result]
 
-class MapSrc(_DerivedPathSet):
+class MapDestFromSrc(_DerivedPathSet):
 	""" Applies a functor to the src paths of the enclosed PathSet to get new destinations
 	(the PathSet's source paths are unaffected)
 	
 	Note that paths passed to the functor will always have forward slashes. 
 
-	e.g. MapSrc(lambda x:x.lower(), mypathset)
+	e.g. MapDestFromSrc(lambda x:x.lower(), mypathset)
 	
 	"""
 	def __init__(self, fn, pathSet):
@@ -800,11 +850,16 @@ class MapSrc(_DerivedPathSet):
 		self.__fn = fn
 	
 	def __repr__(self):
-		return 'MapSrc(%s, %s)' % (self.__fn.__name__, self._pathSet)
+		return 'MapDestFromSrc(%s, %s)' % (self.__fn.__name__, self._pathSet)
 	
 	def resolveWithDestinations(self, context):
 		result = self._pathSet.resolveWithDestinations(context)
 		return [(key, os.path.normpath(context.expandPropertyValues(self.__fn(key.replace('\\','/'))))+(os.path.sep if isDirPath(key) else '')) for (key,value) in result]
+
+MapSrc = MapDestFromSrc
+"""
+Legacy name for MapDestFromSrc. 
+"""
 
 class FlattenDest(_DerivedPathSet):
 	""" Removes all prefixes from the destinations of the specified PathSet. 

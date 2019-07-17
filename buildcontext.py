@@ -384,16 +384,20 @@ class BaseContext(object):
 			rv = []
 			for p in path:
 				isdir = isDirPath(p)
+				if len(p) == 0 or (isdir and len(p)==1): raise Exception('Invalid path "%s" expanded from "%s"'%(p, orig))
 				p = makeabs(p)
 				p = normpath(p.rstrip('\\/'))
 						
 				if isdir and not p.endswith(os.path.sep): p = p+os.path.sep
+
 				rv.append(p)
 				
 			return rv
 		else:
+			orig = path
 			path = self.expandPropertyValues(path)
 			isdir = isDirPath(path)
+			if len(path) == 0 or (isdir and len(path)==1): raise Exception('Invalid path "%s" expanded from "%s"'%(path, orig))
 			path = makeabs(path)
 			path = normpath(path.rstrip('\\/'))
 					
@@ -702,7 +706,7 @@ class BuildContext(BaseContext):
 		BaseContext.__init__(self, initializationContext.getProperties())
 		self.init = initializationContext
 		self._globalOptions = initializationContext._globalOptions
-		self.__targetPaths = targetPaths
+		self.__targetPaths = targetPaths # a set of resolved normalized target paths
 
 		self._dependencyCheckingSerializationLock = threading.Lock()
 		"""Internal, may change at any time do not use. """
@@ -744,6 +748,21 @@ class BuildContext(BaseContext):
 		(throws BuildException if not defined). 
 		"""
 		return self.init.getTargetsWithTag(tag)
+
+
+	def _getTargetPathsWithinDir(self, parentDir):
+		"""Returns a generator yielding the normalized resolved path of all targets 
+		that start with the specified parent directory path. The results will 
+		be in a random order. 
+		
+		@param parentDir: a resolved normalized directory name ending with a slash. 
+		"""
+		if not isDirPath(parentDir): raise BuildException('Directory paths must have a trailing slash: "%s"'%parentDir)
+		assert not parentDir.startswith('\\\\?'), 'This method is not designed for long paths'
+		
+		for path in self.__targetPaths:
+			if path.startswith(parentDir): 
+				yield path
 		
 	def _isValidTarget(self, target):
 		""" Returns true if the specified target is known. Not intended for use 

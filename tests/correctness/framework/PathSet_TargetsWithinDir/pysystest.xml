@@ -1,0 +1,23 @@
+<?xml version="1.0" standalone="yes"?>
+<pysystest type="auto" state="runnable">
+    
+  <description> 
+    <title>PathSets - TargetsWithinDir works correctly, on its own and with FindPaths</title>
+    <purpose><![CDATA[
+
+]]>
+    </purpose>
+  </description>
+
+  <classification>
+  </classification>
+
+  <data>
+    <class name="PySysTest" module="run"/>
+  </data>
+  
+  <traceability>
+    <requirements>    
+    </requirements>
+  </traceability>
+</pysystest>
