@@ -167,7 +167,6 @@ class __SimplePathSet(BasePathSet):
 		p = context.getFullPath(p, defaultDir=self.__location, expandList=True)
 
 		for x in p:
-			assert os.path.isabs(x), x
 			if '*' in x: # sanity check
 				raise BuildException('Cannot specify "*" glob patterns here (consider using FindPaths instead): "%s"'%p, location=self.__location)
 		# destination is always flat path for things specified absolutely
