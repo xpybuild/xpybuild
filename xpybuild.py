@@ -484,7 +484,7 @@ def main(args):
 				errorsList = []
 				if task in [_TASK_CLEAN, _TASK_REBUILD]:
 					startTime = time.time()
-					log.critical('Starting  "%s" clean "%s" at %s', init.getPropertyValue('BUILD_MODE'), init.getPropertyValue('BUILD_NUMBER'), 
+					log.critical('Starting "%s" clean "%s" at %s', init.getPropertyValue('BUILD_MODE'), init.getPropertyValue('BUILD_NUMBER'), 
 						time.strftime(DATE_TIME_FORMAT, time.localtime( startTime )))
 					
 					cleanBuildOptions = buildOptions.copy()
@@ -519,18 +519,21 @@ def main(args):
 							log.error("Pre-build check failed: %s", be)
 							return 7
 
-					startTime = time.time()
-					log.critical('Starting  "%s" build "%s" at %s', init.getPropertyValue('BUILD_MODE'), init.getPropertyValue('BUILD_NUMBER'), 
-						time.strftime(DATE_TIME_FORMAT, time.localtime( startTime )))
+					buildtype = 'INCREMENTAL' if any(os.path.exists(dir) for dir in init.getOutputDirs()) else 'NON-INCREMENTAL'
 					if not buildOptions['dry-run']:
 						for dir in init.getOutputDirs():
 							log.info('Creating output directory: %s', dir)
 							mkdir(dir)
 					
+					startTime = time.time()
+					log.critical('Starting %s "%s" build "%s" at %s', buildtype, 
+						init.getPropertyValue('BUILD_MODE'), init.getPropertyValue('BUILD_NUMBER'), 
+						time.strftime(DATE_TIME_FORMAT, time.localtime( startTime )))
+					
 					buildOptions['clean'] = False
 					scheduler = BuildScheduler(init, selectedTargets, buildOptions)
 					errorsList, targetsBuilt, targetsCompleted, totalTargets = scheduler.run()
-					log.critical('Completed "%s" build "%s" at %s after %s\n', init.getPropertyValue('BUILD_MODE'), init.getPropertyValue('BUILD_NUMBER'), 
+					log.critical('Completed %s "%s" build "%s" at %s after %s\n', buildtype, init.getPropertyValue('BUILD_MODE'), init.getPropertyValue('BUILD_NUMBER'), 
 						time.strftime(DATE_TIME_FORMAT, time.localtime( startTime )), formatTimePeriod(time.time()-startTime))
 					if 'timeFile' in buildOptions:
 						logTargetTimes(buildOptions['timeFile'], scheduler, init)
