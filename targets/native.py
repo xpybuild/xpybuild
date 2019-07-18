@@ -75,7 +75,8 @@ class _AddTrailingDirectorySlashesPathSet(BasePathSet):
 	def resolveWithDestinations(self, context):
 		return [((src if isDirPath(src) else src+os.path.sep), dest) for src,dest in self._pathSet.resolveWithDestinations(context)]
 	def _resolveUnderlyingDependencies(self, context):
-		return (((src if isDirPath(src) or '.' in os.path.basename(src) else src+os.path.sep), pathset) for src,pathset in self._pathSet._resolveUnderlyingDependencies(context))
+		# this is a heuristic - try to avoid adding slashes to TargetsWithinDir(...) .h files
+		return (((src if isDirPath(src) or '.h' in os.path.basename(src) else src+os.path.sep), pathset) for src,pathset in self._pathSet._resolveUnderlyingDependencies(context))
 
 class Cpp(BaseTarget):
 	""" A target that compiles a C++ source file to a .o
