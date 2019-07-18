@@ -493,18 +493,18 @@ class BuildScheduler(object):
 			
 			# try to detect first cycle
 			def findCycle(nodes, edgefn):
-				todo = set(nodes)
-				while todo:
-					node = todo.pop()
+				nodesToCheck = set(nodes)
+				while nodesToCheck:
+					node = nodesToCheck.pop()
 					stack = [node]
 					while stack:
 						top = stack[-1]
 						for node in edgefn(top):
 							if node in stack:
 								return stack[stack.index(node):]
-							if node in todo:
+							if node in nodesToCheck:
 								stack.append(node)
-								todo.remove(node)
+								nodesToCheck.remove(node)
 								break
 						else: # else belongs to for
 							node = stack.pop()
