@@ -155,7 +155,6 @@ class Cpp(BaseTarget):
 		includedirs = self._getIncludeDirs(context)
 		for path in includedirs:
 			r.append('include dir: '+os.path.normcase(path))
-		del path
 		
 		# This is called exactly once during up-to-date checking OR run, which 
 		# means we will have generated all target dependencies 
