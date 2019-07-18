@@ -58,13 +58,15 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class C</h1><p class="nomargin-top"><span class="codelink"><a href="targets.native-pysrc.html#C">source&nbsp;code</a></span></p>
 <pre class="base-tree">
-               object --+        
-                        |        
-<a href="utils.functors.Composable-class.html">utils.functors.Composable</a> --+    
-                            |    
-        <a href="basetarget.BaseTarget-class.html">basetarget.BaseTarget</a> --+
-                                |
-                               <strong class="uidshort">C</strong>
+               object --+            
+                        |            
+<a href="utils.functors.Composable-class.html">utils.functors.Composable</a> --+        
+                            |        
+        <a href="basetarget.BaseTarget-class.html">basetarget.BaseTarget</a> --+    
+                                |    
+                              <a href="targets.native.Cpp-class.html">Cpp</a> --+
+                                    |
+                                   <strong class="uidshort">C</strong>
 </pre>
 
 <hr />
@@ -84,30 +86,6 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="targets.native.C-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">object</span>,
-        <span class="summary-sig-arg">source</span>,
-        <span class="summary-sig-arg">includes</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">flags</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">options</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">dependencies</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Normal constructor, should only be called from sub-classes since this
-      is a stub.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="targets.native-pysrc.html#C.__init__">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
           <td><span class="summary-sig"><a href="targets.native.C-class.html#run" class="summary-sig-name">run</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">context</span>)</span><br />
       Build this target.</td>
@@ -120,46 +98,13 @@
       
     </td>
   </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="targets.native.C-class.html#clean" class="summary-sig-name">clean</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">context</span>)</span><br />
-      Clean this target.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="targets.native-pysrc.html#C.clean">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="targets.native.C-class.html#getHashableImplicitInputs" class="summary-sig-name">getHashableImplicitInputs</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">context</span>)</span><br />
-      Return a target-specific token (a list of strings) representing the 
-      implicit inputs of this target that cannot be detected using normal 
-      timestamp up-to-date checking.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="targets.native-pysrc.html#C.getHashableImplicitInputs">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
   <tr>
     <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="targets.native.Cpp-class.html">Cpp</a></code></b>:
+      <code><a href="targets.native.Cpp-class.html#__init__">__init__</a></code>,
+      <code><a href="targets.native.Cpp-class.html#clean">clean</a></code>,
+      <code><a href="targets.native.Cpp-class.html#getHashableImplicitInputs">getHashableImplicitInputs</a></code>
+      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="basetarget.BaseTarget-class.html">basetarget.BaseTarget</a></code></b>:
       <code><a href="basetarget.BaseTarget-class.html#__getattr__">__getattr__</a></code>,
       <code><a href="basetarget.BaseTarget-class.html#__hash__">__hash__</a></code>,
@@ -221,47 +166,6 @@
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
-<a name="__init__"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">object</span>,
-        <span class="sig-arg">source</span>,
-        <span class="sig-arg">includes</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">flags</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">options</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">dependencies</span>=<span class="sig-default">None</span>)</span>
-    <br /><em class="fname">(Constructor)</em>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="targets.native-pysrc.html#C.__init__">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Normal constructor, should only be called from sub-classes since this 
-  is a stub.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>object</code></strong> - the object file to generate</li>
-        <li><strong class="pname"><code>source</code></strong> - a (list of) source files</li>
-        <li><strong class="pname"><code>includes</code></strong> - a (list of) include directories. If specifying a subdirectory of 
-          a generated directory, use DirGeneratedByTarget.</li>
-        <li><strong class="pname"><code>flags</code></strong> - a list of additional compiler flags</li>
-        <li><strong class="pname"><code>dependencies</code></strong> - a list of additional dependencies that need to be built before 
-          this target</li>
-        <li><strong class="pname"><code>options</code></strong> - [DEPRECATED - use .option() instead]</li>
-    </ul></dd>
-    <dt>Overrides:
-        object.__init__
-    </dt>
-  </dl>
-</td></tr></table>
-</div>
 <a name="run"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -285,79 +189,6 @@
   <dl class="fields">
     <dt>Overrides:
         <a href="basetarget.BaseTarget-class.html#run">basetarget.BaseTarget.run</a>
-        <dd><em class="note">(inherited documentation)</em></dd>
-    </dt>
-  </dl>
-</td></tr></table>
-</div>
-<a name="clean"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">clean</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">context</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="targets.native-pysrc.html#C.clean">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Clean this target.</p>
-  <p>Default implementation will simply delete the target, and any target 
-  workdir, but can be overridden to delete additional temporary files if 
-  needed (shouldn't be).</p>
-  <dl class="fields">
-    <dt>Overrides:
-        <a href="basetarget.BaseTarget-class.html#clean">basetarget.BaseTarget.clean</a>
-        <dd><em class="note">(inherited documentation)</em></dd>
-    </dt>
-  </dl>
-</td></tr></table>
-</div>
-<a name="getHashableImplicitInputs"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getHashableImplicitInputs</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">context</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="targets.native-pysrc.html#C.getHashableImplicitInputs">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return a target-specific token (a list of strings) representing the 
-  implicit inputs of this target that cannot be detected using normal 
-  timestamp up-to-date checking.</p>
-  <p>This can include options, property values (e.g. changes in build 
-  number, release/debug mode) and glob results (e.g. addition or removal of
-  a file should trigger a rebuild).</p>
-  <p>This list will be written to disk (possibly hashed) after the target 
-  builds successfully, and compared with its recorded value when 
-  subsequently checking the up-to-date-ness of the target.</p>
-  <p>The default implementation returns nothing, unless <a 
-  href="basetarget.BaseTarget-class.html#addHashableImplicitInput" 
-  class="link">addHashableImplicitInput</a> or <a 
-  href="basetarget.BaseTarget-class.html#addHashableImplicitInputOption" 
-  class="link">addHashableImplicitInputOption</a> have been called, so only
-  the globbed and resolved paths of any pathsets in the dependency list 
-  will be used.</p>
-  <p>Some targets should override this to append additional information, 
-  such as relevant property or option values. Alternatively, for simple 
-  cases call <a 
-  href="basetarget.BaseTarget-class.html#addHashableImplicitInput" 
-  class="link">addHashableImplicitInput</a> or <a 
-  href="basetarget.BaseTarget-class.html#addHashableImplicitInputOption" 
-  class="link">addHashableImplicitInputOption</a>.</p>
-  <dl class="fields">
-    <dt>Overrides:
-        <a href="basetarget.BaseTarget-class.html#getHashableImplicitInputs">basetarget.BaseTarget.getHashableImplicitInputs</a>
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
@@ -392,7 +223,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jul 15 15:37:29 2019
+    Generated by Epydoc 3.0.1 on Thu Jul 18 16:43:00 2019
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

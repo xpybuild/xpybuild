@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>pathsets.MapSrc</title>
+  <title>pathsets.TargetsWithinDir</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -40,7 +40,7 @@
     <td width="100%">
       <span class="breadcrumbs">
         <a href="pathsets-module.html">Module&nbsp;pathsets</a> ::
-        Class&nbsp;MapSrc
+        Class&nbsp;TargetsWithinDir
       </span>
     </td>
     <td>
@@ -48,30 +48,32 @@
         <!-- hide/show private -->
         <tr><td align="right"><span class="options"
             >[<a href="frames.html" target="_top">frames</a
-            >]&nbsp;|&nbsp;<a href="pathsets.MapSrc-class.html"
+            >]&nbsp;|&nbsp;<a href="pathsets.TargetsWithinDir-class.html"
             target="_top">no&nbsp;frames</a>]</span></td></tr>
       </table>
     </td>
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class MapSrc</h1><p class="nomargin-top"><span class="codelink"><a href="pathsets-pysrc.html#MapSrc">source&nbsp;code</a></span></p>
+<h1 class="epydoc">Class TargetsWithinDir</h1><p class="nomargin-top"><span class="codelink"><a href="pathsets-pysrc.html#TargetsWithinDir">source&nbsp;code</a></span></p>
 <pre class="base-tree">
- object --+        
-          |        
-<a href="pathsets.BasePathSet-class.html">BasePathSet</a> --+    
-              |    
-_DerivedPathSet --+
-                  |
-                 <strong class="uidshort">MapSrc</strong>
+ object --+    
+          |    
+<a href="pathsets.BasePathSet-class.html">BasePathSet</a> --+
+              |
+             <strong class="uidshort">TargetsWithinDir</strong>
 </pre>
 
 <hr />
-<p>Applies a functor to the src paths of the enclosed PathSet to get new 
-  destinations (the PathSet's source paths are unaffected)</p>
-  <p>Note that paths passed to the functor will always have forward 
-  slashes.</p>
-  <p>e.g. MapSrc(lambda x:x.lower(), mypathset)</p>
+<p>A special PathSet that resolves to all build target output paths that 
+  are descendents of the specified parent dir (which is not a target 
+  itself, but somewhere under a build output directory). When resolved, 
+  this pathset returns a single source and destination path which is the 
+  parent directory itself.</p>
+  <p>This PathSet can be wrapped in FindPaths if the contained files and 
+  directories are needed.</p>
+  <p>See also <a href="pathsets.TargetsWithTag-class.html" 
+  class="link">TargetsWithTag</a>.</p>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -87,12 +89,11 @@ _DerivedPathSet --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="pathsets.MapSrc-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">fn</span>,
-        <span class="summary-sig-arg">pathSet</span>)</span><br />
+          <td><span class="summary-sig"><a href="pathsets.TargetsWithinDir-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">parentDir</span>)</span><br />
       x.__init__(...) initializes x; see help(type(x)) for signature</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="pathsets-pysrc.html#MapSrc.__init__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="pathsets-pysrc.html#TargetsWithinDir.__init__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -106,10 +107,10 @@ _DerivedPathSet --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="pathsets.MapSrc-class.html#__repr__" class="summary-sig-name">__repr__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+          <td><span class="summary-sig"><a href="pathsets.TargetsWithinDir-class.html#__repr__" class="summary-sig-name">__repr__</a>(<span class="summary-sig-arg">self</span>)</span><br />
       repr(x)</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="pathsets-pysrc.html#MapSrc.__repr__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="pathsets-pysrc.html#TargetsWithinDir.__repr__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -123,7 +124,7 @@ _DerivedPathSet --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="pathsets.MapSrc-class.html#resolveWithDestinations" class="summary-sig-name">resolveWithDestinations</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="pathsets.TargetsWithinDir-class.html#resolveWithDestinations" class="summary-sig-name">resolveWithDestinations</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">context</span>)</span><br />
       Use the specified context to resolve the contents of this pathset to 
       a list of (srcabs, destrel) pairs specifying the absolute and 
@@ -131,7 +132,7 @@ _DerivedPathSet --+
       delimited path indicating the destination of that path (interpreted 
       in a target-specific way by certain targets such as copy and zip).</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="pathsets-pysrc.html#MapSrc.resolveWithDestinations">source&nbsp;code</a></span>
+            <span class="codelink"><a href="pathsets-pysrc.html#TargetsWithinDir.resolveWithDestinations">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -193,12 +194,11 @@ _DerivedPathSet --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">fn</span>,
-        <span class="sig-arg">pathSet</span>)</span>
+        <span class="sig-arg">parentDir</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="pathsets-pysrc.html#MapSrc.__init__">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="pathsets-pysrc.html#TargetsWithinDir.__init__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
@@ -206,9 +206,8 @@ _DerivedPathSet --+
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>fn</code></strong> - a function that takes a resolved dest path (using forward slashes
-          not backslashes) as input, and returns a potentially different 
-          dest path</li>
+        <li><strong class="pname"><code>parentDir</code></strong> - a string identifying the parent dir. When resolved, must end in a
+          slash.</li>
     </ul></dd>
     <dt>Overrides:
         object.__init__
@@ -227,7 +226,7 @@ _DerivedPathSet --+
     <br /><em class="fname">(Representation operator)</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="pathsets-pysrc.html#MapSrc.__repr__">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="pathsets-pysrc.html#TargetsWithinDir.__repr__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
@@ -251,7 +250,7 @@ _DerivedPathSet --+
         <span class="sig-arg">context</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="pathsets-pysrc.html#MapSrc.resolveWithDestinations">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="pathsets-pysrc.html#TargetsWithinDir.resolveWithDestinations">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
@@ -306,7 +305,7 @@ _DerivedPathSet --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jul 15 15:37:29 2019
+    Generated by Epydoc 3.0.1 on Thu Jul 18 16:43:00 2019
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

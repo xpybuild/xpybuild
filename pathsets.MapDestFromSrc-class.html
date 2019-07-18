@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>utils.compilers.Archiver</title>
+  <title>pathsets.MapDestFromSrc</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -39,9 +39,8 @@
   <tr valign="top">
     <td width="100%">
       <span class="breadcrumbs">
-        <a href="utils-module.html">Package&nbsp;utils</a> ::
-        <a href="utils.compilers-module.html">Module&nbsp;compilers</a> ::
-        Class&nbsp;Archiver
+        <a href="pathsets-module.html">Module&nbsp;pathsets</a> ::
+        Class&nbsp;MapDestFromSrc
       </span>
     </td>
     <td>
@@ -49,31 +48,30 @@
         <!-- hide/show private -->
         <tr><td align="right"><span class="options"
             >[<a href="frames.html" target="_top">frames</a
-            >]&nbsp;|&nbsp;<a href="utils.compilers.Archiver-class.html"
+            >]&nbsp;|&nbsp;<a href="pathsets.MapDestFromSrc-class.html"
             target="_top">no&nbsp;frames</a>]</span></td></tr>
       </table>
     </td>
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class Archiver</h1><p class="nomargin-top"><span class="codelink"><a href="utils.compilers-pysrc.html#Archiver">source&nbsp;code</a></span></p>
+<h1 class="epydoc">Class MapDestFromSrc</h1><p class="nomargin-top"><span class="codelink"><a href="pathsets-pysrc.html#MapDestFromSrc">source&nbsp;code</a></span></p>
 <pre class="base-tree">
-object --+    
-         |    
-   <a href="utils.compilers.Process-class.html">Process</a> --+
-             |
-            <strong class="uidshort">Archiver</strong>
+ object --+        
+          |        
+<a href="pathsets.BasePathSet-class.html">BasePathSet</a> --+    
+              |    
+_DerivedPathSet --+
+                  |
+                 <strong class="uidshort">MapDestFromSrc</strong>
 </pre>
 
-<dl><dt>Known Subclasses:</dt>
-<dd>
-      <ul class="subclass-list">
-<li><a href="utils.compilers.UnixArchiver-class.html">UnixArchiver</a></li><li>, <a href="utils.compilers.VisualStudio-class.html">VisualStudio</a></li>  </ul>
-</dd></dl>
-
 <hr />
-<p>A tool to put a set of object files into an archive for static 
-  linking. Typically only used on unix.</p>
+<p>Applies a functor to the src paths of the enclosed PathSet to get new 
+  destinations (the PathSet's source paths are unaffected)</p>
+  <p>Note that paths passed to the functor will always have forward 
+  slashes.</p>
+  <p>e.g. MapDestFromSrc(lambda x:x.lower(), mypathset)</p>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -89,11 +87,12 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="utils.compilers.Archiver-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">environs</span>=<span class="summary-sig-default">None</span>)</span><br />
+          <td><span class="summary-sig"><a href="pathsets.MapDestFromSrc-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">fn</span>,
+        <span class="summary-sig-arg">pathSet</span>)</span><br />
       x.__init__(...) initializes x; see help(type(x)) for signature</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="utils.compilers-pysrc.html#Archiver.__init__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="pathsets-pysrc.html#MapDestFromSrc.__init__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -107,14 +106,32 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="utils.compilers.Archiver-class.html#archive" class="summary-sig-name">archive</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">context</span>,
-        <span class="summary-sig-arg">output</span>,
-        <span class="summary-sig-arg">src</span>,
-        <span class="summary-sig-arg">options</span>)</span><br />
-      output: The archive file path to create</td>
+          <td><span class="summary-sig"><a href="pathsets.MapDestFromSrc-class.html#__repr__" class="summary-sig-name">__repr__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      repr(x)</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="utils.compilers-pysrc.html#Archiver.archive">source&nbsp;code</a></span>
+            <span class="codelink"><a href="pathsets-pysrc.html#MapDestFromSrc.__repr__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pathsets.MapDestFromSrc-class.html#resolveWithDestinations" class="summary-sig-name">resolveWithDestinations</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">context</span>)</span><br />
+      Use the specified context to resolve the contents of this pathset to 
+      a list of (srcabs, destrel) pairs specifying the absolute and 
+      normalized path of each source path, and a relative normalized 
+      delimited path indicating the destination of that path (interpreted 
+      in a target-specific way by certain targets such as copy and zip).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pathsets-pysrc.html#MapDestFromSrc.resolveWithDestinations">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -124,9 +141,8 @@ object --+
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="utils.compilers.Process-class.html">Process</a></code></b>:
-      <code><a href="utils.compilers.Process-class.html#call">call</a></code>,
-      <code><a href="utils.compilers.Process-class.html#getExpandedEnvirons">getExpandedEnvirons</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="pathsets.BasePathSet-class.html">BasePathSet</a></code></b>:
+      <code><a href="pathsets.BasePathSet-class.html#resolve">resolve</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -136,7 +152,6 @@ object --+
       <code>__new__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
-      <code>__repr__</code>,
       <code>__setattr__</code>,
       <code>__sizeof__</code>,
       <code>__str__</code>,
@@ -178,45 +193,87 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">environs</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">fn</span>,
+        <span class="sig-arg">pathSet</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="utils.compilers-pysrc.html#Archiver.__init__">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="pathsets-pysrc.html#MapDestFromSrc.__init__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
   <p>x.__init__(...) initializes x; see help(type(x)) for signature</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>fn</code></strong> - a function that takes a resolved dest path (using forward slashes
+          not backslashes) as input, and returns a potentially different 
+          dest path</li>
+    </ul></dd>
     <dt>Overrides:
         object.__init__
-        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>
 </div>
-<a name="archive"></a>
+<a name="__repr__"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">archive</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">context</span>,
-        <span class="sig-arg">output</span>,
-        <span class="sig-arg">src</span>,
-        <span class="sig-arg">options</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__repr__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Representation operator)</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="utils.compilers-pysrc.html#Archiver.archive">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="pathsets-pysrc.html#MapDestFromSrc.__repr__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>output: The archive file path to create</p>
-  <p>src: A list of source object file paths</p>
-  <p>options: an options dictionary to override global options</p>
+  <p>repr(x)</p>
   <dl class="fields">
+    <dt>Overrides:
+        object.__repr__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="resolveWithDestinations"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">resolveWithDestinations</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">context</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pathsets-pysrc.html#MapDestFromSrc.resolveWithDestinations">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Use the specified context to resolve the contents of this pathset to a
+  list of (srcabs, destrel) pairs specifying the absolute and normalized 
+  path of each source path, and a relative normalized delimited path 
+  indicating the destination of that path (interpreted in a target-specific
+  way by certain targets such as copy and zip).</p>
+  <p>All paths use OS-dependent slash characters (os.path.sep), and all 
+  directory paths must end with a slash to avoid confusion with file 
+  paths.</p>
+  <p>Some PathSet implementations will cache the results of resolve, if 
+  expensive (e.g. file system globbing); in such case it is essential to 
+  ensure that the implementation is thread-safe.</p>
+  <p>May raise BuildException if the resolution fails.</p>
+  <p>PathSets can contain duplicate entries (with same source and/or 
+  destination).</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="pathsets.BasePathSet-class.html#resolveWithDestinations">BasePathSet.resolveWithDestinations</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
   </dl>
 </td></tr></table>
 </div>
