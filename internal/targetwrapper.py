@@ -169,7 +169,7 @@ class TargetWrapper(object):
 		nontargetdeps = []
 		
 		for abspath, pathset in self.target._resolveUnderlyingDependencies(context):
-			# TODO: should we canonicalize the abspath? e.g. for capitalization
+			# should we canonicalize the abspath for capitalization? (but then we could get different behaviour across platforms)
 			try:
 				dtargetwrapper = scheduler.targetwrappers[abspath]
 			except KeyError:
@@ -279,15 +279,14 @@ class TargetWrapper(object):
 			Adds a reverse dependency to this target
 			Holds the object lock
 		"""
-		with self.lock:
-			self.__rdeps.append(targetwrapper)
+		self.__rdeps.append(targetwrapper)
+		
 	def rdeps(self):
 		"""
 			Returns the list of reverse target dependencies as TargetWrapper objects.
 			Holds the object lock
 		"""
-		with self.lock:
-			return self.__rdeps
+		return self.__rdeps
 
 	def __logUptodate(self, msg, *args):
 		TargetWrapper.__uptodate_log_count += 1

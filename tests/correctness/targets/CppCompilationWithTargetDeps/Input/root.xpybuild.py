@@ -49,26 +49,18 @@ Cpp(objectname('${OUTPUT_DIR}/target-cpp'), '${OUTPUT_DIR}/test-generated.cpp',
 		]
 )
 
-Cpp(objectname('${OUTPUT_DIR}/target-cpp-and-include-file'), '${OUTPUT_DIR}/test-generated.cpp',
-		includes=[
-			"./include/",
-			'${OUTPUT_DIR}/my-generated-include-files2/', # NOT a target, but contains one
-		]
-)
-
-
-# in 1.14 these don't work due to a bug
-"""
 Cpp(objectname('${OUTPUT_DIR}/target-include-dir'), './test.cpp',
 		includes=[
 			"./include/",
 			'${OUTPUT_DIR}/my-generated-include-files/', # a target
 		]
 )
+
+# generated include files in non-target directories are no longer supported
+
 Cpp(objectname('${OUTPUT_DIR}/target-include-file'), './test.cpp',
 		includes=[
 			"./include/",
-			'${OUTPUT_DIR}/my-generated-include-files2/', # NOT a target, but contains one
+			TargetsWithinDir('${OUTPUT_DIR}/my-generated-include-files2/'), # NOT a target, but contains one
 		]
 )
-"""

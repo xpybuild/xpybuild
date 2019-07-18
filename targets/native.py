@@ -1,6 +1,6 @@
 # xpyBuild - eXtensible Python-based Build System
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,7 +17,12 @@
 # $Id: native.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+@undocumented: _AddTrailingDirectorySlashesPathSet
+"""
+
 import os, inspect, re, string, time
+import datetime
 
 from buildcommon import *
 from basetarget import BaseTarget
@@ -27,7 +32,7 @@ from pathsets import PathSet, BasePathSet
 from buildcontext import getBuildInitializationContext
 from buildexceptions import BuildException
 from propertyfunctors import make_functor, Composable
-from utils.fileutils import openForWrite, mkdir, deleteFile, getmtime, exists, toLongPathSafe
+from utils.fileutils import openForWrite, mkdir, deleteFile, getmtime, exists, toLongPathSafe, getstat
 
 class __CompilersNotSpecified(object):
 	def __getattr__(self, attr):
@@ -52,152 +57,66 @@ else:
 	defineOption('native.cxx.staticlibnamefn', FilenameStringFormatter("lib%s.a"))
 	defineOption('native.cxx.objnamefn', FilenameStringFormatter("%s.o"))
 
-makedeplog = logging.getLogger('MakeDepend')
-class CompilerMakeDependsPathSet(BasePathSet):
+class _AddTrailingDirectorySlashesPathSet(BasePathSet):
+	""" NOT for use in builds. 
+	
+	Adds missing slashes to the source and underlying dependencies 
+	(unless the basename contains a dot, suggesting it's a file from a TargetsWithinDir). 
+	
+	For use in builds before 1.15 that incorrectly omitted slashes for include 
+	directories. 
 	"""
-		Use the selection ToolChain to get a list of dependencies from a set of source files
-	"""
-	def __init__(self, target, src, flags=None, includes=None):
-		"""
-		@param target: the BaseTarget object for which this path set is being caculated
-
-		@param src: a PathSet of source file paths
-
-		@param flags: additional compiler flags
-
-		@param includes: a PathSet containing a list of directory include paths, as strings or PathSets. 
-		DirGeneratedByTarget must be used only if a string is concatenated onto the end of the target name. 
-		"""
-		BasePathSet.__init__(self)
-		self.log = makedeplog
-		self.target = target
-		self.sources = src
-		self.flags = flatten([flags]) or []
-		self.includes = includes
-		
+	def __init__(self, pathSet):
+		self._pathSet = pathSet
+	
 	def __repr__(self):
-		return "MakeDepend(%s, %s)" % (self.sources, self.flags)
+		return 'AddTrailingSlashPathSet(%s)' % (self._pathSet)
+	
 	def resolveWithDestinations(self, context):
-		assert False, 'CompilerMakeDependsPathSet.resolveWithDestinations should never be called'
-		
-	def clean(self):
-		dfile = self.target.workDir+'.makedepend'
-		deleteFile(dfile)
-	def _resolveUnderlyingDependencies(self, context):	
-		deplist = None
-		options = self.target.options # get the merged options
-
-		dfile = toLongPathSafe(self.target.workDir+'.makedepend')
-		testsources = self.sources.resolve(context)
-		depsources = self.sources._resolveUnderlyingDependencies(context)
-
-		needsRebuild = not os.path.exists(dfile)
-		if needsRebuild:
-			self.log.info("Rebuilding dependencies for %s because cached dependencies file does not exist (%s)" % (self.target, dfile))
-		dfiletime = 0 if needsRebuild else getmtime(dfile) 
-		
-		for x in testsources:
-			# TODO: could avoid looking up stat of this file twice
-			if not exists(x):
-				# can't generate any deps if some source files don't yet exist
-				
-				# note that when we do this, we'll be using a potentially old source file
-				self.log.info("Dependency generation %s postponed to next incremental build because source file does not exist: %s" % (self.target, x))
-				# TODO: should add include dirs too
-				return depsources
-			elif (not needsRebuild) and getmtime(x) > dfiletime:
-				self.log.info("Rebuilding dependencies for %s because cached dependencies file is older than %s" % (self.target, x))
-				needsRebuild = True
-		
-		if not needsRebuild: # read in cached makedepends
-			deplist = []
-			with open(dfile) as f:
-				lines = f.readlines()
-				header = lines[0].strip()
-				lines = lines[1:]
-				for d in lines:
-					d = d.strip()
-					if not d: continue
-					if context._isValidTarget(d) or exists(toLongPathSafe(d)):
-						deplist.append( (d, self) )
-					else:
-						needsRebuild = True
-						self.log.warn("Rebuilding dependencies for %s because dependency %s is missing" % (self.target, d))
-						break
-			if header != str(self):
-				self.log.info("Rebuilding dependencies for %s because target options have changed (%s != %s)" % (self.target, header, str(self)))
-			elif not needsRebuild:
-				return deplist
-
-		# generate them again; allow other threads to execute dep checking while we 
-		# do this as makedepends benefits a lot from parallelism
-		startt = time.time()
-		with context._dependencyCheckingEnableParallelism():
-			self.log.info("*** Generating native dependencies for %s" % self.target)
-			
-			generatedIncludeDirs = []
-			for d, _ in self.includes._resolveUnderlyingDependencies(context):
-				if not d.endswith(os.sep): d += os.sep # includes are always directories
-				if context._isValidTarget(d) and (d not in generatedIncludeDirs):
-					generatedIncludeDirs.append(d)
-			def isGeneratedIncludeFile(e):
-				for generated in generatedIncludeDirs:
-					if e.startswith(generated): 
-						return True
-				return False
-			try:
-				deplist = options['native.compilers'].dependencies.depends(context=context, src=testsources, options=options, 
-					flags=flatten(options['native.cxx.flags']+[context.expandPropertyValues(x).split(' ') for x in self.flags]), 
-					includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']])
-					)
-				if IS_WINDOWS:
-					deplist = [d.replace('/','\\') for d in deplist]
-				
-				# remove paths inside generated directories and replace with the targets themselves
-				# no point using a generator given we have to materialize this to write the dfile below
-				deplist = [ (d, self) for d in deplist if (not isGeneratedIncludeFile(d) and d not in testsources)] + [ (d, self) for d in generatedIncludeDirs ]
-				deplist.sort() # canonical order
-				
-			except BuildException, e:
-				if len(testsources)==1 and testsources[0] not in str(e):
-					raise BuildException('Dependency resolution failed for %s: %s'%(testsources[0], e))
-				raise
-			
-			# materialize this as a list since we need to iterate over it twice and can't do that with a generator
-			depsources = list(depsources)
-
-			mkdir(os.path.dirname(dfile))
-			with openForWrite(dfile, 'wb') as f:
-				assert not os.linesep in str(self)
-				f.write(str(self)+os.linesep)
-				for d, _ in deplist+[('', None)]+depsources: # spacer to make it easier to see what's going on - distinction between depsources and deplist
-					f.write(d.encode('UTF-8')+os.linesep)
-			if time.time()-startt > 5: # this should usually be pretty quick, so may indicate a real build file mistake
-				self.log.warn('Dependency generation took a long time: %0.1f s to evaluate %s', time.time()-startt, self)
-		
-		# ideally file existence checking should happen here else (due to postponement above) it may not be possible; not done currently
-		
-		return deplist+depsources
+		return [((src if isDirPath(src) else src+os.path.sep), dest) for src,dest in self._pathSet.resolveWithDestinations(context)]
+	def _resolveUnderlyingDependencies(self, context):
+		return (((src if isDirPath(src) or '.' in os.path.basename(src) else src+os.path.sep), pathset) for src,pathset in self._pathSet._resolveUnderlyingDependencies(context))
 
 class Cpp(BaseTarget):
 	""" A target that compiles a C++ source file to a .o
 	"""
 	
+	__rebuild_makedepend_count = 0
+
 	def __init__(self, object, source, includes=None, flags=None, dependencies=None, options=None):
 		"""
 		@param object: the object file to generate
 		@param source: a (list of) source files
-		@param includes: a (list of) include directories, as strings or PathSets. If specifying a subdirectory of a generated directory, use DirGeneratedByTarget. 
+		
+		@param includes: a (list of) include directories, as strings or PathSets, 
+		each with a trailing slash. 
+		If this target depends on some include files that are generated by another target, 
+		make sure it's a directory target since all include directories must either 
+		exist before the build starts or be targets themselves. 
+		If specifying a subdirectory of a generated directory, use DirGeneratedByTarget. 
+		
 		@param flags: a list of additional compiler flags
+		
 		@param dependencies: a list of additional dependencies that need to be built 
-		before this target
+		before this target. Usually this is not needed. 
+		
 		@param options: [DEPRECATED - use .option() instead]
 		"""
 		self.source = PathSet(source)
-		self.includes = PathSet(includes)
+		
+		# currently we don't bother adding the native include dirs here as they're probably always going to be there
+		# for time being, explicitly cope with missing slashes, though really build authors should avoid this
+		self.includes = _AddTrailingDirectorySlashesPathSet(PathSet(includes))
 		self.flags = flatten([flags]) or []
-		self.makedepend = CompilerMakeDependsPathSet(self, self.source, flags=self.flags, includes=self.includes)
-		BaseTarget.__init__(self, object, [dependencies or [], self.source, self.makedepend])
+		
+		# nb: do not include any individual header files in main target deps even if we've already 
+		# got cached makedepends from a previous build, 
+		# because it's possible they are no longer needed and no longer exist (and we don't want spurious 
+		# build failures); this also has the advantage that it doesn't enlarge and slow down the stat cache 
+		# during dep resolution of non-native targets, since it'll only be populated once we're into 
+		# the up to date checking phase
+		
+		BaseTarget.__init__(self, object, PathSet([dependencies, source, self.includes]))
 		
 		for k,v in (options or {}).items(): self.option(k, v)
 		self.tags('native')
@@ -206,18 +125,134 @@ class Cpp(BaseTarget):
 		options = self.options
 
 		mkdir(os.path.dirname(self.path))
-		options['native.compilers'].cxxcompiler.compile(context, output=self.path, options=options, flags=flatten(options['native.cxx.flags']+[context.expandPropertyValues(x).split(' ') for x in self.flags]), src=self.source.resolve(context), includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']]))
+		options['native.compilers'].cxxcompiler.compile(context, output=self.path, options=options, 
+			flags=self._getCompilerFlags(context), 
+			src=self.source.resolve(context), 
+			includes=self._getIncludeDirs(context)
+			)
 
 	def clean(self, context):
-		self.makedepend.clean()
+		deleteFile(self._getMakeDependsFile(context))
 		BaseTarget.clean(self, context)
 
-	def getHashableImplicitInputs(self, context):
+	def _getMakeDependsFile(self, context):
+		# can only be called after target resolution, when workdir is set
+		return toLongPathSafe(context.getPropertyValue("BUILD_WORK_DIR")+'/targets/makedepend-cache/'+os.path.basename(self.workDir)+'.makedepend')
+
+	def _getCompilerFlags(self, context):
+		return flatten(self.getOption('native.cxx.flags')+[context.expandPropertyValues(x).split(' ') for x in self.flags])
+	
+	def _getIncludeDirs(self, context):
+		return self.includes.resolve(context)+flatten([context.expandPropertyValues(x, expandList=True) for x in self.getOption('native.include')])
+
+	def getHashableImplicitInputs(self, context):	
 		r = super(Cpp, self).getHashableImplicitInputs(context)
+
+		r.append('compiler flags: %s' % self._getCompilerFlags(context))
 		
-		# include input to makedepends, since even without running makedepends 
-		# we know we're out of date if inputs have changed
-		r.append('depends: '+context.expandPropertyValues(str(self.makedepend)))
+		# this will provide a quick way to notice changes such as TP library version number changed etc
+		includedirs = self._getIncludeDirs(context)
+		for path in includedirs:
+			r.append('include dir: '+os.path.normcase(path))
+		del path
+		
+		# This is called exactly once during up-to-date checking OR run, which 
+		# means we will have generated all target dependencies 
+		# (e.g. include files, source files etc) by this point
+		
+		# Since non-target include files won't be known until this point, we need 
+		# to perform up-to-date-ness checking for them here (rather than in 
+		# targetwrapper as normally happens for dependencies). 
+		
+		startt = time.time()
+
+		try:
+			targetmtime = os.stat(self.path).st_mtime # must NOT use getstat cache, don't want to pollute it with non-existence
+		except os.error: # file doesn't exist
+			targetmtime = 0
+
+		makedependsfile = self._getMakeDependsFile(context)
+		if targetmtime != 0 and not os.path.exists(makedependsfile):  # no value in using stat cache for this, not used elsewhere
+			targetmtime = 0 # treat the same as if target itself didn't exist
+		
+		newestFile, newestTime = None, 0 # keep track of the newest source or include file
+		
+		# first, figure out if we need to (re-)run makedepends or can use the cached info from the last build
+		runmakedepends = False
+		
+		if targetmtime == 0:
+			runmakedepends = True
+		
+		alreadychecked = set() # paths that we've already checked the date of
+		sourcepaths = []
+		for path, _ in self.source.resolveWithDestinations(context):
+			mtime = getmtime(path)
+			alreadychecked.add(path)
+			sourcepaths.append(path)
+			if mtime > newestTime: newestFile, newestTime = path, mtime
+		if newestTime > targetmtime: runmakedepends = True
+		
+		if (not runmakedepends) and os.path.exists(makedependsfile): # (no point using stat cache for this file)
+			# read file from last time; if any of the transitive dependencies 
+			# have changed, we should run makedepends again to update them
+			with io.open(makedependsfile, 'r', encoding='utf-8') as f:
+				flags = f.readline().strip()
+				if flags != u'flags: %s'%self._getCompilerFlags(context):
+					runmakedepends = True
+				else:
+					for path in f:
+						path = path.strip()
+						mtime = getmtime(path)
+						alreadychecked.add(path)
+						if mtime > newestTime: newestFile, newestTime = path, mtime
+			if newestTime > targetmtime: runmakedepends = True
+		
+		# (re-)run makedepends
+		if runmakedepends:
+			# only bother to log if we're recalculating
+			if targetmtime != 0: 
+				Cpp.__rebuild_makedepend_count += 1 # log the first few at crit
+				(self.log.critical if Cpp.__rebuild_makedepend_count <= 5 else self.log.info)(
+					'Recalculating C/C++ dependencies of %s; most recently modified dependent file is %s at %s', self, newestFile, 
+						datetime.datetime.fromtimestamp(newestTime).strftime('%a %Y-%m-%d %H:%M:%S'))
+
+			makedependsoutput = self.options['native.compilers'].dependencies.depends(
+				context=context, 
+				src=sourcepaths, 
+				options=self.options, 
+				flags=self._getCompilerFlags(context), 
+				includes=includedirs,
+				)
+			# normalize case to avoid problems on windows, and strip out sources since we already checked them above
+			makedependsoutput = [os.path.normcase(path) for path in makedependsoutput if path not in sourcepaths]
+			makedependsoutput.sort()
+			
+			# find the newest time from these files; if this is same as previous makedepends, won't do anything
+			for path in makedependsoutput:
+				if path in alreadychecked: continue
+				mtime = getmtime(path)
+				if mtime > newestTime: newestFile, newestTime = path, mtime
+			
+			# write out new makedepends file for next time
+			mkdir(os.path.dirname(makedependsfile))
+			with io.open(makedependsfile, 'w', encoding='utf-8') as f:
+				f.write(u'flags: %s\n'%self._getCompilerFlags(context))
+				for path in makedependsoutput:
+					f.write(u'%s\n'%path)
+
+		# endif runmakedepends
+		
+		# include the newest timestamp as an implicit input, so that we'll rebuild if any include files have changed
+		# no need to log this, as targetwrapper already logs differences in implicit inputs
+		if newestFile is not None:
+			newestDateTime = datetime.datetime.fromtimestamp(newestTime)
+			r.append(u'newest dependency was modified at %s.%03d: %s'%(
+				newestDateTime.strftime('%a %Y-%m-%d %H:%M:%S'), 
+				newestDateTime.microsecond/1000, 
+				os.path.normcase(newestFile)))
+
+		if time.time()-startt > 5: # this should usually be pretty quick, so if it takes a while it may indicate a real build file mistake
+			self.log.warn('C/C++ dependency generation took a long time: %0.1f s to evaluate %s', time.time()-startt, self)
 		
 		return r
 		
@@ -232,9 +267,16 @@ class C(Cpp):
 		mkdir(os.path.dirname(self.path))
 		options['native.compilers'].ccompiler.compile(context, output=self.path,
 				options=options, 
-				flags=flatten((options['native.c.flags'] or options['native.cxx.flags'])+[context.expandPropertyValues(x).split(' ') for x in self.flags]), 
+				flags=self._getCompilerFlags(context), 
 				src=self.source.resolve(context),
-				includes=flatten(self.includes.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.include']]))
+				includes=self._getIncludeDirs(context)
+				)
+		
+	def _getCompilerFlags(self, context):
+		return flatten(
+			(self.options['native.c.flags'] or self.options['native.cxx.flags'])
+			+[context.expandPropertyValues(x).split(' ') for x in self.flags])
+
 		
 class Link(BaseTarget):
 	""" A target that links object files to binaries

@@ -708,9 +708,6 @@ class BuildContext(BaseContext):
 		self._globalOptions = initializationContext._globalOptions
 		self.__targetPaths = targetPaths # a set of resolved normalized target paths
 
-		self._dependencyCheckingSerializationLock = threading.Lock()
-		"""Internal, may change at any time do not use. """
-		
 		# remove children if parent is also an output dir 
 		# (which is common as output dirs are often used to enforce existence), 
 		# which speeds up checking in later part
@@ -777,28 +774,6 @@ class BuildContext(BaseContext):
 			return target.name in self.init.targets()
 		target = str(target)
 		return target in self.init.targets() or target in self.__targetPaths
-
-	def _dependencyCheckingEnableParallelism(self):
-		"""
-		Enables an advanced optimization during the dependency resolution 
-		phase whereby extra threads can be used. 
-		
-		Most dependency checking is serialized to maximize performance and 
-		avoid Python GIL contention, but call this method 
-		(wrapped in a with clause) if you are starting a separate process 
-		so that dep checking can continue on other threads while we wait 
-		for it to complete. 
-		
-		"""
-		lock = self._dependencyCheckingSerializationLock
-		class DepCheckingParallelism(object):
-			def __enter__(self): return None
-			def __exit__(self, type, value, traceback):
-				lock.acquire()
-		
-		# assume it's already held
-		lock.release()
-		return DepCheckingParallelism()
 
 # hold option definitions outside of init context object, to support re-loading 
 # build file (with a new init context) without losing definitions from 

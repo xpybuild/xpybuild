@@ -251,7 +251,8 @@ class BuildScheduler(object):
 		for i in self.pending:
 			pending.put_nowait((0, i))
 
-		pool = ThreadPool('dependencychecking', self.options["workers"], pending, self._deps_target, self.utilisation, profile=self.options["profile"])
+		depcheckingworkers = 1 # more threads actually makes this slower
+		pool = ThreadPool('dependencychecking', depcheckingworkers, pending, self._deps_target, self.utilisation, profile=self.options["profile"])
 
 		pool.start()
 
@@ -259,11 +260,7 @@ class BuildScheduler(object):
 
 		pool.stop()
 
-		# make this this can't be access by mistake later
-		del self.context._dependencyCheckingSerializationLock
-		
-		# definintely do these GIL-intensive operation single-threaded so we don't need to 
-		# keep grabbing and dropping locks
+		# these are GIL-intensive operation
 		if (not self.options['clean']) and len(pool.errors) == 0:
 			for targetwrapper, _ in self.selectedtargetwrappers:
 				targetwrapper.updatePriority()
@@ -295,89 +292,88 @@ class BuildScheduler(object):
 			
 			tname - this is the canonical PATH of the target, not the name
 		"""
-		# serialize all dep checking by default since it's GIL-bound and we slower performance with 2 or more threads; 
-		# however lock can be dropped (and then required) during some aspects of this such as native makedepends
+		# we assume this is only called on one thread at a time; 
+		# all dep checking is GIL-bound and we get slower performance with 2 or more threads
 		
-		with self.context._dependencyCheckingSerializationLock:
-			errors = []
-			pending = [] # list of new jobs to done as part of dependency resolution
-			log.debug("Inspecting dependencies of target %s", tname)			
-			targetwrapper = self.targetwrappers.get(tname, None) # a TargetWrapper object
+		errors = []
+		pending = [] # list of new jobs to done as part of dependency resolution
+		log.debug("Inspecting dependencies of target %s", tname)			
+		targetwrapper = self.targetwrappers.get(tname, None) # a TargetWrapper object
 
-			# only log dependency status periodically since usually its very quick
-			# and not worthwhile
-			with self.lock:
-				self.index += 1
-				log.critical(self.progressFormat+"Resolving dependencies for %s", self.index, self.total, targetwrapper)
+		# only log dependency status periodically since usually its very quick
+		# and not worthwhile
+		with self.lock:
+			self.index += 1
+			log.critical(self.progressFormat+"Resolving dependencies for %s", self.index, self.total, targetwrapper)
 
-			if targetwrapper is None:
-				assert False # I'm not sure how we can get here, think it should actually be impossible
-				if not exists(tname):
-					errors.append("Unknown target %s" % tname)
-				else:
-					log.debug('Scheduler cannot find target in build file or on disk: %s', targetwrapper) # is this a problem? maybe assert False here?
-			elif self.options['ignore-deps'] and exists(targetwrapper.path): 
-				# in this mode, any target that already exists should be treated as 
-				# a leaf with no deps which means it won't be built under any 
-				# circumstances (even if a target it depends on is rebuilt), 
-				# and allows us to avoid the time-consuming transitive resolution 
-				# of dependencies. Has to be implemented this way, since if we were 
-				# to allow ANY already-existing target to be re-built in the normal 
-				# way, we would have to resolve dependencies for all targets in 
-				# order to ensure we never rebuild a target at the same time as 
-				# a target that depends on it. We're essentially deleting the entire 
-				# dependency subtree for all nodes that exist already
-				log.debug('Scheduler is treating existing target as a leaf and will not rebuild it: %s', targetwrapper)
-				self.leaves.append(targetwrapper)
-			elif not (self.options['ignore-deps'] and self.options['clean']): 
-				try:
-					targetwrapper.resolveUnderlyingDependencies()
-					# this list is sorted
-					
-					targetDeps = [] # just for logging
-					leaf = True
-					for dtargetwrapper in targetwrapper.getTargetDependencies():
-						#log.debug('Processing dependency: %s -> %s', tname, dname)
-						leaf = False
-						
-						if dtargetwrapper in targetwrapper.rdeps(): 
-							raise Exception('Circular dependency between targets: %s and %s'%(dtargetwrapper.name, targetwrapper.name))
-						
-						with self.lock:
-							if not dtargetwrapper.path in self.pending:
-								self.pending.append(dtargetwrapper.path)
-								pending.append((0, dtargetwrapper.path))
-						
-						targetDeps.append(str(dtargetwrapper)) # just for logging
-					# end of target deps loop
-					
-					# must check for missing non-target deps during this phase as if we wait to 
-					# build phase (when uptodate checking happens) we might not detect important race conditions
-					missingdep = targetwrapper.findMissingNonTargetDependencies()
-					if missingdep is not None:
-						missingdep, missingdeperror = missingdep
-						# in the specific case of a dependency error, build will definitely fail immediately so we should log line number 
-						# at ERROR log level not just at info
-						ex = BuildException('%s: %s'%(missingdeperror, missingdep))
-						log.error('FAILED during dependency resolution: %s', ex.toMultiLineString(targetwrapper, includeStack=False), extra=ex.getLoggerExtraArgDict(targetwrapper))
-						errors.append(ex.toSingleLineString(targetwrapper))
-					
-					# Stash this for logging later. Can't log priority here because it might change as more rdeps are found
-					self.selectedtargetwrappers.append( (targetwrapper, targetDeps) )
-					
-					if leaf:
-						self.leaves.append(targetwrapper)
-						
-				except Exception as e:
-					errors.extend(self._handle_error(targetwrapper.target, prefix="Target FAILED during dependency resolution"))
+		if targetwrapper is None:
+			assert False # I'm not sure how we can get here, think it should actually be impossible
+			if not exists(tname):
+				errors.append("Unknown target %s" % tname)
 			else:
-				# For clean ignoring deps we want to be as light-weight as possible
-				self.leaves.append(targetwrapper)
-			
-			if pending:
-				# if we're adding some new jobs
-				with self.lock:
-					self.total += len(pending)
+				log.debug('Scheduler cannot find target in build file or on disk: %s', targetwrapper) # is this a problem? maybe assert False here?
+		elif self.options['ignore-deps'] and exists(targetwrapper.path): 
+			# in this mode, any target that already exists should be treated as 
+			# a leaf with no deps which means it won't be built under any 
+			# circumstances (even if a target it depends on is rebuilt), 
+			# and allows us to avoid the time-consuming transitive resolution 
+			# of dependencies. Has to be implemented this way, since if we were 
+			# to allow ANY already-existing target to be re-built in the normal 
+			# way, we would have to resolve dependencies for all targets in 
+			# order to ensure we never rebuild a target at the same time as 
+			# a target that depends on it. We're essentially deleting the entire 
+			# dependency subtree for all nodes that exist already
+			log.debug('Scheduler is treating existing target as a leaf and will not rebuild it: %s', targetwrapper)
+			self.leaves.append(targetwrapper)
+		elif not (self.options['ignore-deps'] and self.options['clean']): 
+			try:
+				targetwrapper.resolveUnderlyingDependencies()
+				# this list is sorted
+				
+				targetDeps = [] # just for logging
+				leaf = True
+				for dtargetwrapper in targetwrapper.getTargetDependencies():
+					#log.debug('Processing dependency: %s -> %s', tname, dname)
+					leaf = False
+					
+					if dtargetwrapper in targetwrapper.rdeps(): 
+						raise Exception('Circular dependency between targets: %s and %s'%(dtargetwrapper.name, targetwrapper.name))
+					
+					with self.lock:
+						if not dtargetwrapper.path in self.pending:
+							self.pending.append(dtargetwrapper.path)
+							pending.append((0, dtargetwrapper.path))
+					
+					targetDeps.append(str(dtargetwrapper)) # just for logging
+				# end of target deps loop
+				
+				# must check for missing non-target deps during this phase as if we wait to 
+				# build phase (when uptodate checking happens) we might not detect important race conditions
+				missingdep = targetwrapper.findMissingNonTargetDependencies()
+				if missingdep is not None:
+					missingdep, missingdeperror = missingdep
+					# in the specific case of a dependency error, build will definitely fail immediately so we should log line number 
+					# at ERROR log level not just at info
+					ex = BuildException('%s: %s'%(missingdeperror, missingdep))
+					log.error('FAILED during dependency resolution: %s', ex.toMultiLineString(targetwrapper, includeStack=False), extra=ex.getLoggerExtraArgDict(targetwrapper))
+					errors.append(ex.toSingleLineString(targetwrapper))
+				
+				# Stash this for logging later. Can't log priority here because it might change as more rdeps are found
+				self.selectedtargetwrappers.append( (targetwrapper, targetDeps) )
+				
+				if leaf:
+					self.leaves.append(targetwrapper)
+					
+			except Exception as e:
+				errors.extend(self._handle_error(targetwrapper.target, prefix="Target FAILED during dependency resolution"))
+		else:
+			# For clean ignoring deps we want to be as light-weight as possible
+			self.leaves.append(targetwrapper)
+		
+		if pending:
+			# if we're adding some new jobs
+			with self.lock:
+				self.total += len(pending)
 			
 		# NB: the keep-going option does NOT apply to dependency failures 
 		return (pending, errors, 0 == len(errors))

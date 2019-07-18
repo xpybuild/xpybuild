@@ -13,12 +13,12 @@ class PySysTest(XpybuildBaseTest):
 		self.assertGrep(file='xpybuild.out', expr="ERROR .*", contains=False)
 		self.assertGrep(file='test.out', expr="Got string: <STRING1STRING2>")
 
-		self.assertOrderedGrep(file='build-output/BUILD_WORK/targets/objectname(_BUILD_WORK_DIR_.obj.test).makedepend', exprList=[
+		self.assertOrderedGrep(file='build-output/BUILD_WORK/targets/makedepend-cache/objectname(_BUILD_WORK_DIR_.obj.test).makedepend', exprList=[
 			'test1.h',
 			'test2.h',
-			'^$', # blank line
-			'test.c'
 			])
+		self.assertGrep(file='build-output/BUILD_WORK/targets/makedepend-cache/objectname(_BUILD_WORK_DIR_.obj.test).makedepend', 
+			expr='test.c', contains=False)
 		
 
 		# incremental should not rebuild anything
