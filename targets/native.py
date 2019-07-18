@@ -217,13 +217,17 @@ class Cpp(BaseTarget):
 					'Recalculating C/C++ dependencies of %s; most recently modified dependent file is %s at %s', self, newestFile, 
 						datetime.datetime.fromtimestamp(newestTime).strftime('%a %Y-%m-%d %H:%M:%S'))
 
-			makedependsoutput = self.options['native.compilers'].dependencies.depends(
-				context=context, 
-				src=sourcepaths, 
-				options=self.options, 
-				flags=self._getCompilerFlags(context), 
-				includes=includedirs,
-				)
+			try:
+				makedependsoutput = self.options['native.compilers'].dependencies.depends(
+					context=context, 
+					src=sourcepaths, 
+					options=self.options, 
+					flags=self._getCompilerFlags(context), 
+					includes=includedirs,
+					)
+			except Exception as ex:
+				raise BuildException('Dependency resolution failed for %s'%(sourcepaths[0]), causedBy=True)
+				
 			# normalize case to avoid problems on windows, and strip out sources since we already checked them above
 			makedependsoutput = [os.path.normcase(path) for path in makedependsoutput if path not in sourcepaths]
 			makedependsoutput.sort()
