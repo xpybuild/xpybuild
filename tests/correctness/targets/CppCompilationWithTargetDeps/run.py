@@ -23,7 +23,7 @@ class PySysTest(XpybuildBaseTest):
 		def touchfile(p): 
 			assert os.path.exists(self.output+'/'+p), self.output+'/'+p
 			os.utime(self.output+'/'+p, None)
-		touchfile('build-output/BUILD_WORK/targets/implicit-inputs/_OUTPUT_DIR_.my-generated-include-files.txt') # stamp file for /generatedpath
+		touchfile('build-output/BUILD_WORK/targets/Copy/implicit-inputs/_OUTPUT_DIR_.my-generated-include-files.txt') # stamp file for /generatedpath
 		touchfile('build-output/my-generated-include-files/generatedpath/test3.h')
 		
 		touchfile('build-output/my-generated-include-files2/generatedpath/test3.h')

@@ -4,7 +4,7 @@ from xpybuild.xpybuild_basetest import XpybuildBaseTest
 class PySysTest(XpybuildBaseTest):
 
 	def execute(self):
-		implicitinputs = 'build-output/BUILD_WORK/targets/implicit-inputs/_OUTPUT_DIR_.output.txt.txt'
+		implicitinputs = 'build-output/BUILD_WORK/targets/CustomTarget/implicit-inputs/_OUTPUT_DIR_.output.txt.txt'
 		msg = self.xpybuild(stdouterr='xpy-initial', args=['MY_PROP1=val1', 'MY_PROP2=val2', 'MY_PROP3=val3'])
 		self.assertGrep(implicitinputs, expr='addHashableImplicitInput-string=val1', abortOnError=False)
 		self.assertGrep(implicitinputs, expr='addHashableImplicitInput-callable=val2', abortOnError=False)

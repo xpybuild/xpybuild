@@ -169,7 +169,7 @@ class BaseTarget(Composable):
 		self.resolveToString(context)
 
 		# do this early (before deps resolution) so it can be used for clean
-		self.__workDir = os.path.normpath(context.getPropertyValue("BUILD_WORK_DIR")+'/targets/'+targetNameToUniqueId(self.name))
+		self.__workDir = os.path.normpath(context.getPropertyValue("BUILD_WORK_DIR")+'/targets/'+self.__class__.__name__+'/'+targetNameToUniqueId(self.name))
 		
 		# take the opportunity to provide a merged set of options
 		self.__optionsResolved = context.mergeOptions(target=self)
