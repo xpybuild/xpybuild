@@ -240,10 +240,12 @@ class TargetWrapper(object):
 			dstat = getstat(dpath)
 			# TODO: optimization, could compute latest file here too (i.e. only do uptodate checking for FindPaths items)
 			
-			if dstat is False or not ( (dnameIsDirPath and S_ISDIR(dstat.st_mode)) or (not dnameIsDirPath and S_ISREG(dstat.st_mode)) ):
+			if dstat is False: 
+				return dpath, 'Missing dependency'
+			if dnameIsDirPath != S_ISDIR(dstat.st_mode):
 				# just before we throw the exception, check it's not some other weird type of thing
-				assert not os.path.exists(dpath), dpath
-				return dpath
+				assert S_ISDIR(dstat.st_mode) or S_ISREG(dstat.st_mode), dpath
+				return dpath, 'Trailing slash is required for directories'
 		return None
 		
 	def decrement(self):
@@ -300,7 +302,7 @@ class TargetWrapper(object):
 				log.debug('Up-to-date check: %s has been marked dirty', self.name)
 				return False
 
-			if not exists(self.path):
+			if not os.path.exists(self.path): # do NOT use stat cache, since this path will exist during lifetime of the build
 				log.debug('Up-to-date check: %s must be built because file does not exist: "%s"', self.name, self.path)
 				self.__isdirty = True # make sure we don't log this again
 				return False

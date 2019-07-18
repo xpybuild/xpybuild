@@ -355,9 +355,10 @@ class BuildScheduler(object):
 					# build phase (when uptodate checking happens) we might not detect important race conditions
 					missingdep = targetwrapper.findMissingNonTargetDependencies()
 					if missingdep is not None:
+						missingdep, missingdeperror = missingdep
 						# in the specific case of a dependency error, build will definitely fail immediately so we should log line number 
 						# at ERROR log level not just at info
-						ex = BuildException("Cannot find dependency %s" % missingdep)
+						ex = BuildException('%s: %s'%(missingdeperror, missingdep))
 						log.error('FAILED during dependency resolution: %s', ex.toMultiLineString(targetwrapper, includeStack=False), extra=ex.getLoggerExtraArgDict(targetwrapper))
 						errors.append(ex.toSingleLineString(targetwrapper))
 					
