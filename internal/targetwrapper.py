@@ -33,6 +33,7 @@ from utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, i
 
 import logging
 log = logging.getLogger('scheduler.targetwrapper')
+uptodatelog = logging.getLogger('uptodate')
 
 class TargetWrapper(object):
 	"""
@@ -48,6 +49,8 @@ class TargetWrapper(object):
 	DEP_SKIP_EXISTENCE_CHECK = 2**2
 	"""Flag for dependencies from a pathset where there's no point checking the existence of 
 	dependencies because they're already known to be present - e.g. FindPaths. """
+	
+	__uptodate_log_count = 0
 	
 	def __init__(self, target, scheduler):
 		"""
@@ -286,6 +289,13 @@ class TargetWrapper(object):
 		with self.lock:
 			return self.__rdeps
 
+	def __logUptodate(self, msg, *args):
+		TargetWrapper.__uptodate_log_count += 1
+		if TargetWrapper.__uptodate_log_count <= 5:
+			uptodatelog.critical(msg, *args)
+		else:
+			uptodatelog.info(msg, *args)
+
 	def uptodate(self, context, ignoreDeps): 
 		"""
 			Checks whether the target needs to be rebuilt.
@@ -311,7 +321,7 @@ class TargetWrapper(object):
 			
 			if not isfile(self.stampfile): # this is really an existence check, but if we have a dir it's an error so ignore
 				# for directory targets
-				log.info('Up-to-date check: %s must be rebuilt because stamp file does not exist: "%s"', self.name, self.stampfile)
+				self.__logUptodate('Up-to-date check: %s must be rebuilt because stamp file does not exist: "%s"', self.name, self.stampfile)
 				return False
 			
 			# assume that by this point our explicit dependencies at least exist, so it's safe to call getHashableImplicitDependencies
@@ -321,7 +331,7 @@ class TargetWrapper(object):
 			if implicitInputs or self.isDirPath:
 				# this is to cope with targets that have implicit inputs (e.g. globbed pathsets); might as well use the same mechanism for directories (which need a stamp file anyway)
 				if not exists(self.__implicitInputsFile):
-					log.info('Up-to-date check: %s must be rebuilt because implicit inputs/stamp file does not exist: "%s"', self.name, self.__implicitInputsFile)
+					self.__logUptodate('Up-to-date check: %s must be rebuilt because implicit inputs/stamp file does not exist: "%s"', self.name, self.__implicitInputsFile)
 					return False
 				with io.open(toLongPathSafe(self.__implicitInputsFile), 'rb') as f:
 					latestImplicitInputs = f.read().split(os.linesep)
@@ -333,7 +343,7 @@ class TargetWrapper(object):
 						if len(added) > maxdifflines: added = ['...']+added[len(added)-maxdifflines:] 
 						if len(removed) > maxdifflines: removed = ['...']+removed[len(removed)-maxdifflines:]
 						if not added and not removed: added = ['N/A']
-						log.info(u'Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self.__implicitInputsFile, 
+						self.__logUptodate(u'Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self.__implicitInputsFile, 
 							'\n\t'.join(
 								['previous build had %d lines, current build has %d lines'%(len(latestImplicitInputs), len(implicitInputs))]+removed+added
 							).replace(u'\r',u'\\r\r'))
@@ -353,9 +363,9 @@ class TargetWrapper(object):
 				pathmodtime = getmtime(path)
 				if pathmodtime <= stampmodtime: return False
 				if pathmodtime-stampmodtime < 1: # such a small time gap seems dodgy
-					log.warn('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" by just %0.1f seconds', self.name, path, self.stampfile, pathmodtime-stampmodtime)
+					uptodatelog('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" by just %0.1f seconds', self.name, path, self.stampfile, pathmodtime-stampmodtime)
 				else:
-					log.info('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" (by %0.1f seconds)', self.name, path, self.stampfile, pathmodtime-stampmodtime)
+					self.__logUptodate('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" (by %0.1f seconds)', self.name, path, self.stampfile, pathmodtime-stampmodtime)
 				return True
 
 			# things to check:
