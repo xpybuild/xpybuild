@@ -4,4 +4,5 @@
 int main(int argc, char **argv)
 {
 	printf("Test program\n");
+	return 0;
 }
