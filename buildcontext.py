@@ -28,7 +28,7 @@ from buildexceptions import BuildException
 from utils.functors import Composable, Compose
 from utils.consoleformatter import publishArtifact
 import traceback
-
+import re
 import logging
 log = logging.getLogger('xpybuild')
 
@@ -696,6 +696,8 @@ class BuildContext(BaseContext):
 	"""
 	Provides context used only during the build phase of the build (after initialization is complete), 
 	i.e. the ability to expand variables (but not to change their value). 
+	
+	@undocumented: _getTopLevelOutputDirs, _resolveTargetGroups
 	"""
 	def __init__(self, initializationContext, targetPaths=None):
 		""" Create a BuildContext from a L{BuildInitializationContext}. 
@@ -721,13 +723,21 @@ class BuildContext(BaseContext):
 					break
 				x = os.path.dirname(x)
 		self.__topLevelOutputDirs = [o+os.sep for o in outputDirs]
-	
-	def getTopLevelOutputDirs(self):
-		""" Returns a list of the absolute path of the defined output 
-		directories, excluding any output dirs that are nested inside another 
-		output directory. 
 		
-		@return: A list of absolute paths each ending in os.sep. 
+		self.__topLevelOutputDirsRegex = re.compile('(%s)'%'|'.join( re.escape(o+os.sep) for o in outputDirs), 
+			flags=re.IGNORECASE if IS_WINDOWS else 0)
+
+	def isPathWithinOutputDir(self, path):
+		""" Returns true if the specified path is a descendent of any of 
+		this build's output directories. 
+
+		@param path: A normalized absolute path (must use correct slashes for the platform). 
+		@return: True or False
+		"""
+		return self.__topLevelOutputDirsRegex.match(path) is not None
+	
+	def _getTopLevelOutputDirs(self):
+		""" For internal use only. 
 		"""
 		return self.__topLevelOutputDirs
 	

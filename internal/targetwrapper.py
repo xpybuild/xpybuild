@@ -219,11 +219,11 @@ class TargetWrapper(object):
 		the name of one that's under an output dir (suggests a missing target 
 		dep), or None. 
 		"""
+		ctx = self.__scheduler.context
 		for dpath, flags, pathset in self.__nontargetdeps:
-			for outdir in self.__scheduler.context.getTopLevelOutputDirs():
-				if dpath.startswith(outdir):
-					raise BuildException('Target %s depends on output %s which is implicitly created by some other directory target - please use DirGeneratedByTarget to explicitly name the directory target that it depends on'%(self, dpath), 
-					location=self.target.location) # e.g. FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/foo/')+'bar/') # or similar
+			if ctx.isPathWithinOutputDir(dpath):
+				raise BuildException('Target %s depends on output %s which is implicitly created by some other directory target - please use DirGeneratedByTarget to explicitly name the directory target that it depends on'%(self, dpath), 
+				location=self.target.location) # e.g. FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/foo/')+'bar/') # or similar
 		
 	def findMissingNonTargetDependencies(self):
 		"""

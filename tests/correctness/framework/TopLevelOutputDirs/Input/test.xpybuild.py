@@ -16,4 +16,12 @@ defineOutputDirProperty('OUTPUT_DIR4', '${OUTPUT_DIR}/outputdir2')
 from targets.writefile import *
 
 
-WriteFile('${OUTPUT_DIR}/output.txt', lambda ctx: '\n'.join([x[x.find('build-output'):].replace('\\','/') for x in ctx.getTopLevelOutputDirs()]))
+WriteFile('${OUTPUT_DIR}/output.txt', lambda ctx: '\n'.join([x[x.find('build-output'):].replace('\\','/') for x in ctx._getTopLevelOutputDirs()]+[
+	# expected True
+	str(ctx.isPathWithinOutputDir(os.path.normpath(ctx.getFullPath('${OUTPUT_DIR}/out1/aaaa', '.')))),
+	str(ctx.isPathWithinOutputDir(os.path.normpath(ctx.getFullPath(
+		'${OUTPUT_DIR}/outputDIR2/aaaa' if IS_WINDOWS else '${OUTPUT_DIR}/outputdir2/aaaa', '.')))),
+	#expected False
+	str(ctx.isPathWithinOutputDir(os.path.normpath(ctx.getFullPath('${OUTPUT_DIR}/outputdir2-nomatch/aaaa', '.')))),
+	str(ctx.isPathWithinOutputDir('someprefix/'+os.path.normpath(ctx.getFullPath('${OUTPUT_DIR}/outputdir2-nomatch/aaaa', '.')))),
+	]))
