@@ -362,7 +362,7 @@ class TargetWrapper(object):
 				pathmodtime = getmtime(path)
 				if pathmodtime <= stampmodtime: return False
 				if pathmodtime-stampmodtime < 1: # such a small time gap seems dodgy
-					uptodatelog('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" by just %0.1f seconds', self.name, path, self.stampfile, pathmodtime-stampmodtime)
+					uptodatelog.warn('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" by just %0.1f seconds', self.name, path, self.stampfile, pathmodtime-stampmodtime)
 				else:
 					self.__logUptodate('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" (by %0.1f seconds)', self.name, path, self.stampfile, pathmodtime-stampmodtime)
 				return True
