@@ -76,13 +76,14 @@ targets.__package__	targets-module.html#__package__
 targets.copy	targets.copy-module.html
 targets.copy.createReplaceDictLineMappers	targets.copy-module.html#createReplaceDictLineMappers
 targets.copy.openForWrite	utils.java-module.html#openForWrite
-targets.copy.flatten	utils.flatten-module.html#flatten
 targets.copy.PathSet	pathsets-module.html#PathSet
 targets.copy.mkdir	utils.fileutils-module.html#mkdir
 targets.copy.__package__	targets.copy-module.html#__package__
 targets.copy.deleteDir	utils.fileutils-module.html#deleteDir
 targets.copy.normLongPath	utils.fileutils-module.html#normLongPath
 targets.copy.IS_WINDOWS	targets.copy-module.html#IS_WINDOWS
+targets.copy.defineOption	propertysupport-module.html#defineOption
+targets.copy.flatten	utils.flatten-module.html#flatten
 targets.csharp	targets.csharp-module.html
 targets.csharp.PathSet	pathsets-module.html#PathSet
 targets.csharp.mkdir	utils.fileutils-module.html#mkdir
