@@ -519,7 +519,7 @@ def main(args):
 							log.error("Pre-build check failed: %s", be)
 							return 7
 
-					buildtype = 'INCREMENTAL' if any(os.path.exists(dir) for dir in init.getOutputDirs()) else 'NON-INCREMENTAL'
+					buildtype = 'incremental' if any(os.path.exists(dir) for dir in init.getOutputDirs()) else 'full'
 					if not buildOptions['dry-run']:
 						for dir in init.getOutputDirs():
 							log.info('Creating output directory: %s', dir)
