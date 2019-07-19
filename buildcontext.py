@@ -724,7 +724,10 @@ class BuildContext(BaseContext):
 				x = os.path.dirname(x)
 		self.__topLevelOutputDirs = [o+os.sep for o in outputDirs]
 		
-		self.__topLevelOutputDirsRegex = re.compile('(%s)'%'|'.join( re.escape(o+os.sep) for o in outputDirs), 
+		self.__topLevelOutputDirsRegex = re.compile(
+			# optimization, since this is performance-critical
+			('(%s)'%'|'.join( re.escape(o+os.sep) for o in outputDirs)) 
+			if len(outputDirs) > 1 else re.escape(outputDirs[0]+os.sep), 
 			flags=re.IGNORECASE if IS_WINDOWS else 0)
 
 	def isPathWithinOutputDir(self, path):
