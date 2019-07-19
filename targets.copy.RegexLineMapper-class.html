@@ -88,10 +88,32 @@
         <tr>
           <td><span class="summary-sig"><a href="targets.copy.RegexLineMapper-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">regex</span>,
-        <span class="summary-sig-arg">repl</span>)</span><br />
+        <span class="summary-sig-arg">repl</span>,
+        <span class="summary-sig-arg">disablePropertyExpansion</span>=<span class="summary-sig-default">False</span>)</span><br />
       x.__init__(...) initializes x; see help(type(x)) for signature</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="targets.copy-pysrc.html#RegexLineMapper.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="targets.copy.RegexLineMapper-class.html#prepare" class="summary-sig-name">prepare</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">context</span>)</span><br />
+      Called once the build process has started and before any other method
+      on this mapper (other than getInstance) to allow the mapper to 
+      initialize its internal variables using the build context, for 
+      example by expanding build properties.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="targets.copy-pysrc.html#RegexLineMapper.prepare">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -144,7 +166,8 @@
       <code><a href="targets.copy.FileContentsMapper-class.html#getDependencies">getDependencies</a></code>,
       <code><a href="targets.copy.FileContentsMapper-class.html#getFooter">getFooter</a></code>,
       <code><a href="targets.copy.FileContentsMapper-class.html#getHeader">getHeader</a></code>,
-      <code><a href="targets.copy.FileContentsMapper-class.html#getInstance">getInstance</a></code>
+      <code><a href="targets.copy.FileContentsMapper-class.html#getInstance">getInstance</a></code>,
+      <code><a href="targets.copy.FileContentsMapper-class.html#startFile">startFile</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -197,7 +220,8 @@
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">regex</span>,
-        <span class="sig-arg">repl</span>)</span>
+        <span class="sig-arg">repl</span>,
+        <span class="sig-arg">disablePropertyExpansion</span>=<span class="sig-default">False</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -209,6 +233,33 @@
   <dl class="fields">
     <dt>Overrides:
         object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="prepare"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">prepare</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">context</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="targets.copy-pysrc.html#RegexLineMapper.prepare">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called once the build process has started and before any other method 
+  on this mapper (other than getInstance) to allow the mapper to initialize
+  its internal variables using the build context, for example by expanding 
+  build properties.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="targets.copy.FileContentsMapper-class.html#prepare">FileContentsMapper.prepare</a>
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
@@ -233,6 +284,13 @@
   <p>Called for every line in the file, returning the original line, a 
   changed line, or None if the line should be deleted.</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> - The input line as a byte string.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>The line to write to output as a byte string, or None if it 
+          should be omitted.</dd>
     <dt>Overrides:
         <a href="targets.copy.FileContentsMapper-class.html#mapLine">FileContentsMapper.mapLine</a>
         <dd><em class="note">(inherited documentation)</em></dd>
@@ -294,7 +352,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Jul 19 18:08:10 2019
+    Generated by Epydoc 3.0.1 on Fri Jul 19 21:04:04 2019
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

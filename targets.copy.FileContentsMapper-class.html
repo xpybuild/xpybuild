@@ -109,7 +109,49 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="mapLine"></a><span class="summary-sig-name">mapLine</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a name="prepare"></a><span class="summary-sig-name">prepare</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">context</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      Called once the build process has started and before any other method
+      on this mapper (other than getInstance) to allow the mapper to 
+      initialize its internal variables using the build context, for 
+      example by expanding build properties.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="targets.copy-pysrc.html#FileContentsMapper.prepare">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="targets.copy.FileContentsMapper-class.html#startFile" class="summary-sig-name">startFile</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">context</span>,
+        <span class="summary-sig-arg">src</span>,
+        <span class="summary-sig-arg">dest</span>)</span><br />
+      Called when the mapper starts to process a new file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="targets.copy-pysrc.html#FileContentsMapper.startFile">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="targets.copy.FileContentsMapper-class.html#mapLine" class="summary-sig-name">mapLine</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">context</span>,
         <span class="summary-sig-arg">line</span>)</span><br />
       Called for every line in the file, returning the original line, a 
@@ -258,9 +300,78 @@ object --+
   
   <p>Called when a target begins to use a (potentially shared) line mapper.
   Returns the thread-safe (or stateless) FileContentsMapper instance that 
-  will be used; since most instancea are inherently stateless, by default 
+  will be used; since most instances are inherently stateless, by default 
   just returns self.</p>
+  <p>If you need to keep any state that changes after the <a 
+  href="targets.copy.FileContentsMapper-class.html#prepare" 
+  class="link">prepare</a> method is called (for example based on tracking 
+  the current filename or previously encountered lines), you need to 
+  override this and return a new instance either by calling your 
+  constructor or use Python's copy.deepcopy() method.</p>
   <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="startFile"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">startFile</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">context</span>,
+        <span class="sig-arg">src</span>,
+        <span class="sig-arg">dest</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="targets.copy-pysrc.html#FileContentsMapper.startFile">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called when the mapper starts to process a new file.</p>
+  <p>Can be used to prevent the mapper handling certain files. For stateful
+  mappers (with an implementation of L(getInstance), this can be used to 
+  enable file-specific behaviour during mapping.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>context</code></strong> - The context.</li>
+        <li><strong class="pname"><code>src</code></strong> - The absolute normalized long-path-safe source file path.</li>
+        <li><strong class="pname"><code>dest</code></strong> - The absolute normalized long-path-safe destination file path.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>True if this file can be handled by this mapper, or False if it 
+          should be ignored for this file.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="mapLine"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">mapLine</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">context</span>,
+        <span class="sig-arg">line</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="targets.copy-pysrc.html#FileContentsMapper.mapLine">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called for every line in the file, returning the original line, a 
+  changed line, or None if the line should be deleted.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> - The input line as a byte string.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>The line to write to output as a byte string, or None if it 
+          should be omitted.</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -281,7 +392,7 @@ object --+
   
   <p>Called at the start of every file. By default returns None but can 
   return a string that will be written to the target file before anything 
-  else.</p>
+  else. Use os.linesep for new lines.</p>
   <dl class="fields">
   </dl>
 </td></tr></table>
@@ -303,7 +414,7 @@ object --+
   
   <p>Called at the end of every file. By default returns None but can 
   return a string that will be written to the target file after everything 
-  else.</p>
+  else. Use os.linesep for new lines.</p>
   <dl class="fields">
   </dl>
 </td></tr></table>
@@ -358,7 +469,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Jul 19 18:08:10 2019
+    Generated by Epydoc 3.0.1 on Fri Jul 19 21:04:04 2019
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
