@@ -22,8 +22,9 @@
 - Command line: new (experimental) option --verify that can be used to run the build in a slower and stricter mode that will flag up potential build problems. This feature should be considered experimental in this release. 
 - Javac: now respects the `ProcessOutputHandler.regexIgnore` option.
 - Copy: added `Copy.symlinks` option which can be used to enable copying of symlinks. To turn this on globally for your build, use `setGlobalOption('Copy.symlinks', True)`.
- 
-
+- FilteredCopy: added disablePropertyExpansion to AddFileHeader/AddFileFooter/RegexLineMapper
+- FilteredCopy: added FileContentsMapper.startFile(context, src, dest) API method that can be used to skip use of this mapper for certain files, and/or to insert content based on the source or destination path into the file. 
+- FilteredCopy: added FileContentsMapper.prepare(context) API method that can be used to prepare fields based on the context to speed up the actual mapping. 
 
 # 1.14
 

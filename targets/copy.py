@@ -229,20 +229,24 @@ class FilteredCopy(Copy):
 	def getHashableImplicitInputs(self, context):
 		""" Include the mapper descriptions in the implicit dependencies. """
 		r = super(FilteredCopy, self).getHashableImplicitInputs(context)
-		for m in self.mappers: r.append(m.getDescription(context)) # ensures that changes to properties force a rebuild when necessary
+		for m in self.mappers: 
+			m.prepare(context)
+			r.append(m.getDescription(context)) # ensures that changes to properties force a rebuild when necessary
 		return r
 		
 	def _copyFile(self, context, src, dest):
+		mappers = [m for m in self.mappers if m.startFile(context, src, dest) is not False]
+		
 		with open(src, 'rb') as s:
 			with openForWrite(dest, 'wb') as d:
-				for m in self.mappers:
+				for m in mappers:
 					x = m.getHeader(context)
 					if x: 
 						self.__unusedMappers.discard(m)
 						d.write(x)
 				
 				for l in s:
-					for m in self.mappers:
+					for m in mappers:
 						prev = l
 						l = m.mapLine(context, l)
 						if prev != l:
@@ -252,7 +256,7 @@ class FilteredCopy(Copy):
 					if None != l:
 						d.write(l)
 
-				for m in self.mappers:
+				for m in mappers:
 					x = m.getFooter(context)
 					if x: 
 						self.__unusedMappers.discard(m)
@@ -268,27 +272,58 @@ class FileContentsMapper(object):
 	characters; python's os.linesep should be used where a 
 	platform-netural new line character is required. 
 
-	 """
+	"""
+	
 	def getInstance(self): 
 		""" Called when a target begins to use a (potentially shared) line mapper. 
 		Returns the thread-safe (or stateless) FileContentsMapper instance that will be used; 
-		since most instancea are inherently stateless, by default just returns self. 
+		since most instances are inherently stateless, by default just returns self. 
+		
+		If you need to keep any state that changes after the L{prepare} method 
+		is called (for example based on tracking the current filename or 
+		previously encountered lines), you need to override this and return a new instance 
+		either by calling your constructor or use Python's copy.deepcopy() method. 
 		"""
 		return self
+	def prepare(self, context, **kwargs):
+		""" Called once the build process has started and before any other method on this mapper 
+		(other than getInstance) to allow the mapper to initialize its internal 
+		variables using the build context, for example by expanding build properties. 
+		"""
+		pass
+	def startFile(self, context, src, dest):
+		""" Called when the mapper starts to process a new file. 
+		
+		Can be used to prevent the mapper handling certain files. 
+		For stateful mappers (with an implementation of L(getInstance), this 
+		can be used to enable file-specific behaviour during mapping. 
+		
+		@param context: The context. 
+		@param src: The absolute normalized long-path-safe source file path. 
+		@param dest: The absolute normalized long-path-safe destination file path. 
+		@return: True if this file can be handled by this mapper, or False if 
+		it should be ignored for this file. 
+		"""
+		return True
 	def mapLine(self, context, line): 
 		""" Called for every line in the file, returning the original line, a changed line, or None if the line should be deleted. 
+		
+		@param line: The input line as a byte string.
+		@return: The line to write to output as a byte string, or None if it should be omitted. 
 		"""
 		raise Exception('Not implemented yet')
 	def getHeader(self, context): 
 		"""
 		Called at the start of every file. By default returns None but can return 
 		a string that will be written to the target file before anything else. 
+		Use os.linesep for new lines. 
 		"""
 		return None
 	def getFooter(self, context): 
 		"""
 		Called at the end of every file. By default returns None but can return 
 		a string that will be written to the target file after everything else. 
+		Use os.linesep for new lines. 
 		"""
 		return None
 	def getDescription(self, context): 
@@ -334,13 +369,15 @@ class RegexLineMapper(FileContentsMapper):
 	is required. 
 
 	"""
-	def __init__(self, regex, repl): self.regex, self.repl = regex, repl
-	def __getReplacement(self, context): return context.expandPropertyValues(self.repl.replace('\\', '!xpybuildslash!')).replace('\\', '\\\\').replace('!xpybuildslash!', '\\')
+	def __init__(self, regex, repl, disablePropertyExpansion=False): self.regex, self.repl, self.disablePropertyExpansion = regex, repl, disablePropertyExpansion
+	def __getReplacement(self, context): 
+		if self.disablePropertyExpansion: return self.repl
+		return context.expandPropertyValues(self.repl.replace('\\', '!xpybuildslash!')).replace('\\', '\\\\').replace('!xpybuildslash!', '\\')
 	def mapLine(self, context, line): return re.sub(self.regex, self.__getReplacement(context), line)
 	def getDescription(self, context): return 'RegexLineMapper("%s" -> "%s")'%(self.regex, self.__getReplacement(context))
 
 class InsertFileContentsLineMapper(FileContentsMapper):
-	""" Replace instances of the specified token with the entire contents of the specified file
+	""" Replace instances of the specified token with the entire contents of the specified file.
 	
 	filepath must be an absolute path, not a build dir relative path. 
 	"""
@@ -379,11 +416,13 @@ class AddFileHeader(FileContentsMapper):
 	the newline character "\\n", python's os.linesep should be used where a platform-neutral newline 
 	is required. 
 
+	@param disablePropertyExpansion: set to True to disable expansion of ${...} properties in the 
+	old and new strings.
 	"""
-	def __init__(self, string): self.s = string
+	def __init__(self, string, disablePropertyExpansion=False): self.s, self.disablePropertyExpansion = string, disablePropertyExpansion
 	def mapLine(self, context, line): return line
-	def getHeader(self, context): return context.expandPropertyValues(self.s)
-	def getDescription(self, context): return 'AddFileHeader("%s")'%(self.s.replace('\r','\\r').replace('\n','\\n'))
+	def getHeader(self, context): return self.s if self.disablePropertyExpansion else context.expandPropertyValues(self.s)
+	def getDescription(self, context): return 'AddFileHeader("%s")'%(self.getHeader(context).replace('\r','\\r').replace('\n','\\n'))
 
 class AddFileFooter(FileContentsMapper):
 	"""
@@ -397,8 +436,10 @@ class AddFileFooter(FileContentsMapper):
 	the newline character "\\n", python's os.linesep should be used where a platform-neutral newline 
 	is required. 
 	
+	@param disablePropertyExpansion: set to True to disable expansion of ${...} properties in the 
+	old and new strings.
 	"""
-	def __init__(self, string): self.s = string
+	def __init__(self, string, disablePropertyExpansion=False): self.s, self.disablePropertyExpansion = string, disablePropertyExpansion
 	def mapLine(self, context, line): return line
-	def getFooter(self, context): return context.expandPropertyValues(self.s)
-	def getDescription(self, context): return 'AddFileFooter("%s")'%(self.s.replace('\r','\\r').replace('\n','\\n'))
+	def getFooter(self, context): return self.s if self.disablePropertyExpansion else context.expandPropertyValues(self.s)
+	def getDescription(self, context): return 'AddFileFooter("%s")'%(self.getFooter(context).replace('\r','\\r').replace('\n','\\n'))

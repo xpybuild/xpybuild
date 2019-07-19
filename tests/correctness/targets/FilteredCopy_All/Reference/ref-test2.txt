@@ -1,0 +1,14 @@
+File header with replacement prop_value.
+File header without replacement ${MY_PROP}.
+
+Hello world
+A line containing string replacement: stringreplace+new.
+A line containing string replacement with no expansion: replaced ${MY_PROP} no expansion.
+A line containing string replacement with expansion:    replaced prop_value with expansion.
+A line containing regex replacement with expansion: regex replacement prop_value.
+A line containing regex replacement with no expansion: regex replacement ${MY_PROP}.
+A line containing file contents replacement: REPLACEMENT_FILE.
+A line containing dict replacement: replacedictvalue.
+
+File footer with replacement prop_value.
+File footer without replacement ${MY_PROP}.
