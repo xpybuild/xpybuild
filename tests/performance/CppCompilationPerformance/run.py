@@ -3,7 +3,7 @@ from xpybuild.xpybuild_basetest import XpybuildBaseTest
 import shutil
 
 class PySysTest(XpybuildBaseTest):
-	TARGETS = 200
+	TARGETS = 2000
 	THREADS = 4 # aim to take similar amount of time regardless of machine size
 
 	def execute(self):
