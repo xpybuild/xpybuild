@@ -25,6 +25,7 @@
 - FilteredCopy: added disablePropertyExpansion to AddFileHeader/AddFileFooter/RegexLineMapper
 - FilteredCopy: added FileContentsMapper.startFile(context, src, dest) API method that can be used to skip use of this mapper for certain files, and/or to insert content based on the source or destination path into the file. 
 - FilteredCopy: added FileContentsMapper.prepare(context) API method that can be used to prepare fields based on the context to speed up the actual mapping. 
+- Cpp/C native targets: added `native.include.upToDateCheckIgnoreRegex` and `native.include.upToDateCheckIgnoreSystemHeaders` options which can be used to speed up up-to-date checking by excluding large include directories that never change. 
 
 # 1.14
 

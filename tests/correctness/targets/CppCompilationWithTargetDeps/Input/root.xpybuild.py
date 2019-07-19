@@ -24,6 +24,9 @@ from utils.compilers import GCC, VisualStudio
 
 include(os.environ['PYSYS_TEST_ROOT_DIR']+'/build_utilities/native_config.xpybuild.py')
 
+setGlobalOption('native.include.upToDateCheckIgnoreRegex', '(c:/program files.*|.*/tESt4.h)')
+setGlobalOption('native.include.upToDateCheckIgnoreSystemHeaders', True) # only works on linux/gcc currently
+
 Copy('${OUTPUT_DIR}/my-generated-include-files/', FindPaths('./include-src/'))
 Copy('${OUTPUT_DIR}/my-generated-include-files2/generatedpath/test3.h', FindPaths('./include-src/generatedpath/'))
 Copy('${OUTPUT_DIR}/test-generated.cpp', './test.cpp')

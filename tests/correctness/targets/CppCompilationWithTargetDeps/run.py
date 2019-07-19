@@ -80,6 +80,7 @@ class PySysTest(XpybuildBaseTest):
 				'test1.h',
 				'test2.h',
 				])
+			self.assertGrep(makedep, expr='test4.h', contains=False, ignores=['upToDateCheckIgnoreRegex=']) # due to regex ignore
 			self.assertLineCount(makedep, expr='test(-generated)?.cpp', condition='==0')
 		self.logFileContents(makedep, maxLines=50)
 		

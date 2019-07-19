@@ -1,1 +1,1 @@
-#define STRING2 "STRING2"
+#define STRING3 "STRING3"

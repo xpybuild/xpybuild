@@ -309,9 +309,14 @@ class GCC(ToolChain, UnixCompiler, UnixLinker, Depends):
 		Depends.__init__(self, environs=environs)
 	def depends(self, context, src, options, flags=None, includes=None):
 		args=[
-			'g++', '-M', '-MG',
-			'-c']
-		args.extend(['-I%s' % x for x in (includes or [])])
+			'g++', 
+			'-M', # output make dependency rules
+			'-MG', # allow missing header files
+			'-c'
+			]
+		if options['native.include.upToDateCheckIgnoreSystemHeaders']:
+			args.append('-MM')
+		if includes: args.extend(['-I%s' % x for x in includes])
 		args.extend(flags or [])
 		args.extend(src)
 		deplist = []
@@ -485,10 +490,13 @@ class VisualStudio(Compiler, Linker, Depends, Archiver, ToolChain):
 		self.call(context, args, outputHandler=options.get('visualstudio.outputHandlerFactory', None) or VisualStudioProcessOutputHandler, cwd=os.path.dirname(output), environs={'PATH':os.pathsep.join(options['native.cxx.path'])}, options=options)
 
 	def depends(self, context, src, options, flags=None, includes=None):
+		# Note that cl.exe /showIncludes is fairly slow
 		args=[
 			r"%s\cl.exe" % self.vsbin,
 			'/Zs', '/showIncludes',
 			'-c']
+		# native.include.upToDateCheckIgnoreSystemHeaders can't be implemented as no option equivalent to -MM for cl.exe
+		
 		args.extend(['-I%s' % _checkDirExists(x.replace('/','\\'), 'Cannot find include directory ``%s"') for x in (includes or [])])
 		args.extend(flags or [])
 		args.extend(src)
