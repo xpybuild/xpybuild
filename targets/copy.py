@@ -354,11 +354,11 @@ class StringReplaceLineMapper(FileContentsMapper):
 	old and new strings.
 	"""
 	def __init__(self, old, new, disablePropertyExpansion=False): self.old, self.new, self.disablePropertyExpansion = old, new, disablePropertyExpansion
-	def _getOldNew(self, context): 
-		if self.disablePropertyExpansion: return self.old, self.new
-		return context.expandPropertyValues(self.old), context.expandPropertyValues(self.new)
-	def mapLine(self, context, line): return line.replace(*self._getOldNew(context))
-	def getDescription(self, context): return 'StringReplaceLineMapper("%s" -> "%s")'%self._getOldNew(context)
+	def prepare(self, context):
+		if not self.disablePropertyExpansion: 
+			self.old, self.new = context.expandPropertyValues(self.old), context.expandPropertyValues(self.new)
+	def mapLine(self, context, line): return line.replace(self.old, self.new)
+	def getDescription(self, context): return 'StringReplaceLineMapper("%s" -> "%s")'%(self.old, self.new)
 
 class RegexLineMapper(FileContentsMapper):
 	""" Performs a regex substitution ; any ${...} xpybuild properties in 
@@ -369,12 +369,13 @@ class RegexLineMapper(FileContentsMapper):
 	is required. 
 
 	"""
-	def __init__(self, regex, repl, disablePropertyExpansion=False): self.regex, self.repl, self.disablePropertyExpansion = regex, repl, disablePropertyExpansion
-	def __getReplacement(self, context): 
-		if self.disablePropertyExpansion: return self.repl
-		return context.expandPropertyValues(self.repl.replace('\\', '!xpybuildslash!')).replace('\\', '\\\\').replace('!xpybuildslash!', '\\')
-	def mapLine(self, context, line): return re.sub(self.regex, self.__getReplacement(context), line)
-	def getDescription(self, context): return 'RegexLineMapper("%s" -> "%s")'%(self.regex, self.__getReplacement(context))
+	def __init__(self, regex, repl, disablePropertyExpansion=False): 
+		self.regex, self.repl, self.disablePropertyExpansion = regex, repl, disablePropertyExpansion
+	def prepare(self, context):
+		if not self.disablePropertyExpansion: 
+			self.repl = context.expandPropertyValues(self.repl.replace('\\', '!xpybuildslash!')).replace('\\', '\\\\').replace('!xpybuildslash!', '\\')
+	def mapLine(self, context, line): return re.sub(self.regex, self.repl, line)
+	def getDescription(self, context): return 'RegexLineMapper("%s" -> "%s")'%(self.regex, self.repl)
 
 class InsertFileContentsLineMapper(FileContentsMapper):
 	""" Replace instances of the specified token with the entire contents of the specified file.
