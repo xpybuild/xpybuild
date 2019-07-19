@@ -130,7 +130,6 @@ class Copy(BaseTarget):
 					try:
 						if issymlink:
 							os.symlink(os.readlink(srcAbs.rstrip(os.sep)), dest)	
-							#assert not isDirPath(srcAbs), [os.readlink(srcAbs.rstrip(os.sep)), dest]
 						else:
 							self._copyFile(context, srcAbs, dest)
 							if self.mode:
