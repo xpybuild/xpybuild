@@ -1,6 +1,6 @@
 # xpyBuild - eXtensible Python-based Build System
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@
 #
 
 import os, inspect, os.path, re, shutil
+from stat import S_ISLNK
 
 from buildcommon import *
+from propertysupport import defineOption
 from pathsets import PathSet
 from basetarget import BaseTarget
 from utils.fileutils import mkdir, deleteDir, openForWrite, normLongPath
@@ -31,8 +33,11 @@ class Copy(BaseTarget):
 	""" A target that copies input file(s) to an output file or directory. 
 	
 	The parent directory will be created if it doesn't exist already. 
+
+	The 'Copy.symlinks' option can be set to True if symbolic links 
+	in the source should result in the creation of symbolic links 
+	in the destination. 
 	"""
-	
 	def __init__(self, dest, src, mode=None, implicitDependencies=None):
 		"""
 		@param dest: the output directory (ending with a "/") or file. Never 
@@ -71,11 +76,16 @@ class Copy(BaseTarget):
 		BaseTarget.__init__(self, dest, [src, implicitDependencies])
 		self.src = src
 		self.mode = mode
+		self.addHashableImplicitInputOption('Copy.symlinks')
 			
 	def run(self, context):
 		self.log.info("Copying %s to %s", self.src, self.path)
 
 		src = self.src.resolveWithDestinations(context) #  a map of srcAbsolute: destRelative
+
+		symlinks = self.options['Copy.symlinks']
+		if isinstance(symlinks, basestring): symlinks = symlinks.lower()=='true'
+		assert symlinks in [True,False], repr(symlinks)
 
 		# implicitly ensure parent of target exists, to keep things simple
 		
@@ -96,15 +106,21 @@ class Copy(BaseTarget):
 			lastDirCreated = None
 			
 			for (srcAbs, destRel) in src:
+				srcAbs = normLongPath(srcAbs)
+				dest = normLongPath(self.path+destRel)
 				# there should not be any directories here only files from pathsets
 				if '..' in destRel:
 					# to avoid people abusing this to copy files outside the dest directory!
 					raise Exception('This target does not permit destination paths to contain ".." relative path expressions')
-				if isDirPath(srcAbs): # allows creating of empty directories. 
-					mkdir(self.path+destRel)
+				issymlink = symlinks and os.path.islink(srcAbs.rstrip(os.sep))
+
+				if isDirPath(srcAbs) and not issymlink: # allows creating of empty directories. 
+					mkdir(dest)
 				else:
-					dest = os.path.normpath(self.path+destRel)
 					#self.log.debug('Processing %s -> %s i.e. %s', srcAbs, destRel, dest)
+
+					if issymlink: # this may be a directory path, and dirname will fail unless we strip off the /
+						dest = dest.rstrip(os.sep)
 					
 					if not lastDirCreated or lastDirCreated!=os.path.dirname(dest):
 						lastDirCreated = os.path.dirname(dest)
@@ -112,9 +128,13 @@ class Copy(BaseTarget):
 						mkdir(lastDirCreated)
 					
 					try:
-						self._copyFile(context, srcAbs, dest)
-						if self.mode:
-							os.chmod(dest, self.mode)
+						if issymlink:
+							os.symlink(os.readlink(srcAbs.rstrip(os.sep)), dest)	
+							#assert not isDirPath(srcAbs), [os.readlink(srcAbs.rstrip(os.sep)), dest]
+						else:
+							self._copyFile(context, srcAbs, dest)
+							if self.mode:
+								os.chmod(dest, self.mode)
 					except Exception, e:
 						raise BuildException('Error copying from "%s" to "%s"'%(srcAbs, dest), causedBy=True)
 						
@@ -123,8 +143,6 @@ class Copy(BaseTarget):
 		self.log.info('Copied %d file(s) to %s', copied, self.path)
 	
 	def _copyFile(self, context, src, dest):
-		src = normLongPath(src)
-		dest = normLongPath(dest)
 		with open(src, 'rb') as inp:
 			with openForWrite(dest, 'wb') as out:
 				shutil.copyfileobj(inp, out)
@@ -145,6 +163,12 @@ class Copy(BaseTarget):
 		if self.mode: r.append('mode: %s'%self.mode)
 		
 		return r
+
+defineOption('Copy.symlinks', False)
+""" If True, symbolic links in the source are represented as symbolic links 
+(either absolute or relative) in the destination. If False (the default), symbolic links 
+are handled by copying the contents of the linked files. 
+"""
 
 class FilteredCopy(Copy):
 	"""
@@ -210,8 +234,6 @@ class FilteredCopy(Copy):
 		return r
 		
 	def _copyFile(self, context, src, dest):
-		dest = normLongPath(dest)
-		src = normLongPath(src)
 		with open(src, 'rb') as s:
 			with openForWrite(dest, 'wb') as d:
 				for m in self.mappers:

@@ -1,0 +1,12 @@
+build-output/symlink/symlink-absolute/foo/subdir/sourcefile.txt
+build-output/symlink/symlink-absolute/foo/subdir/mylink.txt is ABSOLUTE link -> output/symlink-absolute/foo/subdir/sourcefile.txt
+build-output/symlink/symlink-absolute/foo/subdir-link/ is ABSOLUTE link -> output/symlink-absolute/foo/subdir
+build-output/symlink/symlink-relative/foo/subdir/sourcefile.txt
+build-output/symlink/symlink-relative/foo/subdir/mylink.txt is RELATIVE link -> ../subdir/sourcefile.txt
+build-output/symlink/symlink-relative/foo/subdir-link/ is RELATIVE link -> ./subdir
+build-output/no-symlink/symlink-absolute/foo/subdir/sourcefile.txt
+build-output/no-symlink/symlink-absolute/foo/subdir/mylink.txt
+build-output/no-symlink/symlink-absolute/foo/subdir-link/
+build-output/no-symlink/symlink-relative/foo/subdir/sourcefile.txt
+build-output/no-symlink/symlink-relative/foo/subdir/mylink.txt
+build-output/no-symlink/symlink-relative/foo/subdir-link/
