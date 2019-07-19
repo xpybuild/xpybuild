@@ -21,6 +21,7 @@
 - buildcontext: getExpandPropertyValues() now handles callable(context) inputs as well as other strings, allowing it to perform common resolutions needed in many different situations. 
 - Command line: new (experimental) option --verify that can be used to run the build in a slower and stricter mode that will flag up potential build problems. This feature should be considered experimental in this release. 
 - Javac: now respects the `ProcessOutputHandler.regexIgnore` option.
+- Copy: added `Copy.symlinks` option which can be used to enable copying of symlinks. To turn this on globally for your build, use `setGlobalOption('Copy.symlinks', True)`.
  
 
 
