@@ -23,6 +23,8 @@ from utils.compilers import GCC, VisualStudio
 
 include('../../../../build_utilities/native_config.xpybuild.py')
 
+setGlobalOption('native.include.upToDateCheckIgnoreSystemHeaders', True) # only works on linux/gcc currently
+
 objs = [C(objectname("${BUILD_WORK_DIR}/obj/"+cpp), "./%s.c" % cpp,
 	) for cpp in ['test'] ]
 
