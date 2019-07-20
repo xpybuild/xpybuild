@@ -2,8 +2,8 @@
 #
 # xpyBuild - eXtensible Python-based Build System
 #
-# Copyright (c) 2013 - 2018 Software AG, Darmstadt, Germany and/or its licensors
-# Copyright (c) 2013 - 2018 Ben Spiller and Matthew Johnson
+# Copyright (c) 2013 - 2019 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2019 Ben Spiller and Matthew Johnson
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -130,11 +130,15 @@ def main(args):
 '   -x --exclude <target>     Specifies a target or tag to exclude (unless ',
 '                             needed as a dependency of an included target) ',
 '',
-'   -J --parallel             Build in parallel, automatically determining the ',
-'                             number of threads using number of CPUs and/or the ',
-'                             XPYBUILD_MAX_WORKERS or XPYBUILD_WORKERS_PER_CPU ',
-'                             environment variables set on this machine',
-'   -j --workers <number>     Build in parallel, using <number> worker threads',
+'   -J --parallel             Build in parallel (this is the default). ',
+'                             The number of workers is determined from the ',
+'                             `build.workers` build file option or else the ',
+'                             number of CPUs and the XPYBUILD_WORKERS_PER_CPU ',
+'                             environment varable (default is currently 1.0), ',
+'                             with an upper limit for this machine from the ',
+'                             XPYBUILD_WORKERS_PER_CPU variable. ',
+'   -j --workers <number>     Override the number of worker threads to use for ',
+'                             building. Use -j1 for single-threaded. ',
 '                             (ignores any environment variables)',
 '',
 '   -k --keep-going           Continue rather than aborting on errors',
@@ -171,8 +175,9 @@ def main(args):
 			raise Exception('Invalid usage string - all lines must be less than 80 characters')
 
 		# set up defaults
-		properties = {}
-		buildOptions = { "keep-going":False, "workers":1, "dry-run":False, "ignore-deps":False, "logCPUUtilisation":False, "profile":False, "verify":False } 
+		properties = {} 
+		buildOptions = { "keep-going":False, "workers":0, "dry-run":False, 
+			"ignore-deps":False, "logCPUUtilisation":False, "profile":False, "verify":False } 
 		includedTargets = []
 		excludedTargets = []
 		task = _TASK_BUILD
@@ -210,13 +215,7 @@ def main(args):
 			elif o in ['options']:
 				task = _TASK_LIST_OPTIONS
 			elif o in ['J', 'parallel']:
-				# env var for limiting numbers on threads on a given machine, 
-				# e.g. due to disk contention on wide machines
-				buildOptions['workers'] = multiprocessing.cpu_count()
-				if os.getenv('XPYBUILD_WORKERS_PER_CPU'):
-					buildOptions['workers'] = max(1, int(round(buildOptions['workers'] * float(os.getenv('XPYBUILD_WORKERS_PER_CPU')))))
-				if os.getenv('XPYBUILD_MAX_WORKERS'):
-					buildOptions['workers'] = min(buildOptions['workers'], int(os.getenv('XPYBUILD_MAX_WORKERS')))
+				buildOptions['workers'] = 0
 			elif o in ['j', 'workers']:
 				buildOptions['workers'] = int(a)
 			elif o in ['l', 'log-level']:
@@ -259,8 +258,6 @@ def main(args):
 			else:
 				assert False, "unhandled option: '%s'" % o
 
-		if buildOptions['workers'] < 1: raise Exception('Number of workers is invalid: %s'%buildOptions['workers'])
-
 		for o in targets: # non-option arguments (i.e. no -- prefix)
 			arg = o.strip()
 			if arg:
@@ -281,7 +278,10 @@ def main(args):
 	threading.currentThread().setName('main')
 	logging.getLogger().setLevel(logLevel or logging.INFO)
 
-	outputBufferingDisabled = buildOptions['workers']==1
+	if buildOptions["workers"] < 0: buildOptions["workers"] = 0 # means there's no override
+	
+	outputBufferingDisabled = buildOptions['workers']==1 
+	# nb: it's possible workers=0 (auto) and will later be set to 1 but doesn't really matter much
 
 	# initialize logging to stdout - minimal output to avoid clutter, but indicate progress
 	hdlr = _registeredConsoleFormatters.get(format, None)
@@ -295,7 +295,7 @@ def main(args):
 		
 	hdlr.setLevel(logLevel or logging.WARNING)
 	logging.getLogger().addHandler(hdlr)
-	log.info('Build options: %s'%buildOptions)
+	log.info('Build options: %s'%{k:buildOptions[k] for k in buildOptions if k != 'workers'})
 	
 	stdout = sys.stdout
 	
@@ -312,8 +312,33 @@ def main(args):
 			isRealBuild = (task in [_TASK_BUILD, _TASK_CLEAN, _TASK_REBUILD])
 			init._defineOption("process.timeout", 600)
 			init._defineOption("build.keepGoing", buildOptions["keep-going"])
-			init._defineOption("build.workers", buildOptions["workers"])
+			
+			# 0 means default behaviour
+			init._defineOption("build.workers", 0)
+			
 			init.initializeFromBuildFile(buildFile, isRealBuild=isRealBuild)
+			
+			# now handle setting real value of workers, starting with value from build file
+			workers = int(init._globalOptions.get("build.workers", 0))
+			# default value if not specified in build file
+			if workers <= 0: 
+				workers = multiprocessing.cpu_count() 
+			if os.getenv('XPYBUILD_WORKERS_PER_CPU'):
+				workers = min(workers, int(round(multiprocessing.cpu_count()  * float(os.getenv('XPYBUILD_WORKERS_PER_CPU')))))
+			
+			# machine/user-specific env var can cap it
+			if os.getenv('XPYBUILD_MAX_WORKERS'):
+				workers = min(workers, int(os.getenv('XPYBUILD_MAX_WORKERS')))
+			
+			# finally an explicit command line --workers take precedence
+			if buildOptions['workers']: workers = buildOptions['workers']
+			
+			if workers < 1: workers = 1
+			
+			# finally write the final number of workers where it's available to both scheduler and targets
+			buildOptions['workers'] = workers
+			init._globalOptions['build.workers'] = workers
+			
 			return init
 
 		if buildOptions['profile']:
@@ -526,9 +551,11 @@ def main(args):
 							mkdir(dir)
 					
 					startTime = time.time()
-					log.critical('Starting %s "%s" build "%s" at %s', buildtype, 
+					log.critical('Starting %s "%s" build "%s" at %s using %d workers', buildtype, 
 						init.getPropertyValue('BUILD_MODE'), init.getPropertyValue('BUILD_NUMBER'), 
-						time.strftime(DATE_TIME_FORMAT, time.localtime( startTime )))
+						time.strftime(DATE_TIME_FORMAT, time.localtime( startTime )), 
+						buildOptions['workers']
+						)
 					
 					buildOptions['clean'] = False
 					scheduler = BuildScheduler(init, selectedTargets, buildOptions)
