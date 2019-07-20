@@ -3,7 +3,7 @@ from pysys.basetest import BaseTest
 from pysys.utils.filegrep import filegrep
 
 class XpybuildBaseTest(BaseTest):
-	def xpybuild(self, args=None, buildfile='test.xpybuild.py', shouldFail=False, stdouterr='xpybuild', env=None):
+	def xpybuild(self, args=None, buildfile='test.xpybuild.py', shouldFail=False, stdouterr='xpybuild', env=None, **kwargs):
 		"""
 		Runs xpybuild against the specified buildfile or test.xpybuild.py from the 
 		input dir. Produces output in the <testoutput>/build-output folder. 
@@ -46,7 +46,7 @@ class XpybuildBaseTest(BaseTest):
 				result = self.startProcess(sys.executable, args, 
 					environs=environs, 
 					stdout=stdout, stderr=stderr, displayName=('xpybuild %s'%' '.join(args)).strip(), 
-					abortOnError=True, ignoreExitStatus=shouldFail)
+					abortOnError=True, ignoreExitStatus=shouldFail, **kwargs)
 				if shouldFail and result != 0: raise Exception('Build failed as expected')
 				if getattr(self, 'PYTHON_COVERAGE_REPORT', '')=='true':
 					self.startProcess(sys.executable, ['-m', 'coverage', 'html'], 

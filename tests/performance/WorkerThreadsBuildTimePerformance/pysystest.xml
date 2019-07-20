@@ -1,0 +1,24 @@
+<?xml version="1.0" standalone="yes"?>
+<pysystest type="auto" state="runnable">
+    
+  <description> 
+    <title>Full build time measured against number of worker threads</title>
+    <purpose><![CDATA[
+This test primarily exists for measuring the impact of different numbers of worker 
+threads on total build time. It can be used on any build. 
+]]>
+    </purpose>
+  </description>
+
+  <classification>
+  </classification>
+
+  <data>
+    <class name="PySysTest" module="run"/>
+  </data>
+  
+  <traceability>
+    <requirements>    
+    </requirements>
+  </traceability>
+</pysystest>

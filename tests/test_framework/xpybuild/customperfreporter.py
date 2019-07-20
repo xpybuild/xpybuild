@@ -1,6 +1,7 @@
 import glob
 import subprocess
 import logging, io, sys
+import multiprocessing
 from pysys.utils.perfreporter import *
 from pysys.utils.logutils import ColorLogFormatter
 from pysys.utils.logutils import stdoutPrint
@@ -35,7 +36,8 @@ class XpybuildPerfReporter(CSVPerformanceReporter):
 			_log.debug('Failed to get git commit hash: %s', ex)
 		else:
 			d['gitCommit'] = gitcommit
-		
+
+		d['cpuCount'] = multiprocessing.cpu_count()		
 		d['platform'] = sys.platform
 		return d
 
