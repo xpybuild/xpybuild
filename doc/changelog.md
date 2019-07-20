@@ -5,6 +5,7 @@
 - BasePathSet._resolveUnderlyingDepenencies() now returns a generator of (path, pathset) instead of a list of [path]. This only affects users with a custom subclass of BasePathSet with an override of this method (and does not affect you if you used DerivedPathSet). 
 - Target priority can no longer be set to a negative number; 0.0 is the minimum.
 - The native C target was previously using the C++ (`native.cxx.flags`) compiler options during dependency generation ratehr than `native.c.flags`; this is now fixed but it may be necessary to add additional flags explicitly if you have C targets that are relying on them. 
+- The build now runs in parallel by default (equivalent to -J); if you need single-threaded execution, use the command line parameter `-j1`.
 
 ## Deprecation
 - Support for specifying C/C++ include directories without a trailing slash (as is normal in xpybuild) is now discouraged and may be removed in a future release. 
@@ -26,6 +27,12 @@
 - FilteredCopy: added FileContentsMapper.startFile(context, src, dest) API method that can be used to skip use of this mapper for certain files, and/or to insert content based on the source or destination path into the file. 
 - FilteredCopy: added FileContentsMapper.prepare(context) API method that can be used to prepare fields based on the context to speed up the actual mapping. 
 - Cpp/C native targets: added `native.include.upToDateCheckIgnoreRegex` and `native.include.upToDateCheckIgnoreSystemHeaders` options which can be used to speed up up-to-date checking by excluding large include directories that never change. 
+- The build now runs in parallel by default (no need to use the `-J` option). Additionally, the default number of workers can now be specified in the build file, as an integer or float, e.g.
+  ```
+    import multiprocessing
+    setGlobalOption('build.workers', multiprocessing.cpu_count() * 0.75)
+  ```
+  The default value for this option is one worker per CPU. The maximum number of workers can be limited on a per-machine/user basis using the `XPYBUILD_WORKERS_PER_CPU` and/or `XPYBUILD_MAX_WORKERS` variables. The `-j` command line option can still be used to explicitly override the number of workers (taking precedence over all other settings), for example use `-j1` for a single-threaded build. 
 
 # 1.14
 
