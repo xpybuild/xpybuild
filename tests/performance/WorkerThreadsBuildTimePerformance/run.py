@@ -9,13 +9,20 @@ class PySysTest(XpybuildBaseTest):
 	buildRoot = None # can override this with -XbuildRoot=path to measure your own build
 
 	def execute(self):
-		if not self.buildRoot: self.buildRoot = self.input
-		
+		buildroot = self.buildRoot if self.buildRoot else self.input
+		assert os.path.isdir(buildroot), self.buildroot
+	
 		cpus = multiprocessing.cpu_count()
 		pending = set()
-		for i in range(1, (cpus)/4 + 1):
-			pending.add(i*4)
 		pending.add(1)
+		pending.add(cpus*1/5)
+		pending.add(cpus*2/5)
+		pending.add(cpus*3/5)
+		pending.add(cpus*4/5)
+		pending.add(cpus)
+		#for i in range(1, (cpus)/4 + 1):
+		#	pending.add(i*4)
+		#pending.add(1)
 		pending = sorted(list(pending))
 		self.log.info('This machine has %d CPUs', cpus)
 		self.log.info('Planning to run with workers=%s', pending)
@@ -39,7 +46,9 @@ class PySysTest(XpybuildBaseTest):
 			)
 			t = time.time()
 			#time.sleep(1)
-			self.xpybuild(args=['--workers', str(workers), 'OUTPUT_DIR=%s'%(self.output+'/output%d'%workers)], buildfile='root.xpybuild.py', stdouterr='xpybuild-j%d'%workers, timeout=2*60*60)
+			env = dict(os.environ) if self.buildRoot else None # inherit full parent env for custom builds
+			self.xpybuild(args=['--workers', str(workers), 
+				'%s=%s'%(getattr(self, 'buildOutputDirProperty', 'OUTPUT_DIR'), self.output+'/output%d'%workers)], buildfile=self.buildRoot+'/root.xpybuild.py', stdouterr='xpybuild-j%d'%workers, timeout=2*60*60, env=env, setOutputDir=False)
 			t = time.time()-t
 			self.reportPerformanceResult(t, 'Total build time with %d worker threads'%workers, 's', resultDetails={'workers':workers})
 			self.results[workers] = t

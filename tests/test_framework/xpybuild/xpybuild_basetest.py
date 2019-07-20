@@ -3,7 +3,7 @@ from pysys.basetest import BaseTest
 from pysys.utils.filegrep import filegrep
 
 class XpybuildBaseTest(BaseTest):
-	def xpybuild(self, args=None, buildfile='test.xpybuild.py', shouldFail=False, stdouterr='xpybuild', env=None, **kwargs):
+	def xpybuild(self, args=None, buildfile='test.xpybuild.py', shouldFail=False, stdouterr='xpybuild', env=None, setOutputDir=True, **kwargs):
 		"""
 		Runs xpybuild against the specified buildfile or test.xpybuild.py from the 
 		input dir. Produces output in the <testoutput>/build-output folder. 
@@ -23,13 +23,15 @@ class XpybuildBaseTest(BaseTest):
 				environs['COVERAGE_FILE'] = '.coverage.%s'%stdouterr # use unique names to avoid overwriting
 				environs['PYSYS_TEST_ROOT_DIR'] = self.project.testRootDir
 				
-				args = 	[
+				newargs = 	[
 #					PROJECT.rootdir+'/../xpybuild.py', 
 					PROJECT.XPYBUILD,
 					'-f', os.path.join(self.input, buildfile), 
 					'--logfile', os.path.join(self.output, stdout.replace('.out', '')+'.log'), 
 					'-J', # might as well run in parallel to speed things up and help find race conditions
-					'OUTPUT_DIR=%s'%self.output+'/build-output']+args
+					]
+				if setOutputDir: newargs.append('OUTPUT_DIR=%s'%self.output+'/build-output')
+				args = newargs+args
 				pythoncoverage = getattr(self, 'PYTHON_COVERAGE', '')=='true'
 				if pythoncoverage:
 					self.log.info('Enabling Python code coverage')
