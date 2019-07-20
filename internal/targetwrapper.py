@@ -92,7 +92,7 @@ class TargetWrapper(object):
 		Can only be used after resolveUnderlyingDependencies has been called. 
 		"""
 		
-		self.__implicitInputsFile = self.__getImplicitInputsFile()
+		self.__implicitInputsFile = toLongPathSafe(self.__getImplicitInputsFile())
 		if self.isDirPath: 
 			self.stampfile = self.__implicitInputsFile # might as well re-use this for dirs
 		else:
@@ -332,7 +332,7 @@ class TargetWrapper(object):
 				if not exists(self.__implicitInputsFile):
 					self.__logUptodate('Up-to-date check: %s must be rebuilt because implicit inputs/stamp file does not exist: "%s"', self.name, self.__implicitInputsFile)
 					return False
-				with io.open(toLongPathSafe(self.__implicitInputsFile), 'rb') as f:
+				with io.open(self.__implicitInputsFile, 'rb') as f:
 					latestImplicitInputs = f.read().split(os.linesep)
 					if latestImplicitInputs != implicitInputs:
 						maxdifflines = int(os.getenv('XPYBUILD_IMPLICIT_INPUTS_MAX_DIFF_LINES', '30'))/2
@@ -416,7 +416,7 @@ class TargetWrapper(object):
 		if implicitInputs or self.isDirPath:
 			log.debug('writing implicitInputsFile: %s', self.__implicitInputsFile)
 			mkdir(os.path.dirname(self.__implicitInputsFile))
-			with openForWrite(toLongPathSafe(self.__implicitInputsFile), 'wb') as f:
+			with openForWrite(self.__implicitInputsFile, 'wb') as f:
 				f.write(os.linesep.join(implicitInputs))
 		
 	def clean(self, context):
