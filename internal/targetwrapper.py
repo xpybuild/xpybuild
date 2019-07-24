@@ -29,7 +29,7 @@ from basetarget import BaseTarget
 from buildcommon import *
 from threading import Lock
 from buildexceptions import BuildException
-from utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, isfile, isdir, toLongPathSafe, getstat, notincache
+from utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, isfile, isdir, toLongPathSafe, getstat
 
 import logging
 log = logging.getLogger('scheduler.targetwrapper')
