@@ -80,9 +80,9 @@ class XpybuildBaseTest(BaseTest):
 				self.log.info('Build failed as expected; message is: %s', m)
 				return m
 			else:
-				self.abort(BLOCKED, 'Build failed unexpectedly: %s'%m)
+				self.abort(BLOCKED, 'Build %s failed unexpectedly: %s'%(stdouterr, m))
 		else:
 			if shouldFail:
-				self.abort(FAILED, 'build was expected to fail but succeeded')
+				self.abort(FAILED, 'build %s was expected to fail but succeeded'%stdouterr)
 		
 		return None
