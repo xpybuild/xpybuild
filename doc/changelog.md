@@ -1,4 +1,14 @@
-# 1.15 - current release
+# 1.16 - current release
+## Breaking changes
+
+## Deprecation
+
+## Fixes
+- Fixed a subtle bug that could cause unnecessary incremental compilation of targets that depend on generated C/C++ source or include files. 
+ 
+## Enhancements
+
+# 1.15
 ## Breaking changes
 - Native C/C++ targets now treat include directories as dependencies, which means that the set of targets they depend on can (and must) be known before the build begins (i.e. without running makedepend). All include directories must now either be statically available before the build starts, or themselves be a directory target. For advanced cases where you need to specify an include directory that is not itself a target but is made up of a set of file or directory targets, use TargetsWithinDir. 
 - PathSet class no longer exists, replaced by a function of the same name that creates a new instance only if needed. If you have code that subclasses PathSet change it to subclass BasePathSet. 

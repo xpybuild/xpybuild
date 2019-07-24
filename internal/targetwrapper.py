@@ -29,7 +29,7 @@ from basetarget import BaseTarget
 from buildcommon import *
 from threading import Lock
 from buildexceptions import BuildException
-from utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, isfile, isdir, toLongPathSafe, getstat
+from utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, isfile, isdir, toLongPathSafe, getstat, notincache
 
 import logging
 log = logging.getLogger('scheduler.targetwrapper')
@@ -301,9 +301,15 @@ class TargetWrapper(object):
 			Returns true if the target is up to date and does not need a rebuild
 			Holds the object lock
 			
-			Called during the main build phase, after the dependency resolution phase
+			Called during the main build phase, after the dependency resolution phase. 
+			
+			Is NOT be called until all target dependencies have been built - since 
+			otherwise we'd populate the stat cache with stale modification times for targets
 		"""
 		with self.lock:
+			# NB: it's important NOT to use the stat cache for checking the path/stampfile/implicitinputs 
+			# since then the cache will contain entries that are stale/wrong which will affect dep resolution
+		
 			log.debug('Up-to-date check for %s', self.name)
 			
 			if self.__isdirty: 
@@ -311,27 +317,31 @@ class TargetWrapper(object):
 				log.debug('Up-to-date check: %s has been marked dirty', self.name)
 				return False
 
-			if not os.path.exists(self.path): # do NOT use stat cache, since this path will exist during lifetime of the build
+			try:
+				path_stat = os.stat(self.path) # do NOT use stat cache
+			except Exception:
+				# path doesn't exist
 				log.debug('Up-to-date check: %s must be built because file does not exist: "%s"', self.name, self.path)
 				self.__isdirty = True # make sure we don't log this again
 				return False
 			
 			if ignoreDeps: return True
-			
-			if not isfile(self.stampfile): # this is really an existence check, but if we have a dir it's an error so ignore
-				# for directory targets
-				self.__logUptodate('Up-to-date check: %s must be rebuilt because stamp file does not exist: "%s"', self.name, self.stampfile)
-				return False
-			
+
 			# assume that by this point our explicit dependencies at least exist, so it's safe to call getHashableImplicitDependencies
 			implicitInputs = self.__getImplicitInputs(context)
 			
 			# read implicit inputs file
 			if implicitInputs or self.isDirPath:
 				# this is to cope with targets that have implicit inputs (e.g. globbed pathsets); might as well use the same mechanism for directories (which need a stamp file anyway)
-				if not exists(self.__implicitInputsFile):
-					self.__logUptodate('Up-to-date check: %s must be rebuilt because implicit inputs/stamp file does not exist: "%s"', self.name, self.__implicitInputsFile)
+				
+				try:
+					implicitInputsFile_stat = os.stat(self.__implicitInputsFile) # do NOT use stat cache
+					if not S_ISREG(implicitInputsFile_stat.st_mode): raise Exception('Not a file: %s'%self.__implicitInputsFile)
+				except Exception:
+					# path doesn't exist (or isn't a file); this will be fairly rare (given the path DOES exist) so worth logging
+					self.__logUptodate('Up-to-date check: %s must be built because implicit inputs/stamp file does not exist: "%s"', self.name, self.__implicitInputsFile)
 					return False
+				
 				with io.open(self.__implicitInputsFile, 'rb') as f:
 					latestImplicitInputs = f.read().split(os.linesep)
 					if latestImplicitInputs != implicitInputs:
@@ -352,11 +362,11 @@ class TargetWrapper(object):
 			else:
 				log.debug("Up-to-date check: target has no implicitInputs data: %s", self)
 			
+			# NB: there shouldn't be any file system errors here since we've checked for the existence of dep targets 
+			# already in _expand_deps; if this happens it's probably a build system bug - 
+			# the following logic mirrors the logic for self.stampfile (for directories and files), reusing stat's we've already done to save time
+			stampmodtime = implicitInputsFile_stat.st_mtime if self.isDirPath else path_stat.st_mtime
 			
-			# NB: there shouldn't be any file system errors here since we've checked for the existence of deps 
-			# already in _expand_deps; if this happens it's probably a build system bug
-			stampmodtime = getmtime(self.stampfile)
-
 			def isNewer(path):
 				# assumes already long path safe
 				pathmodtime = getmtime(path)
@@ -367,7 +377,7 @@ class TargetWrapper(object):
 					self.__logUptodate('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" (by %0.1f seconds)', self.name, path, self.stampfile, pathmodtime-stampmodtime)
 				return True
 
-			# things to check:
+			# first check if any target dependencies are newer than output (e.g. from an aborted or partial previous build)
 			for dtargetwrapper in self.__targetdeps:
 				if not dtargetwrapper.isDirPath:
 					f = dtargetwrapper.path # might have an already built target dependency which is still newer
@@ -408,8 +418,12 @@ class TargetWrapper(object):
 		implicitInputs = self.__getImplicitInputs(context)
 		if implicitInputs or self.isDirPath:
 			deleteFile(self.__implicitInputsFile)
-		
+
 		self.target.run(context)
+		
+		# we expect self.path to NOT be in the fileutils stat cache at this point; 
+		# it's too costly to check this explictly, but unwanted incremental rebuilds 
+		# can be caused if the path does get into the stat cache since it'll have a stale value
 		
 		# if target built successfully, record what the implicit inputs were to help with the next up to date 
 		# check and ensure incremental build is correct
