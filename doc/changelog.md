@@ -4,7 +4,7 @@
 ## Deprecation
 
 ## Fixes
-- Fixed a subtle bug that could cause unnecessary incremental compilation of targets that depend on generated C/C++ source or include files. 
+- Fixed a couple of bugs in incremental C++ compilation - one that could cause unnecessary incremental compilation of targets that depend on generated C/C++ source or include files, and another in which the build would fail rather than re-running makedepends if some of the cached dependencies no longer exist. 
  
 ## Enhancements
 

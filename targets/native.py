@@ -243,9 +243,18 @@ class Cpp(BaseTarget):
 				else:
 					for path in f:
 						path = path.strip()
-						mtime = getmtime(path)
-						alreadychecked.add(path)
-						if mtime > newestTime: newestFile, newestTime = path, mtime
+						try:
+							mtime = getmtime(path)
+						except Exception:
+							# file doesn't exist - must rebuild
+							runmakedepends = True
+							(self.log.critical if Cpp.__rebuild_makedepend_count <= 5 else self.log.info)(
+								'Recalculating C/C++ dependencies of %s as dependency no longer exists: %s', self, newestFile)
+
+							break
+						else:
+							alreadychecked.add(path)
+							if mtime > newestTime: newestFile, newestTime = path, mtime
 			if newestTime > targetmtime: runmakedepends = True
 		
 		# (re-)run makedepends
