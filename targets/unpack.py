@@ -259,7 +259,7 @@ class FilteredArchiveContents(object):
 				else:
 					return False
 					
-		except Exception as e:
+		except Exception, e:
 			raise BuildException('FilteredArchiveContents error for %s'%(self), causedBy=True, location=self.__location)
 
 	def hasIncludeExcludeFilters(self):

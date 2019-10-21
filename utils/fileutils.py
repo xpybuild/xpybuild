@@ -82,7 +82,7 @@ def mkdir(newdir):
 	#at the same time, it can be a race
 	try:
 		os.makedirs(newdir)
-	except Exception as e:
+	except Exception, e:
 		if os.path.isdir(newdir):
 			pass
 		else:
@@ -127,7 +127,7 @@ def deleteDir(path, allowRetry=True):
 			elif excvalue.errno == errno.ENOTEMPTY: # directory not empty, try again
 				try:
 					log.info("handleRemoveReadonly: ENOTEMPTY dir - has contents: %s", os.listdir(path))
-				except Exception as e:
+				except Exception, e:
 					log.info("handleRemoveReadonly: ENOTEMPTY dir, could not get contents: %s"%e)
 					
 				if allowRetry: # avoid danger of infinite recursion if things are going really wrong
@@ -210,7 +210,7 @@ def deleteFile(path, allowRetry=True):
 			if os.path.lexists(path): 
 				raise
 		
-	except OSError as e:
+	except OSError, e:
 		if os.path.isdir(path):
 			raise OSError, "Unable to delete file %s as this is a directory not a file" % (path)
 		

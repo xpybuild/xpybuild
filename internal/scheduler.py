@@ -99,7 +99,7 @@ class BuildScheduler(object):
 						raise BuildException('Cannot use shared output directory for target: directory targets must always build to a dedicated directory')
 						
 				self.targetwrappers[t.path] = TargetWrapper(target=t, scheduler=self)
-			except Exception as e:
+			except Exception, e:
 				if not isinstance(e, IOError):
 					log.exception('FAILED to prepare target %s: '%t) # include python stack trace in case it's an xpybuild bug
 				# ensure all exceptions from here are annotated with the location and target name

@@ -562,9 +562,9 @@ class FindPaths(BasePathSet):
 					if unusedPatterns != []:
 						raise BuildException('Some include patterns did not match any files: %s'%', '.join(unusedPatterns), location=self.location)
 						
-			except BuildException as e:
+			except BuildException, e:
 				raise BuildException('%s for %s'%(e.toSingleLineString(target=None), self), causedBy=False, location=self.location)
-			except Exception as e:
+			except Exception, e:
 				raise BuildException('%s for %s'%(repr(e), self), causedBy=True, location=self.location)
 			
 			result = []
@@ -618,7 +618,7 @@ class TargetsWithTag(BasePathSet):
 		log = logging.getLogger('TargetsWithTag')
 		try:
 			targets = context.getTargetsWithTag(self.__targetTag)
-		except BuildException as e: # add location info to exception
+		except BuildException, e: # add location info to exception
 			raise BuildException(str(e), location=self.__location)
 		
 		log.info('%s matched %s targets: %s', self, len(targets), [t.name for t in targets])
@@ -642,7 +642,7 @@ class TargetsWithTag(BasePathSet):
 		log = logging.getLogger('TargetsWithTag')
 		try:
 			targets = context.getTargetsWithTag(self.__targetTag)
-		except BuildException as e: # add location info to exception
+		except BuildException, e: # add location info to exception
 			raise BuildException(str(e), location=self.__location)
 		if len(targets)==0: raise BuildException('No targets have tag "%s"'%self.__targetTag, location=self.__location)
 		return ( (t.path, self) for t in targets)

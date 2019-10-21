@@ -53,7 +53,7 @@ class Process(object):
 			
 			try:
 				outputHandlerInstance=outputHandler(os.path.basename(args[0]), options=options)
-			except Exception as e:
+			except Exception, e:
 				# backwards compatibility for output handlers that don't pass kwargs down
 				outputHandlerInstance = outputHandler(os.path.basename(args[0]))
 			
@@ -339,7 +339,7 @@ class GCC(ToolChain, UnixCompiler, UnixLinker, Depends):
 
 		try:
 			self.call(context, args, outputHandler=GccDependsHandler, options=options)
-		except Exception as e:
+		except Exception, e:
 			# occasionally we see SIGABRT (=6) for no reason (e.g. on ARM), so do a retry
 			if 'return code -6' not in str(e): raise
 			_logger.warn('g++ dependency checking failed, may be transient so will retry: %s', e)
@@ -444,7 +444,7 @@ class VisualStudio(Compiler, Linker, Depends, Archiver, ToolChain):
 	def call(self, *args, **kwargs):
 		try:
 			super(VisualStudio, self).call(*args, **kwargs)
-		except BuildException as e:
+		except BuildException, e:
 			options = kwargs.get('options',{})
 			transientRegex = options.get('visualstudio.transientErrorRegex', None)
 			if not (transientRegex and re.match(transientRegex, str(e))):

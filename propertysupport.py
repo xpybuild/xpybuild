@@ -214,7 +214,7 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 	propertiesFile = context.getFullPath(propertiesFile, BuildFileLocation(raiseOnError=True).buildDir)
 	try:
 		f = open(propertiesFile, 'r') 
-	except Exception as e:
+	except Exception, e:
 		raise BuildException('Failed to open properties file "%s"'%(propertiesFile), causedBy=True)
 	missingKeysFound = set()
 	try:
@@ -247,7 +247,7 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 			try:
 				value = context.expandPropertyValues(value)
 				context.defineProperty(key, value, debug=True)
-			except BuildException as e:
+			except BuildException, e:
 				raise BuildException('Error processing properties file %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
 	finally:
 		f.close()
@@ -257,7 +257,7 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 	for k in missingKeysFound:
 		try:
 			context.getPropertyValue(k)
-		except BuildException as e:
+		except BuildException, e:
 			raise BuildException('Error processing properties file %s: no property key found for "%s" matched any of the conditions: %s'%(
 				propertiesFile, k, conditions), causedBy=False)
 

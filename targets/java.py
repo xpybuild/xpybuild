@@ -104,7 +104,7 @@ class SignJars(BaseTarget):
 							if fn.lower().endswith('manifest.mf'):
 								try:
 									manifest_txt = zf.read(zi.filename)
-								except Exception as e:
+								except Exception, e:
 									raise BuildException('Failed reading the manifest file %s with exception:%s' % (fn, e))
 
 								# if we have all manifest text, parse and save each line
@@ -147,7 +147,7 @@ class SignJars(BaseTarget):
 	
 				signjar(os.path.join(self.path, dest), self.keystore, options, alias=self.alias, storepass=self.storepass, 
 					outputHandler=ProcessOutputHandler.create('signjars', treatStdErrAsErrors=False, options=options))
-			except BuildException as e:
+			except BuildException, e:
 				raise BuildException('Error processing %s: %s'%(os.path.basename(dest), e))
 
 class Javac(BaseTarget):

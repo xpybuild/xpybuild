@@ -45,7 +45,7 @@ def getBuildInitializationContext():
 	global __buildInitializationContext
 
 	if not __buildInitializationContext: # just for pydoc testing
-		print("<using test initialization context>", end=' ')
+		print "<using test initialization context>",
 		return None
 	assert __buildInitializationContext != 'build phase', 'cannot use this method once the build has started, use context argument instead'
 		
@@ -334,7 +334,7 @@ class BaseContext(object):
 					try:
 						if not key in _definedOptions.keys()+['tmpdir']: raise BuildException("Unknown option %s" % key)
 						fulloptions[key] = self._recursiveExpandProperties(source[key])
-					except BuildException as e:
+					except BuildException, e:
 						raise BuildException('Failed to resolve option "%s"'%key, location=target.location if target else None, causedBy=True)
 		return fulloptions
 
@@ -465,15 +465,15 @@ class BuildInitializationContext(BaseContext):
 			BuildFileLocation._currentBuildFile = [buildFile]
 			execfile(buildFile, {})
 			BuildFileLocation._currentBuildFile = []
-		except BuildException as e:
+		except BuildException, e:
 			log.error('Failed to load build file: %s', e.toSingleLineString(None), extra=e.getLoggerExtraArgDict())
 			log.debug('Failed to load build file: %s', traceback.format_exc())
 			raise
-		except SyntaxError as e:
+		except SyntaxError, e:
 			log.exception('Failed to load build file: ', extra={'xpybuild_filename':e.filename, 'xpybuild_line':e.lineno, 'xpybuild_col':e.offset})
 			# wrap in buildexception to avoid printing same stack trace twice
 			raise BuildException('Failed to load build file', causedBy=True)
-		except Exception as e:
+		except Exception, e:
 			log.exception('Failed to load build file: ')
 			# wrap in buildexception to avoid printing same stack trace twice
 			raise BuildException('Failed to load build file', causedBy=True)
