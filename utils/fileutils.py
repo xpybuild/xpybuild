@@ -261,7 +261,7 @@ def parsePropertiesFile(lines, excludeLines=None):
 		key = line[:line.find('=')].strip()
 		value = line[line.find('=')+1:].strip()
 
-		if filter(lambda x: x in key, excludeLines):
+		if [x for x in excludeLines if x in key]:
 			log.debug('Ignoring property line due to exclusion: %s', line)
 			continue
 		
