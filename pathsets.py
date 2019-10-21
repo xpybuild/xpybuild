@@ -573,9 +573,6 @@ class FindPaths(BasePathSet):
 			for m in matches:
 				if replacesep and '/' in m: m = m.replace('/', os.sep)
 				
-				# see normpath(); have to convert from unicode (from os.walk-ing a long path) 
-				# back to byte strings to avoid confusing other parts of build. gross. 
-				if IS_WINDOWS and isinstance(m, unicode): m = m.encode() 
 				result.append( ( normedbasedir+m, m ) )
 			result.sort()
 			

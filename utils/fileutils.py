@@ -44,7 +44,7 @@ if __isWindows: # ugly ugly hacks due to stupid windows filesystem semantics. Se
 					None, win32file.CREATE_ALWAYS, win32file.FILE_ATTRIBUTE_NORMAL, None)
 				return self
 			def write(self, string):
-				if isinstance(string, unicode):
+				if isinstance(string, str):
 					# must pass byte strings not unicode objects when writing in binary mode; for backwards compatibility, automatically convert 7-bit ascii (which is what the Unix impl will do), but give errors for anything else as user should be explicitly specifying their encoding
 					string = string.encode('ascii', errors='strict') 
 				assert isinstance(string, str), 'cannot write unicode character string to binary file; please use byte str instead: %s'%repr(string) 
@@ -170,7 +170,7 @@ def deleteDir(path, allowRetry=True):
 			# on windows, try again using a separate process, just in case that 
 			# helps to avoid problems with virus checkers, etc
 			if __isWindows:
-				rmdirresult = os.system(u'rmdir /s /q "%s" 2>1 > /dev/nul'%path)
+				rmdirresult = os.system('rmdir /s /q "%s" 2>1 > /dev/nul'%path)
 				log.info("Directory deletion retry using rmdir returned code %d: %s", rmdirresult, path)
 				
 				# continue to run deleteDir regardless of result, to check it's 
@@ -358,9 +358,9 @@ def toLongPathSafe(path, force=False):
 
 		try:
 			if path.startswith('\\\\'): 
-				path = u'\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
+				path = '\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
 			else:
-				path = u'\\\\?\\'+path
+				path = '\\\\?\\'+path
 		except Exception:
 			# can throw an exception if path is a bytestring containing non-ascii characters
 			# to be safe, fallback to original string, just hoping it isn't both 
@@ -404,9 +404,9 @@ def normLongPath(path):
 		if __isWindows and path and not path.startswith('\\\\?\\'):
 			try:
 				if path.startswith('\\\\'): 
-					path = u'\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
+					path = '\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
 				else:
-					path = u'\\\\?\\'+path
+					path = '\\\\?\\'+path
 			except Exception:
 				# can throw an exception if path is a bytestring containing non-ascii characters
 				# to be safe, fallback to original string, just hoping it isn't both 

@@ -251,7 +251,7 @@ class ProcessOutputHandler(object):
 		None. 
 		"""
 		
-		assert isinstance(line, unicode) # only accept unicode - force caller to explicitly decode their output before calling this, e.g. l.decode(getStdoutEncoding())
+		assert isinstance(line, str) # only accept unicode - force caller to explicitly decode their output before calling this, e.g. l.decode(getStdoutEncoding())
 		
 		if (isstderr and self._treatStdErrAsErrors) or re.search(r'error[\s]*([A-Z]+\d+)?:', line, flags=re.IGNORECASE): return logging.ERROR
 		if re.search('warning[\s]*([A-Z]+\d+)?:', line, flags=re.IGNORECASE): return logging.WARNING

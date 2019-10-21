@@ -2,7 +2,7 @@ from pysys.constants import *
 from xpybuild.xpybuild_basetest import XpybuildBaseTest
 import io, collections
 
-TEST_PY = u"""
+TEST_PY = """
 import os, logging, time
 from propertysupport import *
 from buildcommon import *

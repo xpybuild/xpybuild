@@ -81,11 +81,11 @@ class OutputBufferingStreamWrapper(object):
 		self.bufferingDisabled = bufferingDisabled # can be set by formatter if doesn't support it, e.g. progress
 		
 	def write(self, s):
-		if isinstance(s, unicode):
-			s = s.encode(self.__underlying.encoding or locale.getpreferredencoding(), errors='replace')
+		# convert to bytes
+		s = s.encode(self.__underlying.encoding or locale.getpreferredencoding(), errors='replace')
 	
 		if not self.bufferingDisabled and outputBufferingManager.isBufferingEnabledForCurrentThread():
-			self.tlocal.buffer = getattr(self.tlocal, 'buffer', '')+s
+			self.tlocal.buffer = getattr(self.tlocal, 'buffer', b'')+s
 		else:
 			self.__underlying.write(s)
 				
@@ -93,9 +93,9 @@ class OutputBufferingStreamWrapper(object):
 		self.__underlying.flush()
 
 	def writeBufferedMessages(self):
-		buf = getattr(self.tlocal, 'buffer', '')
+		buf = getattr(self.tlocal, 'buffer', b'')
 		if buf:
 			self.__underlying.write(buf)
-			self.tlocal.buffer = ''
+			self.tlocal.buffer = b''
 			self.flush() # probably overdue a flush by now
 	

@@ -212,7 +212,7 @@ class Cpp(BaseTarget):
 		if ignoreregex: 
 			ignoreregex = xpybuild_normcase(ignoreregex)
 			r.append('option native.include.upToDateCheckIgnoreRegex=%s'%ignoreregex)
-		makedependsoptions = u"upToDateCheckIgnoreRegex='%s', upToDateCheckIgnoreSystemHeaders=%s, flags=%s"%(
+		makedependsoptions = "upToDateCheckIgnoreRegex='%s', upToDateCheckIgnoreSystemHeaders=%s, flags=%s"%(
 			ignoreregex,
 			self.options['native.include.upToDateCheckIgnoreSystemHeaders'],
 			self._getCompilerFlags(context), 
@@ -296,9 +296,9 @@ class Cpp(BaseTarget):
 			assert '\n' not in makedependsoptions, makedependsoptions # sanity check
 			with io.open(makedependsfile, 'w', encoding='utf-8') as f:
 				f.write(makedependsoptions)
-				f.write(u'\n')
+				f.write('\n')
 				for path in makedependsoutput:
-					f.write(u'%s\n'%path)
+					f.write('%s\n'%path)
 
 		# endif runmakedepends
 		
@@ -306,7 +306,7 @@ class Cpp(BaseTarget):
 		# no need to log this, as targetwrapper already logs differences in implicit inputs
 		if newestFile is not None:
 			newestDateTime = datetime.datetime.fromtimestamp(newestTime)
-			r.append(u'newest dependency was modified at %s.%03d: %s'%(
+			r.append('newest dependency was modified at %s.%03d: %s'%(
 				newestDateTime.strftime('%a %Y-%m-%d %H:%M:%S'), 
 				newestDateTime.microsecond/1000, 
 				os.path.normcase(newestFile)))

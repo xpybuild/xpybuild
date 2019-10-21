@@ -85,8 +85,6 @@ class TargetWrapper(object):
 		""" A sorted list of dependencies that aren't targets. Each item is a tuple
 		(longpathsafepath, dep flags, pathset)
 		
-		longpathsafepath is a unicode string on Windows (on Python 3: also linux)
-		
 		flags includes: DEP_IS_DIR_PATH, DEP_SKIP_EXISTENCE_CHECK, DEP_SHORTCUT_UPTODATE_CHECK
 		
 		Can only be used after resolveUnderlyingDependencies has been called. 
@@ -135,7 +133,6 @@ class TargetWrapper(object):
 		# also make any non-linesep \r or \n chars explicit to avoid confusion when diffing
 		x += [x.replace('\r','\\r').replace('\n','\\n') for x in os.linesep.join(self.target.getHashableImplicitInputs(context)).split(os.linesep)]
 
-		if isinstance(x, unicode): x = x.encode('utf-8') # TODO: remove when we switch to Python 3
 		self.__implicitInputs = x
 		return x
 
@@ -352,10 +349,10 @@ class TargetWrapper(object):
 						if len(added) > maxdifflines: added = ['...']+added[len(added)-maxdifflines:] 
 						if len(removed) > maxdifflines: removed = ['...']+removed[len(removed)-maxdifflines:]
 						if not added and not removed: added = ['N/A']
-						self.__logUptodate(u'Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self.__implicitInputsFile, 
+						self.__logUptodate('Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self.__implicitInputsFile, 
 							'\n\t'.join(
 								['previous build had %d lines, current build has %d lines'%(len(latestImplicitInputs), len(implicitInputs))]+removed+added
-							).replace(u'\r',u'\\r\r'))
+							).replace('\r','\\r\r'))
 						return False
 					else:
 						log.debug("Up-to-date check: implicit inputs file contents has not changed: %s", self.__implicitInputsFile)

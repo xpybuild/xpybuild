@@ -226,7 +226,7 @@ class BaseTarget(Composable):
 		@param optionKey: the name of an option. 
 		
 		"""
-		self.addHashableImplicitInput(lambda context: u'option %s=%s'%(optionKey, repr(self.options[optionKey])))
+		self.addHashableImplicitInput(lambda context: 'option %s=%s'%(optionKey, repr(self.options[optionKey])))
 		
 	def addHashableImplicitInput(self, item):
 		""" Adds a target-specific string giving information about an 

@@ -33,11 +33,8 @@ def _publishArtifact(path):
 	publishArtifact('<artifact>', path)
 
 def _teamcityEscape(s):
-	# to be on the safe side, remove all non-ascii chars and convert to bit string
-	if isinstance(s, unicode):
-		s = s.encode('ascii', errors='replace')
-	else:
-		s = s.decode('ascii', errors='ignore').encode('ascii')
+	# to be on the safe side, remove all non-ascii chars
+	s = s.encode('ascii', errors='replace').decode('ascii')
 	
 	s = s.replace('\r','').strip()
 	s = s.replace('|', '||')

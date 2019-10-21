@@ -63,7 +63,7 @@ def _wait_with_timeout(process, displayName, timeout, read):
 	PRIVATE method - do not call
 	"""
 	# read output from the command, with a timeout
-	# returns (out, err, timedout) if read else returncode
+	# returns (out, err, timedout) if read else returncode; out/err are byte buffers
 	
 	_processCleanupMonitor.add(process)
 	timedOut = [False]
@@ -186,10 +186,11 @@ def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, time
 	
 	outputEncoding = outputEncoding or getStdoutEncoding()
 	log.debug('%s outputEncoding assumed to be: %s', processName, outputEncoding)
-		
+	
+	# convert byte buffers to strings	
 	# probably best to be tolerant about unexpected chars, given how hard it is to predict what subprocesses will write in 
-	out = unicode(out, outputEncoding, errors='replace')
-	err = unicode(err, outputEncoding, errors='replace')
+	out = str(out, outputEncoding, errors='replace')
+	err = str(err, outputEncoding, errors='replace')
 	
 	hasfailed = True
 	try:

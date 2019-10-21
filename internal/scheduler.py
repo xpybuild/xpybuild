@@ -274,13 +274,13 @@ class BuildScheduler(object):
 			targetinfodir = mkdir(self.context.expandPropertyValues('${BUILD_WORK_DIR}/targets/'))
 			with io.open(targetinfodir+'/xpybuild-version.properties', 'w', encoding='utf-8') as f:
 				# write this file in case we want to avoid mixed xpybuild versions in working dir
-				f.write(u'xpybuildVersion=%s\n'%_XPYBUILD_VERSION)
-				f.write(u'workDirVersion=%d\n' % 1) # bump this when we make a breaking change that should force a rebuild
+				f.write('xpybuildVersion=%s\n'%_XPYBUILD_VERSION)
+				f.write('workDirVersion=%d\n' % 1) # bump this when we make a breaking change that should force a rebuild
 
 			with io.open(targetinfodir+'/selected-targets.txt', 'w', encoding='utf-8') as f:
-				f.write(u'%d targets selected for building:\n'%(len(self.selectedtargetwrappers)))
+				f.write('%d targets selected for building:\n'%(len(self.selectedtargetwrappers)))
 				for targetwrapper,targetdeps in self.selectedtargetwrappers:
-					f.write(u'- Target %s with priority %s depends on: %s\n\n'%(targetwrapper, targetwrapper.effectivePriority, 
+					f.write('- Target %s with priority %s depends on: %s\n\n'%(targetwrapper, targetwrapper.effectivePriority, 
 						', '.join(str(d) for d in targetdeps) if len(targetdeps)>0 else '<no dependencies>'))
 	
 		#assert (not pool.errors) or (self.total == self.index), (self.total, self.index) #disabled because assertion triggers during ctrl+c
