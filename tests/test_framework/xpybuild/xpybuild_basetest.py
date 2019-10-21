@@ -73,7 +73,7 @@ class XpybuildBaseTest(BaseTest):
 				m = filegrep(stdout, '(Target FAILED: .*)', returnMatch=True)
 				if not m: m = filegrep(stdout, '(XPYBUILD FAILED: .*)', returnMatch=True)
 				if m: m = m.group(1)
-			except Exception, e2:
+			except Exception as e2:
 				if shouldFail: raise e2 # this is fatal if we need the error message
 				self.log.exception('Error handling block failed: ')
 			if not m: self.log.warning('Caught exception running build: %s', e)

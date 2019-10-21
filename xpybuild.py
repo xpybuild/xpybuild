@@ -270,7 +270,7 @@ def main(args):
 		if (not includedTargets) or includedTargets==['']:
 			includedTargets = ['all']
 		
-	except getopt.error, msg:
+	except getopt.error as msg:
 		print msg
 		print "For help use --help"
 		return 2
@@ -369,7 +369,7 @@ def main(args):
 				matchregex = s.rstrip('$')+'$'
 				try:
 					matchregex = re.compile(matchregex, re.IGNORECASE)
-				except Exception, e:
+				except Exception as e:
 					raise BuildException('Invalid target regular expression "%s": %s'%(matchregex, e))
 				matches = [t for t in init.targets().values() if matchregex.match(t.name)]
 				if len(matches) > 1:
@@ -484,7 +484,7 @@ def main(args):
 				# sometimes useful to have this info available
 				import socket, getpass
 				log.info('Build running on %s as user %s', socket.gethostname(), getpass.getuser())
-			except Exception, e:
+			except Exception as e:
 				log.info('Failed to get host/user: %s', e)
 
 			log.info('Default encoding for subprocesses assumed to be: %s (stdout=%s, preferred=%s)', 
@@ -497,7 +497,7 @@ def main(args):
 				if os.getenv('XPYBUILD_DISABLE_PRIORITY_CHANGE','') != 'true':
 					utils.platformutils.lowerCurrentProcessPriority()
 					log.info('Successfully changed process priority to below normal')
-			except Exception, e:
+			except Exception as e:
 				log.warning('Failed to lower current process priority: %s'%e)
 			
 			if buildOptions['ignore-deps']:
@@ -581,12 +581,12 @@ def main(args):
 		else:
 			raise Exception('Task type not implemented yet - '+task) # should not happen
 		
-	except BuildException, e:
+	except BuildException as e:
 		# hopefully we don't end up here very often
 		log.error('*** XPYBUILD FAILED: %s', e.toMultiLineString(None))
 		return 5
 
-	except Exception, e:
+	except Exception as e:
 		log.exception('*** XPYBUILD FAILED: ')
 		return 6
 	

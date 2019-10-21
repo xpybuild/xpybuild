@@ -43,7 +43,7 @@ class MyTarget(basetarget.BaseTarget):
 		try:
 			x = self.options
 			self.log.error('ERROR - should be impossible to read self.options in the constructor unexpectedly: %s', x)
-		except Exception, e:
+		except Exception as e:
 			self.log.critical('Exception from trying to read self.options: %s'%e)
 		
 	def run(self, context):
@@ -63,7 +63,7 @@ class MyTarget(basetarget.BaseTarget):
 			try:
 				self.getOption('testoption2.empty')
 				self.log.error('ERROR - getOption should throw if empty')
-			except Exception, e:
+			except Exception as e:
 				self.log.critical('Got expected exception: %s', e)
 			
 			
