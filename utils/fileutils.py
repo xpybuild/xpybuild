@@ -152,7 +152,7 @@ def deleteDir(path, allowRetry=True):
 		
 	except OSError as e:
 		if os.path.isfile(path):
-			raise OSError, "Unable to delete dir %s as this is a file not a directory" % (path)
+			raise OSError("Unable to delete dir %s as this is a file not a directory" % (path))
 			
 		if allowRetry:
 			log.warn("Failed to delete dir %s (%s), will retry in 10 seconds" %(path, e))
@@ -212,7 +212,7 @@ def deleteFile(path, allowRetry=True):
 		
 	except OSError as e:
 		if os.path.isdir(path):
-			raise OSError, "Unable to delete file %s as this is a directory not a file" % (path)
+			raise OSError("Unable to delete file %s as this is a directory not a file" % (path))
 		
 		if allowRetry:
 			log.debug("Failed to delete file %s on first attempt (%s), will retry in 5 seconds", path, e)
