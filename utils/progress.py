@@ -34,7 +34,6 @@ class ProgressBarConsoleFormatter(ConsoleFormatter):
 	An alternative log handler that outputs as a non-coloured progress bar 
 	for systems without cursor movement support
 	"""
-	output = None
 	state = "OK"
 	progress = False
 	width = None
@@ -45,9 +44,8 @@ class ProgressBarConsoleFormatter(ConsoleFormatter):
 	timethreshold = 0
 
 	def __init__(self, output, buildOptions):
-		ConsoleFormatter.__init__(self)
+		ConsoleFormatter.__init__(self, output, buildOptions)
 		
-		self.output = output
 		self.bufferingDisabled = True # buffering isn't helpful in progress mode
 		(self.width, height) = getTerminalSize()
 		self.width = self.width - len("Progress: [] (xxx/xxx)  ")

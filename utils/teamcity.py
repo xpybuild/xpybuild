@@ -49,9 +49,8 @@ class TeamcityHandler(ConsoleFormatter):
 	"""
 	An alternative log handler than adds some teamcity-format output messages.
 	"""
-	output = None
 	def __init__(self, output, buildOptions):
-		ConsoleFormatter.__init__(self)
+		ConsoleFormatter.__init__(self, output, buildOptions)
 		self.output = output
 		
 		self.bufferingDisabled = True # useful to let teamcity know as soon as there is an error

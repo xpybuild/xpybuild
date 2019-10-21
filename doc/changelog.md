@@ -1,6 +1,7 @@
 # 3.0 - current release
 ## Breaking changes
 - Now requires Python 3.7+ instead of Python 2
+- Added output argument to ConsoleFormatter base class
 
 ## Deprecation
 

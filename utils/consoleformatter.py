@@ -81,7 +81,12 @@ class ConsoleFormatter(object):
 
 	level = logging.ERROR
 	
-	def __init__(self):	
+	def __init__(self, output, buildOptions):	
+		"""
+		@param output: The output stream, which can cope with unicode characters. 
+		@param buildOptions: Dictionary of build options
+		"""
+		self.output = output
 		self.fmt = logging.Formatter()
 		self.bufferingDisabled = False # can be set to True to prevent it for handlers for which it's not appropriate
 		_outputFormattersInUse.append(self)
@@ -115,7 +120,7 @@ class DefaultConsoleFormatter(ConsoleFormatter):
 	The default text output formatter for xpybuild. 
 	"""
 	def __init__(self, stream, buildOptions):
-		ConsoleFormatter.__init__(self)
+		ConsoleFormatter.__init__(self, stream, buildOptions)
 		self.delegate = logging.StreamHandler(stream)
 		self.delegate.setFormatter(logging.Formatter('[%(threadName)4s] %(message)s', None))
 		self.lastDepTime = time.time()

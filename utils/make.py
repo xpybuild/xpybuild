@@ -33,10 +33,6 @@ class MakeConsoleFormatter(ConsoleFormatter):
 	file:line: category: description
 
 	"""
-	output = None
-	def __init__(self, output, buildOptions):
-		ConsoleFormatter.__init__(self)
-		self.output = output
 	def handle(self, record):
 		if record.levelno == logging.ERROR:
 			category = 'error'
