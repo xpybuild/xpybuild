@@ -9,19 +9,21 @@
 matrix:
   include:
   
-  - name: Python 2.7 Linux + doc + deploy
+  - name: Python 3.7 Linux + doc + deploy
     os: linux
-    python: 2.7
+    python: 3.7
     env: XPYBUILD_DOC_AND_DEPLOY=true
   
-  - name: Python 2.7 Windows
+
+  - name: Python 3.7 Windows
     os: windows
+    # until Travis has language=python support on Windows, manually install using choco and sh(ell)
     language: sh
     before_install: 
       - unset GITHUB_API_KEY
-      - choco install python2 vcredist2008 -i vcpython27
-      - choco install jdk8 -params 'installdir=c:\\jdk1.8'
-      - export "PATH=/c/Python27:/c/Python27/Scripts:/c/jdk1.8/bin:$PATH"
+      - choco install python --version 3.7
+      - export PATH=/c/Python37:/c/Python37/Scripts:$PATH
+    # workaround for Travis Windows bug: disable secret filtering and hide secret env by unsetting it
     filter_secrets: false
 
 # Default Linux build runs on Ubuntu
@@ -43,8 +45,8 @@ script:
   - |
     if [[ -n $XPYBUILD_DOC_AND_DEPLOY ]]; then (
        set -e
-       $PY -m pip install epydoc
-       $PY ./xpybuild.py EPYDOC_ROOT=.
+       python2 -m pip install epydoc
+       python2 ./xpybuild.py EPYDOC_ROOT=.
     )
     fi
 
