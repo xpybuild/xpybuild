@@ -13,7 +13,7 @@ def main(args):
 		print("Has no arguments. Produces")
 		return
 	
-	print("Searching for .coverage* files under %s"%os.path.normpath('.'))
+	print(("Searching for .coverage* files under %s"%os.path.normpath('.')))
 	cov = []
 	for (dirpath, dirnames, filenames) in os.walk('.'):
 		for f in filenames:
@@ -21,13 +21,13 @@ def main(args):
 			if f.startswith('.coverage'): cov.append(os.path.join(dirpath, f))
 	
 	if cov:
-		print('Found %d coverage file(s)'%(len(cov)))
+		print(('Found %d coverage file(s)'%(len(cov))))
 		dest = os.path.abspath('./.coverage.combined')
 		c = coverage.Coverage(dest)
 		# nb: combine automatically deletes all the files (!)
 		c.combine(cov)
 		c.save() 
-		print('Saved combined coverage to: %s'%dest)
+		print(('Saved combined coverage to: %s'%dest))
 	else:
 		print("Nothing to do - no coverage files found")
 		

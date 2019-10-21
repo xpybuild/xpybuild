@@ -53,7 +53,7 @@ class MyTarget(basetarget.BaseTarget):
 				for k in sorted(o.keys()):
 					if k.startswith('testoption.'): 
 						self.log.critical('-- %s %s=%s', display, k, o[k])
-						print >>f, '%s %s=%s'%(display, k, o[k])
+						print('%s %s=%s'%(display, k, o[k]), file=f)
 		
 			printit(context.mergeOptions(self), name+' mergeOptions')
 			assert context.mergeOptions(self) == self.options, '%s != %s'%(context.mergeOptions(self), self.options)

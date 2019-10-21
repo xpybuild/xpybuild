@@ -45,7 +45,7 @@ def getBuildInitializationContext():
 	global __buildInitializationContext
 
 	if not __buildInitializationContext: # just for pydoc testing
-		print "<using test initialization context>",
+		print("<using test initialization context>", end=' ')
 		return None
 	assert __buildInitializationContext != 'build phase', 'cannot use this method once the build has started, use context argument instead'
 		
