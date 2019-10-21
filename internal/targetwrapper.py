@@ -99,6 +99,7 @@ class TargetWrapper(object):
 		self.effectivePriority = target.getPriority() # may be mutated to an effective priority
 
 	def __hash__ (self): return hash(self.target) # delegate
+	def __lt__(self, other): return self.target.path < other.target.path
 	
 	def __str__(self): return '%s'%self.target # display string for the underlying target
 	def __repr__(self): return 'TargetWrapper.%s'%str(self)
@@ -339,7 +340,7 @@ class TargetWrapper(object):
 					self.__logUptodate('Up-to-date check: %s must be built because implicit inputs/stamp file does not exist: "%s"', self.name, self.__implicitInputsFile)
 					return False
 				
-				with io.open(self.__implicitInputsFile, 'rb') as f:
+				with io.open(self.__implicitInputsFile, 'r', encoding='utf-8') as f:
 					latestImplicitInputs = f.read().split(os.linesep)
 					if latestImplicitInputs != implicitInputs:
 						maxdifflines = int(os.getenv('XPYBUILD_IMPLICIT_INPUTS_MAX_DIFF_LINES', '30'))/2
@@ -428,7 +429,7 @@ class TargetWrapper(object):
 			log.debug('writing implicitInputsFile: %s', self.__implicitInputsFile)
 			mkdir(os.path.dirname(self.__implicitInputsFile))
 			with openForWrite(self.__implicitInputsFile, 'wb') as f:
-				f.write(os.linesep.join(implicitInputs))
+				f.write(os.linesep.join(implicitInputs).encode('utf-8'))
 		
 	def clean(self, context):
 		"""

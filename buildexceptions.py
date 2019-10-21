@@ -67,7 +67,7 @@ class BuildException(Exception):
 				self.__causedByTraceback = None # tracebacks not needed for BuildException, by definition
 			else:
 				causedByMsg = '%s'%causedByExc
-				self.__causedByTraceback = traceback.format_exc(causedBy)
+				self.__causedByTraceback = ''.join(traceback.format_exception(*causedBy))
 				
 			if (causedByMsg not in self.__msg): self.__msg += (': %s'%causedByMsg)
 			

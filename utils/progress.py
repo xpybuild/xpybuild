@@ -190,9 +190,9 @@ class VT100ProgressBarConsoleFormatter(ConsoleFormatter):
 		elif self.state == "ERROR": return "!"
 
 	def occupied(self, current, total):
-		return (current*self.width) / total
+		return (current*self.width) // total
 	def unoccupied(self, current, total):
-		return self.width - (current*self.width) / total
+		return self.width - (current*self.width) // total
 
 	def getNextSpinner(self):
 		if self.spinner == '/':

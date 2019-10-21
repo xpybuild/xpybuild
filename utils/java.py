@@ -18,6 +18,7 @@
 #
 
 import os, sys, re, subprocess
+import locale
 from buildcommon import *
 from propertysupport import defineOption
 from utils.process import call
@@ -64,8 +65,8 @@ def create_manifest(path, properties, options):
 		assert ' ' not in key.strip(), 'manifest.mf key "%s" does not confirm to jar file specification - cannot contain spaces'%(key.strip())
 		assert '\n' not in line, repr(line)
 		
-		# must convert to utf8 before applying continuation char logic
-		if not isinstance(line, str): line = line.encode('utf-8')
+		# assume character strings as input; must convert to utf8 before applying continuation char logic
+		line = line.encode('utf-8')
 		
 		# spec says: No line may be longer than 72 bytes (not characters), in its UTF8-encoded form
 		# If a value would make the initial line longer than this, it should be continued on extra lines (each starting with a single SPACE).
@@ -290,8 +291,8 @@ def javac(output, inputs, classpath, options, logbasename, targetname):
 
 	with openForWrite(argsfile, 'wb') as f:
 		for a in args:
-			a = '"%s"'%a.replace('\\','\\\\')
-			print >>f, a
+			a = '"%s"'%a.replace('\\','\\\\')+os.linesep
+			f.write(a.encode(locale.getpreferredencoding()))
 
 	success=False
 	try:
@@ -441,7 +442,7 @@ def javadoc(path, sources, classpath, options, outputHandler):
 	mkdir(options['tmpdir'])
 	inputlistfile = os.path.join(options['tmpdir'], "javadoc.inputs")
 	with openForWrite(inputlistfile, 'wb') as f:
-		f.writelines('"'+x.replace('\\','\\\\')+'"'+os.linesep for x in sources)
+		f.writelines('"'+x.replace('\\','\\\\')+'"'+os.linesep for x in sources).encode(locale.getpreferredencoding())
 
 	# build up arguments
 	args = [binary]

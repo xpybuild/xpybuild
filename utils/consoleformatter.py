@@ -81,7 +81,7 @@ class ConsoleFormatter(object):
 
 	level = logging.ERROR
 	
-	def __init__(self):
+	def __init__(self):	
 		self.fmt = logging.Formatter()
 		self.bufferingDisabled = False # can be set to True to prevent it for handlers for which it's not appropriate
 		_outputFormattersInUse.append(self)

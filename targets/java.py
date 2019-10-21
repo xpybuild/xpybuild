@@ -103,7 +103,7 @@ class SignJars(BaseTarget):
 							fn = zi.filename
 							if fn.lower().endswith('manifest.mf'):
 								try:
-									manifest_txt = zf.read(zi.filename)
+									manifest_txt = zf.read(zi.filename).decode('utf-8', errors='strict')
 								except Exception as e:
 									raise BuildException('Failed reading the manifest file %s with exception:%s' % (fn, e))
 

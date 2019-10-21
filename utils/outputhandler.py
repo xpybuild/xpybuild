@@ -320,7 +320,7 @@ class StdoutRedirector(ProcessOutputHandler):
 		if isstderr:
 			ProcessOutputHandler.handleLine(self, line, isstderr)
 		else:
-			self.fd.write(line.encode("UTF-8")+os.linesep)
+			self.fd.write((line+os.linesep).encode("UTF-8"))
 	
 	def handleEnd(self, returnCode=None):
 		ProcessOutputHandler.handleEnd(self, returnCode)
