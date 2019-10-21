@@ -89,7 +89,7 @@ class ConsoleFormatter(object):
 	def setLevel(self, level):
 		self.level = level
 	def handle(self, record):
-		raise "Not Implemented"
+		raise NotImplementedError("Not Implemented")
 	
 	def publishArtifact(self, logger, displayName, path):
 		""" Publishes the specified local path (e.g. a log file) as an artifact, 
