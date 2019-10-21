@@ -187,8 +187,8 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 					self._log(logging.ERROR, '\njavac> '.join(x[1][0]), 
 						filename,lineno) 
 					
-					print >> fo, '- '+x[0]
-					print >> fo
+					print('- '+x[0], file=fo)
+					print(file=fo)
 					i = 0
 					for x2 in x[1]: # print the detail of later similar ones only at INFO
 						if i != 0:
@@ -198,8 +198,8 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 						self._errors.append(' / '.join(x2[0]))
 						for x3 in x2:
 							fo.write(x3.encode(getStdoutEncoding()))
-							print >> fo
-					print >> fo
+							print(file=fo)
+					print(file=fo)
 			self._log(logging.ERROR, '%d javac ERRORS in %s - see %s'%(sum([len(x[1]) for x in errs]), self._targetName, self._logbasename+'-errors.txt'), 
 				self._logbasename+'-errors.txt')
 			publishArtifact('javac %s errors'%self._targetName, self._logbasename+'-errors.txt')
@@ -215,11 +215,11 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 							errmsg = 'Failed due to %d warnings, first is: %s'%(len(warns), errmsg)
 						# it IS worth publishing warnings if they caused a failure
 						publishArtifact('javac %s warnings'%self._targetName, self._logbasename+'-warnings.txt')
-					print >>fo, '- '+x[0]
-					print >>fo
+					print('- '+x[0], file=fo)
+					print(file=fo)
 					for x2 in x[1]:
 						for x3 in x2:
-							print >>fo, x3
+							print(x3, file=fo)
 			# might add an option to publish warnings as artifacts, but don't by default as it happens a lot on some projects
 			#_publishArtifact(self._logbasename+'-warnings.txt')
 		
@@ -291,7 +291,7 @@ def javac(output, inputs, classpath, options, logbasename, targetname):
 	with openForWrite(argsfile, 'wb') as f:
 		for a in args:
 			a = '"%s"'%a.replace('\\','\\\\')
-			print >>f, a
+			print(a, file=f)
 
 	success=False
 	try:

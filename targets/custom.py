@@ -266,7 +266,7 @@ class CustomCommand(BaseTarget):
 				try:
 					if os.path.getsize(stderrPath) == 0 and not self.stderr: deleteFile(stderrPath, allowRetry=True)
 					if not self.redirectStdOutToTarget and os.path.getsize(stdoutPath) == 0 and not self.stdout: deleteFile(stdoutPath, allowRetry=True)
-				except Exception, e:
+				except Exception as e:
 					# stupid windows, it passes understanding
 					self.log.info('Failed to delete empty .out/.err files (ignoring error as its not critical): %s', e)
 					

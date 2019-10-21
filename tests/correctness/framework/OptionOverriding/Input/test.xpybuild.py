@@ -43,7 +43,7 @@ class MyTarget(basetarget.BaseTarget):
 		try:
 			x = self.options
 			self.log.error('ERROR - should be impossible to read self.options in the constructor unexpectedly: %s', x)
-		except Exception, e:
+		except Exception as e:
 			self.log.critical('Exception from trying to read self.options: %s'%e)
 		
 	def run(self, context):
@@ -54,7 +54,7 @@ class MyTarget(basetarget.BaseTarget):
 				for k in sorted(o.keys()):
 					if k.startswith('testoption.'): 
 						self.log.critical('-- %s %s=%s', display, k, o[k])
-						print >>f, '%s %s=%s'%(display, k, o[k])
+						print('%s %s=%s'%(display, k, o[k]), file=f)
 		
 			printit(context.mergeOptions(self), name+' mergeOptions')
 			assert context.mergeOptions(self) == self.options, '%s != %s'%(context.mergeOptions(self), self.options)
@@ -63,7 +63,7 @@ class MyTarget(basetarget.BaseTarget):
 			try:
 				self.getOption('testoption2.empty')
 				self.log.error('ERROR - getOption should throw if empty')
-			except Exception, e:
+			except Exception as e:
 				self.log.critical('Got expected exception: %s', e)
 			
 			

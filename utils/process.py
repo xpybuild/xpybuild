@@ -39,7 +39,7 @@ class __ProcessMonitor(object):
 			for p in self._global_process_list:
 				try:
 					p.kill()
-				except Exception, e:
+				except Exception as e:
 					if p.poll() == None:
 						log.warn('Failed to clean up child process %s: %s', p, e)
 			if self._global_process_list:
@@ -81,14 +81,14 @@ def _wait_with_timeout(process, displayName, timeout, read):
 			try:
 				process.kill()
 				log.info('Process kill completed successfully for %s'%displayName)
-			except Exception, e:
+			except Exception as e:
 				# only log if process is still running (Windows Access Denied 5 are seen occasionally in kill()) - should not happen
 				time.sleep(2)
 				if process.poll() == None:
 					log.error('Failed to kill process %s (pid %s) after %d second timeout: %s', displayName, process.pid, timeout, e)
 				else:
 					log.debug('Process kill failed but process is now stopped anyway: %s', e)
-		except Exception, e: # should never happen but make sure we notice if it does
+		except Exception as e: # should never happen but make sure we notice if it does
 			log.exception('Unexpected error in process timeout monitoring thread for %s: '%displayName)
 			
 	timer = threading.Timer(timeout, kill_proc, [])
@@ -172,7 +172,7 @@ def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, time
 			process = subprocess.Popen(args, env=environs, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd)
 		else:
 			process = subprocess.Popen(args, env=environs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-	except Exception, e:
+	except Exception as e:
 		raise EnvironmentError('Cannot start process "%s": %s'%(args[0], e))
 
 	if not outputHandler: # use short processName not longer displayName for per-line prefixes, the extra context isn't necessary anyway

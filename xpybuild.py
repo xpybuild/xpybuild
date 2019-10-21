@@ -196,7 +196,7 @@ def main(args):
 		for o, a in opts: # option arguments
 			o = o.strip('-')
 			if o in ["?", "h", "help"]:
-				print '\n'.join(usage)
+				print('\n'.join(usage))
 				return 0
 			elif o in ["x", "exclude"]:
 				excludedTargets.append(a)
@@ -233,8 +233,8 @@ def main(args):
 					if h.upper() == a.upper():
 						format = h
 				if not format:
-					print 'invalid format "%s"; valid formatters are: %s'%(a, ', '.join(_registeredConsoleFormatters.keys()))
-					print '\n'.join(usage)
+					print('invalid format "%s"; valid formatters are: %s'%(a, ', '.join(_registeredConsoleFormatters.keys())))
+					print('\n'.join(usage))
 					return 1
 			elif o in ['clean']:
 				task = _TASK_CLEAN
@@ -270,9 +270,9 @@ def main(args):
 		if (not includedTargets) or includedTargets==['']:
 			includedTargets = ['all']
 		
-	except getopt.error, msg:
-		print msg
-		print "For help use --help"
+	except getopt.error as msg:
+		print(msg)
+		print("For help use --help")
 		return 2
 	
 	threading.currentThread().setName('main')
@@ -369,15 +369,15 @@ def main(args):
 				matchregex = s.rstrip('$')+'$'
 				try:
 					matchregex = re.compile(matchregex, re.IGNORECASE)
-				except Exception, e:
+				except Exception as e:
 					raise BuildException('Invalid target regular expression "%s": %s'%(matchregex, e))
 				matches = [t for t in init.targets().values() if matchregex.match(t.name)]
 				if len(matches) > 1:
-					print >>stdout, 'Found multiple targets matching pattern %s:'%(s)
-					print >>stdout
+					print('Found multiple targets matching pattern %s:'%(s), file=stdout)
+					print(file=stdout)
 					for m in matches:
-						print >>stdout, m.name
-					print >>stdout
+						print(m.name, file=stdout)
+					print(file=stdout)
 					raise BuildException('Target regex must uniquely identify a single target: %s (use tags to specify multiple related targets)'%s)
 				if matches: return matches[0]
 				
@@ -415,46 +415,46 @@ def main(args):
 
 		if task == _TASK_LIST_PROPERTIES:
 			p = init.getProperties()
-			print >>stdout, "Properties: "
+			print("Properties: ", file=stdout)
 			pad = max(map(len, p.keys()))
 			if pad > 30: pad = 0
 			for k in sorted(p.keys()):
-				print >>stdout, ('%'+str(pad)+'s = %s') % (k, p[k])
+				print(('%'+str(pad)+'s = %s') % (k, p[k]), file=stdout)
 				
 		elif task == _TASK_LIST_OPTIONS:
 			options = init.mergeOptions(None)
 			pad = max(map(len, options.keys()))
 			if pad > 30: pad = 0
 			for k in sorted(options.keys()):
-				print >>stdout, ("%"+str(pad)+"s = %s") % (k, options[k])
+				print(("%"+str(pad)+"s = %s") % (k, options[k]), file=stdout)
 
 		elif task == _TASK_LIST_TARGETS:
 			if len(init.targets())-len(selectedTargets) > 0:
-				print >>stdout, "%d target(s) excluded (unless required as dependencies): "%(len(init.targets())-len(selectedTargets))
+				print("%d target(s) excluded (unless required as dependencies): "%(len(init.targets())-len(selectedTargets)), file=stdout)
 				for t in sorted(['   %-15s %s'%('<'+t.type+'>', t.name) for t in init.targets().values() if t not in selectedTargets]):
-					print >>stdout, t
-				print >>stdout
+					print(t, file=stdout)
+				print(file=stdout)
 				
-			print >>stdout, "%d target(s) included: "%(len(selectedTargets))
+			print("%d target(s) included: "%(len(selectedTargets)), file=stdout)
 			for t in sorted(['   %-15s %s'%('<'+t.type+'>', t.name) for t in selectedTargets]):
-				print >>stdout, t
-			print >>stdout
+				print(t, file=stdout)
+			print(file=stdout)
 
 			if allTargets:
-				print >>stdout, "%d tags(s) are defined: "%(len(init.tags()))
+				print("%d tags(s) are defined: "%(len(init.tags())), file=stdout)
 				for t in sorted(['   %-15s (%d targets)'%(t, len(init.tags()[t])) for t in init.tags()]):
-					print >>stdout, t
+					print(t, file=stdout)
 
 		elif task == _TASK_LIST_TARGET_INFO:
 			if findTargetsList == '*': findTargetsList = init.targets().values()
 			for t in sorted(findTargetsList, key=lambda t:(t.type+' '+t.name)):
-				print >>stdout, '- %s priority: %s, tags: %s, location: \n   %s'%(t, t.getPriority(), t.getTags(), t.location)
+				print('- %s priority: %s, tags: %s, location: \n   %s'%(t, t.getPriority(), t.getTags(), t.location), file=stdout)
 
 		elif task == _TASK_LIST_FIND_TARGETS:
 			# sort matches at start of path first, then anywhere in name, finally anywhere in type
 			for t in findTargetsList:
 				# this must be very easy to copy+paste, so don't put anything else on the line at all
-				print >>stdout, '%s'%(t.name)
+				print('%s'%(t.name), file=stdout)
 				
 		elif task in [_TASK_BUILD, _TASK_CLEAN, _TASK_REBUILD]:
 			
@@ -484,7 +484,7 @@ def main(args):
 				# sometimes useful to have this info available
 				import socket, getpass
 				log.info('Build running on %s as user %s', socket.gethostname(), getpass.getuser())
-			except Exception, e:
+			except Exception as e:
 				log.info('Failed to get host/user: %s', e)
 
 			log.info('Default encoding for subprocesses assumed to be: %s (stdout=%s, preferred=%s)', 
@@ -497,7 +497,7 @@ def main(args):
 				if os.getenv('XPYBUILD_DISABLE_PRIORITY_CHANGE','') != 'true':
 					utils.platformutils.lowerCurrentProcessPriority()
 					log.info('Successfully changed process priority to below normal')
-			except Exception, e:
+			except Exception as e:
 				log.warning('Failed to lower current process priority: %s'%e)
 			
 			if buildOptions['ignore-deps']:
@@ -581,12 +581,12 @@ def main(args):
 		else:
 			raise Exception('Task type not implemented yet - '+task) # should not happen
 		
-	except BuildException, e:
+	except BuildException as e:
 		# hopefully we don't end up here very often
 		log.error('*** XPYBUILD FAILED: %s', e.toMultiLineString(None))
 		return 5
 
-	except Exception, e:
+	except Exception as e:
 		log.exception('*** XPYBUILD FAILED: ')
 		return 6
 	
