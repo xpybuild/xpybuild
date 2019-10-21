@@ -282,7 +282,7 @@ class BaseTarget(Composable):
 		""" Stops this target from building in 'all' mode, therefore it must be called 
 		explicitly or via a tag.
 		"""
-		self.__tags = list(set(self.__tags) - set(['all']))
+		self.__tags = list(set(self.__tags) - {'all'})
 		init = getBuildInitializationContext()
 		init.removeFromTags(self, ['all'])
 		return self
