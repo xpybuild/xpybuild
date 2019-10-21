@@ -23,7 +23,7 @@ from propertysupport import defineOption
 from utils.process import call
 from utils.outputhandler import ProcessOutputHandler
 from utils.flatten import getStringList
-from fileutils import deleteDir, mkdir, deleteFile, openForWrite, normLongPath
+from .fileutils import deleteDir, mkdir, deleteFile, openForWrite, normLongPath
 from utils.consoleformatter import publishArtifact
 
 from buildexceptions import BuildException

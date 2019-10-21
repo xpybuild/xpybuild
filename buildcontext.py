@@ -276,7 +276,7 @@ class BaseContext(object):
 		>>> BaseContext({'test':'foo'})._recursiveExpandProperties({('${test}','${test}'):['${test}','${test}',{'${test}1','${test}2'}]})
 		{('foo', 'foo'): ['foo', 'foo', set(['foo1', 'foo2'])]}
 		"""
-		if isinstance(obj, types.StringTypes):
+		if isinstance(obj, (str,)):
 			return self.expandPropertyValues(obj, expandList)
 		elif isinstance(obj, tuple):
 			newobj = []
@@ -463,7 +463,7 @@ class BuildInitializationContext(BaseContext):
 		self._rootDir = os.path.abspath(os.path.dirname(buildFile))
 		try:
 			BuildFileLocation._currentBuildFile = [buildFile]
-			execfile(buildFile, {})
+			exec(compile(open(buildFile, "rb").read(), buildFile, 'exec'), {})
 			BuildFileLocation._currentBuildFile = []
 		except BuildException as e:
 			log.error('Failed to load build file: %s', e.toSingleLineString(None), extra=e.getLoggerExtraArgDict())

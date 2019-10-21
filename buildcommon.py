@@ -66,7 +66,7 @@ def include(file):
 	BuildFileLocation._currentBuildFile.append(filepath) # add to stack of files being parsed
 	
 	namespace = {}
-	execfile(filepath, namespace, namespace)
+	exec(compile(open(filepath, "rb").read(), filepath, 'exec'), namespace, namespace)
 	
 	del BuildFileLocation._currentBuildFile[-1]
 	

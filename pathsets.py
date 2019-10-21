@@ -199,7 +199,7 @@ class __SimplePathSet(BasePathSet):
 		for x in self.contents:
 			if not isinstance(x, BasePathSet):
 				y = self.__resolveStringPath(x, context)
-				r.extend(zip(y[0], y[1]))
+				r.extend(list(zip(y[0], y[1])))
 			else:
 				if len(self.contents)==1: # short-circuit this common case
 					return x.resolveWithDestinations(context)

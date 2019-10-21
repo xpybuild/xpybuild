@@ -210,7 +210,7 @@ class TargetWrapper(object):
 		self.depcount = len(targetdeps)
 		
 		# sort for deterministic order (as there are some sets and dicts involved)
-		nontargetdeps.sort(key=lambda (path, flags, pathset): path)
+		nontargetdeps.sort(key=lambda path_flags_pathset: path_flags_pathset[0])
 		self.__nontargetdeps, self.__targetdeps = nontargetdeps, sorted(targetdeps.values(), key=lambda wrapper: wrapper.name)
 	
 	def checkForNonTargetDependenciesUnderOutputDirs(self):

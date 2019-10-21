@@ -37,9 +37,9 @@ from utils.timeutils import formatTimePeriod
 from threading import Lock
 
 import time
-import thread
+import _thread
 import logging
-import Queue
+import queue
 import random
 import math
 
@@ -247,7 +247,7 @@ class BuildScheduler(object):
 		"""
 		self.index = 0 # identifies thread pool item n out of total=len(self.pending)
 		self.total = len(self.pending) # can increase during this phase
-		pending = Queue.Queue()
+		pending = queue.Queue()
 		for i in self.pending:
 			pending.put_nowait((0, i))
 
@@ -270,7 +270,7 @@ class BuildScheduler(object):
 			# this is the only place we can list all targets since only here are final priorities known
 			# printing the deps in one place is important for debugging missing dependencies etc
 			# might move this to a separate file at some point
-			self.selectedtargetwrappers.sort(key=lambda (targetwrapper, targetdeps): (-targetwrapper.effectivePriority, targetwrapper.name) )
+			self.selectedtargetwrappers.sort(key=lambda targetwrapper_targetdeps: (-targetwrapper_targetdeps[0].effectivePriority, targetwrapper_targetdeps[0].name) )
 			targetinfodir = mkdir(self.context.expandPropertyValues('${BUILD_WORK_DIR}/targets/'))
 			with io.open(targetinfodir+'/xpybuild-version.properties', 'w', encoding='utf-8') as f:
 				# write this file in case we want to avoid mixed xpybuild versions in working dir
@@ -390,7 +390,7 @@ class BuildScheduler(object):
 
 		leaves = self.leaves # list of targetwrappers
 		self.leaves = None
-		buildqueue = Queue.PriorityQueue()
+		buildqueue = queue.PriorityQueue()
 		randomizePriorities = 'randomizePriorities' in self.options
 		for l in leaves:
 			if randomizePriorities:

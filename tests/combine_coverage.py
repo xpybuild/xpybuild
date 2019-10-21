@@ -3,7 +3,7 @@
 """ Utility script that finds .coverage files under the current directory and combines them into a single file, deleting them as it goes.
 """
 
-from __future__ import print_function
+
 import time, sys, os.path
 import coverage
 

@@ -44,6 +44,7 @@
 #
 
 import sys, os, getopt, time, traceback, logging, multiprocessing, threading, re
+from functools import reduce
 
 if float(sys.version[:3]) < 2.7: raise Exception('xpybuild.py requires at least Python 2.7 - unsupported python version %s'%sys.version[:3])
 
