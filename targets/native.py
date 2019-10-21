@@ -380,7 +380,7 @@ class Link(BaseTarget):
 				flags=options['native.link.flags']+self.flags, 
 				shared=self.shared,
 				src=self.objects.resolve(context),
-				libs=flatten([map(string.strip, context.expandPropertyValues(x, expandList=True)) for x in self.libs+options['native.libs'] if x]),
+				libs=flatten([(y.strip() for y in context.expandPropertyValues(x, expandList=True)) for x in self.libs+options['native.libs'] if x]),
 				libdirs=flatten(self.libpaths.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.libpaths']]))
 
 	def getHashableImplicitInputs(self, context):

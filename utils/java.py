@@ -441,7 +441,7 @@ def javadoc(path, sources, classpath, options, outputHandler):
 	mkdir(options['tmpdir'])
 	inputlistfile = os.path.join(options['tmpdir'], "javadoc.inputs")
 	with openForWrite(inputlistfile, 'wb') as f:
-		f.writelines(map(lambda x: '"'+x.replace('\\','\\\\')+'"'+os.linesep, sources))
+		f.writelines('"'+x.replace('\\','\\\\')+'"'+os.linesep for x in sources)
 
 	# build up arguments
 	args = [binary]

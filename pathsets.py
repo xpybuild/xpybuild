@@ -158,7 +158,7 @@ class __SimplePathSet(BasePathSet):
 		
 	def __repr__(self):
 		""" Return a string including this class name and the paths from which it was created. """
-		return 'PathSet(%s)' % ', '.join(map(lambda s:'"%s"'%s.replace('\\','/') if isinstance(s, basestring) else str(s), self.contents))
+		return 'PathSet(%s)' % ', '.join('"%s"'%s.replace('\\','/') if isinstance(s, basestring) else str(s) for s in self.contents)
 	
 	def __resolveStringPath(self, p, context): # used for anything that isn't a pathset
 		if hasattr(p, 'resolveToString'):
@@ -338,7 +338,7 @@ class DirBasedPathSet(BasePathSet):
 	
 	def resolveWithDestinations(self, context):
 		children = flatten([
-			map(lambda s: s.strip(), context.expandPropertyValues(c, expandList=True))
+			[s.strip() for s in context.expandPropertyValues(c, expandList=True)]
 			for c in self.__children])
 
 		dir = _resolveDirPath(self.__dir, context, self.__location)

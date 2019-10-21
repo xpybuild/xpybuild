@@ -32,7 +32,7 @@ class PySysTest(XpybuildBaseTest):
 			i += 1
 			moduleName = f.replace(DIR,'').replace('/','.').replace('\\','.').strip('.').replace('.py','')
 			
-			if any(map(lambda x: re.search(x, moduleName), EXCLUDED_MODULES)):
+			if any([re.search(x, moduleName) for x in EXCLUDED_MODULES]):
 				self.log.info("skipping excluded module %s"%moduleName)
 				skipped += 1
 				continue

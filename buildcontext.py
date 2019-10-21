@@ -247,7 +247,7 @@ class BaseContext(object):
 		assert not propertyName.startswith('$'), propertyName
 		assert propertyName.endswith('[]'), propertyName
 		value = self.getPropertyValue(propertyName)
-		return map(lambda s: s.strip(), value.split(','))
+		return [s.strip() for s in value.split(',')]
 	
 	def getProperties(self):
 		"""

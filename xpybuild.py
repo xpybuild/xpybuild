@@ -171,7 +171,7 @@ def main(args):
 ] + [
 
 ]
-		if reduce(max, map(len, usage)) > 80:
+		if reduce(max, list(map(len, usage))) > 80:
 			raise Exception('Invalid usage string - all lines must be less than 80 characters')
 
 		# set up defaults
@@ -416,14 +416,14 @@ def main(args):
 		if task == _TASK_LIST_PROPERTIES:
 			p = init.getProperties()
 			print >>stdout, "Properties: "
-			pad = max(map(len, p.keys()))
+			pad = max(list(map(len, p.keys())))
 			if pad > 30: pad = 0
 			for k in sorted(p.keys()):
 				print >>stdout, ('%'+str(pad)+'s = %s') % (k, p[k])
 				
 		elif task == _TASK_LIST_OPTIONS:
 			options = init.mergeOptions(None)
-			pad = max(map(len, options.keys()))
+			pad = max(list(map(len, options.keys())))
 			if pad > 30: pad = 0
 			for k in sorted(options.keys()):
 				print >>stdout, ("%"+str(pad)+"s = %s") % (k, options[k])
