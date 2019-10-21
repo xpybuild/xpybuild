@@ -84,7 +84,7 @@ class Copy(BaseTarget):
 		src = self.src.resolveWithDestinations(context) #  a map of srcAbsolute: destRelative
 
 		symlinks = self.options['Copy.symlinks']
-		if isinstance(symlinks, basestring): symlinks = symlinks.lower()=='true'
+		if isinstance(symlinks, str): symlinks = symlinks.lower()=='true'
 		assert symlinks in [True,False], repr(symlinks)
 
 		# implicitly ensure parent of target exists, to keep things simple

@@ -94,9 +94,9 @@ class WriteFile(BaseTarget):
 	def _getContents(self, context):
 		if self.__resolved == None:
 			c = self.getContents
-			if isinstance(c, basestring) or hasattr(c, 'resolveToString'):
+			if isinstance(c, str) or hasattr(c, 'resolveToString'):
 				self.__resolved = context.expandPropertyValues(c)
 			else:
 				self.__resolved = c(context, *self.__args, **self.__kwargs)
-			assert isinstance(self.__resolved, basestring), 'WriteFile function must return a string: %r'%self.__resolved
+			assert isinstance(self.__resolved, str), 'WriteFile function must return a string: %r'%self.__resolved
 		return self.__resolved

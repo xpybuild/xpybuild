@@ -151,14 +151,14 @@ class __SimplePathSet(BasePathSet):
 		
 		self.__location = None
 		for x in self.contents:
-			if not (isinstance(x, basestring) or isinstance(x, BasePathSet) or hasattr(x, 'resolveToString')):
+			if not (isinstance(x, str) or isinstance(x, BasePathSet) or hasattr(x, 'resolveToString')):
 				raise BuildException('PathSet may contain only strings, PathSets, Composables, targets and lists - cannot accept %s (%s)'%(x, x.__class__))
 		
 		self.__location = BuildFileLocation()
 		
 	def __repr__(self):
 		""" Return a string including this class name and the paths from which it was created. """
-		return 'PathSet(%s)' % ', '.join('"%s"'%s.replace('\\','/') if isinstance(s, basestring) else str(s) for s in self.contents)
+		return 'PathSet(%s)' % ', '.join('"%s"'%s.replace('\\','/') if isinstance(s, str) else str(s) for s in self.contents)
 	
 	def __resolveStringPath(self, p, context): # used for anything that isn't a pathset
 		if hasattr(p, 'resolveToString'):
@@ -447,7 +447,7 @@ class FindPaths(BasePathSet):
 		else:
 			self.excludes = GlobPatternSet.create(self.excludes)
 			
-		if isinstance(dir, basestring) and '\\' in dir: # avoid silly mistakes, and enforce consistency
+		if isinstance(dir, str) and '\\' in dir: # avoid silly mistakes, and enforce consistency
 			raise BuildException('Invalid base directory for FindPaths - must not contain \\ (always use forward slashes)')
 		
 		self.location = BuildFileLocation()
@@ -456,7 +456,7 @@ class FindPaths(BasePathSet):
 	
 	def __repr__(self): 
 		""" Return a string including this class name and the basedir and include/exclude patterns with which it was created. """
-		return ('FindPaths(%s, includes=%s, excludes=%s)'%('"%s"'%self.__dir if isinstance(self.__dir, basestring) else str(self.__dir), self.includes or [], self.excludes or [])).replace('\'','"')
+		return ('FindPaths(%s, includes=%s, excludes=%s)'%('"%s"'%self.__dir if isinstance(self.__dir, str) else str(self.__dir), self.includes or [], self.excludes or [])).replace('\'','"')
 	
 	def _resolveUnderlyingDependencies(self, context):
 		if isinstance(self.__dir, BaseTarget):
@@ -969,7 +969,7 @@ class SingletonDestRenameMapper(_DerivedPathSet):
 		if not isinstance(pathSet, BasePathSet): pathSet = PathSet(pathSet)
 		_DerivedPathSet.__init__(self, pathSet)
 		self.newDestRelPath = newDestRelPath
-		if isinstance(self.newDestRelPath, basestring): assert '\\' not in self.newDestRelPath
+		if isinstance(self.newDestRelPath, str): assert '\\' not in self.newDestRelPath
 	
 	def __repr__(self):
 		""" Return a string including this class name, the new destination and the included PathSet. """
@@ -1005,7 +1005,7 @@ class DirGeneratedByTarget(BasePathSet):
 		@param dirTargetName: The directory that another target will generate.
 		"""
 		BasePathSet.__init__(self)
-		assert isinstance(dirTargetName, basestring)
+		assert isinstance(dirTargetName, str)
 		assert dirTargetName.endswith('/')
 		self.__target = dirTargetName
 		self.__location = BuildFileLocation()

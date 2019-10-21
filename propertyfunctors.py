@@ -70,7 +70,7 @@ class dirname(Composable):
 		# isn't expanded yet but this at least makes it as short as possible -
 		# though only if it's a string, if it's a Composable this wouldn't be 
 		# appropriate
-		if isinstance(self.arg, basestring) and '/' in self.arg:
+		if isinstance(self.arg, str) and '/' in self.arg:
 			arg = os.path.dirname(arg)
 		
 		return "dirname("+arg+")"
@@ -120,7 +120,7 @@ class basename(Composable):
 		# isn't expanded yet but this at least makes it as short as possible -
 		# though only if it's a string, if it's a Composable this wouldn't be 
 		# appropriate
-		if isinstance(self.arg, basestring):
+		if isinstance(self.arg, str):
 			arg = os.path.basename(arg)
 		
 		return "basename("+arg+")"

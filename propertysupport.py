@@ -207,7 +207,7 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 	keys e.g. "FOO<condition>=bar" where lines with no condition in this list 
 	are ignored. Conditions are typically lowercase. 
 	"""
-	if conditions: assert not isinstance(conditions,basestring), 'conditions parameter must be a list'
+	if conditions: assert not isinstance(conditions,str), 'conditions parameter must be a list'
 	__log.info('Defining properties from file: %s', propertiesFile)
 	context = getBuildInitializationContext()
 	

@@ -232,7 +232,7 @@ class Jar(BaseTarget):
 		self.package = PathSet(package)
 		self.manifest = manifest
 		BaseTarget.__init__(self, jar, [self.compile,self.classpath,self.package, 
-			manifest if isinstance(manifest, basestring) else None])
+			manifest if isinstance(manifest, str) else None])
 			
 		for k,v in (options or {}).items(): self.option(k, v)
 		self.preserveManifestFormatting = preserveManifestFormatting
@@ -257,7 +257,7 @@ class Jar(BaseTarget):
 
 		manifest = os.path.join(self.workDir, "MANIFEST.MF") # manifest file
 	
-		if isinstance(self.manifest, basestring):
+		if isinstance(self.manifest, str):
 			manifest = context.getFullPath(self.manifest, self.baseDir)
 		elif self.manifest == None:
 			manifest = None

@@ -70,8 +70,8 @@ class Compose(Composable):
 		>>> (Compose('a', 'b')+"c").resolveToString(None)
 		'abc'
 		"""
-		left = self.left if isinstance(self.left, basestring) else self.left.resolveToString(context)
-		right = self.right if isinstance(self.right, basestring) else self.right.resolveToString(context)
+		left = self.left if isinstance(self.left, str) else self.left.resolveToString(context)
+		right = self.right if isinstance(self.right, str) else self.right.resolveToString(context)
 		return left + right
 	def __str__(self):
 		return str(self.left)+"+"+str(self.right)

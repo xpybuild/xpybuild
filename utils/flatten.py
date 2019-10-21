@@ -95,6 +95,6 @@ def getStringList(stringOrListOfStrings):
 		if len(stringOrListOfStrings)==1 and isinstance(stringOrListOfStrings[0], list):
 			return stringOrListOfStrings[0]
 		return stringOrListOfStrings
-	elif isinstance(stringOrListOfStrings, basestring):
+	elif isinstance(stringOrListOfStrings, str):
 		return [stringOrListOfStrings]
 	raise ValueError('The specified value must be a list of strings: "%s"'%(stringOrListOfStrings))

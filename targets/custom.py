@@ -180,7 +180,7 @@ class CustomCommand(BaseTarget):
 	def _resolveItem(self, x, context):
 		if x == self.DEPENDENCIES: return self.deps.resolve(context)
 		if x == self.TARGET: x = self.path
-		if isinstance(x, basestring): return context.expandPropertyValues(x)
+		if isinstance(x, str): return context.expandPropertyValues(x)
 		if hasattr(x, 'resolveToString'): return x.resolveToString(context) # supports Composables too
 		if isinstance(x, BasePathSet): 
 			result = x.resolve(context)
@@ -194,7 +194,7 @@ class CustomCommand(BaseTarget):
 	def _resolveCommand(self, context):
 		if callable(self.command):
 			self.command = self.command(self.path, self.deps.resolve(context), context)
-		assert not isinstance(self.command, basestring) # must be a list of strings, not a string
+		assert not isinstance(self.command, str) # must be a list of strings, not a string
 			
 		self.command = flatten([self._resolveItem(x, context) for x in self.command])
 		self.command[0] = os.path.normpath(self.command[0])

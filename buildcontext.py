@@ -194,7 +194,7 @@ class BaseContext(object):
 		if hasattr(string, 'resolveToString'):
 			string = string.resolveToString(self)
 		if callable(string): string = string(self)
-		assert isinstance(string, basestring), 'Error in expandPropertyValues: expecting string but argument was of type "%s"'%(string.__class__.__name__)
+		assert isinstance(string, str), 'Error in expandPropertyValues: expecting string but argument was of type "%s"'%(string.__class__.__name__)
 		
 		if '$${' in string:
 			assert '<escaped_xpybuild_placeholder>' not in string
