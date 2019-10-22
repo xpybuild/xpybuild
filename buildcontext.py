@@ -327,12 +327,16 @@ class BaseContext(object):
 			fulloptions = { 'tmpdir' : target.workDir }
 		else:
 			fulloptions = {}
+		
+		permittedoptions = 	set(_definedOptions.keys())
+		permittedoptions.add('tmpdir')
+		
 		# search defaults, then replace if in globals, then replace if in target.options
 		for source in [_definedOptions, self._globalOptions, target and target._optionsTargetOverridesUnresolved or {}, options if options else {}]:
 			if source:
 				for key in source:
 					try:
-						if not key in _definedOptions.keys()+['tmpdir']: raise BuildException("Unknown option %s" % key)
+						if key not in permittedoptions: raise BuildException("Unknown option %s" % key)
 						fulloptions[key] = self._recursiveExpandProperties(source[key])
 					except BuildException as e:
 						raise BuildException('Failed to resolve option "%s"'%key, location=target.location if target else None, causedBy=True)
