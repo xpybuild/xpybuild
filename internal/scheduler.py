@@ -522,7 +522,7 @@ class BuildScheduler(object):
 def createDepGraph(file, scheduler, context):
 	""" Create a .dot file with the build dependency graph """
 	def _getKey(target):
-		return re.sub(r"[${}/()+\\<>\. -]", "_", str(target));
+		return re.sub(r"[^a-zA-Z0-9_]", "_", str(target));
 
 	def _getPrintable(target):
 		return re.sub(r"<.*>", "", re.sub(r"[{}]", "", str(target)))
@@ -545,7 +545,7 @@ def logTargetTimes(file, scheduler, context):
 	"""
 
 	def _getKey(target):
-		return re.sub(r"[${}/()+\\<>\. -]", "_", str(target));
+		return re.sub(r"[^a-zA-Z0-9_]", "_", str(target));
 
 	def _getPrintable(target):
 		return re.sub(r"<.*>", "", re.sub(r"[{}]", "", str(target)))
