@@ -14,8 +14,12 @@ class PySysTest(XpybuildBaseTest):
 		with open(self.output+'/symlink-absolute/foo/subdir/sourcefile.txt', 'wb') as f:
 			f.write(b'Hello world')
 		# source, linkname
-		os.symlink(self.output+'/symlink-absolute/foo/subdir/sourcefile.txt',
-			self.output+'/symlink-absolute/foo/subdir/mylink.txt')
+		try:
+			os.symlink(self.output+'/symlink-absolute/foo/subdir/sourcefile.txt',
+				self.output+'/symlink-absolute/foo/subdir/mylink.txt')
+		except OSError:
+			if IS_WINDOWS:
+				self.abort(NOTVERIFIED, 'Cannot create symlinks without elevated/admin rights on this version of Windows')
 		os.symlink(self.output+'/symlink-absolute/foo/subdir', 
 			self.output+'/symlink-absolute/foo/subdir-link')
 
