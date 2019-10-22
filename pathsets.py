@@ -803,6 +803,9 @@ class MapDest(_DerivedPathSet):
 	""" Applies a functor to the destination paths of the enclosed PathSet
 	(the PathSet's source paths are unaffected)
 	
+	Do not use this pathset for adding a prefix to the destinations - for that 
+	L{AddDestPrefix} is a better solution. 
+	
 	Note that paths passed to the functor will always have forward slashes. 
 
 	e.g. MapDest(lambda x:x.lower(), mypathset)
@@ -817,7 +820,8 @@ class MapDest(_DerivedPathSet):
 	def __init__(self, fn, pathSet):
 		"""
 		@param fn: a function that takes a resolved dest path (using forward slashes 
-		not backslashes) as input, and returns a potentially different dest path
+		not backslashes) as input, and returns a potentially different dest path. 
+		If possible, use a named function rather than a lamba. 
 		"""
 		if not isinstance(pathSet, BasePathSet): pathSet = PathSet(pathSet)
 		_DerivedPathSet.__init__(self, pathSet)
