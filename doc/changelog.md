@@ -1,7 +1,7 @@
 # 3.0 - current release
 ## Breaking changes
 - Now requires Python 3.7+ instead of Python 2
-- Added output argument to ConsoleFormatter base class
+- Added `output` and `buildOptions` required arguments to ConsoleFormatter base class constructor.
 
 ## Deprecation
 
@@ -9,6 +9,7 @@
 - Fixed a couple of bugs in incremental C++ compilation - one that could cause unnecessary incremental compilation of targets that depend on generated C/C++ source or include files, and another in which the build would fail rather than re-running makedepends if some of the cached dependencies no longer exist. 
  
 ## Enhancements
+- Added `buildcommon.compareVersions` method for comparing version strings. 
 
 # 1.15
 ## Breaking changes
