@@ -97,15 +97,15 @@ class BaseContext(object):
 		>>> BaseContext({'A':'b'}).getPropertyValue('UNDEFINED_PROPERTY')
 		Traceback (most recent call last):
 		...
-		BuildException: Property "UNDEFINED_PROPERTY" is not defined
+		buildexceptions.BuildException: Property "UNDEFINED_PROPERTY" is not defined
 		>>> BaseContext({'A':'b'}).getPropertyValue(None)
 		Traceback (most recent call last):
 		...
-		BuildException: Property "None" is not defined
+		buildexceptions.BuildException: Property "None" is not defined
 		>>> BaseContext({'A':'b'}).getPropertyValue('')
 		Traceback (most recent call last):
 		...
-		BuildException: Property "" is not defined
+		buildexceptions.BuildException: Property "" is not defined
 		
 		"""
 			
@@ -179,15 +179,15 @@ class BaseContext(object):
 		>>> BaseContext({'A':'b'}).expandPropertyValues('${UNDEFINED_PROPERTY}')
 		Traceback (most recent call last):
 		...
-		BuildException: Property "UNDEFINED_PROPERTY" is not defined
+		buildexceptions.BuildException: Property "UNDEFINED_PROPERTY" is not defined
 		>>> BaseContext({'A':'b'}).expandPropertyValues('${A')
 		Traceback (most recent call last):
 		...
-		BuildException: Incorrectly formatted property string "${A"
+		buildexceptions.BuildException: Incorrectly formatted property string "${A"
 		>>> BaseContext({'A[]':'a, b'}).expandPropertyValues('${A[]}${A[]}', expandList=True)
 		Traceback (most recent call last):
 		...
-		BuildException: Cannot expand as a list a string containing multiple list variables
+		buildexceptions.BuildException: Cannot expand as a list a string containing multiple list variables
 		
 		"""
 		if not string: return [] if expandList else string
@@ -271,10 +271,10 @@ class BaseContext(object):
 		('foo', 'foo')
 		>>> BaseContext({'test':'foo'})._recursiveExpandProperties({'${test}':'${test}'})
 		{'foo': 'foo'}
-		>>> BaseContext({'test':'foo'})._recursiveExpandProperties({'${test}1','${test}2'})
-		set(['foo1', 'foo2'])
-		>>> BaseContext({'test':'foo'})._recursiveExpandProperties({('${test}','${test}'):['${test}','${test}',{'${test}1','${test}2'}]})
-		{('foo', 'foo'): ['foo', 'foo', set(['foo1', 'foo2'])]}
+		>>> repr(BaseContext({'test':'foo'})._recursiveExpandProperties({'${test}1','${test}2'})).replace("{'foo2', 'foo1'}", "{'foo1', 'foo2'}")
+		"{'foo1', 'foo2'}"
+		>>> repr(BaseContext({'test':'foo'})._recursiveExpandProperties({('${test}','${test}'):['${test}','${test}',{'${test}1','${test}2'}]})).replace("{'foo2', 'foo1'}", "{'foo1', 'foo2'}")
+		"{('foo', 'foo'): ['foo', 'foo', {'foo1', 'foo2'}]}"
 		"""
 		if isinstance(obj, (str,)):
 			return self.expandPropertyValues(obj, expandList)

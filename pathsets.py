@@ -245,7 +245,7 @@ def PathSet(*items):
 	>>> PathSet('a/*').resolve(BaseContext({})) #doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	BuildException:
+	buildexceptions.BuildException:
 	"""
 	# This function is called a lot so its performance matters
 	
@@ -298,7 +298,7 @@ class DirBasedPathSet(BasePathSet):
 	>>> DirBasedPathSet('mydir', 'a*b').resolve(BaseContext({})) #doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	BuildException:
+	buildexceptions.BuildException:
 
 	>>> str(PathSet('a', DirBasedPathSet(DirGeneratedByTarget('4/5/6/'), '7/8')))
 	'PathSet("a", DirBasedPathSet(DirGeneratedByTarget("4/5/6/"), [\\'7/8\\']))'
@@ -408,12 +408,12 @@ class FindPaths(BasePathSet):
 	>>> FindPaths('x', includes=['*.x', 'c:\\d'], excludes=[])#doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	BuildException:
+	buildexceptions.BuildException:
 
 	>>> FindPaths('x', includes=['*.x', '${foo}'], excludes=[])#doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	BuildException:
+	buildexceptions.BuildException:
 
 	"""
 	_skipDependenciesExistenceCheck = True # since we only return items we've found on disk, no need to check them again
@@ -902,12 +902,12 @@ class RemoveDestParents(_DerivedPathSet):
 	>>> str(RemoveDestParents(1, DirBasedPathSet('mydir/', 'a')).resolveWithDestinations(BaseContext({}) )).replace('\\\\\\\\','/') #doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	BuildException: Cannot strip 1 parent dir(s) from "a" as it does not have that many parent directories
+	buildexceptions.BuildException: Cannot strip 1 parent dir(s) from "a" as it does not have that many parent directories
 
 	>>> str(RemoveDestParents(1, DirBasedPathSet('mydir/', 'b/')).resolveWithDestinations(BaseContext({}) )).replace('\\\\\\\\','/')
 	Traceback (most recent call last):
 	...
-	BuildException: Cannot strip 1 parent dir(s) from "b/" as it does not have that many parent directories
+	buildexceptions.BuildException: Cannot strip 1 parent dir(s) from "b/" as it does not have that many parent directories
 
 	"""
 	def __init__(self, dirsToRemove, pathSet):

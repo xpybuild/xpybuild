@@ -327,14 +327,11 @@ class BaseTarget(Composable):
 		@param tags: the tag, tags or list of tags to add to the target.
 		
 		>>> BaseTarget('a',[]).tags('abc').getTags()
-		<using test initialization context> <using test initialization context>
-		['abc', 'all']
+		<using test initialization context> <using test initialization context> ['abc', 'all']
 		>>> BaseTarget('a',[]).tags(['abc', 'def']).getTags()
-		<using test initialization context> <using test initialization context>
-		['abc', 'def', 'all']
+		<using test initialization context> <using test initialization context> ['abc', 'def', 'all']
 		>>> BaseTarget('a',[]).tags('abc', 'def').tags('ghi').getTags()
-		<using test initialization context> <using test initialization context> <using test initialization context>
-		['ghi', 'abc', 'def', 'all']
+		<using test initialization context> <using test initialization context> <using test initialization context> ['ghi', 'abc', 'def', 'all']
 		"""
 		taglist = getStringList(list(tags))
 		self.__tags = taglist + self.__tags

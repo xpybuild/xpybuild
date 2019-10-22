@@ -68,7 +68,7 @@ class ProcessOutputHandler(object):
 	>>> h.handleEnd(5)
 	Traceback (most recent call last):
 	...
-	BuildException: 2 errors, first is: error: My error
+	buildexceptions.BuildException: 2 errors, first is: error: My error
 
 	>>> h = ProcessOutputHandler('myhandler')
 	>>> h.handleLine(u'some message')
@@ -77,7 +77,7 @@ class ProcessOutputHandler(object):
 	>>> h.handleEnd(5)
 	Traceback (most recent call last):
 	...
-	BuildException: myhandler failed with return code 5; no errors reported, last line was: later message
+	buildexceptions.BuildException: myhandler failed with return code 5; no errors reported, last line was: later message
 
 	"""
 	
@@ -168,7 +168,7 @@ class ProcessOutputHandler(object):
 		>>> type(ProcessOutputHandler.create('mine')).__name__
 		'ProcessOutputHandler'
 	
-		>>> def myfactory(*args, **kwargs): print 'called factory %s, kwarg keys: %s'%(args, kwargs.keys())
+		>>> def myfactory(*args, **kwargs): print('called factory %s, kwarg keys: %s'%(args, list(kwargs.keys())))
 		>>> ProcessOutputHandler.create('mine', options={ProcessOutputHandler.Options.factory: myfactory})
 		called factory ('mine',), kwarg keys: ['options']
 		
