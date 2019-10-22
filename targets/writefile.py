@@ -73,6 +73,7 @@ class WriteFile(BaseTarget):
 		self.__resolved = None
 		self.__mode = mode
 		self.__executable = executable 
+		self.addHashableImplicitInputOption('fileEncodingDecider')
 	
 	def getHashableImplicitInputs(self, context):
 		""" The literal content text is considered the dependency of this target """
@@ -83,7 +84,7 @@ class WriteFile(BaseTarget):
 		
 		mkdir(os.path.dirname(self.path))
 		path = normLongPath(self.path)
-		with openForWrite(path, 'w', encoding='utf-8') as f: # TODO: make encoding configurable
+		with self.openFile(context, path, 'w') as f:
 			f.write(contents)
 		
 		if self.__mode and not isWindows():

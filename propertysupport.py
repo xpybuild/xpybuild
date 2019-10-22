@@ -3,7 +3,7 @@
 # Support for defining properties of various types, for use by build files. 
 # Assumes the buildLoader global variable has been set
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -327,3 +327,24 @@ def enableEnvironmentPropertyOverrides(prefix):
 	init = getBuildInitializationContext()
 	if init:
 		init.enableEnvironmentPropertyOverrides(prefix)
+
+class ExtensionBasedFileEncodingDecider:
+	"""Can be used for the `fileEncodingDecider` option which decides what file encoding to use for 
+	reading/writing a text file given its path. 
+	
+	The decider is called with arguments: (context, path), and returns the name of the encoding to be used for this path. 
+	Additional keyword arguments may be passed to the decider in future. 
+	
+	@param defaultEncoding: The name of the default encoding to be used. Recommended values are: 'utf-8', 'ascii' or locale.getpreferredencoding().
+	@param extToEncodingDict: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one. 
+	The extensions can contain ${...} properties. 
+	"""
+	def __init__(self, extToEncodingDict={}, default='ascii'): self.extToEncodingDict, self.defaultEncoding = dict(extToEncodingDict), default
+	def __repr__(self): return f'ExtensionBasedFileEncodingDecider({self.extToEncodingDict}; default={self.defaultEncoding})'
+	def __call__(self, context, path, **forfutureuse):
+		# could add some per-context caching here
+		for ext, enc in self.extToEncodingDict.items():
+			if path.endswith(context.expandPropertyValues(ext)): return enc or self.defaultEncoding
+		return self.defaultEncoding
+
+

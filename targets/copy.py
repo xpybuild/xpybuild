@@ -219,6 +219,7 @@ class FilteredCopy(Copy):
 		self.allowUnusedMappers = kwargs.pop('allowUnusedMappers', False)
 		assert not kwargs, 'unknown keyword arg(s): %s'%kwargs
 		super(FilteredCopy, self).__init__(dest, src, implicitDependencies=[m.getDependencies() for m in self.mappers])
+		self.addHashableImplicitInputOption('fileEncodingDecider')
 	
 	def run(self, context):
 		self.__unusedMappers = set(self.mappers)
@@ -239,10 +240,9 @@ class FilteredCopy(Copy):
 	def _copyFile(self, context, src, dest):
 		mappers = [m for m in self.mappers if m.startFile(context, src, dest) is not False]
 		
-		# TODO: make encoding configurable
-		with open(src, 'r', encoding='utf-8') as s:
-			# newline: for compatibility with existing builds, don't expand \n to os.linesep (Python universal newlines)
-			with openForWrite(dest, 'w', encoding='utf-8', newline='\n') as d:
+		with self.openFile(context, src, 'r') as s:
+			# newline: for compatibility with existing builds, we don't expand \n to os.linesep (i.e. don't use Python universal newlines)
+			with self.openFile(context, dest, 'w', newline='\n') as d:
 				for m in mappers:
 					x = m.getHeader(context)
 					if x: 

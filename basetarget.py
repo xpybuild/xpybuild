@@ -120,7 +120,6 @@ class BaseTarget(Composable):
 		if name == 'name': return self.__name
 			
 		if name == 'options': 
-			# the 
 			# don't return self.options here, since a) that has the unresolved/unmerged options and b) setting it is 
 			# dodgy and something that must work for compat reasons but which we want to discourage
 			
@@ -316,6 +315,19 @@ class BaseTarget(Composable):
 		"""
 		self._optionsTargetOverridesUnresolved[key] = value
 		return self
+	
+	def openFile(self, context, path, mode='r', **kwargs):
+		"""
+		Opens the specified file, using an encoding specified by the target option's fileEncodingDecider unless explicitly provided. 
+		
+		@param context: The context that was passed to run().
+		@param path: The full absolute path to be opened. 
+		@param mode: The file mode. 
+		@keyword kwargs: Any additional arguments for the io.open() method can be specified here. 
+		"""
+		if 'b' not in mode and 'encoding' not in kwargs: kwargs['encoding'] = self.getOption('fileEncodingDecider')(context, path)
+		self.log.critical('opening %s with %s, %s', path, (openForWrite if 'w' in mode else io.open), kwargs.get('encoding'))
+		return (openForWrite if 'w' in mode else io.open)(path, mode, **kwargs)
 	
 	def tags(self, *tags):
 		"""
