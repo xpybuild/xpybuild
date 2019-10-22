@@ -6,7 +6,7 @@ XPyBuild is a cross-platform, cross-language, multi-threaded build system that u
 
 It combines the best features of Make with those from Ant along with an easy to use but powerful blend of declarative statements and imperative python code.
 
-XPyBuild requires Python 3.7+. 
+XPyBuild requires Python 3.6+. 
 
 Links
 =====

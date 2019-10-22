@@ -1,6 +1,6 @@
 # 3.0 - current release
 ## Breaking changes
-- Now requires Python 3.7+ instead of Python 2
+- Now requires Python 3.6+ instead of Python 2
 - Added `output` and `buildOptions` required arguments to ConsoleFormatter base class constructor.
 - FilteredCopy mappers and the WriteFilter target now handle only unicode str objects and not bytes.
 
