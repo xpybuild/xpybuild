@@ -579,22 +579,23 @@ def logTargetTimes(file, scheduler, context):
 		if target._dependencyTimes: return target._dependencyTimes
 
 		(_, time) = scheduler.targetTimes.get(target.name, (0, 0))
-		sum = time;
 
 		maxcrit = 0 # find the maximum critical path below us
 		target.resolveUnderlyingDependencies()
 		localcritpath = []
+		deps = set()
 		for d in target.getTargetDependencies():
-				(edgecrit, edgesum, edgepath) = _sumDepTimes(d, scheduler, context, dots, critpath) # get the critical/sum time for this dependency
+				(edgecrit, edgesum, edgedeps, edgepath) = _sumDepTimes(d, scheduler, context, dots, critpath) # get the critical/sum time for this dependency
 				dots.add('%s -> %s[label="%s"];\n' % (_getKey(d), _getKey(target), _formatTime(edgesum)))
-				sum = sum + edgesum
+				deps.update(edgedeps)
 				if edgecrit > maxcrit:
 					maxcrit = edgecrit # update our maximum
 					localcritpath = list(edgepath)
-
+		deps.add((target, time))
+		sum = reduce((lambda s, (_, time): s+time), deps, 0)
 		localcritpath.insert(0, (target, time))
 		dots.add('%s[label="{{%s|{%s|%s}}}"];\n' % (_getKey(target), _getPrintable(target), _formatTime(time), _formatTime(sum)))
-		target._dependencyTimes = (time+maxcrit, sum, localcritpath) # return the critical path sum and all deps sum
+		target._dependencyTimes = (time+maxcrit, sum, deps, localcritpath) # return the critical path sum and all deps sum
 		
 		if _sumpath(localcritpath) > _sumpath(critpath):
 			del critpath[:]
@@ -613,8 +614,8 @@ def logTargetTimes(file, scheduler, context):
 			for name in scheduler.targetTimes: # Iterate over each target
 				(path, time) = scheduler.targetTimes[name]
 				target = scheduler.targetwrappers[path]
-				(crittime, cumtime, _) = _sumDepTimes(target, scheduler, context, dots, critpath) # recurse, summing the times on all the deps
-				f.write(name)
+				(crittime, cumtime, _, _) = _sumDepTimes(target, scheduler, context, dots, critpath) # recurse, summing the times on all the deps
+				f.write(name.replace(',','_'))
 				f.write(',')
 				f.write(str(time))
 				f.write(',')
