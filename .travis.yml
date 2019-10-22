@@ -58,16 +58,15 @@ script:
     fi
 
   # run tests
-  - cd tests/correctness
-  - pysys.py run --threads auto -X PYTHON_COVERAGE=true --exclude skip_ci
-  - cd ../..
+  - cd tests
+  - pysys.py run --threads auto -XpythonCoverage=true --exclude skip_ci --purge --record --mode ALL
+  - cd ..
 
 after_script:
   # upload Python code coverage
-  - cd tests
-  - $PY combine_coverage.py
+  - cd tests/coverage-python
   - codecov
-  - cd ..
+  - cd ../..
   
 deploy:
   - provider: releases

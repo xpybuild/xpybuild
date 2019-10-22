@@ -35,7 +35,7 @@ class XpybuildBaseTest(BaseTest):
 					]
 				if setOutputDir: newargs.append('OUTPUT_DIR=%s'%self.output+'/build-output')
 				args = newargs+args
-				pythoncoverage = getattr(self, 'PYTHON_COVERAGE', '')=='true'
+				pythoncoverage =  getattr(self, 'pythonCoverage', False)
 				if pythoncoverage:
 					self.log.info('Enabling Python code coverage')
 					args = ['-m', 'coverage', 'run', '--source=%s'%PROJECT.XPYBUILD_ROOT, '--omit=*tests/*']+args
