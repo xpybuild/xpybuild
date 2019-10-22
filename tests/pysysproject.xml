@@ -51,6 +51,7 @@
 
 	<default-file-encodings>
 		<default-file-encoding pattern="run.log" encoding="utf-8"/>
+		<default-file-encoding pattern="*.log" encoding="utf-8"/>
 		
 		<default-file-encoding pattern="*.xml"  encoding="utf-8"/>
 		<default-file-encoding pattern="*.json" encoding="utf-8"/>
