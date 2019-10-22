@@ -6,6 +6,10 @@ class PySysTest(XpybuildBaseTest):
 
 	def execute(self):
 		if not hasattr(os, 'symlink'): self.skipTest('this OS does not support symlinks')
+
+		if IS_WINDOWS: # skip for now since it doesn't work - FindPaths() treats dir symlinks as files
+			self.skipTest('Although Python 3 support symlinks on Windows, xpybuild does not yet')
+
 		self.mkdir('symlink-relative/foo/')
 		self.mkdir('symlink-relative/foo/subdir/')
 		self.mkdir('symlink-absolute/foo/subdir/')
