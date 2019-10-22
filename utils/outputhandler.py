@@ -40,7 +40,8 @@ class ProcessOutputHandler(object):
 	Usage: the handleLine method will be invoked for every line in the stdout 
 	and stderr, then handleEnd will be called once, with the process returnCode 
 	if known. handleEnd should raise a BuildException if the process is 
-	deemed to have failed. 
+	deemed to have failed. Note that this class deals with unicode character 
+	strings; the caller must decode from the original bytes. 
 	
 	The errors and warnings lists can be inspected after handleEnd has been 
 	called to get further information if desired. 
@@ -184,7 +185,7 @@ class ProcessOutputHandler(object):
 		Called once for every line in the stdout and stderr 
 		(stderr after, if not during stdout). 
 		
-		If possible, line should be a unicode object rather than a byte string. 
+		Line must be a unicode str (not bytes). 
 		
 		The default implementation uses _decideLogLevel to decide how to 
 		interpret each line, then calls _preprocessLine and _parseLocationFromLine 
@@ -251,7 +252,7 @@ class ProcessOutputHandler(object):
 		None. 
 		"""
 		
-		assert isinstance(line, str) # only accept unicode - force caller to explicitly decode their output before calling this, e.g. l.decode(getStdoutEncoding())
+		assert isinstance(line, str), 'ProcessOutputHandler does not accept bytes - caller must decode bytes to a character str (e.g. l.decode(getStdoutEncoding()))'
 		
 		if (isstderr and self._treatStdErrAsErrors) or re.search(r'error[\s]*([A-Z]+\d+)?:', line, flags=re.IGNORECASE): return logging.ERROR
 		if re.search('warning[\s]*([A-Z]+\d+)?:', line, flags=re.IGNORECASE): return logging.WARNING
