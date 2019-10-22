@@ -59,7 +59,8 @@ script:
 
   # run tests
   - cd tests
-  - $PY pysys.py run --threads auto -XpythonCoverage=true --exclude skip_ci --purge --record --mode ALL
+  - pysys.py --help
+  - pysys.py run --threads auto -XpythonCoverage=true --exclude skip_ci --purge --record --mode ALL
   - cd ..
 
 after_script:
