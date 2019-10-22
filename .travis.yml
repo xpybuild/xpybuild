@@ -14,14 +14,6 @@ matrix:
     python: 3.6
     env: XPYBUILD_DOC_AND_DEPLOY=true
 
-  - name: Python 3.7 Linux
-    os: linux
-    python: 3.7
-
-  - name: Python 3.8 Linux
-    os: linux
-    python: 3.8
- 
   - name: Python 3.6 Windows
     os: windows
     # until Travis has language=python support on Windows, manually install using choco and sh(ell)
@@ -32,6 +24,15 @@ matrix:
       - export PATH=/c/Python36:/c/Python37/Scripts:$PATH
     # workaround for Travis Windows bug: disable secret filtering and hide secret env by unsetting it
     filter_secrets: false
+
+  - name: Python 3.7 Linux
+    os: linux
+    python: 3.7
+    env: XPYBUILD_PERFORMANCE_TESTS=true
+
+  - name: Python 3.8 Linux
+    os: linux
+    python: 3.8
 
 # Default Linux build runs on Ubuntu
 language: python
@@ -58,10 +59,12 @@ script:
     fi
 
   # run tests
-  - cd tests
+  - cd tests/correctness
   - pysys.py --help
   - pysys.py run --threads auto -XpythonCoverage=true --exclude skip_ci --purge --record --mode ALL
-  - cd ..
+  - cd ../performance
+  - if [[ -z $XPYBUILD_PERFORMANCE_TESTS ]]; then pysys.py run --threads auto --exclude skip_ci --purge --record --mode ALL; fi
+  - cd ../..
 
 after_script:
   # upload Python code coverage
