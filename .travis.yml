@@ -17,6 +17,10 @@ matrix:
   - name: Python 3.7 Linux
     os: linux
     python: 3.7
+
+  - name: Python 3.8 Linux
+    os: linux
+    python: 3.8
  
   - name: Python 3.6 Windows
     os: windows
