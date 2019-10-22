@@ -15,6 +15,9 @@ class XpybuildBaseTest(BaseTest):
 		
 		@returns the failure message string if shouldFail=True, otherwise nothing
 		"""
+		
+		if 'performance' in self.descriptor.groups: self.disableCoverage = True
+		
 		stdout,stderr=self.allocateUniqueStdOutErr(stdouterr)
 		args = args or []
 		try:
