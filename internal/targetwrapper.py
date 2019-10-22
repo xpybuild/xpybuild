@@ -341,7 +341,7 @@ class TargetWrapper(object):
 					return False
 				
 				with io.open(self.__implicitInputsFile, 'r', encoding='utf-8') as f:
-					latestImplicitInputs = f.read().split(os.linesep)
+					latestImplicitInputs = f.read().split('\n')
 					if latestImplicitInputs != implicitInputs:
 						maxdifflines = int(os.getenv('XPYBUILD_IMPLICIT_INPUTS_MAX_DIFF_LINES', '30'))/2
 						added = ['+ %s'%x for x in implicitInputs if x not in latestImplicitInputs]
