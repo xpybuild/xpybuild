@@ -72,30 +72,38 @@ class OutputBufferingStreamWrapper(object):
 	"""
 	Thread-safe class that adds buffering for current thread (if currently 
 	enabled). Buffered messages will be written when 
-	outputBufferingManager.endBufferingForCurrentThread() is called
+	outputBufferingManager.endBufferingForCurrentThread() is called.
+	
+	Writes characters not bytes. 
 	"""
 	def __init__(self, underlying, bufferingDisabled=False):
 		self.__underlying = underlying
 		self.tlocal = threading.local()
 		outputBufferingManager.registerStreamWrapper(self)
 		self.bufferingDisabled = bufferingDisabled # can be set by formatter if doesn't support it, e.g. progress
-		
-	def write(self, s):
-		# convert to bytes
-		s = s.encode(self.__underlying.encoding or locale.getpreferredencoding(), errors='replace')
 	
-		if not self.bufferingDisabled and outputBufferingManager.isBufferingEnabledForCurrentThread():
-			self.tlocal.buffer = getattr(self.tlocal, 'buffer', b'')+s
-		else:
+	def __writeUnderlying(self, s):
+		try:
 			self.__underlying.write(s)
+		except Exception:
+			# add replacement characters for anything that isn't supported by this encoding
+			encoding = self.__underlying.encoding or locale.getpreferredencoding()
+			self.__underlying.write(s.encode(encoding, errors='replace').decode(encoding, errors='replace'))
+
+	
+	def write(self, s):
+		if not self.bufferingDisabled and outputBufferingManager.isBufferingEnabledForCurrentThread():
+			self.tlocal.buffer = getattr(self.tlocal, 'buffer', '')+s
+		else:
+			self.__writeUnderlying(s)
 				
 	def flush(self):
 		self.__underlying.flush()
 
 	def writeBufferedMessages(self):
-		buf = getattr(self.tlocal, 'buffer', b'')
+		buf = getattr(self.tlocal, 'buffer', '')
 		if buf:
-			self.__underlying.write(buf)
-			self.tlocal.buffer = b''
+			self.__writeUnderlying(buf)
+			self.tlocal.buffer = ''
 			self.flush() # probably overdue a flush by now
 	
