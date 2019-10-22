@@ -21,7 +21,7 @@ matrix:
     before_install: 
       - unset GITHUB_API_KEY
       - choco install python --version 3.6
-      - export PATH=/c/Python36:/c/Python37/Scripts:$PATH
+      - export PATH=/c/Python36:/c/Python36/Scripts:$PATH
     # workaround for Travis Windows bug: disable secret filtering and hide secret env by unsetting it
     filter_secrets: false
 
