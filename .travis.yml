@@ -63,7 +63,7 @@ script:
   - pysys.py --help
   - pysys.py run --threads auto -XpythonCoverage=true --exclude skip_ci --purge --record --mode ALL
   - cd ../performance
-  - if [[ -z $XPYBUILD_PERFORMANCE_TESTS ]]; then pysys.py run --threads auto --exclude skip_ci --purge --record --mode ALL; fi
+  - if [[ -n $XPYBUILD_PERFORMANCE_TESTS ]]; then pysys.py run --threads auto --exclude skip_ci --purge --record --mode ALL; fi
   - cd ../..
 
 after_script:

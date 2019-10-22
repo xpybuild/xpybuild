@@ -23,7 +23,7 @@ class PySysTest(XpybuildBaseTest):
 		#for i in range(1, (cpus)/4 + 1):
 		#	pending.add(i*4)
 		#pending.add(1)
-		pending = sorted(list(pending))
+		pending = sorted(p for p in pending if p > 0)
 		self.log.info('This machine has %d CPUs', cpus)
 		self.log.info('Planning to run with workers=%s', pending)
 
