@@ -1,6 +1,6 @@
 # xpyBuild - eXtensible Python-based Build System
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -39,14 +39,13 @@ class WriteFile(BaseTarget):
 		
 		@param name: the output filename
 		
-		@param getContents: a string (which will be subject to expansion) or 
+		@param getContents: a unicode character string (which will be subject to expansion) or 
 		a function that accepts a context as input 
 		followed optionally by any specified 'args') and returns 
-		the string that should be written to the file, using \\n for newlines (not os.linesep).
-		
-		The file is written in binary mode, but any occurrences of the newline character \\n in 
+		the string that should be written to the file, using \\n for newlines 
+		(not os.linesep - any occurrences of the newline character \\n in 
 		the provided string will be replaced automatically with the 
-		OS-specific line separator. 
+		OS-specific line separator). 
 		
 		The function will be evaluated during the dependency resolution 
 		phase. 
@@ -84,8 +83,9 @@ class WriteFile(BaseTarget):
 		
 		mkdir(os.path.dirname(self.path))
 		path = normLongPath(self.path)
-		with openForWrite(path, 'wb') as f:
-			f.write(contents.replace('\n', os.linesep))
+		with openForWrite(path, 'w', encoding='utf-8') as f: # TODO: make encoding configurable
+			f.write(contents)
+		
 		if self.__mode and not isWindows():
 			os.chmod(path, self.__mode)
 		if self.__executable and not isWindows():

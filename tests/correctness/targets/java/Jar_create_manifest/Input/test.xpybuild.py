@@ -43,11 +43,12 @@ def getoutput(context):
 		if 'c' in p:
 			options['jar.manifest.defaults'] = {'d':'default value '+'d'*70}
 		
-		r.extend([b'|'+l.replace(b'\r',b'\\r')+b'|' for l in create_manifest(None, p, options).replace(b'\n', b'N\n').split(b'\n')])
+		r.extend([(b'|'+l.replace(b'\r',b'\\r')+b'|').decode('utf-8') for l in create_manifest(None, p, options).replace(b'\n', b'N\n').split(b'\n')])
 		r.append('-----')
-		
-	assert isinstance('\n'.join(r), str)
-	return '\n'.join(r)
+	
+	r = '\n'.join(r)
+	assert isinstance(r, str)
+	return r
 
 WriteFile('${OUTPUT_DIR}/output.txt', getoutput)
 

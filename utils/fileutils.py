@@ -23,6 +23,7 @@
 
 import shutil, os, os.path, time, platform, threading
 import stat, sys
+import io
 from utils.flatten import getStringList
 import subprocess, errno
 
@@ -31,36 +32,59 @@ log = logging.getLogger('fileutils')
 
 __isWindows = platform.system()=='Windows'
 
-if __isWindows: # ugly ugly hacks due to stupid windows filesystem semantics. See http://bugs.python.org/issue4944
+if __isWindows: # Workaround required for windows filesystem semantics having a stupid race condition between writes from POSIX API (which Python uses) and win32 API (e.g. used by Java/C++)
 	try:
 		import win32file
-		class openForWrite:
-			def __init__(self, dest, mode):
-				assert mode == 'wb' # the Win32 API only has binary mode, not text mode, so only accept opening in this mode. This also means you must deal with any line ending issues yourself when using this.
+		class Win32FileWriter(io.RawIOBase):
+			def __init__(self, dest, mode='w', encoding=None, errors=None, newline=None):
+				super(Win32FileWriter, self).__init__()
+				assert 'w' in mode, 'Currently the Win32FileWriter class only supports writing, not reading'
 				self.dest = dest
+				self.__textWrapper = None if 'b' in mode else io.TextIOWrapper(self, encoding=encoding, errors=errors, newline=newline)
+				self.__alreadyclosed = False
+				
 			def __enter__(self):
 				self.Fd = win32file.CreateFile(self.dest, win32file.GENERIC_WRITE, 
 					win32file.FILE_SHARE_READ | win32file.FILE_SHARE_WRITE  | win32file.FILE_SHARE_DELETE, 
 					None, win32file.CREATE_ALWAYS, win32file.FILE_ATTRIBUTE_NORMAL, None)
+
+				if self.__textWrapper is not None: return self.__textWrapper
 				return self
-			def write(self, string):
-				if isinstance(string, str):
+
+			def writable(self): return True
+			def write(self, data):
+				# writes bytes to the file using the Win32 (not POSIX api)
+			
+				# TODO: remove this!
+				if isinstance(data, str): 
 					# must pass byte strings not unicode objects when writing in binary mode; for backwards compatibility, automatically convert 7-bit ascii (which is what the Unix impl will do), but give errors for anything else as user should be explicitly specifying their encoding
-					string = string.encode('ascii', errors='strict') 
-				assert isinstance(string, bytes), 'cannot write unicode character string to binary file; please use bytes instead: %s'%repr(string) 
-				win32file.WriteFile(self.Fd, string)
-			def writelines(self, lines):
-				for l in lines:
-					self.write(l)
+					data = data.encode('ascii', errors='strict') 
+				assert isinstance(data, bytes), 'cannot write unicode character string to binary file; please use bytes instead: %s'%repr(data) 
+				
+				err, byteswritten = win32file.WriteFile(self.Fd, data)
+				return byteswritten
+
 			def close(self):
+				if self.__alreadyclosed: return # make this idempotent (not least to avoid infinite loop when the text wrapper tries to close us)
+				self.__alreadyclosed = True
+				
+				if self.__textWrapper is not None: self.__textWrapper.close()
 				win32file.CloseHandle(self.Fd)
+				
 			def __exit__(self, ex_type, ex_val, tb):
 				self.close()
-	except:
-		openForWrite = open
-else:
-	openForWrite = open
+			
+	except Exception:
+		raise # need to know about this
 
+openForWrite = Win32FileWriter if __isWindows else open
+"""
+Open file for writing and return a corresponding text or binary stream file object. 
+
+This has the same semantics as open/io.open, but should be used instead of open/io.open 
+to avoid file system race conditions on Windows. This class must be used from a 
+`with` clause. 
+"""
 
 def mkdir(newdir):
 	""" Recursively create the specified directory if it doesn't already exist. 

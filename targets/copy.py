@@ -181,36 +181,38 @@ class FilteredCopy(Copy):
 	def __init__(self, dest, src, *mappers, **kwargs):
 		"""
 		@param dest: the output directory (ending with a "/") or file. Never 
-		   specify a dest directory that is also written to by another 
-		   target (e.g. do not specify an output directory here). If you need 
-		   to write multiple files to the output directory, use separate Copy 
-		   targets for each. 
+		specify a dest directory that is also written to by another 
+		target (e.g. do not specify an output directory here). If you need 
+		to write multiple files to the output directory, use separate Copy 
+		targets for each. 
 			
 		@param src: the input, which may be any combination of strings, PathSets and 
-		   lists of these. 
+		lists of these. 
 		
-		@param mappers: a list of mapper objects that will be used to transform 
-		   the file, line by line. Can be empty in which case this behaves the same 
-		   as a normal Copy target. 
+		@param mappers: a list of objects subclassing L{FileContentsMapper} 
+		that will be used to transform 
+		the file, line by line. Can be empty in which case this behaves the same 
+		as a normal Copy target. Any items in this list with the value None 
+		are ignored. 
+		
+		For simple @TOKEN@ replacement see createReplaceDictLineMappers. 
+		In addition to per-line changes, it is also possible to specify 
+		mappers that add header/footer content to the file. 
 			
-		   For simple @TOKEN@ replacement see createReplaceDictLineMappers. 
-		   In addition to per-line changes, it is also possible to specify 
-		   mappers that add header/footer content to the file. 
-			
-		   Note that files are read and written in binary mode, so mappers 
-		   will be dealing directly with platform-specific \\n and \\r 
-		   characters; python's os.linesep should be used where a 
-		   platform-neutral newline is required. 
+		Note that files are read and written in binary mode, so mappers 
+		will be dealing directly with platform-specific \\n and \\r 
+		characters; python's os.linesep should be used where a 
+		platform-neutral newline is required. 
 		
 		@param kwargs: Additional parameter: allowUnusedMappers:
-		   To avoid build files that accumulate unused 
-		   cruft or are hard to understand, it by default an an error to include a 
-		   mapper in this list that is not used, i.e. that does not in any way 
-		   change the output for any file. We recommend using conditionalization 
-		   to avoid passing in such mappers e.g. 
-		   FilteredCopy(target, src, [StringReplaceLineMapper(os.linesep,'\\n') if isWindows() else None]). 
-		   If this is not practical, set allowUnusedMappers=True to prevent this 
-		   check. 
+		To avoid build files that accumulate unused 
+		cruft or are hard to understand, by default it is an error to include a 
+		mapper in this list that is not used, i.e. that does not in any way 
+		change the output for any file. We recommend using conditionalization 
+		to avoid passing in such mappers e.g. 
+		FilteredCopy(target, src, [StringReplaceLineMapper(os.linesep,'\\n') if isWindows() else None]). 
+		If this is not practical, set allowUnusedMappers=True to prevent this 
+		check. 
 		
 		"""
 		self.mappers = [m.getInstance() for m in flatten(mappers)]
@@ -237,8 +239,10 @@ class FilteredCopy(Copy):
 	def _copyFile(self, context, src, dest):
 		mappers = [m for m in self.mappers if m.startFile(context, src, dest) is not False]
 		
-		with open(src, 'rb') as s:
-			with openForWrite(dest, 'wb') as d:
+		# TODO: make encoding configurable
+		with open(src, 'r', encoding='utf-8') as s:
+			# newline: for compatibility with existing builds, don't expand \n to os.linesep (Python universal newlines)
+			with openForWrite(dest, 'w', encoding='utf-8', newline='\n') as d:
 				for m in mappers:
 					x = m.getHeader(context)
 					if x: 

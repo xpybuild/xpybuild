@@ -136,8 +136,8 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 		assert self._logbasename # could make this optional, but for now don't
 		
 		if self._contents:
-			with open(self._logbasename+'.out', 'w') as fo:
-				fo.write(self._contents.encode('UTF-8'))
+			with openForWrite(self._logbasename+'.out', 'w', encoding='utf-8') as fo:
+				fo.write(self._contents)
 		
 		errs = []
 		warns = []
@@ -173,7 +173,7 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 			if not iswarning and not errmsg: errmsg = msg+(' at %s'%loc if loc else '')
 	
 		if errs:
-			with open(self._logbasename+'-errors.txt', 'w') as fo:
+			with openForWrite(self._logbasename+'-errors.txt', 'w', encoding='utf-8') as fo:
 				for x in errs:
 					# x[0] is the common msg type, x[1] is a list of places where it occured, each of which 
 					
@@ -198,7 +198,7 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 						
 						self._errors.append(' / '.join(x2[0]))
 						for x3 in x2:
-							fo.write(x3.encode(getStdoutEncoding()))
+							fo.write(x3)
 							print(file=fo)
 					print(file=fo)
 			self._log(logging.ERROR, '%d javac ERRORS in %s - see %s'%(sum([len(x[1]) for x in errs]), self._targetName, self._logbasename+'-errors.txt'), 
@@ -208,7 +208,7 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 		if warns:
 			self._log(logging.WARNING, '%d javac WARNINGS in %s - see %s; first is: %s'%(sum([len(x[1]) for x in warns]), self._targetName, self._logbasename+'-warnings.txt', warns[0][0]), 
 				self._logbasename+'-warnings.txt')
-			with open(self._logbasename+'-warnings.txt', 'w') as fo:
+			with openForWrite(self._logbasename+'-warnings.txt', 'w', encoding='utf-8') as fo:
 				for x in warns:
 					if not errmsg and (returnCode != 0): 
 						errmsg = x[1][0][0]

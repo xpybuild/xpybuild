@@ -2,6 +2,7 @@
 ## Breaking changes
 - Now requires Python 3.7+ instead of Python 2
 - Added `output` and `buildOptions` required arguments to ConsoleFormatter base class constructor.
+- FilteredCopy mappers and the WriteFilter target now handle only unicode str objects and not bytes.
 
 ## Deprecation
 
@@ -10,6 +11,7 @@
  
 ## Enhancements
 - Added `buildcommon.compareVersions` method for comparing version strings. 
+- The `openForWrite` method can now be used to write unicode strings in text mode, not only binary bytes. The available options are now pretty similar to what `io.open` supports, and `openForWrite` should be used instead of io.open/open to avoid possible file system races on Windows. 
 
 # 1.15
 ## Breaking changes
