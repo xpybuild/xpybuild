@@ -505,7 +505,7 @@ class VisualStudio(Compiler, Linker, Depends, Archiver, ToolChain):
 
 		class VSDependsHandler(VisualStudioProcessOutputHandler):
 			def handleLine(self, line, isstderr=False):
-				data = line.encode('utf8')
+				data = line
 				if 'fatal error' in data: fatalerrors.append(data.strip())
 				if 'Cannot open include file:' in data:
 					data = re.sub(".*Cannot open include file: '([^']*)':.*", r'\1', data).strip()
