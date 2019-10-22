@@ -234,7 +234,7 @@ class CustomCommand(BaseTarget):
 		for k in os.environ:
 			if k not in env: env[k] = os.getenv(k)
 
-		for k in env.keys():
+		for k in list(env.keys()):
 			if None == env[k]:
 				del env[k]
 		self.log.info('Output from %s will be written to "%s" and "%s"', self.name, 
