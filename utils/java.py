@@ -289,10 +289,9 @@ def javac(output, inputs, classpath, options, logbasename, targetname):
 	if classpath: args.extend(['-cp', classpath])
 	args.extend([x for x in inputs if x.endswith('.java')]) # automatically filter out non-java files
 
-	with openForWrite(argsfile, 'wb') as f:
+	with openForWrite(argsfile, 'w', encoding=locale.getpreferredencoding()) as f:
 		for a in args:
-			a = '"%s"'%a.replace('\\','\\\\')+os.linesep
-			f.write(a.encode(locale.getpreferredencoding()))
+			f.write('"%s"'%a.replace('\\','\\\\')+'\n')
 
 	success=False
 	try:
@@ -441,8 +440,8 @@ def javadoc(path, sources, classpath, options, outputHandler):
 	# store the list of files in a temporary file, then build from that.
 	mkdir(options['tmpdir'])
 	inputlistfile = os.path.join(options['tmpdir'], "javadoc.inputs")
-	with openForWrite(inputlistfile, 'wb') as f:
-		f.writelines('"'+x.replace('\\','\\\\')+'"'+os.linesep for x in sources).encode(locale.getpreferredencoding())
+	with openForWrite(inputlistfile, 'w', encoding=locale.getpreferredencoding()) as f:
+		f.writelines('"'+x.replace('\\','\\\\')+'"'+'\n' for x in sources)
 
 	# build up arguments
 	args = [binary]
