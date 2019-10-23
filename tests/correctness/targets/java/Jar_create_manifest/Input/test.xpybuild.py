@@ -50,7 +50,8 @@ def getoutput(context):
 	assert isinstance(r, str)
 	return r
 
-WriteFile('${OUTPUT_DIR}/output.txt', getoutput)
+WriteFile('${OUTPUT_DIR}/output.txt', getoutput, encoding='utf-8')
+
 
 # also useful to test with the jar target since the jar executable munges it further
 Jar('${OUTPUT_DIR}/test.jar', [], [], manifest={

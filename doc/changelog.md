@@ -11,6 +11,7 @@
  
 ## Enhancements
 - Added option `fileEncodingDecider` which is used by Copy and WriteFile to decide what encoding to use for reading/writing text files. The default is 'ascii' which means an exception will be thrown if any files containing characters outside the 7-bit ASCII range are present. Alternative encodings such as utf-8 can be specified for a given file extension, globally or on a per-target basis. 
+- Added `encoding=` option to WriteFile (`fileEncodingDecider` option is used if not specified). 
 - Added `BaseTarget.openFile` which should be used for opening files (especially text files) from targets. It automatically picks the correct encoding to use for text files using the `fileEncodingDecider` option. 
 - Added `buildcommon.compareVersions` method for comparing version strings. 
 - The `openForWrite` method can now be used to write unicode strings in text mode, not only binary bytes. The available options are now pretty similar to what `io.open` supports, and `openForWrite` should be used instead of io.open/open to avoid possible file system races on Windows. 

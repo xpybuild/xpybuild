@@ -29,7 +29,7 @@ class WriteFile(BaseTarget):
 	The file will only be updated if its contents have changed. 
 	"""
 	
-	def __init__(self, name, getContents, dependencies=None, mode=None, executable=False, args=None, kwargs=None):
+	def __init__(self, name, getContents, dependencies=None, mode=None, executable=False, encoding=None, args=None, kwargs=None):
 		"""
 		Constructor. 
 		
@@ -56,6 +56,9 @@ class WriteFile(BaseTarget):
 		
 		@param executable: set to True to add Unix executable permissions (simpler 
 		alternative to setting using mode)
+		
+		@param encoding: The encoding to use for converting the string to bytes; 
+		if not specified the `fileEncodingDecider` option is used. 
 
 		@param args: optional tuple containing arguments that should be passed to 
 		the getContents function, after the context argument (first arg)
@@ -73,6 +76,7 @@ class WriteFile(BaseTarget):
 		self.__resolved = None
 		self.__mode = mode
 		self.__executable = executable 
+		self.__encoding = encoding
 		self.addHashableImplicitInputOption('fileEncodingDecider')
 	
 	def getHashableImplicitInputs(self, context):
@@ -84,7 +88,7 @@ class WriteFile(BaseTarget):
 		
 		mkdir(os.path.dirname(self.path))
 		path = normLongPath(self.path)
-		with self.openFile(context, path, 'w') as f:
+		with self.openFile(context, path, 'w', encoding=self.__encoding) as f:
 			f.write(contents)
 		
 		if self.__mode and not isWindows():
