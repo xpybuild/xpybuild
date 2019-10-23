@@ -327,7 +327,6 @@ class BaseTarget(Composable):
 		@keyword kwargs: Any additional arguments for the io.open() method can be specified here. 
 		"""
 		if 'b' not in mode and not kwargs.get('encoding'): kwargs['encoding'] = self.getOption('fileEncodingDecider')(context, path)
-		self.log.critical('opening %s with %s, %s', path, (openForWrite if 'w' in mode else io.open), kwargs.get('encoding'))
 		return (openForWrite if 'w' in mode else io.open)(path, mode, **kwargs)
 	
 	def tags(self, *tags):
