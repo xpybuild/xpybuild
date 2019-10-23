@@ -302,10 +302,6 @@ class BaseContext(object):
 			return obj.resolveToString(self)
 		else: return obj
 
-	def defaultOptions(self):
-		""" Returns a map of all the defined options and their default values. """
-		return dict(_definedOptions)
-
 	def mergeOptions(self, target=None, options=None): 
 		""" [DEPRECATED] Merges together the default options, the globally overridden options and any set on the target.
 		
