@@ -318,14 +318,15 @@ class BaseTarget(Composable):
 	
 	def openFile(self, context, path, mode='r', **kwargs):
 		"""
-		Opens the specified file, using an encoding specified by the target option's fileEncodingDecider unless explicitly provided. 
+		Opens the specified file, using an encoding specified by the target option's 
+		`fileEncodingDecider` (unless explicitly provided by encoding=). 
 		
 		@param context: The context that was passed to run().
 		@param path: The full absolute path to be opened. 
 		@param mode: The file mode. 
 		@keyword kwargs: Any additional arguments for the io.open() method can be specified here. 
 		"""
-		if 'b' not in mode and 'encoding' not in kwargs: kwargs['encoding'] = self.getOption('fileEncodingDecider')(context, path)
+		if 'b' not in mode and not kwargs.get('encoding'): kwargs['encoding'] = self.getOption('fileEncodingDecider')(context, path)
 		self.log.critical('opening %s with %s, %s', path, (openForWrite if 'w' in mode else io.open), kwargs.get('encoding'))
 		return (openForWrite if 'w' in mode else io.open)(path, mode, **kwargs)
 	
