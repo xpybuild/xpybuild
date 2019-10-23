@@ -240,31 +240,37 @@ class FilteredCopy(Copy):
 	def _copyFile(self, context, src, dest):
 		mappers = [m for m in self.mappers if m.startFile(context, src, dest) is not False]
 		
-		with self.openFile(context, src, 'r') as s:
-			# newline: for compatibility with existing builds, we don't expand \n to os.linesep (i.e. don't use Python universal newlines)
-			with self.openFile(context, dest, 'w', newline='\n') as d:
-				for m in mappers:
-					x = m.getHeader(context)
-					if x: 
-						self.__unusedMappers.discard(m)
-						d.write(x)
-				
-				for l in s:
+		try:
+			with self.openFile(context, src, 'r') as s:
+				# newline: for compatibility with existing builds, we don't expand \n to os.linesep (i.e. don't use Python universal newlines)
+				with self.openFile(context, dest, 'w', newline='\n') as d:
 					for m in mappers:
-						prev = l
-						l = m.mapLine(context, l)
-						if prev != l:
+						x = m.getHeader(context)
+						if x: 
 							self.__unusedMappers.discard(m)
-						if None == l:
-							break
-					if None != l:
-						d.write(l)
+							d.write(x)
+					
+					for l in s:
+						for m in mappers:
+							prev = l
+							l = m.mapLine(context, l)
+							if prev != l:
+								self.__unusedMappers.discard(m)
+							if None == l:
+								break
+						if None != l:
+							d.write(l)
 
-				for m in mappers:
-					x = m.getFooter(context)
-					if x: 
-						self.__unusedMappers.discard(m)
-						d.write(x)
+					for m in mappers:
+						x = m.getFooter(context)
+						if x: 
+							self.__unusedMappers.discard(m)
+							d.write(x)
+		except Exception as ex:
+			exceptionsuffix = ''
+			if isinstance(ex, UnicodeDecodeError):
+				exceptionsuffix = ' due to encoding problem; consider setting the "fileEncodingDecide" option'
+			raise BuildException(f'Failed to perform filtered copy of {src}{exceptionsuffix}',causedBy=True)
 		shutil.copymode(src, dest)
 		assert os.path.exists(dest)
 
