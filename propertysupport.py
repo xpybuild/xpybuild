@@ -335,16 +335,18 @@ class ExtensionBasedFileEncodingDecider:
 	The decider is called with arguments: (context, path), and returns the name of the encoding to be used for this path. 
 	Additional keyword arguments may be passed to the decider in future. 
 	
-	@param defaultEncoding: The name of the default encoding to be used. Recommended values are: 'utf-8', 'ascii' or locale.getpreferredencoding().
+	@param defaultEncoding: The name of the default encoding to be used, or None to defer to the global option. Recommended values are: 'utf-8', 'ascii' or locale.getpreferredencoding().
 	@param extToEncodingDict: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one. 
 	The extensions can contain ${...} properties. 
 	"""
-	def __init__(self, extToEncodingDict={}, default='ascii'): self.extToEncodingDict, self.defaultEncoding = dict(extToEncodingDict), default
+	def __init__(self, extToEncodingDict={}, default=None): self.extToEncodingDict, self.defaultEncoding = dict(extToEncodingDict), default
 	def __repr__(self): return f'ExtensionBasedFileEncodingDecider({self.extToEncodingDict}; default={self.defaultEncoding})'
 	def __call__(self, context, path, **forfutureuse):
 		# could add some per-context caching here
 		for ext, enc in self.extToEncodingDict.items():
 			if path.endswith(context.expandPropertyValues(ext)): return enc or self.defaultEncoding
-		return self.defaultEncoding
-
+		if self.defaultEncoding is not None: return self.defaultEncoding
+		fallbackDecider = context.mergeOptions()['fileEncodingDecider']
+		if fallbackDecider is not self: return fallbackDecider(context, path, **forfutureuse)
+		raise Exception(f'File encoding decider cannot handle path \'{path}\': {self}')
 

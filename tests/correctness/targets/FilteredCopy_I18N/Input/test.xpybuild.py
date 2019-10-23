@@ -30,6 +30,7 @@ WriteFile('${OUTPUT_DIR}/writefile-default.${Y}aml', f'Text is: {I18N}') # utf-8
 WriteFile('${OUTPUT_DIR}/writefile-customized.foo.yaml', f'Text is: {I18N}').option('fileEncodingDecider', 
 	ExtensionBasedFileEncodingDecider({'-customized.foo.yaml':'iso-8859-1'}, 'ascii'))
 
-FilteredCopy('${OUTPUT_DIR}/copy-default.json', '${OUTPUT_DIR}/writefile-default.yaml', [StringReplaceLineMapper('Text', 'Replaced text'),])
+FilteredCopy('${OUTPUT_DIR}/copy-default.json', '${OUTPUT_DIR}/writefile-default.yaml', [StringReplaceLineMapper('Text', 'Replaced text'),]).option('fileEncodingDecider',
+	ExtensionBasedFileEncodingDecider({'doesnotmatchanything':'foo'}, None)) # invokes the default (global) value
 FilteredCopy('${OUTPUT_DIR}/copy-customized.json', '${OUTPUT_DIR}/writefile-customized.foo.yaml', [StringReplaceLineMapper('Text', 'Replaced text'),]).option('fileEncodingDecider',
-	ExtensionBasedFileEncodingDecider({'-customized.foo.${Y}aml':'iso-8859-1','.json':'iso-8859-1'}, 'ascii'))
+	ExtensionBasedFileEncodingDecider({'-customized.foo.${Y}aml':'iso-8859-1','.json':'iso-8859-1'}, None))
