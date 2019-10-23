@@ -2,7 +2,7 @@
 <pysystest type="auto" state="runnable">
     
   <description> 
-    <title>FilteredCopy - fileEncodingDecider and I18N</title>
+    <title>FilteredCopy and WriteFile - fileEncodingDecider, I18N, binary files and ExtensionBasedFileEncodingDecider</title>
     <purpose><![CDATA[
 ]]>
     </purpose>

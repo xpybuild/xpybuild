@@ -332,14 +332,28 @@ class ExtensionBasedFileEncodingDecider:
 	"""Can be used for the `fileEncodingDecider` option which decides what file encoding to use for 
 	reading/writing a text file given its path. 
 	
-	The decider is called with arguments: (context, path), and returns the name of the encoding to be used for this path. 
+	The decider option is called with arguments: (context, path), and returns the name of the encoding to be used for this path. 
 	Additional keyword arguments may be passed to the decider in future. 
 	
-	@param defaultEncoding: The name of the default encoding to be used, or None to defer to the global option. Recommended values are: 'utf-8', 'ascii' or locale.getpreferredencoding().
-	@param extToEncodingDict: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one. 
-	The extensions can contain ${...} properties. 
+	This extension-based decider uses the specified dictionary of extensions to determine which 
+	extension to use, including the special value L{ExtensionBasedFileEncodingDecider.BINARY} 
+	which indicates non-text files. 
+
 	"""
+	
+	BINARY = '<binary>'
+	"""This constant should be used with ExtensionBasedFileEncodingDecider to indicate binary files that 
+	should not be opened in text mode. """
+	
 	def __init__(self, extToEncodingDict={}, default=None): 
+		"""
+		@param defaultEncoding: The name of the default encoding to be used, another decider to delegate to, or None to defer to the configured global option. 
+		Recommended values are: 'utf-8', 'ascii' or locale.getpreferredencoding().
+		
+		@param extToEncodingDict: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one, 
+		or the constant L{ExtensionBasedFileEncodingDecider.BINARY} which indicates a non-text file (not all targets support binary). 
+		The extensions can contain ${...} properties. 
+		"""
 		self.extToEncodingDict, self.defaultEncoding = dict(extToEncodingDict), default
 		# enforce starts with a . to prevent mistakes and allow su to potentially optimize the implementation in future
 		for k in extToEncodingDict: 
@@ -349,8 +363,40 @@ class ExtensionBasedFileEncodingDecider:
 		# could definitely be made more efficient if needed
 		for ext, enc in self.extToEncodingDict.items():
 			if path.endswith(context.expandPropertyValues(ext)): return enc or self.defaultEncoding
-		if self.defaultEncoding is not None: return self.defaultEncoding
+		if self.defaultEncoding is not None: 
+			# could be another decider, so call it
+			if callable(self.defaultEncoding): return self.defaultEncoding(context, path, **forfutureuse)
+			assert isinstance(self.defaultEncoding, str), 'Encoding must be a str (or callable): '+repr(self.defaultEncoding)
+			return self.defaultEncoding
+		
 		fallbackDecider = context.mergeOptions()['fileEncodingDecider']
 		if fallbackDecider is not self: return fallbackDecider(context, path, **forfutureuse)
 		raise Exception(f'File encoding decider cannot handle path \'{path}\': {self}')
+	
+	@staticmethod
+	def getDefaultFileEncodingDecider():
+		""" Creates the file encoding decider that is used by default if per-target 
+		or global option is specified. 
+		
+		Currently this supports utf-8 encoding of json/xml/yaml/yml files, 
+		and binary for common non-application/text mime types such as image files 
+		(based on the mime settings of the current machine). 
+		
+		Additional types may be added to this in future releases, so you should 
+		use `setGlobalOption('fileEncodingDecider', ...)` if you wish to control 
+		the encodings precisely and ensure identical behaviour across machines.
 
+		"""
+		import mimetypes
+		d = {
+			'.json':'utf-8',
+			'.xml':'utf-8',
+			'.yaml':'utf-8', '.yml':'utf-8',
+		}
+		# add binary for known non-text types such as images. Don't do it for application/ as that includes 
+		# text formats such as js and json
+		for (ext,contenttype) in sorted(mimetypes.types_map.items()):
+			if not contenttype.startswith(('text/', 'application/')):
+				d[ext] = ExtensionBasedFileEncodingDecider.BINARY
+		return ExtensionBasedFileEncodingDecider(d, default='ascii')
+		
