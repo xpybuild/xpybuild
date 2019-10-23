@@ -1,6 +1,6 @@
 # flatten - take any input type and turn it sensibly into a list of strings (expansions, flattenning, function calls)
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,11 +18,12 @@
 #
 
 from utils.functors import Composable
+import types
 
 def flatten(input):
 	"""Return the input flattened to an array.
 	
-	input: any variable composed of lists, strings, lambda functions or other 
+	input: any variable composed of lists/generators/tuples, strings, lambda functions or other 
 	objects, nested arbitrarily.
 	
 	Empty strings and None items are removed. 
@@ -39,6 +40,8 @@ def flatten(input):
 	['hi', 'ho', 'hum']
 	>>> flatten(3)
 	[3]
+	>>> flatten( (x + 1) for x in [1,2,3])
+	[2, 3, 4]
 	>>> flatten(lambda: '3')
 	['3']
 	>>> flatten(['hi', lambda: 'ho', 'hum'])
@@ -47,7 +50,7 @@ def flatten(input):
 	[]
 	"""
 	if not input: return []
-	if isinstance(input, (list, tuple, set)):
+	if isinstance(input, (list, tuple, set, types.GeneratorType)):
 		rv = []
 		for l in input:
 			rv = rv + flatten(l)
