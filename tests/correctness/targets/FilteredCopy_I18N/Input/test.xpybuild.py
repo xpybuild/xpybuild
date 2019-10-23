@@ -28,9 +28,9 @@ defineStringProperty('Y', 'y')
 
 WriteFile('${OUTPUT_DIR}/writefile-default.${Y}aml', f'Text is: {I18N}') # utf-8 is the default for .yaml files
 WriteFile('${OUTPUT_DIR}/writefile-customized.foo.yaml', f'Text is: {I18N}').option('fileEncodingDecider', 
-	ExtensionBasedFileEncodingDecider({'-customized.foo.yaml':'iso-8859-1'}, 'ascii'))
+	ExtensionBasedFileEncodingDecider({'.foo.yaml':'iso-8859-1'}, 'ascii'))
 
 FilteredCopy('${OUTPUT_DIR}/copy-default.json', '${OUTPUT_DIR}/writefile-default.yaml', [StringReplaceLineMapper('Text', 'Replaced text'),]).option('fileEncodingDecider',
-	ExtensionBasedFileEncodingDecider({'doesnotmatchanything':'foo'}, None)) # invokes the default (global) value
+	ExtensionBasedFileEncodingDecider({'.doesnotmatchanything':'foo'}, None)) # invokes the default (global) value
 FilteredCopy('${OUTPUT_DIR}/copy-customized.json', '${OUTPUT_DIR}/writefile-customized.foo.yaml', [StringReplaceLineMapper('Text', 'Replaced text'),]).option('fileEncodingDecider',
-	ExtensionBasedFileEncodingDecider({'-customized.foo.${Y}aml':'iso-8859-1','.json':'iso-8859-1'}, None))
+	ExtensionBasedFileEncodingDecider({'.${Y}aml':'iso-8859-1','.json':'iso-8859-1'}, None))

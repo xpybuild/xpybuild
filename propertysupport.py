@@ -339,10 +339,14 @@ class ExtensionBasedFileEncodingDecider:
 	@param extToEncodingDict: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one. 
 	The extensions can contain ${...} properties. 
 	"""
-	def __init__(self, extToEncodingDict={}, default=None): self.extToEncodingDict, self.defaultEncoding = dict(extToEncodingDict), default
+	def __init__(self, extToEncodingDict={}, default=None): 
+		self.extToEncodingDict, self.defaultEncoding = dict(extToEncodingDict), default
+		# enforce starts with a . to prevent mistakes and allow su to potentially optimize the implementation in future
+		for k in extToEncodingDict: 
+			if not k.startswith('.'): raise BuildException(f'ExtensionBasedFileEncodingDecider extension does not start with the required "." character: "{k}"')
 	def __repr__(self): return f'ExtensionBasedFileEncodingDecider({self.extToEncodingDict}; default={self.defaultEncoding})'
 	def __call__(self, context, path, **forfutureuse):
-		# could add some per-context caching here
+		# could definitely be made more efficient if needed
 		for ext, enc in self.extToEncodingDict.items():
 			if path.endswith(context.expandPropertyValues(ext)): return enc or self.defaultEncoding
 		if self.defaultEncoding is not None: return self.defaultEncoding
