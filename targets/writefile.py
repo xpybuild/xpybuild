@@ -24,7 +24,7 @@ from basetarget import BaseTarget
 from utils.fileutils import mkdir, openForWrite, normLongPath
 
 class WriteFile(BaseTarget):
-	""" Target for writing out a textfile with hardcoded contents. 
+	""" Target for writing out a text or binary file with hardcoded contents. 
 	
 	The file will only be updated if its contents have changed. 
 	"""
@@ -39,13 +39,13 @@ class WriteFile(BaseTarget):
 		
 		@param name: the output filename
 		
-		@param getContents: a unicode character string (which will be subject to expansion) or 
-		a function that accepts a context as input 
+		@param getContents: a unicode character string (which will be subject to expansion), 
+		or binary bytes, or a function that accepts a context as input 
 		followed optionally by any specified 'args') and returns 
-		the string that should be written to the file, using \\n for newlines 
+		the string/bytes that should be written to the file, using \\n for newlines 
 		(not os.linesep - any occurrences of the newline character \\n in 
 		the provided string will be replaced automatically with the 
-		OS-specific line separator). 
+		OS-specific line separator unless bytes are provided).
 		
 		The function will be evaluated during the dependency resolution 
 		phase. 
@@ -57,7 +57,7 @@ class WriteFile(BaseTarget):
 		@param executable: set to True to add Unix executable permissions (simpler 
 		alternative to setting using mode)
 		
-		@param encoding: The encoding to use for converting the string to bytes; 
+		@param encoding: The encoding to use for converting the str to bytes; 
 		if not specified the `fileEncodingDecider` option is used. 
 
 		@param args: optional tuple containing arguments that should be passed to 
@@ -81,14 +81,16 @@ class WriteFile(BaseTarget):
 	
 	def getHashableImplicitInputs(self, context):
 		""" The literal content text is considered the dependency of this target """
-		return super(WriteFile, self).getHashableImplicitInputs(context) + [self._getContents(context)] + ['mode: %s, executable: %s'%(self.__mode, self.__executable)]
+		stringifiedcontents = self._getContents(context)
+		if isinstance(stringifiedcontents, bytes): stringifiedcontents = repr(stringifiedcontents)
+		return super(WriteFile, self).getHashableImplicitInputs(context) + [stringifiedcontents] + ['mode: %s, executable: %s'%(self.__mode, self.__executable)]
 		
 	def run(self, context):
 		contents = self._getContents(context)
 		
 		mkdir(os.path.dirname(self.path))
 		path = normLongPath(self.path)
-		with self.openFile(context, path, 'w', encoding=self.__encoding) as f:
+		with self.openFile(context, path, 'wb' if isinstance(contents, bytes) else 'w', encoding=self.__encoding) as f:
 			f.write(contents)
 		
 		if self.__mode and not isWindows():
@@ -101,7 +103,9 @@ class WriteFile(BaseTarget):
 			c = self.getContents
 			if isinstance(c, str) or hasattr(c, 'resolveToString'):
 				self.__resolved = context.expandPropertyValues(c)
-			else:
+			elif callable(c):
 				self.__resolved = c(context, *self.__args, **self.__kwargs)
-			assert isinstance(self.__resolved, str), 'WriteFile function must return a string: %r'%self.__resolved
+			else: # hopefully bytes
+				self.__resolved = c
+			assert isinstance(self.__resolved, str) or isinstance(self.__resolved, bytes), 'WriteFile function must return a str or bytes: %r'%self.__resolved
 		return self.__resolved
