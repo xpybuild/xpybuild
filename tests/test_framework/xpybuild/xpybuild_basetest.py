@@ -43,13 +43,14 @@ class XpybuildBaseTest(BaseTest):
 					self.log.info('Enabling Python code coverage')
 					args = ['-m', 'coverage', 'run', '--source=%s'%PROJECT.XPYBUILD_ROOT, '--omit=*tests/*']+args
 				elif os.getenv('XPYBUILD_PPROFILE',None):
+					pprof_output = f'profileoutput-{stdouterr}.py'
 					self.log.info('Enabling Python per-line pprofile')
-					args = [os.environ['XPYBUILD_PPROFILE'], '--out', 'profileoutput.py', 
+					args = [os.environ['XPYBUILD_PPROFILE'], '--out', pprof_output, 
 						'--include', os.getenv('XPYBUILD_PPROFILE_REGEX', '.*xpybuild.*'), '--exclude', '.*', #'--verbose'
 						]+args
 					assert args[0].endswith('py'), args[0] # use the script path not the dir
 					assert os.path.exists(args[0]), args[0]
-					self.log.info('   see %s', os.path.normpath(self.output+'/profileoutput.py'))
+					self.log.info('   see %s', os.path.normpath(self.output+'/'+pprof_output))
 
 				result = self.startProcess(sys.executable, args, 
 					environs=environs, 
