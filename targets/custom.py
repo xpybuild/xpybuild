@@ -251,8 +251,8 @@ class CustomCommand(BaseTarget):
 			try:
 				# maybe send output to a file instead
 				mkdir(os.path.dirname(logbasename))
-				with open(stderrPath, 'w') as fe:
-					with open(stdoutPath, 'w') as fo:
+				with open(stderrPath, 'wb') as fe: # can't use openForWrite with subprocess
+					with open(stdoutPath, 'wb') as fo:
 						process = subprocess.Popen(cmd, 
 							stderr=fe, 
 							stdout=fo,
