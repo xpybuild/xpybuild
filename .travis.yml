@@ -56,8 +56,8 @@ script:
   - |
     if [[ -n $XPYBUILD_DOC_AND_DEPLOY ]]; then (
        set -e
-       python2 -m pip install epydoc
-       python2 ./xpybuild.py EPYDOC_ROOT=.
+       $PY -m pip install sphinx==2.2.0 sphinx-epytext=0.0.4
+       # python2 ./xpybuild.py EPYDOC_ROOT=.
     )
     fi
 
