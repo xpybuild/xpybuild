@@ -307,7 +307,7 @@ if os.sep == '\\':
 		True
 		"""
 		try:
-			return path[-1] in ('/', '\\')
+			return path[-1] in {'/', '\\'}
 		except Exception:
 			return False
 else:

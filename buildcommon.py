@@ -187,11 +187,18 @@ IS_WINDOWS = platform.system()=='Windows'
 # (we won't want constants for every possible OS here, but since there is so much conditionalization between 
 # windows and unix-based systems, much of it on the critical path, it is worthwhile having a constant for this). 
 
-def isWindows():
-	""" Returns True if this is a windows platform. 
-	@deprecated: Use the IS_WINDOWS constant instead. 
-	"""
-	return IS_WINDOWS
+if IS_WINDOWS:
+	def isWindows():
+		""" Returns True if this is a windows platform. 
+		@deprecated: Use the IS_WINDOWS constant instead. 
+		"""
+		return True
+else:
+	def isWindows():
+		""" Returns True if this is a windows platform. 
+		@deprecated: Use the IS_WINDOWS constant instead. 
+		"""
+		return False
 
 _stdoutEncoding = None
 try:
