@@ -31,16 +31,16 @@ from targets.custom import CustomCommand
 
 from utils.process import call
 
-requireXpyBuildVersion('1.12')
+requireXpyBuildVersion('3.0')
 
 # Need the caller to provide the path to epydoc
-definePathProperty('EPYDOC_ROOT', None, mustExist=True) # parent of the /lib directory; used for local builds but not Travis
+#definePathProperty('EPYDOC_ROOT', None, mustExist=True) # parent of the /lib directory; used for local builds but not Travis
 defineOutputDirProperty('OUTPUT_DIR', 'release-output')
 with open('XPYBUILD_VERSION') as f: defineStringProperty('VERSION', f.read().strip())
 
 def markdownToTxt(f): return f.replace('.md', '.txt')
 
-CustomCommand('${OUTPUT_DIR}/doc/api/', 
+"""CustomCommand('${OUTPUT_DIR}/doc/api/', 
 	command=[ 
 		sys.executable, 
 		'-m', 'epydoc.cli', 
@@ -54,10 +54,10 @@ CustomCommand('${OUTPUT_DIR}/doc/api/',
 	dependencies=FindPaths('./', includes='**/*.py', excludes=['**/root.xpybuild.py', 'tests/**', 'internal/**', 'xpybuild.py']),
 	env={'PYTHONPATH' : PathSet('${EPYDOC_ROOT}/lib')}
 	)
-
+"""
 # Zip all the distributables into a release zip file.
 Zip('${OUTPUT_DIR}/xpybuild_${VERSION}.zip', [
-		AddDestPrefix('doc/api/', FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/doc/api/'))),
+		#AddDestPrefix('doc/api/', FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/doc/api/'))),
 		AddDestPrefix('doc/', MapDest(markdownToTxt, FindPaths('doc/', includes=['*.md']))),
 		FindPaths('./', includes='**/*.py', excludes=['tests/**', 'root.xpybuild.py']),
 		'XPYBUILD_VERSION',
