@@ -93,9 +93,9 @@ class WriteFile(BaseTarget):
 		with self.openFile(context, path, 'wb' if isinstance(contents, bytes) else 'w', encoding=self.__encoding) as f:
 			f.write(contents)
 		
-		if self.__mode and not isWindows():
+		if self.__mode and not IS_WINDOWS:
 			os.chmod(path, self.__mode)
-		if self.__executable and not isWindows():
+		if self.__executable and not IS_WINDOWS:
 			os.chmod(path, stat.S_IXOTH | stat.S_IXUSR | stat.S_IXGRP | os.stat(self.path).st_mode)
 		
 	def _getContents(self, context):

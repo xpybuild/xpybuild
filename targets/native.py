@@ -63,7 +63,7 @@ if ever change.
 
 defineOption('native.link.flags', [])
 
-if isWindows():
+if IS_WINDOWS:
 	defineOption('native.cxx.exenamefn', FilenameStringFormatter("%s.exe"))
 	defineOption('native.cxx.libnamefn', FilenameStringFormatter("%s.dll"))
 	defineOption('native.cxx.staticlibnamefn', FilenameStringFormatter("%s.lib"))

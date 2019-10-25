@@ -303,7 +303,7 @@ class VT100ProgressBarConsoleFormatter(ConsoleFormatter):
 					self.cursorUp(line)
 					self.output.flush()
 
-if isWindows():
+if IS_WINDOWS:
 	registerConsoleFormatter("progress", ProgressBarConsoleFormatter)
 else:
 	registerConsoleFormatter("progress", VT100ProgressBarConsoleFormatter)

@@ -242,7 +242,7 @@ class CustomCommand(BaseTarget):
 			stderrPath)
 		
 				
-		if not os.path.exists(cmd[0]) and not (isWindows() and os.path.exists(cmd[0]+'.exe')):
+		if not os.path.exists(cmd[0]) and not (IS_WINDOWS and os.path.exists(cmd[0]+'.exe')):
 			raise BuildException('Cannot run command because the executable does not exist: "%s"'%(cmd[0]), location=self.location)
 		
 		try:

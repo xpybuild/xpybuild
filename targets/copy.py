@@ -213,7 +213,7 @@ class FilteredCopy(Copy):
 		mapper in this list that is not used, i.e. that does not in any way 
 		change the output for any file. We recommend using conditionalization 
 		to avoid passing in such mappers e.g. 
-		FilteredCopy(target, src, [StringReplaceLineMapper(os.linesep,'\\n') if isWindows() else None]). 
+		FilteredCopy(target, src, [StringReplaceLineMapper(os.linesep,'\\n') if IS_WINDOWS else None]). 
 		If this is not practical, set allowUnusedMappers=True to prevent this 
 		check. 
 		

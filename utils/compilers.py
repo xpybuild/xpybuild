@@ -169,7 +169,7 @@ class ToolChain(object):
 		self.cxxcompiler = cxxcompiler
 		assert isinstance(linker, Linker) or linker == None
 		self.linker = linker
-		assert isWindows() or isinstance(archiver, Archiver) or archiver == None
+		assert IS_WINDOWS or isinstance(archiver, Archiver) or archiver == None
 		self.archiver = archiver
 	
 	def __repr__(self): return '%s instance'%self.__class__ # make sure we get a stable stringification of the instance stored in the native.compilers option

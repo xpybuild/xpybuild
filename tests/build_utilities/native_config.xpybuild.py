@@ -5,7 +5,7 @@ from pathsets import *
 from utils.compilers import GCC, VisualStudio
 
 # some basic defaults for recent default compilers for running our testcases with
-if isWindows():
+if IS_WINDOWS:
 	VSROOT=r'c:\Program Files (x86)\Microsoft Visual Studio 14.0'
 	assert os.path.exists(VSROOT), 'Cannot find Visual Studio installed in: %s'%VSROOT
 	setGlobalOption('native.include', [r"%s\VC\ATLMFC\INCLUDE" % VSROOT, r"%s\VC\INCLUDE" % VSROOT, r"C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt"])

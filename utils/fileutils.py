@@ -410,16 +410,17 @@ def normLongPath(path):
 	# normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case 
 	# for drive letters (more so than directory names), with different cmd prompts frequently using different 
 	# capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts
-	if __isWindows and len(path)>2 and path[1] == ':' and path[0] >= 'A' and path[0] <= 'Z': 
+	iswindows = __isWindows
+	if iswindows and len(path)>2 and path[1] == ':' and path[0] >= 'A' and path[0] <= 'Z': 
 		path = path[0].lower()+path[1:]
 		
-	if __isWindows and path and path.startswith('\\\\?\\'):
+	if iswindows and path.startswith('\\\\?\\'):
 		path = path.replace('/', '\\')
 	else:
 		# abspath also normalizes slashes
 		path = os.path.abspath(path)+(os.path.sep if isDirPath(path) else '')
 		
-		if __isWindows and path and not path.startswith('\\\\?\\'):
+		if iswindows and not path.startswith('\\\\?\\'):
 			try:
 				if path.startswith('\\\\'): 
 					path = '\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My

@@ -6,6 +6,7 @@
 - BuildContext.defaultOptions() was removed, as there is no legitimate use case for it. 
 
 ## Deprecation
+- The isWindows() function is deprecated in favour of the IS_WINDOWS constant (which is faster). 
 
 ## Fixes
 - Fixed a couple of bugs in incremental C++ compilation - one that could cause unnecessary incremental compilation of targets that depend on generated C/C++ source or include files, and another in which the build would fail rather than re-running makedepends if some of the cached dependencies no longer exist. 
