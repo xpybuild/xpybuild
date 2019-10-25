@@ -40,6 +40,7 @@ with open('XPYBUILD_VERSION') as f: defineStringProperty('VERSION', f.read().str
 
 def markdownToTxt(f): return f.replace('.md', '.txt')
 
+Copy('${OUTPUT_DIR}/doc/', FindPaths('doc/', '**/*.md')) # simulate creation of API docs
 """CustomCommand('${OUTPUT_DIR}/doc/api/', 
 	command=[ 
 		sys.executable, 

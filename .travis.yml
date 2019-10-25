@@ -96,8 +96,7 @@ deploy:
   - provider: pages
     github-token: $GITHUB_API_KEY
     target-branch: gh-pages
-    #local-dir: release-output/doc/api/
-    local-dir: release-output/doc/
+    local-dir: release-output/doc
     skip_cleanup: true
     keep-history: true
     project-name: "XPyBuild $XPYBUILD_VERSION"
