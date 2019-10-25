@@ -58,7 +58,7 @@ class WriteFile(BaseTarget):
 		alternative to setting using mode)
 		
 		@param encoding: The encoding to use for converting the str to bytes; 
-		if not specified the `fileEncodingDecider` option is used. 
+		if not specified the `common.fileEncodingDecider` option is used. 
 
 		@param args: optional tuple containing arguments that should be passed to 
 		the getContents function, after the context argument (first arg)
@@ -77,7 +77,7 @@ class WriteFile(BaseTarget):
 		self.__mode = mode
 		self.__executable = executable 
 		self.__encoding = encoding
-		self.addHashableImplicitInputOption('fileEncodingDecider')
+		self.addHashableImplicitInputOption('common.fileEncodingDecider')
 	
 	def getHashableImplicitInputs(self, context):
 		""" The literal content text is considered the dependency of this target """

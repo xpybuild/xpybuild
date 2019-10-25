@@ -222,7 +222,7 @@ class FilteredCopy(Copy):
 		self.allowUnusedMappers = kwargs.pop('allowUnusedMappers', False)
 		assert not kwargs, 'unknown keyword arg(s): %s'%kwargs
 		super(FilteredCopy, self).__init__(dest, src, implicitDependencies=[m.getDependencies() for m in self.mappers])
-		self.addHashableImplicitInputOption('fileEncodingDecider')
+		self.addHashableImplicitInputOption('common.fileEncodingDecider')
 	
 	def run(self, context):
 		self.__unusedMappers = set(self.mappers)
@@ -241,7 +241,7 @@ class FilteredCopy(Copy):
 		return r
 		
 	def _copyFile(self, context, src, dest):
-		if self.getOption('fileEncodingDecider')(context, src) == ExtensionBasedFileEncodingDecider.BINARY:
+		if self.getOption('common.fileEncodingDecider')(context, src) == ExtensionBasedFileEncodingDecider.BINARY:
 			return super()._copyFile(context, src, dest)
 	
 		mappers = [m for m in self.mappers if m.startFile(context, src, dest) is not False]
@@ -275,7 +275,7 @@ class FilteredCopy(Copy):
 		except Exception as ex:
 			exceptionsuffix = ''
 			if isinstance(ex, UnicodeDecodeError):
-				exceptionsuffix = ' due to encoding problem; consider setting the "fileEncodingDecider" option'
+				exceptionsuffix = ' due to encoding problem; consider setting the "common.fileEncodingDecider" option'
 			raise BuildException(f'Failed to perform filtered copy of {src}{exceptionsuffix}',causedBy=True)
 		shutil.copymode(src, dest)
 		assert os.path.exists(dest)

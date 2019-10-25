@@ -29,6 +29,7 @@ from utils.buildfilelocation import BuildFileLocation
 from utils.functors import Composable
 from buildexceptions import BuildException
 from utils.fileutils import openForWrite, normLongPath, mkdir
+import targets.common # ensure common options are defined
 import logging
 
 class BaseTarget(Composable):
@@ -319,14 +320,14 @@ class BaseTarget(Composable):
 	def openFile(self, context, path, mode='r', **kwargs):
 		"""
 		Opens the specified file, using an encoding specified by the target option's 
-		`fileEncodingDecider` (unless explicitly provided by encoding=). 
+		`common.fileEncodingDecider` (unless explicitly provided by encoding=). 
 		
 		@param context: The context that was passed to run().
 		@param path: The full absolute path to be opened. 
 		@param mode: The file mode. 
 		@keyword kwargs: Any additional arguments for the io.open() method can be specified here. 
 		"""
-		if 'b' not in mode and not kwargs.get('encoding'): kwargs['encoding'] = self.getOption('fileEncodingDecider')(context, path)
+		if 'b' not in mode and not kwargs.get('encoding'): kwargs['encoding'] = self.getOption('common.fileEncodingDecider')(context, path)
 		return (openForWrite if 'w' in mode else io.open)(path, mode, **kwargs)
 	
 	def tags(self, *tags):

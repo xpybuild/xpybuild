@@ -329,7 +329,7 @@ def enableEnvironmentPropertyOverrides(prefix):
 		init.enableEnvironmentPropertyOverrides(prefix)
 
 class ExtensionBasedFileEncodingDecider:
-	"""Can be used for the `fileEncodingDecider` option which decides what file encoding to use for 
+	"""Can be used for the `common.fileEncodingDecider` option which decides what file encoding to use for 
 	reading/writing a text file given its path. 
 	
 	The decider option is called with arguments: (context, path), and returns the name of the encoding to be used for this path. 
@@ -369,7 +369,7 @@ class ExtensionBasedFileEncodingDecider:
 			assert isinstance(self.defaultEncoding, str), 'Encoding must be a str (or callable): '+repr(self.defaultEncoding)
 			return self.defaultEncoding
 		
-		fallbackDecider = context.mergeOptions()['fileEncodingDecider']
+		fallbackDecider = context.mergeOptions()['common.fileEncodingDecider']
 		if fallbackDecider is not self: return fallbackDecider(context, path, **forfutureuse)
 		raise Exception(f'File encoding decider cannot handle path \'{path}\': {self}')
 	
@@ -383,7 +383,7 @@ class ExtensionBasedFileEncodingDecider:
 		(based on the mime settings of the current machine). 
 		
 		Additional types may be added to this in future releases, so you should 
-		use `setGlobalOption('fileEncodingDecider', ...)` if you wish to control 
+		use `setGlobalOption('common.fileEncodingDecider', ...)` if you wish to control 
 		the encodings precisely and ensure identical behaviour across machines.
 
 		"""

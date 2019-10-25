@@ -28,15 +28,15 @@ I18N = chr(163) # pound sign
 defineStringProperty('Y', 'y')
 
 WriteFile('${OUTPUT_DIR}/writefile-default.${Y}aml', f'Text is: {I18N}') # utf-8 is the default for .yaml files
-WriteFile('${OUTPUT_DIR}/writefile-customized.foo.yaml', f'Text is: {I18N}').option('fileEncodingDecider', 
+WriteFile('${OUTPUT_DIR}/writefile-customized.foo.yaml', f'Text is: {I18N}').option('common.fileEncodingDecider', 
 	ExtensionBasedFileEncodingDecider({'.foo.yaml':'iso-8859-1'}, 'ascii'))
 WriteFile('${OUTPUT_DIR}/writefile-binary.bin', f'Text is: {I18N}'.encode('utf-8'))
 WriteFile('${OUTPUT_DIR}/writefile-compressed.jpg', codecs.encode(f'Text is: {I18N}'.encode('utf-8'), 'bz2_codec'))
 
 
-FilteredCopy('${OUTPUT_DIR}/copy-default.json', '${OUTPUT_DIR}/writefile-default.yaml', [StringReplaceLineMapper('Text', 'Replaced text'),]).option('fileEncodingDecider',
+FilteredCopy('${OUTPUT_DIR}/copy-default.json', '${OUTPUT_DIR}/writefile-default.yaml', [StringReplaceLineMapper('Text', 'Replaced text'),]).option('common.fileEncodingDecider',
 	ExtensionBasedFileEncodingDecider({'.doesnotmatchanything':'foo'}, None)) # invokes the default (global) value
-FilteredCopy('${OUTPUT_DIR}/copy-customized.json', '${OUTPUT_DIR}/writefile-customized.foo.yaml', [StringReplaceLineMapper('Text', 'Replaced text'),]).option('fileEncodingDecider',
+FilteredCopy('${OUTPUT_DIR}/copy-customized.json', '${OUTPUT_DIR}/writefile-customized.foo.yaml', [StringReplaceLineMapper('Text', 'Replaced text'),]).option('common.fileEncodingDecider',
 	ExtensionBasedFileEncodingDecider({'.${Y}aml':'iso-8859-1','.json':'iso-8859-1'}, None))
 
 FilteredCopy('${OUTPUT_DIR}/copy-compressed.jpg', '${OUTPUT_DIR}/writefile-compressed.jpg') # rely on mime types to detect this as binary
