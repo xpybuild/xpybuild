@@ -247,7 +247,7 @@ class FilteredCopy(Copy):
 		mappers = [m for m in self.mappers if m.startFile(context, src, dest) is not False]
 		
 		try:
-			with self.openFile(context, src, 'r') as s:
+			with self.openFile(context, src, 'r', newline='\n') as s:
 				# newline: for compatibility with existing builds, we don't expand \n to os.linesep (i.e. don't use Python universal newlines)
 				with self.openFile(context, dest, 'w', newline='\n') as d:
 					for m in mappers:
