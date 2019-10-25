@@ -40,7 +40,7 @@ with open('XPYBUILD_VERSION') as f: defineStringProperty('VERSION', f.read().str
 
 def markdownToTxt(f): return f.replace('.md', '.txt')
 
-Copy('${OUTPUT_DIR}/doc/', FindPaths('doc/', '**/*.md')) # simulate creation of API docs
+Copy('${OUTPUT_DIR}/doc/', FindPaths('doc/', includes='*.md')) # simulate creation of API docs
 """CustomCommand('${OUTPUT_DIR}/doc/api/', 
 	command=[ 
 		sys.executable, 
@@ -60,7 +60,7 @@ Copy('${OUTPUT_DIR}/doc/', FindPaths('doc/', '**/*.md')) # simulate creation of 
 Zip('${OUTPUT_DIR}/xpybuild_${VERSION}.zip', [
 		#AddDestPrefix('doc/api/', FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/doc/api/'))),
 		AddDestPrefix('doc/', MapDest(markdownToTxt, FindPaths('doc/', includes=['*.md']))),
-		FindPaths('./', includes='**/*.py', excludes=['tests/**', 'root.xpybuild.py']),
+		FindPaths('./', includes='**/*.py', excludes=['tests/**', 'root.xpybuild.py', 'doc/**', 'release-output/**']),
 		'XPYBUILD_VERSION',
 		MapDest(markdownToTxt, 'README.md'),
 		'LICENSE.txt',
