@@ -31,7 +31,7 @@ class XpybuildBaseTest(BaseTest):
 				
 				newargs = 	[
 #					PROJECT.rootdir+'/../xpybuild.py', 
-					PROJECT.XPYBUILD,
+					os.path.normpath(PROJECT.XPYBUILD),
 					'-f', os.path.join(self.input, buildfile), 
 					'--logfile', os.path.join(self.output, stdout.replace('.out', '')+'.log'), 
 					'-J', # might as well run in parallel to speed things up and help find race conditions
@@ -43,13 +43,26 @@ class XpybuildBaseTest(BaseTest):
 					self.log.info('Enabling Python code coverage')
 					args = ['-m', 'coverage', 'run', '--source=%s'%PROJECT.XPYBUILD_ROOT, '--omit=*tests/*']+args
 				elif os.getenv('XPYBUILD_PPROFILE',None):
-					pprof_output = f'profileoutput-{stdouterr}.py'
+					# unfortunately CProfile isn't much use in a multithreaded application, so use pprofile
 					self.log.info('Enabling Python per-line pprofile')
-					args = [os.environ['XPYBUILD_PPROFILE'], '--out', pprof_output, 
-						'--include', os.getenv('XPYBUILD_PPROFILE_REGEX', '.*xpybuild.*'), '--exclude', '.*', #'--verbose'
+					
+					profileargs = os.environ['XPYBUILD_PPROFILE']
+					if profileargs == 'true':
+						profileargs = ['-m', 'pprofile'] # assume it's installed
+					else:
+						profileargs = [profileargs] # run it as a script
+						assert args[0].endswith('py'), args[0] # must be the .py script path not the dir
+						assert os.path.isfile(args[0]), args[0]
+
+					if os.getenv('XPYBUILD_PPROFILE_CALLGRIND','')=='true' or getattr(self, 'pprofileCallgrind',False):
+						pprof_output = f'callgrind.pprofile.{stdouterr}'
+						profileargs.extend(['--format', 'callgrind'])
+					else:
+						pprof_output = f'pprofile.{stdouterr}.py'
+					
+					args = profileargs+['--out', pprof_output, 
+						#'--include', os.getenv('XPYBUILD_PPROFILE_REGEX', '.*xpybuild.*'), '--exclude', '.*', #'--verbose'
 						]+args
-					assert args[0].endswith('py'), args[0] # use the script path not the dir
-					assert os.path.exists(args[0]), args[0]
 					self.log.info('   see %s', os.path.normpath(self.output+'/'+pprof_output))
 
 				result = self.startProcess(sys.executable, args, 
