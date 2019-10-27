@@ -1,6 +1,6 @@
 # xpyBuild - eXtensible Python-based Build System
 #
-# Copyright (c) 2014 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2014 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import os, re, logging, time, traceback
 from buildcommon import *
 from buildexceptions import BuildException
 from utils.process import call
+from utils.fileutils import isdir
 from utils.outputhandler import ProcessOutputHandler
 from propertysupport import defineOption
 
@@ -64,8 +65,8 @@ class Process(object):
 
 _logger = logging.getLogger('compilers')
 def _checkDirExists(dirpath, message):
-	if not os.path.isdir(dirpath):
-		_logger.debug(message%dirpath) # legitimate but useful for debugging
+	if not isdir(dirpath):
+		_logger.debug(message, dirpath) # legitimate but useful for debugging
 	return dirpath
 
 class Compiler(Process):
