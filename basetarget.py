@@ -70,6 +70,15 @@ class BaseTarget(Composable):
 		strings, PathSets and lists and may also contain unexpanded variables.
 		"""
 		
+		self.__getAttrImpl = {
+			'path': lambda: self.__returnOrRaiseIfNone(self.__path, 'Target path has not yet been resolved by this phase of the build process: %s'%self),
+			'name': lambda: self.__name,
+			'options': lambda: self.__returnOrRaiseIfNone(self.__optionsResolved, "Cannot read the value of basetarget.targetOptions during the initialization phase of the build as the resolved option values are not yet available"),
+			'workDir': lambda: self.__workDir,
+			'type': lambda: self.__class__.__name__,
+			'baseDir': lambda: self.location.buildDir,
+		}
+		
 		self._optionsTargetOverridesUnresolved = {} # for target-specific option overrides. for internal use (by buildcontext), do not use
 		self.__optionsResolved = None # gets assigned during end of initialization phase
 
@@ -100,6 +109,14 @@ class BaseTarget(Composable):
 		
 		self.__hashableImplicitInputs = []
 
+		# put the class first, since it results in better ordering (e.g. for errors)
+		# use a space to delimit these to make it easier to copy to the clipboard by double-clicking
+		self.__stringvalue = f'<{self.type}> {self.name}'
+		
+	def __returnOrRaiseIfNone(self, value, exceptionMessage):
+		if value is not None: return value
+		raise Exception(exceptionMessage)
+
 	def __setattr__(self, name, value):
 		# this is a hack to retain backwards compat for a few classes that rely on explicitly assigning to self.options
 
@@ -114,32 +131,14 @@ class BaseTarget(Composable):
 	def __getattr__(self, name):
 		""" Getter for read-only attributes """
 		# nb this is not called for fields that have been set explicitly using self.X = ...
-		
-		if name == 'path': 
-			if not self.__path: raise Exception('Target path has not yet been resolved by this phase of the build process: %s'%self)
-			return self.__path
-		if name == 'name': return self.__name
-			
-		if name == 'options': 
-			# don't return self.options here, since a) that has the unresolved/unmerged options and b) setting it is 
-			# dodgy and something that must work for compat reasons but which we want to discourage
-			
-			if self.__optionsResolved == None:
-				# probably no-one is using this, but in case they are give a clear message
-				# instead, should be setting the .option(...) method, and getting
-				raise Exception("Cannot read the value of basetarget.targetOptions during the initialization phase of the build as the resolved option values are not yet available")
-			return self.__optionsResolved
-		
-		if name == 'workDir': return self.__workDir
-		if name == 'type': return self.__class__.__name__
-		if name == 'baseDir': return self.location.buildDir
-		raise AttributeError('Unknown attribute %s'%name)
+		try:
+			return self.__getAttrImpl[name]()
+		except KeyError:
+			raise AttributeError('Unknown attribute %s'%name)
 
 	def __str__(self): # string display name which is used for log statements etc
 		""" Returns a display name including the target name and the target type (class) """
-		# put the class first, since it results in better ordering (e.g. for errors)
-		# use a space to delimit these to make it easier to copy to the clipboard by double-clicking
-		return '<%s> %s' % (self.type, self.name)
+		return self.__stringvalue
 
 	def resolveToString(self, context):
 		""" Resolves this target's path and returns as a string. 
