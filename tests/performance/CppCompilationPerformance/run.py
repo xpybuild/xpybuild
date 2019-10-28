@@ -27,8 +27,8 @@ class PySysTest(XpybuildBaseTest):
 			
 			self.log.info('%s: deps took %0.1fs, build took %0.1fs', f, deps, build)
 			
-			results[f+'.deps'] = deps
-			results[f+'.build'] = build
+			results[f+'.deps'] = deps or 1e-10 # avoid by by zero
+			results[f+'.build'] = build or 1e-10
 		self.assertGrep(file='xpybuild-build-no-op.log', expr="<NO TARGETS> built")
 
 		self.reportPerformanceResult(self.TARGETS / results['xpybuild-dep-check.deps'], 'Dependency resolution rate for C++ target', '/s')
