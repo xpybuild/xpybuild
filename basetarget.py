@@ -122,7 +122,7 @@ class BaseTarget(Composable):
 
 		if name == 'options':
 			# make this a WARN at some point
-			self.log.debug('Target class "%s" assigns to self.options which is deprecated - instead call .option(...) to set target options'%self.__class__.__name__)
+			self.log.warning('Target class "%s" assigns to self.options which is deprecated - instead call .option(...) to set target options'%self.__class__.__name__)
 			if value:
 				self._optionsTargetOverridesUnresolved.update(value)
 		else:
