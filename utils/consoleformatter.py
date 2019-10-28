@@ -65,8 +65,8 @@ def publishArtifact(displayName, path):
 
 class ConsoleFormatter(object):
 	"""
-	An xpybuild-specific base class for customizing how log output is formatted 
-	for output to the command console/stdout. 
+	An xpybuild-specific base class for customizing the output format used 
+	for handling log records when displaying to the command console/stdout. 
 	
 	This allows to output to be customized for the tool that is executing 
 	xpybuild, for example e.g. teamcity, visual studio IDE, etc. 
@@ -86,6 +86,7 @@ class ConsoleFormatter(object):
 		@param output: The output stream, which can cope with unicode characters. 
 		@param buildOptions: Dictionary of build options
 		"""
+		super().__init__()
 		self.output = output
 		self.fmt = logging.Formatter()
 		self.bufferingDisabled = False # can be set to True to prevent it for handlers for which it's not appropriate

@@ -51,7 +51,6 @@ class TeamcityHandler(ConsoleFormatter):
 	"""
 	def __init__(self, output, buildOptions, **kwargs):
 		ConsoleFormatter.__init__(self, output, buildOptions, **kwargs)
-		self.output = output
 		
 		self.bufferingDisabled = True # useful to let teamcity know as soon as there is an error
 		
