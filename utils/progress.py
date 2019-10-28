@@ -150,9 +150,9 @@ class VT100ProgressBarConsoleFormatter(ConsoleFormatter):
 	time = 0
 	timethreshold = 0
 
-	def __init__(self, output, buildOptions):
+	def __init__(self, output, buildOptions, **kwargs):
 		
-		ConsoleFormatter.__init__(self)
+		ConsoleFormatter.__init__(self, output, buildOptions=buildOptions, **kwargs)
 		
 		self.output = output
 		self.bufferingDisabled = True # buffering isn't helpful in progress mode
