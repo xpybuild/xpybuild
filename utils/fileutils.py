@@ -99,9 +99,9 @@ def mkdir(newdir):
 	#when multiple threads/processes are creating directories  
 	#at the same time, it can be a race
 	try:
-		os.makedirs(newdir)
+		os.makedirs(newdir, exist_ok=True)
 	except Exception as e:
-		if os.path.isdir(newdir):
+		if os.path.isdir(newdir): # probably won't happen now we've added exist_ok
 			pass
 		else:
 			raise IOError('Problem creating directory %s: %s' % (newdir, e))
