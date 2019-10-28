@@ -65,8 +65,6 @@ class BaseContext(object):
 		@param initialProperties: a dictionary of initial property values; 
 		used by doc tests. 
 		"""
-		
-		self._globalOptions = {} # global options in build file (must be in _definedOptions)
 		self._properties = dict(initialProperties or {})
 
 	def publishArtifact(self, displayName, path):
@@ -302,10 +300,28 @@ class BaseContext(object):
 			return obj.resolveToString(self)
 		else: return obj
 
+	def _mergeListOfOptionDicts(self, dicts, target=None):
+		# creates a new dictionary
+		# dicts is a list of dictionaries
+		# target is used just for error reporting, if available
+		fulloptions = {}
+		for source in dicts:
+			if source is None: continue
+				
+			for key in source:
+				try:
+					if key not in _definedOptions: raise BuildException("Unknown option %s" % key)
+					fulloptions[key] = self._recursiveExpandProperties(source[key])
+				except BuildException as e:
+					raise BuildException('Failed to resolve option "%s"'%key, location=target.location if target else None, causedBy=True)
+		return fulloptions
+				
+
 	def mergeOptions(self, target=None, options=None): 
 		""" [DEPRECATED] Merges together the default options, the globally overridden options and any set on the target.
 		
-		DEPRECATED: Use the target's self.options to get the resolved dictionary of options instead of this method. 
+		DEPRECATED: Use the target's self.options to get the resolved dictionary of options instead of this method, or L{getGlobalOptions} 
+		for PathSets and functors where there is no target available. 
 
 		This is usually called from within a target run() method. Any options provided on the target 
 		will take priority, followed by anything overridden globally, finally anything left is taken
@@ -317,20 +333,20 @@ class BaseContext(object):
 
 		@return: Returns a map of the merged options and their correct values.
 		"""
-		# maybe this should move into basetarget eventually
-
-		fulloptions = {}
-		
 		# search defaults, then replace if in globals, then replace if in target.options
-		for source in [_definedOptions, self._globalOptions, target and target._optionsTargetOverridesUnresolved or {}, options if options else {}]:
-			if source:
-				for key in source:
-					try:
-						if key not in _definedOptions: raise BuildException("Unknown option %s" % key)
-						fulloptions[key] = self._recursiveExpandProperties(source[key])
-					except BuildException as e:
-						raise BuildException('Failed to resolve option "%s"'%key, location=target.location if target else None, causedBy=True)
-		return fulloptions
+		if target is None:
+			return self._mergeListOfOptionDicts([
+				_definedOptions, self._globalOptions, target and target._optionsTargetOverridesUnresolved, options])
+		else: # if we're given a target, assume we're past the initialization phase
+			return self._mergeListOfOptionDicts([target.options, options], target=target)
+
+	def getGlobalOption(self, key):
+		"""Get the value of the specified global option for this build. 
+		
+		This can be useful for PathSets and functors, however in any situation 
+		where there is a target, use L{BaseTarget.options} instead, so that per-target 
+		option overrides are respected. """
+		return self._globalOptions[key]
 
 	def getFullPath(self, path, defaultDir, expandList=False):
 		""" Expands any properties in the specified path, then removes trailing path separators, normalizes it for this 
@@ -433,6 +449,7 @@ class BuildInitializationContext(BaseContext):
 		self._initializationCompleted = False
 		self._envPropertyOverrides = {}
 		self._preBuildCallbacks = []
+		self._globalOptions = {}
 			
 	def initializeFromBuildFile(self, buildFile, isRealBuild=True):
 		""" Load the specified build file, which is the initialization phase during which properties are defined and 
@@ -485,12 +502,19 @@ class BuildInitializationContext(BaseContext):
 		# make sure this has been imported, since it's used for implementing many targets and defines some options of its own
 		# which must happen before hte build phase begins
 		import utils.outputhandler
+
 		_setBuildInitializationContext('build phase')
 		self._initializationCompleted = True
 		
 		# all the valid ones will have been popped already
 		if self._propertyOverrides:
 			raise BuildException('Cannot specify value for undefined build property/properties: %s'%(', '.join(self._propertyOverrides.keys())))
+	
+	def _finalizeGlobalOptions(self): # internal method called at end of build initialization phase
+		# use this proxy to make it unmodifiable so we can pass it around (most targets don't need to override any options)
+		self._globalOptions = types.MappingProxyType(self._mergeListOfOptionDicts([
+			_definedOptions, self._globalOptions]))
+		assert self._globalOptions # there will always be at least some options defined
 	
 	def _initializationCheck(self):
 		if self._initializationCompleted: raise Exception('Cannot invoke this method now that the initialization phase is over')
@@ -701,7 +725,9 @@ class BuildContext(BaseContext):
 		"""
 		BaseContext.__init__(self, initializationContext.getProperties())
 		self.init = initializationContext
-		self._globalOptions = initializationContext._globalOptions
+		
+		self._globalOptions = initializationContext._globalOptions # unmodifiable at this point
+
 		self.__targetPaths = targetPaths # a set of resolved normalized target paths
 
 		# remove children if parent is also an output dir 

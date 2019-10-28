@@ -340,6 +340,8 @@ def main(args):
 			buildOptions['workers'] = workers
 			init._globalOptions['build.workers'] = workers
 			
+			init._finalizeGlobalOptions()
+			
 			return init
 
 		if buildOptions['profile']:

@@ -79,7 +79,7 @@ class BaseTarget(Composable):
 			'baseDir': lambda: self.location.buildDir,
 		}
 		
-		self._optionsTargetOverridesUnresolved = {} # for target-specific option overrides. for internal use (by buildcontext), do not use
+		self.__optionsTargetOverridesUnresolved = {} # for target-specific option overrides. for internal use (by buildcontext), do not use
 		self.__optionsResolved = None # gets assigned during end of initialization phase
 
 		if isinstance(name, str):
@@ -122,9 +122,9 @@ class BaseTarget(Composable):
 
 		if name == 'options':
 			# make this a WARN at some point
-			self.log.warning('Target class "%s" assigns to self.options which is deprecated - instead call .option(...) to set target options'%self.__class__.__name__)
+			self.log.debug('Target class "%s" assigns to self.options which is deprecated - instead call .option(...) to set target options'%self.__class__.__name__)
 			if value:
-				self._optionsTargetOverridesUnresolved.update(value)
+				self.__optionsTargetOverridesUnresolved.update(value)
 		else:
 			object.__setattr__(self, name, value)
 
@@ -152,7 +152,7 @@ class BaseTarget(Composable):
 		
 		# if there's no explicit parent, default to ${OUTPUT_DIR} to stop 
 		# people accidentally writing to their source directories
-		if self.__path: return self.__path # cache it for consistency
+		if self.__path is not None: return self.__path # cache it for consistency
 		self.__path = context.getFullPath(self.__path_src, "${OUTPUT_DIR}")
 		self.log.debug('Resolved target name %s to canonical path %s', self.name, self.path)
 		return self.__path
@@ -171,7 +171,10 @@ class BaseTarget(Composable):
 		self.__workDir = os.path.normpath(context.getPropertyValue("BUILD_WORK_DIR")+'/targets/'+self.__class__.__name__+'/'+targetNameToUniqueId(self.name))
 		
 		# take the opportunity to provide a merged set of options
-		self.__optionsResolved = context.mergeOptions(target=self)
+		if len(self.__optionsTargetOverridesUnresolved)==0:
+			self.__optionsResolved = context._globalOptions # since is immutable so we can avoid a copy
+		else:
+			self.__optionsResolved = context._mergeListOfOptionDicts([context._globalOptions, self.__optionsTargetOverridesUnresolved], target=self)
 
 	def _resolveUnderlyingDependencies(self, context, rawdeps=False):
 		""" Internal method for resolving dependencies needed by this target, 
@@ -313,7 +316,7 @@ class BaseTarget(Composable):
 		
 		Use self.options or L{getOption} to get resolved option values. 
 		"""
-		self._optionsTargetOverridesUnresolved[key] = value
+		self.__optionsTargetOverridesUnresolved[key] = value
 		return self
 	
 	def openFile(self, context, path, mode='r', **kwargs):

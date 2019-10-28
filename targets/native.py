@@ -424,8 +424,8 @@ class Ar(BaseTarget):
 		
 		return r
 		
-exename = make_functor(lambda c, i:c.mergeOptions()['native.cxx.exenamefn'](c.expandPropertyValues(i)), name='exename')
-objectname = make_functor(lambda c, i:c.mergeOptions()['native.cxx.objnamefn'](c.expandPropertyValues(i)), name='objectname')
-libname = make_functor(lambda c, i:c.mergeOptions()['native.cxx.libnamefn'](c.expandPropertyValues(i)), name='libname')
-staticlibname = make_functor(lambda c, i:c.mergeOptions()['native.cxx.staticlibnamefn'](c.expandPropertyValues(i)), name='staticlibname')
+exename = make_functor(lambda c, i:c.getGlobalOption('native.cxx.exenamefn')(c.expandPropertyValues(i)), name='exename')
+objectname = make_functor(lambda c, i:c.getGlobalOption('native.cxx.objnamefn')(c.expandPropertyValues(i)), name='objectname')
+libname = make_functor(lambda c, i:c.getGlobalOption('native.cxx.libnamefn')(c.expandPropertyValues(i)), name='libname')
+staticlibname = make_functor(lambda c, i:c.getGlobalOption('native.cxx.staticlibnamefn')(c.expandPropertyValues(i)), name='staticlibname')
 

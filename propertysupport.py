@@ -369,7 +369,7 @@ class ExtensionBasedFileEncodingDecider:
 			assert isinstance(self.defaultEncoding, str), 'Encoding must be a str (or callable): '+repr(self.defaultEncoding)
 			return self.defaultEncoding
 		
-		fallbackDecider = context.mergeOptions()['common.fileEncodingDecider']
+		fallbackDecider = context.getGlobalOption('common.fileEncodingDecider')
 		if fallbackDecider is not self: return fallbackDecider(context, path, **forfutureuse)
 		raise Exception(f'File encoding decider cannot handle path \'{path}\': {self}')
 	
