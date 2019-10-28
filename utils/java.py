@@ -239,7 +239,7 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 		raise BuildException(msg)
 
 
-def javac(output, inputs, classpath, options, logbasename, targetname):
+def javac(output, inputs, classpath, options, logbasename, targetname, workDir):
 	""" Compile some java files to class files.
 
 	Will raise BuildException if compilation fails.
@@ -257,6 +257,8 @@ def javac(output, inputs, classpath, options, logbasename, targetname):
 		to use for files such as .err, .out, etc files
 
 	@param targetname: to log appropriate error messages
+	
+	@param workDir: where temporary files are stored.  
 
 	"""
 
@@ -270,9 +272,9 @@ def javac(output, inputs, classpath, options, logbasename, targetname):
 	else:
 		javacpath = "javac" # just get it from the path
 	# store the list of files in a temporary file, then build from that.
-	mkdir(options['tmpdir'])
+	mkdir(workDir)
 	
-	argsfile = os.path.join(options['tmpdir'], "javac_args.txt")
+	argsfile = os.path.join(workDir, "javac_args.txt")
 	
 	# build up the arguments
 	args = ["-d", output]
@@ -416,7 +418,7 @@ up the Javadoc generation.
 """
 defineOption('javadoc.ignoreSourceFilesFromClasspath', False)
 
-def javadoc(path, sources, classpath, options, outputHandler):
+def javadoc(path, sources, classpath, options, workDir, outputHandler):
 	""" Create javadoc from sources and a set of options
 
 	@param path: The directory under which to create the javadoc
@@ -426,7 +428,9 @@ def javadoc(path, sources, classpath, options, outputHandler):
 	@param classpath: a list of jars for the classpath
 
 	@param options: the current set of options to use
-
+	
+	@param workDir: where temporary files are stored
+	
 	@param outputHandler: the output handler (optional)
 	"""
 	deleteDir(path)
@@ -438,8 +442,8 @@ def javadoc(path, sources, classpath, options, outputHandler):
 		binary = "javadoc"
 
 	# store the list of files in a temporary file, then build from that.
-	mkdir(options['tmpdir'])
-	inputlistfile = os.path.join(options['tmpdir'], "javadoc.inputs")
+	mkdir(workDir)
+	inputlistfile = os.path.join(workDir, "javadoc.inputs")
 	with openForWrite(inputlistfile, 'w', encoding=locale.getpreferredencoding()) as f:
 		f.writelines('"'+x.replace('\\','\\\\')+'"'+'\n' for x in sources)
 

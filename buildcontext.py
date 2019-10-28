@@ -311,28 +311,22 @@ class BaseContext(object):
 		will take priority, followed by anything overridden globally, finally anything left is taken
 		from the option defaults.
 
-		@param target: the target from which to take default options. If target is set then the map will
-			also contain a 'tmpdir' option pointing at the target-specific work directory.
+		@param target: the target from which to take option values overriding the global defaults. 
 
 		@param options: options to override directly - this is retained for backwards compatibility only and should not be used. 
 
 		@return: Returns a map of the merged options and their correct values.
 		"""
 		# maybe this should move into basetarget eventually
-		if target: 
-			fulloptions = { 'tmpdir' : target.workDir }
-		else:
-			fulloptions = {}
-		
-		permittedoptions = 	set(_definedOptions.keys())
-		permittedoptions.add('tmpdir')
+
+		fulloptions = {}
 		
 		# search defaults, then replace if in globals, then replace if in target.options
 		for source in [_definedOptions, self._globalOptions, target and target._optionsTargetOverridesUnresolved or {}, options if options else {}]:
 			if source:
 				for key in source:
 					try:
-						if key not in permittedoptions: raise BuildException("Unknown option %s" % key)
+						if key not in _definedOptions: raise BuildException("Unknown option %s" % key)
 						fulloptions[key] = self._recursiveExpandProperties(source[key])
 					except BuildException as e:
 						raise BuildException('Failed to resolve option "%s"'%key, location=target.location if target else None, causedBy=True)

@@ -170,7 +170,8 @@ class Javac(BaseTarget):
 		self.classpath = PathSet(classpath)
 		
 		BaseTarget.__init__(self, output, [self.compile,self.classpath])
-		for k,v in (options or {}).items(): self.option(k, v)
+		if options is not None:
+			for k,v in options.items(): self.option(k, v)
 
 	def run(self, context):
 		# make sure outputdir exists
@@ -182,7 +183,7 @@ class Javac(BaseTarget):
 
 		# compile everything
 		mkdir(self.getOption('javac.logs'))
-		javac(self.path, self.compile.resolve(context), classpath, options=self.options, logbasename=self.options['javac.logs']+'/'+targetNameToUniqueId(self.name), targetname=self.name)
+		javac(self.path, self.compile.resolve(context), classpath, options=self.options, logbasename=self.options['javac.logs']+'/'+targetNameToUniqueId(self.name), targetname=self.name, workDir=self.workDir)
 
 	def getHashableImplicitInputs(self, context):
 		# changes in the manifest text should cause a rebuild
@@ -253,7 +254,7 @@ class Jar(BaseTarget):
 		mkdir(classes) # (need this for assembling other files to package later on, even if we don't do any javac)
 		if self.compile:
 			mkdir(self.getOption('javac.logs'))
-			javac(classes, self.compile.resolve(context), classpath, options=options, logbasename=options.get('javac.logs')+'/'+targetNameToUniqueId(self.name), targetname=self.name)
+			javac(classes, self.compile.resolve(context), classpath, options=options, logbasename=options.get('javac.logs')+'/'+targetNameToUniqueId(self.name), targetname=self.name, workDir=self.workDir)
 
 		manifest = os.path.join(self.workDir, "MANIFEST.MF") # manifest file
 	
@@ -339,7 +340,7 @@ class Javadoc(BaseTarget):
 		options = self.options
 		classpath = os.pathsep.join(self.classpath.resolve(context))
 		javadoc(self.path, self.sources.resolve(context), classpath, options, 
-			outputHandler=ProcessOutputHandler.create('javadoc', treatStdErrAsErrors=False, options=options))
+			outputHandler=ProcessOutputHandler.create('javadoc', treatStdErrAsErrors=False, options=options), workDir=self.workDir)
 
 	def getHashableImplicitInputs(self, context):
 		# changes in the manifest text should cause a rebuild

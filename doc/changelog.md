@@ -4,6 +4,7 @@
 - Added `output` and `buildOptions` required arguments to ConsoleFormatter base class constructor.
 - FilteredCopy mappers and the WriteFilter target now handle only unicode str objects and not bytes.
 - BuildContext.defaultOptions() was removed, as there is no legitimate use case for it. 
+- `tmpdir` has been removed from the target's `self.options`; instead if needed the target's `self.workDir` should be used explicitly. 
 
 ## Deprecation
 - The isWindows() function is deprecated in favour of the IS_WINDOWS constant (which is faster). 
