@@ -512,26 +512,43 @@ class FindPaths(BasePathSet):
 					unusedPatternsTracker = GlobUnusedPatternTracker(self.includes) # give an error if any are not used
 				else:
 					unusedPatternsTracker = None
-				longdir = normLongPath(resolveddir)
+					
 				visited = 0
-				for root, dirs, files in os.walk(longdir):
+				scanroot = normLongPath(resolveddir)[:-1]
+				pathsToWalk = [scanroot] # stack of paths
+				while len(pathsToWalk)>0:
 					visited += 1 
-					root = root.replace(longdir, '').replace('\\','/').strip('/')
+					longdir = pathsToWalk.pop()
+					root = longdir[len(scanroot):].replace('\\','/').strip('/')
 					if root != '': root += '/'
 					#log.debug('visiting: "%s"'%root)
+
+					# emulate os.walk's API, since we think it's more efficient to glob all the paths in a given root dir at the same time
+					with os.scandir(longdir) as it:
+						dirs = []
+						files = []
+						for entry in it:
+							if entry.is_dir():
+								dirs.append(entry.name)
+							else:
+								files.append(entry.name)
 					
 					# optimization: if this doesn't require walking down the dir tree, don't do any!
 					# (this optimization applies to includes like prefix/** but not if there is a bare '**' 
-					# in the includes lsit)
+					# in the includes list)
 					if self.includes is not None:
 						self.includes.removeUnmatchableDirectories(root, dirs)
-
+					
 					# optimization: if there's an exclude starting with this dir and ending with '/**' or '/*', don't navigate to it
 					# we deliberately match only against filename patterns (not dir patterns) since 
 					# empty dirs are handled in the later loop not through this mechanism, so it's just files that matter
 					if self.excludes is not None and dirs != []:
 						# nb: both dirs and the result of getPathMatches will have no trailing slashes
 						self.__removeNamesFromList(dirs, self.excludes.getPathMatches(root, filenames=dirs))
+
+					# any other subdirs will need to be walked to
+					for dir in dirs:
+						pathsToWalk.append(longdir+os.sep+dir)
 					
 					# now find which files and empty dirs match
 					matchedemptydirs = dirs
@@ -550,7 +567,9 @@ class FindPaths(BasePathSet):
 						matches.append(root+p)
 					for p in matchedemptydirs:
 						matches.append(root+p+'/')					
-
+				
+				#end while
+				
 				log.info('FindPaths in "%s" found %d path(s) for %s after visiting %s directories; %s', resolveddir, len(matches), self, visited, self.location)
 				if time.time()-startt > 5: # this should usually be pretty quick, so may indicate a real build file mistake
 					log.warn('FindPaths took a long time: %0.1f s to evaluate %s; see %s', time.time()-startt, self, self.location)
