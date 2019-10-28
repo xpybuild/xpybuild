@@ -291,7 +291,7 @@ def main(args):
 	# actually instantiate it
 	hdlr = hdlr(
 		wrapper, 
-		buildOptions) 
+		buildOptions=buildOptions) 
 	if hdlr.bufferingDisabled: wrapper.bufferingDisabled = True
 		
 	hdlr.setLevel(logLevel or logging.WARNING)

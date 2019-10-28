@@ -2,7 +2,7 @@
 <pysystest type="auto" state="runnable">
     
   <description> 
-    <title>I18N - logging to .log and redirected stdout works with i18n characters and target buffering</title>
+    <title>I18N, formatters - logging to .log and redirected stdout works with i18n characters and target buffering, and all formatters</title>
     <purpose><![CDATA[
 Check it works
 ]]>
