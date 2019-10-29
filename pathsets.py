@@ -61,6 +61,13 @@ class BasePathSet(object):
 	present before the main build begins. Only set this when sure that this 
 	is the case. 
 	"""
+
+	_shortcutUptodateCheck = False
+	"""
+	Special flag that can be set by implementors of a PathSet to indicate that 
+	the scheduler can take a shorcut and use pathset._newestFile=(path, timestamp) 
+	to get the newest file rather than manually calling stat on the dependencies. 
+	"""
 	
 	def __init__(self):
 		pass
@@ -416,7 +423,10 @@ class FindPaths(BasePathSet):
 	buildexceptions.BuildException:
 
 	"""
+	
 	_skipDependenciesExistenceCheck = True # since we only return items we've found on disk, no need to check them again
+	
+	_shortcutUptodateCheck = IS_WINDOWS # on Windows os.scandir can efficiently get the stat results without an extra call
 	
 	def __init__(self, dir, excludes=None, includes=None):
 		"""
@@ -496,6 +506,9 @@ class FindPaths(BasePathSet):
 		log = logging.getLogger('FindPaths')
 		log.debug('FindPaths resolve starting for: %s', self)
 		with self.__lock:
+			_shortcutUptodateCheck = self._shortcutUptodateCheck
+			newestTimestamp, newestFile = 0, None
+			
 			# think this operation is atomically thread-safe due to global interpreter lock
 			if self.__cached: return self.__cached
 			
@@ -532,44 +545,51 @@ class FindPaths(BasePathSet):
 								dirs.append(entry.name)
 							else:
 								files.append(entry.name)
+								# for simplicity and because it doesn't cost anything we do this before processing include/exclude
+								if _shortcutUptodateCheck:
+									thisTimestamp = entry.stat().st_mtime
+									if thisTimestamp > newestTimestamp:
+										newestTimestamp, newestFile = thisTimestamp, root+entry.name
 					
-					# optimization: if this doesn't require walking down the dir tree, don't do any!
-					# (this optimization applies to includes like prefix/** but not if there is a bare '**' 
-					# in the includes list)
-					if self.includes is not None:
-						self.includes.removeUnmatchableDirectories(root, dirs)
-					
-					# optimization: if there's an exclude starting with this dir and ending with '/**' or '/*', don't navigate to it
-					# we deliberately match only against filename patterns (not dir patterns) since 
-					# empty dirs are handled in the later loop not through this mechanism, so it's just files that matter
-					if self.excludes is not None and dirs != []:
-						# nb: both dirs and the result of getPathMatches will have no trailing slashes
-						self.__removeNamesFromList(dirs, self.excludes.getPathMatches(root, filenames=dirs))
-
-					# any other subdirs will need to be walked to
-					for dir in dirs:
-						pathsToWalk.append(longdir+os.sep+dir)
-					
-					# now find which files and empty dirs match
-					matchedemptydirs = dirs
-					
-					if self.includes is not None:
-						files, matchedemptydirs = self.includes.getPathMatches(root, filenames=files, dirnames=matchedemptydirs, unusedPatternsTracker=unusedPatternsTracker)
-					else:
-						matchedemptydirs = [] # only include empty dirs if explicitly specified
-					
-					if self.excludes is not None:
-						exfiles, exdirs = self.excludes.getPathMatches(root, filenames=files, dirnames=matchedemptydirs)
-						self.__removeNamesFromList(files, exfiles)
-						self.__removeNamesFromList(matchedemptydirs, exdirs)
+						# optimization: if this doesn't require walking down the dir tree, don't do any!
+						# (this optimization applies to includes like prefix/** but not if there is a bare '**' 
+						# in the includes list)
+						if self.includes is not None:
+							self.includes.removeUnmatchableDirectories(root, dirs)
 						
-					for p in files:
-						matches.append(root+p)
-					for p in matchedemptydirs:
-						matches.append(root+p+'/')					
+						# optimization: if there's an exclude starting with this dir and ending with '/**' or '/*', don't navigate to it
+						# we deliberately match only against filename patterns (not dir patterns) since 
+						# empty dirs are handled in the later loop not through this mechanism, so it's just files that matter
+						if self.excludes is not None and dirs != []:
+							# nb: both dirs and the result of getPathMatches will have no trailing slashes
+							self.__removeNamesFromList(dirs, self.excludes.getPathMatches(root, filenames=dirs))
+
+						# any other subdirs will need to be walked to
+						for dir in dirs:
+							pathsToWalk.append(longdir+os.sep+dir)
+						
+						# now find which files and empty dirs match
+						matchedemptydirs = dirs
+						
+						if self.includes is not None:
+							files, matchedemptydirs = self.includes.getPathMatches(root, filenames=files, dirnames=matchedemptydirs, unusedPatternsTracker=unusedPatternsTracker)
+						else:
+							matchedemptydirs = [] # only include empty dirs if explicitly specified
+						
+						if self.excludes is not None:
+							exfiles, exdirs = self.excludes.getPathMatches(root, filenames=files, dirnames=matchedemptydirs)
+							self.__removeNamesFromList(files, exfiles)
+							self.__removeNamesFromList(matchedemptydirs, exdirs)
+							
+						for p in files:
+							matches.append(root+p)
+						for p in matchedemptydirs:
+							matches.append(root+p+'/')					
 				
 				#end while
-				
+				if _shortcutUptodateCheck:
+					self._newestFile = newestTimestamp, newestFile
+
 				log.info('FindPaths in "%s" found %d path(s) for %s after visiting %s directories; %s', resolveddir, len(matches), self, visited, self.location)
 				if time.time()-startt > 5: # this should usually be pretty quick, so may indicate a real build file mistake
 					log.warn('FindPaths took a long time: %0.1f s to evaluate %s; see %s', time.time()-startt, self, self.location)
