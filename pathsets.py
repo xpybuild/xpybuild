@@ -399,6 +399,9 @@ class FindPaths(BasePathSet):
 
 	Destination paths (where needed) are generated from the path underneath the
 	base dir.
+
+	FindPaths will return file or directory symlinks (with '/' suffix if directory), 
+	but will not recurse into directory symlinks. 
 	
 	@param dir: May be a simple string, or a DirGeneratedByTarget to glob under a 
 	directory generated as part of the build. To find paths from a set of 
@@ -540,9 +543,15 @@ class FindPaths(BasePathSet):
 					with os.scandir(longdir) as it:
 						dirs = []
 						files = []
+						symlinks = None # set to keep track of symlinks, to avoid recursing into them
 						for entry in it:
 							if entry.is_dir():
 								dirs.append(entry.name)
+								if entry.is_symlink():
+									if symlinks is None: 
+										symlinks = {entry.name}
+									else:
+										symlinks.add(entry.name)
 							else:
 								files.append(entry.name)
 								# for simplicity and because it doesn't cost anything we do this before processing include/exclude
@@ -566,6 +575,7 @@ class FindPaths(BasePathSet):
 
 						# any other subdirs will need to be walked to
 						for dir in dirs:
+							if symlinks is not None and dir in symlinks: continue # don't recursive into symlinks (messes up copying)
 							pathsToWalk.append(longdir+os.sep+dir)
 						
 						# now find which files and empty dirs match
