@@ -41,7 +41,7 @@ class TargetWrapper(object):
 		scheduler during builds. 
 	"""
 	
-	__slots__ = 'target', 'path', 'name', 'isDirPath', 'lock', 'depcount', '__targetdeps', '__nontargetdeps', '__rdeps', '__isdirty', '__implicitInputs', '__implicitInputsFile', 'stampfile', 'effectivePriority', '__scheduler', '__newestNonTargetDep'
+	__slots__ = 'target', 'path', 'name', 'isDirPath', 'lock', 'depcount', '__targetdeps', '__nontargetdeps', '__rdeps', '__isdirty', '__implicitInputs', '__implicitInputsFile', 'stampfile', 'effectivePriority', '__scheduler', '_dependencyTimes', '__newestNonTargetDep'
 	
 	# flags
 	DEP_IS_DIR_PATH = 2**1
@@ -80,6 +80,8 @@ class TargetWrapper(object):
 		self.__isdirty = False
 		
 		self.__implicitInputs = None
+
+		self._dependencyTimes=None
 
 		self.__targetdeps = None
 		""" A list of TargetWrappers that this one depends upon. 

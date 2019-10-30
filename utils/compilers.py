@@ -308,9 +308,10 @@ class GCC(ToolChain, UnixCompiler, UnixLinker, Depends):
 		UnixCompiler.__init__(self, 'g++', GccProcessOutputHandler, environs=environs)
 		UnixLinker.__init__(self, 'g++', GccProcessOutputHandler, environs=environs)
 		Depends.__init__(self, environs=environs)
+		self.depends_command = self.compiler_command
 	def depends(self, context, src, options, flags=None, includes=None):
 		args=[
-			'g++', 
+			self.depends_command, 
 			'-M', # output make dependency rules
 			'-MG', # allow missing header files
 			'-c'

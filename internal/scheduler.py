@@ -522,7 +522,7 @@ class BuildScheduler(object):
 def createDepGraph(file, scheduler, context):
 	""" Create a .dot file with the build dependency graph """
 	def _getKey(target):
-		return re.sub(r"[${}/()+\\<>\. -]", "_", str(target));
+		return re.sub(r"[^a-zA-Z0-9_]", "_", str(target));
 
 	def _getPrintable(target):
 		return re.sub(r"<.*>", "", re.sub(r"[{}]", "", str(target)))
@@ -545,7 +545,7 @@ def logTargetTimes(file, scheduler, context):
 	"""
 
 	def _getKey(target):
-		return re.sub(r"[${}/()+\\<>\. -]", "_", str(target));
+		return re.sub(r"[^a-zA-Z0-9_]", "_", str(target));
 
 	def _getPrintable(target):
 		return re.sub(r"<.*>", "", re.sub(r"[{}]", "", str(target)))
@@ -569,29 +569,39 @@ def logTargetTimes(file, scheduler, context):
 			str = str + "\t\t%s (%0.2f, %0.2f)\n" % (target.target.name, time, sum)
 		return str
 
-	def _sumDepTimes(target, scheduler, context, dots, curpath, critpath):
+	def _sumDepTimes(target, scheduler, context, dots, critpath):
 		""" Takes a target, recurses over all its dependencies and sums the time take as well as looking for the critical path.
-		This is not called the most efficient way (it's O(n^2), rather than O(n), since we don't cache the data on the nodes).
-		It's not used unless we're requesting times though, so unless it gets too bad it's acceptable.
 		"""
-		(_, time) = scheduler.targetTimes[target.name]
-		sum = time;
-		curpath=list(curpath) # clone the path to check whether we're actually improving the critical path
-		curpath.append((target, time)) # append this node to the possible critical path
-		if _sumpath(curpath) > _sumpath(critpath): # if we are, then replace the current one
-			del critpath[:]
-			critpath.extend(curpath) 
+
+		# postcondition - returns the time for this target, the cumulative time for this target and the critical path for this target
+		# and stores all of that in target._dependencyTimes, then updates critpath and dots as appropriate
+
+		if target._dependencyTimes: return target._dependencyTimes
+
+		(_, time) = scheduler.targetTimes.get(target.name, (0, 0))
 
 		maxcrit = 0 # find the maximum critical path below us
 		target.resolveUnderlyingDependencies()
+		localcritpath = []
+		deps = set()
 		for d in target.getTargetDependencies():
-				(edgecrit, edgesum) = _sumDepTimes(d, scheduler, context, dots, curpath, critpath) # get the critical/sum time for this dependency
+				(edgecrit, edgesum, edgedeps, edgepath) = _sumDepTimes(d, scheduler, context, dots, critpath) # get the critical/sum time for this dependency
 				dots.add('%s -> %s[label="%s"];\n' % (_getKey(d), _getKey(target), _formatTime(edgesum)))
-				sum = sum + edgesum
+				deps.update(edgedeps)
 				if edgecrit > maxcrit:
 					maxcrit = edgecrit # update our maximum
+					localcritpath = list(edgepath)
+		deps.add((target, time))
+		sum = reduce((lambda s, (_, time): s+time), deps, 0)
+		localcritpath.insert(0, (target, time))
 		dots.add('%s[label="{{%s|{%s|%s}}}"];\n' % (_getKey(target), _getPrintable(target), _formatTime(time), _formatTime(sum)))
-		return (time+maxcrit, sum) # return the critical path sum and all deps sum
+		target._dependencyTimes = (time+maxcrit, sum, deps, localcritpath) # return the critical path sum and all deps sum
+		
+		if _sumpath(localcritpath) > _sumpath(critpath):
+			del critpath[:]
+			critpath.extend(localcritpath)
+
+		return target._dependencyTimes
 
 	log.critical("Analysing build times...")
 	critpath = []
@@ -604,8 +614,8 @@ def logTargetTimes(file, scheduler, context):
 			for name in scheduler.targetTimes: # Iterate over each target
 				(path, time) = scheduler.targetTimes[name]
 				target = scheduler.targetwrappers[path]
-				(crittime, cumtime) = _sumDepTimes(target, scheduler, context, dots, [], critpath) # recurse, summing the times on all the deps
-				f.write(name)
+				(crittime, cumtime, _, _) = _sumDepTimes(target, scheduler, context, dots, critpath) # recurse, summing the times on all the deps
+				f.write(name.replace(',','_'))
 				f.write(',')
 				f.write(str(time))
 				f.write(',')
