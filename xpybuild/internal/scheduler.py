@@ -25,7 +25,7 @@ import threading
 import io
 from functools import reduce
 
-from xpybuild import _XPYBUILD_VERSION
+from buildcommon import _XPYBUILD_VERSION
 from basetarget import BaseTarget
 from buildcommon import *
 from buildcontext import BuildContext

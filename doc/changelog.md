@@ -5,10 +5,12 @@
 - FilteredCopy mappers and the WriteFilter target now handle only unicode str objects and not bytes.
 - BuildContext.defaultOptions() was removed, as there is no legitimate use case for it. 
 - `tmpdir` has been removed from the target's `self.options`; instead if needed the target's `self.workDir` should be used explicitly. 
+- All xpybuild modules have been moved to a new `xpybuild.` module for namespacing purposes (though unqualified access to the names is still permitted to avoid the need to update existing builds). The xpybuild.py entry-point script is now one level above the directory for the `xpybuild` package. 
 
 ## Deprecation
 - The isWindows() function is deprecated in favour of the IS_WINDOWS constant (which is faster). 
 - BuildContext.mergeOptions() is deprecated in favour of BaseTarget.options, or (for situations where there is no target such as PathSets) BuildContext.getGlobalOption().
+- All xpybuild modules and classes should now be accessed via "xpybuild." (e.g. "xpybuild.targets.copy" etc), and importing names without the `xpybuild.` prefix is now deprecated. 
 
 ## Fixes
 - Fixed a couple of bugs in incremental C++ compilation - one that could cause unnecessary incremental compilation of targets that depend on generated C/C++ source or include files, and another in which the build would fail rather than re-running makedepends if some of the cached dependencies no longer exist. 

@@ -9,7 +9,7 @@ from pysys.constants import PROJECT
 
 def getXpybuildVersion(project):
 	assert project, 'not initialized yet'
-	with io.open(project.XPYBUILD_ROOT+'/XPYBUILD_VERSION', encoding='ascii') as f:
+	with io.open(project.XPYBUILD_ROOT+'/xpybuild/XPYBUILD_VERSION', encoding='ascii') as f:
 		return f.read().strip()
 
 _log = logging.getLogger('perfreporter')

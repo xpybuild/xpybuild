@@ -19,8 +19,9 @@ from propertysupport import *
 from buildcommon import *
 from pathsets import *
 
+# this is a convenient place to check we can use both with an without xpybuild.* qualification
 from targets.copy import *
-from targets.writefile import *
+from xpybuild.targets.writefile import *
 
 defineStringProperty('MY_PROP', 'prop_value')
 

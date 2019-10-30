@@ -36,7 +36,7 @@ requireXpyBuildVersion('3.0')
 # Need the caller to provide the path to epydoc
 #definePathProperty('EPYDOC_ROOT', None, mustExist=True) # parent of the /lib directory; used for local builds but not Travis
 defineOutputDirProperty('OUTPUT_DIR', 'release-output')
-with open('XPYBUILD_VERSION') as f: defineStringProperty('VERSION', f.read().strip())
+with open('xpybuild/XPYBUILD_VERSION') as f: defineStringProperty('VERSION', f.read().strip())
 
 def markdownToTxt(f): return f.replace('.md', '.txt')
 
@@ -56,14 +56,16 @@ Copy('${OUTPUT_DIR}/doc/', FindPaths('doc/', includes='*.md')) # simulate creati
 	env={'PYTHONPATH' : PathSet('${EPYDOC_ROOT}/lib')}
 	)
 """
-# Zip all the distributables into a release zip file.
+# Zip all the distributables into a release zip file, but not documentation.
 Zip('${OUTPUT_DIR}/xpybuild_${VERSION}.zip', [
-		#AddDestPrefix('doc/api/', FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/doc/api/'))),
-		AddDestPrefix('doc/', MapDest(markdownToTxt, FindPaths('doc/', includes=['*.md']))),
-		FindPaths('./', includes='**/*.py', excludes=['tests/**', 'root.xpybuild.py', 'doc/**', 'release-output/**']),
-		'XPYBUILD_VERSION',
-		MapDest(markdownToTxt, 'README.md'),
-		'LICENSE.txt',
+		AddDestPrefix('xpybuild/',[
+			FindPaths('./xpybuild/', includes=['**/*.py']),
+			'xpybuild/XPYBUILD_VERSION',
+			'LICENSE.txt',
+			MapDest(markdownToTxt, 'README.md'),
+			MapDest(markdownToTxt, 'doc/changelog.md'),
+		]),
+		'xpybuild.py',
 		])
 
 
