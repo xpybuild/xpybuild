@@ -33,7 +33,7 @@ class SymLink(BaseTarget):
 		dest: the link to be created
 		src: what it points at
 		"""
-		if isinstance(dest, basestring) and dest.endswith('/'): raise BuildException('SymLink target can only be used for files, not directories') # for now
+		if isinstance(dest, str) and dest.endswith('/'): raise BuildException('SymLink target can only be used for files, not directories') # for now
 		if not hasattr(os, 'symlink'): raise BuildException('SymLink target is not supported on this platform')
 
 		self.src = PathSet(src)

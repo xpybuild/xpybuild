@@ -2,7 +2,7 @@
 #
 # logging handler that logs progress messages as a progress bar
 # 
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -32,9 +32,8 @@ from utils.terminal import getTerminalSize
 class ProgressBarConsoleFormatter(ConsoleFormatter):
 	"""
 	An alternative log handler that outputs as a non-coloured progress bar 
-	for systems without cursor movement support
+	for systems without cursor movement support (e.g. Windows). 
 	"""
-	output = None
 	state = "OK"
 	progress = False
 	width = None
@@ -44,10 +43,9 @@ class ProgressBarConsoleFormatter(ConsoleFormatter):
 	time = 0
 	timethreshold = 0
 
-	def __init__(self, output, buildOptions):
-		ConsoleFormatter.__init__(self)
+	def __init__(self, output, buildOptions, **kwargs):
+		ConsoleFormatter.__init__(self, output, buildOptions, **kwargs)
 		
-		self.output = output
 		self.bufferingDisabled = True # buffering isn't helpful in progress mode
 		(self.width, height) = getTerminalSize()
 		self.width = self.width - len("Progress: [] (xxx/xxx)  ")
@@ -62,10 +60,10 @@ class ProgressBarConsoleFormatter(ConsoleFormatter):
 		elif self.state == "ERROR": return "!"
 
 	def occupied(self, current, total):
-		return (current*self.width) / total
+		return (current*self.width) // total
 
 	def unoccupied(self, current, total):
-		return self.width - (current*self.width) / total
+		return self.width - (current*self.width) // total
 
 	def getNextSpinner(self):
 		if self.spinner == '/':
@@ -152,9 +150,9 @@ class VT100ProgressBarConsoleFormatter(ConsoleFormatter):
 	time = 0
 	timethreshold = 0
 
-	def __init__(self, output, buildOptions):
+	def __init__(self, output, buildOptions, **kwargs):
 		
-		ConsoleFormatter.__init__(self)
+		ConsoleFormatter.__init__(self, output, buildOptions=buildOptions, **kwargs)
 		
 		self.output = output
 		self.bufferingDisabled = True # buffering isn't helpful in progress mode
@@ -190,9 +188,9 @@ class VT100ProgressBarConsoleFormatter(ConsoleFormatter):
 		elif self.state == "ERROR": return "!"
 
 	def occupied(self, current, total):
-		return (current*self.width) / total
+		return (current*self.width) // total
 	def unoccupied(self, current, total):
-		return self.width - (current*self.width) / total
+		return self.width - (current*self.width) // total
 
 	def getNextSpinner(self):
 		if self.spinner == '/':
@@ -305,7 +303,7 @@ class VT100ProgressBarConsoleFormatter(ConsoleFormatter):
 					self.cursorUp(line)
 					self.output.flush()
 
-if isWindows():
+if IS_WINDOWS:
 	registerConsoleFormatter("progress", ProgressBarConsoleFormatter)
 else:
 	registerConsoleFormatter("progress", VT100ProgressBarConsoleFormatter)

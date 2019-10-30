@@ -21,8 +21,7 @@
 #
 
 import traceback, os, sys, locale, inspect, io
-
-
+import re
 import platform
 
 import logging
@@ -66,29 +65,97 @@ def include(file):
 	BuildFileLocation._currentBuildFile.append(filepath) # add to stack of files being parsed
 	
 	namespace = {}
-	execfile(filepath, namespace, namespace)
+	exec(compile(open(filepath, "rb").read(), filepath, 'exec'), namespace, namespace)
 	
 	del BuildFileLocation._currentBuildFile[-1]
 	
 	return namespace
 
-def _compareVersion(version, ref):
-	""" returns true if version >= ref """
-	version = version.split('.')
-	ref = ref.split('.')
-	equal = True
-	for i in range(0, min(len(version), len(ref))):
-		if (version[i]+ref[i]).isdigit() and int(version[i]) < int(ref[i]):
-			return False
-		if version[i] < ref[i]: # fall back to lexical comparison for thigns like .beta1
-			return False
-		elif version[i] != ref[i]:
-			equal = False
-	return len(version) >= len(ref) if equal else True
+
+def compareVersions(v1, v2):
+	""" Compares two alphanumeric dotted version strings to see which is more recent. 
+
+		Example usage::
+		
+			if self.compareVersions(thisversion, '1.2.alpha-3') > 0:
+				... # thisversion is newer than 1.2.alpha-3 
+
+		The comparison algorithm ignores case, and normalizes separators ./-/_ 
+		so that `'1.alpha2'=='1Alpha2'`. Any string components are compared 
+		lexicographically with other strings, and compared to numbers 
+		strings are always considered greater. 
+
+		@param v1: A string containing a version number, with any number of components. 
+		@param v2: A string containing a version number, with any number of components. 
+
+		@return: an integer > 0 if v1>v2, 
+		an integer < 0 if v1<v2, 
+		or 0 if they are semantically the same.
+
+		>>> compareVersions('10-alpha5.dev10', '10alpha-5-dEv_10') == 0 # normalization of case and separators
+		True
+
+		>>> compareVersions('1.2.0', '1.2')
+		0
+
+		>>> compareVersions('1.02', '1.2')
+		0
+
+		>>> compareVersions('1.2.3', '1.2') > 0
+		True
+
+		>>> compareVersions('1.2', '1.2.3')
+		-1
+		
+		>>> compareVersions('10.2', '1.2')
+		1
+
+		>>> compareVersions('1.2.text', '1.2.0') # letters are > numbers
+		1
+
+		>>> compareVersions('1.2.text', '1.2') # letters are > numbers 
+		1
+
+		>>> compareVersions('10.2alpha1', '10.2alpha')
+		1
+
+		>>> compareVersions('10.2dev', '10.2alpha') # letters are compared lexicographically
+		1
+
+		>>> compareVersions('', '')
+		0
+
+		>>> compareVersions('1', '')
+		1
+	"""
+	
+	def normversion(v):
+		# normalize versions into a list of components, with integers for the numeric bits
+		v = [int(x) if x.isdigit() else x for x in re.split('([0-9]+|[.])', v.lower().replace('-','.').replace('_','.')) if (x and x != '.') ]
+		return v
+	
+	v1 = normversion(v1)
+	v2 = normversion(v2)
+	
+	# make them the same length
+	while len(v1)<len(v2): v1.append(0)
+	while len(v1)>len(v2): v2.append(0)
+
+	for i in range(len(v1)):
+		if type(v1[i]) != type(v2[i]): # can't use > on different types
+			if type(v2[i])==int: # define string>int
+				return +1
+			else:
+				return -1
+		else:
+			if v1[i] > v2[i]: return 1
+			if v1[i] < v2[i]: return -1
+	return 0
+
 
 def requireXpyBuildVersion(version):
 	""" Checks that this xpybuild is at least a certain version number """
-	if not _compareVersion(_XPYBUILD_VERSION, version): raise Exception("This build file requires xpyBuild at least version "+version+" but this is xpyBuild "+_XPYBUILD_VERSION)
+	if compareVersions(_XPYBUILD_VERSION, version) < 0: raise Exception("This build file requires xpyBuild at least version "+version+" but this is xpyBuild "+_XPYBUILD_VERSION)
 
 """ Returns true if the path is a directory (ends with / or \\). """
 isDirPath = utils.fileutils.isDirPath
@@ -105,8 +172,6 @@ def normpath(path):
 	See also L{utils.fileutils.normLongPath} and L{utils.fileutils.toLongPathSafe}. 
 
 	"""
-	if isinstance(path, unicode) and not (IS_WINDOWS and path.startswith('\\\\?')):
-		path = path.encode()
 	path = os.path.normpath(path)+(os.path.sep if isDirPath(path) else '')
 	
 	# normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case 
@@ -122,11 +187,18 @@ IS_WINDOWS = platform.system()=='Windows'
 # (we won't want constants for every possible OS here, but since there is so much conditionalization between 
 # windows and unix-based systems, much of it on the critical path, it is worthwhile having a constant for this). 
 
-def isWindows():
-	""" Returns True if this is a windows platform. 
-	@deprecated: Use the IS_WINDOWS constant instead. 
-	"""
-	return IS_WINDOWS
+if IS_WINDOWS:
+	def isWindows():
+		""" Returns True if this is a windows platform. 
+		@deprecated: Use the IS_WINDOWS constant instead. 
+		"""
+		return True
+else:
+	def isWindows():
+		""" Returns True if this is a windows platform. 
+		@deprecated: Use the IS_WINDOWS constant instead. 
+		"""
+		return False
 
 _stdoutEncoding = None
 try:

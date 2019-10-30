@@ -22,7 +22,7 @@ import os, platform
 import logging, buildcommon
 
 def lowerCurrentProcessPriority():
-	if buildcommon.isWindows():
+	if buildcommon.IS_WINDOWS:
 		import win32process, win32api,win32con
 		win32process.SetPriorityClass(win32api.GetCurrentProcess(), win32process.BELOW_NORMAL_PRIORITY_CLASS)
 	else:

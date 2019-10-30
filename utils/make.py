@@ -33,10 +33,6 @@ class MakeConsoleFormatter(ConsoleFormatter):
 	file:line: category: description
 
 	"""
-	output = None
-	def __init__(self, output, buildOptions):
-		ConsoleFormatter.__init__(self)
-		self.output = output
 	def handle(self, record):
 		if record.levelno == logging.ERROR:
 			category = 'error'
@@ -53,9 +49,9 @@ class MakeConsoleFormatter(ConsoleFormatter):
 			location = "%s:%s" % (record.pathname, record.lineno or 0)
 
 		if category:
-			self.output.write("%s: %s: %s\n" % (location, category, record.getMessage().encode(errors='ignore')))
+			self.output.write("%s: %s: %s\n" % (location, category, record.getMessage()))
 		else:
-			self.output.write("%s\n" % record.getMessage().encode(errors='ignore'))
+			self.output.write("%s\n" % record.getMessage())
 
 		self.output.flush()
 

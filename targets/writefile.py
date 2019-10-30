@@ -1,6 +1,6 @@
 # xpyBuild - eXtensible Python-based Build System
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -24,12 +24,12 @@ from basetarget import BaseTarget
 from utils.fileutils import mkdir, openForWrite, normLongPath
 
 class WriteFile(BaseTarget):
-	""" Target for writing out a textfile with hardcoded contents. 
+	""" Target for writing out a text or binary file with hardcoded contents. 
 	
 	The file will only be updated if its contents have changed. 
 	"""
 	
-	def __init__(self, name, getContents, dependencies=None, mode=None, executable=False, args=None, kwargs=None):
+	def __init__(self, name, getContents, dependencies=None, mode=None, executable=False, encoding=None, args=None, kwargs=None):
 		"""
 		Constructor. 
 		
@@ -39,14 +39,13 @@ class WriteFile(BaseTarget):
 		
 		@param name: the output filename
 		
-		@param getContents: a string (which will be subject to expansion) or 
-		a function that accepts a context as input 
+		@param getContents: a unicode character string (which will be subject to expansion), 
+		or binary bytes, or a function that accepts a context as input 
 		followed optionally by any specified 'args') and returns 
-		the string that should be written to the file, using \\n for newlines (not os.linesep).
-		
-		The file is written in binary mode, but any occurrences of the newline character \\n in 
+		the string/bytes that should be written to the file, using \\n for newlines 
+		(not os.linesep - any occurrences of the newline character \\n in 
 		the provided string will be replaced automatically with the 
-		OS-specific line separator. 
+		OS-specific line separator unless bytes are provided).
 		
 		The function will be evaluated during the dependency resolution 
 		phase. 
@@ -57,6 +56,9 @@ class WriteFile(BaseTarget):
 		
 		@param executable: set to True to add Unix executable permissions (simpler 
 		alternative to setting using mode)
+		
+		@param encoding: The encoding to use for converting the str to bytes; 
+		if not specified the `common.fileEncodingDecider` option is used. 
 
 		@param args: optional tuple containing arguments that should be passed to 
 		the getContents function, after the context argument (first arg)
@@ -74,29 +76,36 @@ class WriteFile(BaseTarget):
 		self.__resolved = None
 		self.__mode = mode
 		self.__executable = executable 
+		self.__encoding = encoding
+		self.addHashableImplicitInputOption('common.fileEncodingDecider')
 	
 	def getHashableImplicitInputs(self, context):
 		""" The literal content text is considered the dependency of this target """
-		return super(WriteFile, self).getHashableImplicitInputs(context) + [self._getContents(context)] + ['mode: %s, executable: %s'%(self.__mode, self.__executable)]
+		stringifiedcontents = self._getContents(context)
+		if isinstance(stringifiedcontents, bytes): stringifiedcontents = repr(stringifiedcontents)
+		return super(WriteFile, self).getHashableImplicitInputs(context) + [stringifiedcontents] + ['mode: %s, executable: %s'%(self.__mode, self.__executable)]
 		
 	def run(self, context):
 		contents = self._getContents(context)
 		
 		mkdir(os.path.dirname(self.path))
 		path = normLongPath(self.path)
-		with openForWrite(path, 'wb') as f:
-			f.write(contents.replace('\n', os.linesep))
-		if self.__mode and not isWindows():
+		with self.openFile(context, path, 'wb' if isinstance(contents, bytes) else 'w', encoding=self.__encoding) as f:
+			f.write(contents)
+		
+		if self.__mode and not IS_WINDOWS:
 			os.chmod(path, self.__mode)
-		if self.__executable and not isWindows():
+		if self.__executable and not IS_WINDOWS:
 			os.chmod(path, stat.S_IXOTH | stat.S_IXUSR | stat.S_IXGRP | os.stat(self.path).st_mode)
 		
 	def _getContents(self, context):
 		if self.__resolved == None:
 			c = self.getContents
-			if isinstance(c, basestring) or hasattr(c, 'resolveToString'):
+			if isinstance(c, str) or hasattr(c, 'resolveToString'):
 				self.__resolved = context.expandPropertyValues(c)
-			else:
+			elif callable(c):
 				self.__resolved = c(context, *self.__args, **self.__kwargs)
-			assert isinstance(self.__resolved, basestring), 'WriteFile function must return a string: %r'%self.__resolved
+			else: # hopefully bytes
+				self.__resolved = c
+			assert isinstance(self.__resolved, str) or isinstance(self.__resolved, bytes), 'WriteFile function must return a str or bytes: %r'%self.__resolved
 		return self.__resolved

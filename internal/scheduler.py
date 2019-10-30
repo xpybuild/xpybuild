@@ -23,6 +23,7 @@
 import traceback, os, re, stat
 import threading
 import io
+from functools import reduce
 
 from xpybuild import _XPYBUILD_VERSION
 from basetarget import BaseTarget
@@ -37,9 +38,9 @@ from utils.timeutils import formatTimePeriod
 from threading import Lock
 
 import time
-import thread
+import _thread
 import logging
-import Queue
+import queue
 import random
 import math
 
@@ -99,7 +100,7 @@ class BuildScheduler(object):
 						raise BuildException('Cannot use shared output directory for target: directory targets must always build to a dedicated directory')
 						
 				self.targetwrappers[t.path] = TargetWrapper(target=t, scheduler=self)
-			except Exception, e:
+			except Exception as e:
 				if not isinstance(e, IOError):
 					log.exception('FAILED to prepare target %s: '%t) # include python stack trace in case it's an xpybuild bug
 				# ensure all exceptions from here are annotated with the location and target name
@@ -247,7 +248,7 @@ class BuildScheduler(object):
 		"""
 		self.index = 0 # identifies thread pool item n out of total=len(self.pending)
 		self.total = len(self.pending) # can increase during this phase
-		pending = Queue.Queue()
+		pending = queue.Queue()
 		for i in self.pending:
 			pending.put_nowait((0, i))
 
@@ -270,17 +271,17 @@ class BuildScheduler(object):
 			# this is the only place we can list all targets since only here are final priorities known
 			# printing the deps in one place is important for debugging missing dependencies etc
 			# might move this to a separate file at some point
-			self.selectedtargetwrappers.sort(key=lambda (targetwrapper, targetdeps): (-targetwrapper.effectivePriority, targetwrapper.name) )
+			self.selectedtargetwrappers.sort(key=lambda targetwrapper_targetdeps: (-targetwrapper_targetdeps[0].effectivePriority, targetwrapper_targetdeps[0].name) )
 			targetinfodir = mkdir(self.context.expandPropertyValues('${BUILD_WORK_DIR}/targets/'))
 			with io.open(targetinfodir+'/xpybuild-version.properties', 'w', encoding='utf-8') as f:
 				# write this file in case we want to avoid mixed xpybuild versions in working dir
-				f.write(u'xpybuildVersion=%s\n'%_XPYBUILD_VERSION)
-				f.write(u'workDirVersion=%d\n' % 1) # bump this when we make a breaking change that should force a rebuild
+				f.write('xpybuildVersion=%s\n'%_XPYBUILD_VERSION)
+				f.write('workDirVersion=%d\n' % 1) # bump this when we make a breaking change that should force a rebuild
 
 			with io.open(targetinfodir+'/selected-targets.txt', 'w', encoding='utf-8') as f:
-				f.write(u'%d targets selected for building:\n'%(len(self.selectedtargetwrappers)))
+				f.write('%d targets selected for building:\n'%(len(self.selectedtargetwrappers)))
 				for targetwrapper,targetdeps in self.selectedtargetwrappers:
-					f.write(u'- Target %s with priority %s depends on: %s\n\n'%(targetwrapper, targetwrapper.effectivePriority, 
+					f.write('- Target %s with priority %s depends on: %s\n\n'%(targetwrapper, targetwrapper.effectivePriority, 
 						', '.join(str(d) for d in targetdeps) if len(targetdeps)>0 else '<no dependencies>'))
 	
 		#assert (not pool.errors) or (self.total == self.index), (self.total, self.index) #disabled because assertion triggers during ctrl+c
@@ -390,7 +391,7 @@ class BuildScheduler(object):
 
 		leaves = self.leaves # list of targetwrappers
 		self.leaves = None
-		buildqueue = Queue.PriorityQueue()
+		buildqueue = queue.PriorityQueue()
 		randomizePriorities = 'randomizePriorities' in self.options
 		for l in leaves:
 			if randomizePriorities:
@@ -592,7 +593,7 @@ def logTargetTimes(file, scheduler, context):
 					maxcrit = edgecrit # update our maximum
 					localcritpath = list(edgepath)
 		deps.add((target, time))
-		sum = reduce((lambda s, (_, time): s+time), deps, 0)
+		sum = reduce((lambda s, targetAndTime: s+targetAndTime[1]), deps, 0)
 		localcritpath.insert(0, (target, time))
 		dots.add('%s[label="{{%s|{%s|%s}}}"];\n' % (_getKey(target), _getPrintable(target), _formatTime(time), _formatTime(sum)))
 		target._dependencyTimes = (time+maxcrit, sum, deps, localcritpath) # return the critical path sum and all deps sum

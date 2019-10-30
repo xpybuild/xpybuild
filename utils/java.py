@@ -18,12 +18,13 @@
 #
 
 import os, sys, re, subprocess
+import locale
 from buildcommon import *
 from propertysupport import defineOption
 from utils.process import call
 from utils.outputhandler import ProcessOutputHandler
 from utils.flatten import getStringList
-from fileutils import deleteDir, mkdir, deleteFile, openForWrite, normLongPath
+from .fileutils import deleteDir, mkdir, deleteFile, openForWrite, normLongPath
 from utils.consoleformatter import publishArtifact
 
 from buildexceptions import BuildException
@@ -64,8 +65,8 @@ def create_manifest(path, properties, options):
 		assert ' ' not in key.strip(), 'manifest.mf key "%s" does not confirm to jar file specification - cannot contain spaces'%(key.strip())
 		assert '\n' not in line, repr(line)
 		
-		# must convert to utf8 before applying continuation char logic
-		if not isinstance(line, str): line = line.encode('utf-8')
+		# assume character strings as input; must convert to utf8 before applying continuation char logic
+		line = line.encode('utf-8')
 		
 		# spec says: No line may be longer than 72 bytes (not characters), in its UTF8-encoded form
 		# If a value would make the initial line longer than this, it should be continued on extra lines (each starting with a single SPACE).
@@ -135,8 +136,8 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 		assert self._logbasename # could make this optional, but for now don't
 		
 		if self._contents:
-			with open(self._logbasename+'.out', 'w') as fo:
-				fo.write(self._contents.encode('UTF-8'))
+			with openForWrite(self._logbasename+'.out', 'w', encoding='utf-8') as fo:
+				fo.write(self._contents)
 		
 		errs = []
 		warns = []
@@ -172,7 +173,7 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 			if not iswarning and not errmsg: errmsg = msg+(' at %s'%loc if loc else '')
 	
 		if errs:
-			with open(self._logbasename+'-errors.txt', 'w') as fo:
+			with openForWrite(self._logbasename+'-errors.txt', 'w', encoding='utf-8') as fo:
 				for x in errs:
 					# x[0] is the common msg type, x[1] is a list of places where it occured, each of which 
 					
@@ -187,8 +188,8 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 					self._log(logging.ERROR, '\njavac> '.join(x[1][0]), 
 						filename,lineno) 
 					
-					print >> fo, '- '+x[0]
-					print >> fo
+					print('- '+x[0], file=fo)
+					print(file=fo)
 					i = 0
 					for x2 in x[1]: # print the detail of later similar ones only at INFO
 						if i != 0:
@@ -197,9 +198,9 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 						
 						self._errors.append(' / '.join(x2[0]))
 						for x3 in x2:
-							fo.write(x3.encode(getStdoutEncoding()))
-							print >> fo
-					print >> fo
+							fo.write(x3)
+							print(file=fo)
+					print(file=fo)
 			self._log(logging.ERROR, '%d javac ERRORS in %s - see %s'%(sum([len(x[1]) for x in errs]), self._targetName, self._logbasename+'-errors.txt'), 
 				self._logbasename+'-errors.txt')
 			publishArtifact('javac %s errors'%self._targetName, self._logbasename+'-errors.txt')
@@ -207,7 +208,7 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 		if warns:
 			self._log(logging.WARNING, '%d javac WARNINGS in %s - see %s; first is: %s'%(sum([len(x[1]) for x in warns]), self._targetName, self._logbasename+'-warnings.txt', warns[0][0]), 
 				self._logbasename+'-warnings.txt')
-			with open(self._logbasename+'-warnings.txt', 'w') as fo:
+			with openForWrite(self._logbasename+'-warnings.txt', 'w', encoding='utf-8') as fo:
 				for x in warns:
 					if not errmsg and (returnCode != 0): 
 						errmsg = x[1][0][0]
@@ -215,11 +216,11 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 							errmsg = 'Failed due to %d warnings, first is: %s'%(len(warns), errmsg)
 						# it IS worth publishing warnings if they caused a failure
 						publishArtifact('javac %s warnings'%self._targetName, self._logbasename+'-warnings.txt')
-					print >>fo, '- '+x[0]
-					print >>fo
+					print('- '+x[0], file=fo)
+					print(file=fo)
 					for x2 in x[1]:
 						for x3 in x2:
-							print >>fo, x3
+							print(x3, file=fo)
 			# might add an option to publish warnings as artifacts, but don't by default as it happens a lot on some projects
 			#_publishArtifact(self._logbasename+'-warnings.txt')
 		
@@ -238,7 +239,7 @@ class JavacProcessOutputHandler(ProcessOutputHandler):
 		raise BuildException(msg)
 
 
-def javac(output, inputs, classpath, options, logbasename, targetname):
+def javac(output, inputs, classpath, options, logbasename, targetname, workDir):
 	""" Compile some java files to class files.
 
 	Will raise BuildException if compilation fails.
@@ -256,6 +257,8 @@ def javac(output, inputs, classpath, options, logbasename, targetname):
 		to use for files such as .err, .out, etc files
 
 	@param targetname: to log appropriate error messages
+	
+	@param workDir: where temporary files are stored.  
 
 	"""
 
@@ -269,9 +272,9 @@ def javac(output, inputs, classpath, options, logbasename, targetname):
 	else:
 		javacpath = "javac" # just get it from the path
 	# store the list of files in a temporary file, then build from that.
-	mkdir(options['tmpdir'])
+	mkdir(workDir)
 	
-	argsfile = os.path.join(options['tmpdir'], "javac_args.txt")
+	argsfile = os.path.join(workDir, "javac_args.txt")
 	
 	# build up the arguments
 	args = ["-d", output]
@@ -288,10 +291,9 @@ def javac(output, inputs, classpath, options, logbasename, targetname):
 	if classpath: args.extend(['-cp', classpath])
 	args.extend([x for x in inputs if x.endswith('.java')]) # automatically filter out non-java files
 
-	with openForWrite(argsfile, 'wb') as f:
+	with openForWrite(argsfile, 'w', encoding=locale.getpreferredencoding()) as f:
 		for a in args:
-			a = '"%s"'%a.replace('\\','\\\\')
-			print >>f, a
+			f.write('"%s"'%a.replace('\\','\\\\')+'\n')
 
 	success=False
 	try:
@@ -416,7 +418,7 @@ up the Javadoc generation.
 """
 defineOption('javadoc.ignoreSourceFilesFromClasspath', False)
 
-def javadoc(path, sources, classpath, options, outputHandler):
+def javadoc(path, sources, classpath, options, workDir, outputHandler):
 	""" Create javadoc from sources and a set of options
 
 	@param path: The directory under which to create the javadoc
@@ -426,7 +428,9 @@ def javadoc(path, sources, classpath, options, outputHandler):
 	@param classpath: a list of jars for the classpath
 
 	@param options: the current set of options to use
-
+	
+	@param workDir: where temporary files are stored
+	
 	@param outputHandler: the output handler (optional)
 	"""
 	deleteDir(path)
@@ -438,10 +442,10 @@ def javadoc(path, sources, classpath, options, outputHandler):
 		binary = "javadoc"
 
 	# store the list of files in a temporary file, then build from that.
-	mkdir(options['tmpdir'])
-	inputlistfile = os.path.join(options['tmpdir'], "javadoc.inputs")
-	with openForWrite(inputlistfile, 'wb') as f:
-		f.writelines(map(lambda x: '"'+x.replace('\\','\\\\')+'"'+os.linesep, sources))
+	mkdir(workDir)
+	inputlistfile = os.path.join(workDir, "javadoc.inputs")
+	with openForWrite(inputlistfile, 'w', encoding=locale.getpreferredencoding()) as f:
+		f.writelines('"'+x.replace('\\','\\\\')+'"'+'\n' for x in sources)
 
 	# build up arguments
 	args = [binary]

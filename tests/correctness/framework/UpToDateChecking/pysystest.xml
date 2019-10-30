@@ -2,9 +2,9 @@
 <pysystest type="auto" state="runnable">
     
   <description> 
-    <title>I18N, formatters - logging to .log and redirected stdout works with i18n characters and target buffering, and all formatters</title>
+    <title>PathSets - uptodate checking for FindPaths and DirBasedPathSet</title>
     <purpose><![CDATA[
-Check it works
+
 ]]>
     </purpose>
   </description>
@@ -21,4 +21,3 @@ Check it works
     </requirements>
   </traceability>
 </pysystest>
-

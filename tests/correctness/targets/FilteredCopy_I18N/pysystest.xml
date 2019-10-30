@@ -2,9 +2,8 @@
 <pysystest type="auto" state="runnable">
     
   <description> 
-    <title>I18N, formatters - logging to .log and redirected stdout works with i18n characters and target buffering, and all formatters</title>
+    <title>FilteredCopy and WriteFile - common.fileEncodingDecider, I18N, binary files and ExtensionBasedFileEncodingDecider</title>
     <purpose><![CDATA[
-Check it works
 ]]>
     </purpose>
   </description>
@@ -21,4 +20,3 @@ Check it works
     </requirements>
   </traceability>
 </pysystest>
-

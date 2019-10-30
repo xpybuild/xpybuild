@@ -117,8 +117,11 @@ class Unpack(BaseTarget):
 		self.log.info('Cleaning existing files from %s', self.path)
 		deleteDir(self.path)
 		
+		iswindows = IS_WINDOWS
+		
 		for a in self.archives:
-			if isinstance(a, FilteredArchiveContents):
+			a_is_filteredarchivecontents = isinstance(a, FilteredArchiveContents)
+			if a_is_filteredarchivecontents:
 				items = [(a.getResolvedPath(context), '')]
 			else:
 				assert isinstance(a, BasePathSet)
@@ -137,7 +140,7 @@ class Unpack(BaseTarget):
 				starttime = time.time()
 				with self. __openArchive(srcAbs) as f:
 					mkdir(self.path+destRel)
-					if isinstance(a, FilteredArchiveContents) and a.hasIncludeExcludeFilters():
+					if a_is_filteredarchivecontents and a.hasIncludeExcludeFilters():
 						fullList = _getnames(f)
 						if not fullList:
 							raise BuildException('No files were found in archive "%s"'%(srcAbs))
@@ -155,17 +158,17 @@ class Unpack(BaseTarget):
 					for m in filteredMembers:						
 						if not isDirPath(m):
 							info = _getinfo(f, m)
-							if isinstance(a, FilteredArchiveContents):
+							if a_is_filteredarchivecontents:
 								_setfilename(info, a.mapDestPath(context, _getfilename(info)))
-							if isWindows(): _setfilename(info, _getfilename(info).replace('/', '\\'))
+							if iswindows: _setfilename(info, _getfilename(info).replace('/', '\\'))
 							f.extract(info, path=path)
 						else:
 							# we should create empty directories too
-							if isinstance(a, FilteredArchiveContents):
+							if a_is_filteredarchivecontents:
 								m = a.mapDestPath(context, m).rstrip('/')
 
 							m = path.rstrip('/\\')+'/'+m
-							if isWindows(): m = m.replace('/', '\\')
+							if iswindows: m = m.replace('/', '\\')
 							mkdir(m)
 							
 				
@@ -259,7 +262,7 @@ class FilteredArchiveContents(object):
 				else:
 					return False
 					
-		except Exception, e:
+		except Exception as e:
 			raise BuildException('FilteredArchiveContents error for %s'%(self), causedBy=True, location=self.__location)
 
 	def hasIncludeExcludeFilters(self):

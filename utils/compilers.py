@@ -1,6 +1,6 @@
 # xpyBuild - eXtensible Python-based Build System
 #
-# Copyright (c) 2014 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2014 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import os, re, logging, time, traceback
 from buildcommon import *
 from buildexceptions import BuildException
 from utils.process import call
+from utils.fileutils import isdir
 from utils.outputhandler import ProcessOutputHandler
 from propertysupport import defineOption
 
@@ -53,7 +54,7 @@ class Process(object):
 			
 			try:
 				outputHandlerInstance=outputHandler(os.path.basename(args[0]), options=options)
-			except Exception, e:
+			except Exception as e:
 				# backwards compatibility for output handlers that don't pass kwargs down
 				outputHandlerInstance = outputHandler(os.path.basename(args[0]))
 			
@@ -64,8 +65,8 @@ class Process(object):
 
 _logger = logging.getLogger('compilers')
 def _checkDirExists(dirpath, message):
-	if not os.path.isdir(dirpath):
-		_logger.debug(message%dirpath) # legitimate but useful for debugging
+	if not isdir(dirpath):
+		_logger.debug(message, dirpath) # legitimate but useful for debugging
 	return dirpath
 
 class Compiler(Process):
@@ -169,7 +170,7 @@ class ToolChain(object):
 		self.cxxcompiler = cxxcompiler
 		assert isinstance(linker, Linker) or linker == None
 		self.linker = linker
-		assert isWindows() or isinstance(archiver, Archiver) or archiver == None
+		assert IS_WINDOWS or isinstance(archiver, Archiver) or archiver == None
 		self.archiver = archiver
 	
 	def __repr__(self): return '%s instance'%self.__class__ # make sure we get a stable stringification of the instance stored in the native.compilers option
@@ -340,7 +341,7 @@ class GCC(ToolChain, UnixCompiler, UnixLinker, Depends):
 
 		try:
 			self.call(context, args, outputHandler=GccDependsHandler, options=options)
-		except Exception, e:
+		except Exception as e:
 			# occasionally we see SIGABRT (=6) for no reason (e.g. on ARM), so do a retry
 			if 'return code -6' not in str(e): raise
 			_logger.warn('g++ dependency checking failed, may be transient so will retry: %s', e)
@@ -445,7 +446,7 @@ class VisualStudio(Compiler, Linker, Depends, Archiver, ToolChain):
 	def call(self, *args, **kwargs):
 		try:
 			super(VisualStudio, self).call(*args, **kwargs)
-		except BuildException, e:
+		except BuildException as e:
 			options = kwargs.get('options',{})
 			transientRegex = options.get('visualstudio.transientErrorRegex', None)
 			if not (transientRegex and re.match(transientRegex, str(e))):
@@ -506,7 +507,7 @@ class VisualStudio(Compiler, Linker, Depends, Archiver, ToolChain):
 
 		class VSDependsHandler(VisualStudioProcessOutputHandler):
 			def handleLine(self, line, isstderr=False):
-				data = line.encode('utf8')
+				data = line
 				if 'fatal error' in data: fatalerrors.append(data.strip())
 				if 'Cannot open include file:' in data:
 					data = re.sub(".*Cannot open include file: '([^']*)':.*", r'\1', data).strip()

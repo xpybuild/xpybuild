@@ -61,6 +61,13 @@ class BasePathSet(object):
 	present before the main build begins. Only set this when sure that this 
 	is the case. 
 	"""
+
+	_shortcutUptodateCheck = False
+	"""
+	Special flag that can be set by implementors of a PathSet to indicate that 
+	the scheduler can take a shorcut and use pathset._newestFile=(path, timestamp) 
+	to get the newest file rather than manually calling stat on the dependencies. 
+	"""
 	
 	def __init__(self):
 		pass
@@ -151,14 +158,14 @@ class __SimplePathSet(BasePathSet):
 		
 		self.__location = None
 		for x in self.contents:
-			if not (isinstance(x, basestring) or isinstance(x, BasePathSet) or hasattr(x, 'resolveToString')):
+			if not (isinstance(x, str) or isinstance(x, BasePathSet) or hasattr(x, 'resolveToString')):
 				raise BuildException('PathSet may contain only strings, PathSets, Composables, targets and lists - cannot accept %s (%s)'%(x, x.__class__))
 		
 		self.__location = BuildFileLocation()
 		
 	def __repr__(self):
 		""" Return a string including this class name and the paths from which it was created. """
-		return 'PathSet(%s)' % ', '.join(map(lambda s:'"%s"'%s.replace('\\','/') if isinstance(s, basestring) else str(s), self.contents))
+		return 'PathSet(%s)' % ', '.join('"%s"'%s.replace('\\','/') if isinstance(s, str) else str(s) for s in self.contents)
 	
 	def __resolveStringPath(self, p, context): # used for anything that isn't a pathset
 		if hasattr(p, 'resolveToString'):
@@ -199,7 +206,7 @@ class __SimplePathSet(BasePathSet):
 		for x in self.contents:
 			if not isinstance(x, BasePathSet):
 				y = self.__resolveStringPath(x, context)
-				r.extend(zip(y[0], y[1]))
+				r.extend(list(zip(y[0], y[1])))
 			else:
 				if len(self.contents)==1: # short-circuit this common case
 					return x.resolveWithDestinations(context)
@@ -245,7 +252,7 @@ def PathSet(*items):
 	>>> PathSet('a/*').resolve(BaseContext({})) #doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	BuildException:
+	buildexceptions.BuildException:
 	"""
 	# This function is called a lot so its performance matters
 	
@@ -298,7 +305,7 @@ class DirBasedPathSet(BasePathSet):
 	>>> DirBasedPathSet('mydir', 'a*b').resolve(BaseContext({})) #doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	BuildException:
+	buildexceptions.BuildException:
 
 	>>> str(PathSet('a', DirBasedPathSet(DirGeneratedByTarget('4/5/6/'), '7/8')))
 	'PathSet("a", DirBasedPathSet(DirGeneratedByTarget("4/5/6/"), [\\'7/8\\']))'
@@ -338,7 +345,7 @@ class DirBasedPathSet(BasePathSet):
 	
 	def resolveWithDestinations(self, context):
 		children = flatten([
-			map(lambda s: s.strip(), context.expandPropertyValues(c, expandList=True))
+			[s.strip() for s in context.expandPropertyValues(c, expandList=True)]
 			for c in self.__children])
 
 		dir = _resolveDirPath(self.__dir, context, self.__location)
@@ -392,6 +399,9 @@ class FindPaths(BasePathSet):
 
 	Destination paths (where needed) are generated from the path underneath the
 	base dir.
+
+	FindPaths will return file or directory symlinks (with '/' suffix if directory), 
+	but will not recurse into directory symlinks. 
 	
 	@param dir: May be a simple string, or a DirGeneratedByTarget to glob under a 
 	directory generated as part of the build. To find paths from a set of 
@@ -408,15 +418,18 @@ class FindPaths(BasePathSet):
 	>>> FindPaths('x', includes=['*.x', 'c:\\d'], excludes=[])#doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	BuildException:
+	buildexceptions.BuildException:
 
 	>>> FindPaths('x', includes=['*.x', '${foo}'], excludes=[])#doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	BuildException:
+	buildexceptions.BuildException:
 
 	"""
+	
 	_skipDependenciesExistenceCheck = True # since we only return items we've found on disk, no need to check them again
+	
+	_shortcutUptodateCheck = IS_WINDOWS # on Windows os.scandir can efficiently get the stat results without an extra call
 	
 	def __init__(self, dir, excludes=None, includes=None):
 		"""
@@ -447,7 +460,7 @@ class FindPaths(BasePathSet):
 		else:
 			self.excludes = GlobPatternSet.create(self.excludes)
 			
-		if isinstance(dir, basestring) and '\\' in dir: # avoid silly mistakes, and enforce consistency
+		if isinstance(dir, str) and '\\' in dir: # avoid silly mistakes, and enforce consistency
 			raise BuildException('Invalid base directory for FindPaths - must not contain \\ (always use forward slashes)')
 		
 		self.location = BuildFileLocation()
@@ -456,7 +469,7 @@ class FindPaths(BasePathSet):
 	
 	def __repr__(self): 
 		""" Return a string including this class name and the basedir and include/exclude patterns with which it was created. """
-		return ('FindPaths(%s, includes=%s, excludes=%s)'%('"%s"'%self.__dir if isinstance(self.__dir, basestring) else str(self.__dir), self.includes or [], self.excludes or [])).replace('\'','"')
+		return ('FindPaths(%s, includes=%s, excludes=%s)'%('"%s"'%self.__dir if isinstance(self.__dir, str) else str(self.__dir), self.includes or [], self.excludes or [])).replace('\'','"')
 	
 	def _resolveUnderlyingDependencies(self, context):
 		if isinstance(self.__dir, BaseTarget):
@@ -496,6 +509,9 @@ class FindPaths(BasePathSet):
 		log = logging.getLogger('FindPaths')
 		log.debug('FindPaths resolve starting for: %s', self)
 		with self.__lock:
+			_shortcutUptodateCheck = self._shortcutUptodateCheck
+			newestTimestamp, newestFile = 0, None
+			
 			# think this operation is atomically thread-safe due to global interpreter lock
 			if self.__cached: return self.__cached
 			
@@ -512,44 +528,77 @@ class FindPaths(BasePathSet):
 					unusedPatternsTracker = GlobUnusedPatternTracker(self.includes) # give an error if any are not used
 				else:
 					unusedPatternsTracker = None
-				longdir = normLongPath(resolveddir)
+					
 				visited = 0
-				for root, dirs, files in os.walk(longdir):
+				scanroot = normLongPath(resolveddir)[:-1]
+				pathsToWalk = [scanroot] # stack of paths
+				while len(pathsToWalk)>0:
 					visited += 1 
-					root = root.replace(longdir, '').replace('\\','/').strip('/')
+					longdir = pathsToWalk.pop()
+					root = longdir[len(scanroot):].replace('\\','/').strip('/')
 					if root != '': root += '/'
 					#log.debug('visiting: "%s"'%root)
-					
-					# optimization: if this doesn't require walking down the dir tree, don't do any!
-					# (this optimization applies to includes like prefix/** but not if there is a bare '**' 
-					# in the includes lsit)
-					if self.includes is not None:
-						self.includes.removeUnmatchableDirectories(root, dirs)
 
-					# optimization: if there's an exclude starting with this dir and ending with '/**' or '/*', don't navigate to it
-					# we deliberately match only against filename patterns (not dir patterns) since 
-					# empty dirs are handled in the later loop not through this mechanism, so it's just files that matter
-					if self.excludes is not None and dirs != []:
-						# nb: both dirs and the result of getPathMatches will have no trailing slashes
-						self.__removeNamesFromList(dirs, self.excludes.getPathMatches(root, filenames=dirs))
+					# emulate os.walk's API, since we think it's more efficient to glob all the paths in a given root dir at the same time
+					with os.scandir(longdir) as it:
+						dirs = []
+						files = []
+						symlinks = None # set to keep track of symlinks, to avoid recursing into them
+						for entry in it:
+							if entry.is_dir():
+								dirs.append(entry.name)
+								if entry.is_symlink():
+									if symlinks is None: 
+										symlinks = {entry.name}
+									else:
+										symlinks.add(entry.name)
+							else:
+								files.append(entry.name)
+								# for simplicity and because it doesn't cost anything we do this before processing include/exclude
+								if _shortcutUptodateCheck:
+									thisTimestamp = entry.stat().st_mtime
+									if thisTimestamp > newestTimestamp:
+										newestTimestamp, newestFile = thisTimestamp, root+entry.name
 					
-					# now find which files and empty dirs match
-					matchedemptydirs = dirs
-					
-					if self.includes is not None:
-						files, matchedemptydirs = self.includes.getPathMatches(root, filenames=files, dirnames=matchedemptydirs, unusedPatternsTracker=unusedPatternsTracker)
-					else:
-						matchedemptydirs = [] # only include empty dirs if explicitly specified
-					
-					if self.excludes is not None:
-						exfiles, exdirs = self.excludes.getPathMatches(root, filenames=files, dirnames=matchedemptydirs)
-						self.__removeNamesFromList(files, exfiles)
-						self.__removeNamesFromList(matchedemptydirs, exdirs)
+						# optimization: if this doesn't require walking down the dir tree, don't do any!
+						# (this optimization applies to includes like prefix/** but not if there is a bare '**' 
+						# in the includes list)
+						if self.includes is not None:
+							self.includes.removeUnmatchableDirectories(root, dirs)
 						
-					for p in files:
-						matches.append(root+p)
-					for p in matchedemptydirs:
-						matches.append(root+p+'/')					
+						# optimization: if there's an exclude starting with this dir and ending with '/**' or '/*', don't navigate to it
+						# we deliberately match only against filename patterns (not dir patterns) since 
+						# empty dirs are handled in the later loop not through this mechanism, so it's just files that matter
+						if self.excludes is not None and dirs != []:
+							# nb: both dirs and the result of getPathMatches will have no trailing slashes
+							self.__removeNamesFromList(dirs, self.excludes.getPathMatches(root, filenames=dirs))
+
+						# any other subdirs will need to be walked to
+						for dir in dirs:
+							if symlinks is not None and dir in symlinks: continue # don't recursive into symlinks (messes up copying)
+							pathsToWalk.append(longdir+os.sep+dir)
+						
+						# now find which files and empty dirs match
+						matchedemptydirs = dirs
+						
+						if self.includes is not None:
+							files, matchedemptydirs = self.includes.getPathMatches(root, filenames=files, dirnames=matchedemptydirs, unusedPatternsTracker=unusedPatternsTracker)
+						else:
+							matchedemptydirs = [] # only include empty dirs if explicitly specified
+						
+						if self.excludes is not None:
+							exfiles, exdirs = self.excludes.getPathMatches(root, filenames=files, dirnames=matchedemptydirs)
+							self.__removeNamesFromList(files, exfiles)
+							self.__removeNamesFromList(matchedemptydirs, exdirs)
+							
+						for p in files:
+							matches.append(root+p)
+						for p in matchedemptydirs:
+							matches.append(root+p+'/')					
+				
+				#end while
+				if _shortcutUptodateCheck:
+					self._newestFile = newestTimestamp, newestFile
 
 				log.info('FindPaths in "%s" found %d path(s) for %s after visiting %s directories; %s', resolveddir, len(matches), self, visited, self.location)
 				if time.time()-startt > 5: # this should usually be pretty quick, so may indicate a real build file mistake
@@ -562,9 +611,9 @@ class FindPaths(BasePathSet):
 					if unusedPatterns != []:
 						raise BuildException('Some include patterns did not match any files: %s'%', '.join(unusedPatterns), location=self.location)
 						
-			except BuildException, e:
+			except BuildException as e:
 				raise BuildException('%s for %s'%(e.toSingleLineString(target=None), self), causedBy=False, location=self.location)
-			except Exception, e:
+			except Exception as e:
 				raise BuildException('%s for %s'%(repr(e), self), causedBy=True, location=self.location)
 			
 			result = []
@@ -573,9 +622,6 @@ class FindPaths(BasePathSet):
 			for m in matches:
 				if replacesep and '/' in m: m = m.replace('/', os.sep)
 				
-				# see normpath(); have to convert from unicode (from os.walk-ing a long path) 
-				# back to byte strings to avoid confusing other parts of build. gross. 
-				if IS_WINDOWS and isinstance(m, unicode): m = m.encode() 
 				result.append( ( normedbasedir+m, m ) )
 			result.sort()
 			
@@ -618,7 +664,7 @@ class TargetsWithTag(BasePathSet):
 		log = logging.getLogger('TargetsWithTag')
 		try:
 			targets = context.getTargetsWithTag(self.__targetTag)
-		except BuildException, e: # add location info to exception
+		except BuildException as e: # add location info to exception
 			raise BuildException(str(e), location=self.__location)
 		
 		log.info('%s matched %s targets: %s', self, len(targets), [t.name for t in targets])
@@ -642,7 +688,7 @@ class TargetsWithTag(BasePathSet):
 		log = logging.getLogger('TargetsWithTag')
 		try:
 			targets = context.getTargetsWithTag(self.__targetTag)
-		except BuildException, e: # add location info to exception
+		except BuildException as e: # add location info to exception
 			raise BuildException(str(e), location=self.__location)
 		if len(targets)==0: raise BuildException('No targets have tag "%s"'%self.__targetTag, location=self.__location)
 		return ( (t.path, self) for t in targets)
@@ -905,12 +951,12 @@ class RemoveDestParents(_DerivedPathSet):
 	>>> str(RemoveDestParents(1, DirBasedPathSet('mydir/', 'a')).resolveWithDestinations(BaseContext({}) )).replace('\\\\\\\\','/') #doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	BuildException: Cannot strip 1 parent dir(s) from "a" as it does not have that many parent directories
+	buildexceptions.BuildException: Cannot strip 1 parent dir(s) from "a" as it does not have that many parent directories
 
 	>>> str(RemoveDestParents(1, DirBasedPathSet('mydir/', 'b/')).resolveWithDestinations(BaseContext({}) )).replace('\\\\\\\\','/')
 	Traceback (most recent call last):
 	...
-	BuildException: Cannot strip 1 parent dir(s) from "b/" as it does not have that many parent directories
+	buildexceptions.BuildException: Cannot strip 1 parent dir(s) from "b/" as it does not have that many parent directories
 
 	"""
 	def __init__(self, dirsToRemove, pathSet):
@@ -969,7 +1015,7 @@ class SingletonDestRenameMapper(_DerivedPathSet):
 		if not isinstance(pathSet, BasePathSet): pathSet = PathSet(pathSet)
 		_DerivedPathSet.__init__(self, pathSet)
 		self.newDestRelPath = newDestRelPath
-		if isinstance(self.newDestRelPath, basestring): assert '\\' not in self.newDestRelPath
+		if isinstance(self.newDestRelPath, str): assert '\\' not in self.newDestRelPath
 	
 	def __repr__(self):
 		""" Return a string including this class name, the new destination and the included PathSet. """
@@ -1005,7 +1051,7 @@ class DirGeneratedByTarget(BasePathSet):
 		@param dirTargetName: The directory that another target will generate.
 		"""
 		BasePathSet.__init__(self)
-		assert isinstance(dirTargetName, basestring)
+		assert isinstance(dirTargetName, str)
 		assert dirTargetName.endswith('/')
 		self.__target = dirTargetName
 		self.__location = BuildFileLocation()

@@ -21,7 +21,7 @@ import os, inspect, os.path, re, shutil
 from stat import S_ISLNK
 
 from buildcommon import *
-from propertysupport import defineOption
+from propertysupport import defineOption, ExtensionBasedFileEncodingDecider
 from pathsets import PathSet
 from basetarget import BaseTarget
 from utils.fileutils import mkdir, deleteDir, openForWrite, normLongPath
@@ -84,7 +84,7 @@ class Copy(BaseTarget):
 		src = self.src.resolveWithDestinations(context) #  a map of srcAbsolute: destRelative
 
 		symlinks = self.options['Copy.symlinks']
-		if isinstance(symlinks, basestring): symlinks = symlinks.lower()=='true'
+		if isinstance(symlinks, str): symlinks = symlinks.lower()=='true'
 		assert symlinks in [True,False], repr(symlinks)
 
 		# implicitly ensure parent of target exists, to keep things simple
@@ -134,7 +134,7 @@ class Copy(BaseTarget):
 							self._copyFile(context, srcAbs, dest)
 							if self.mode:
 								os.chmod(dest, self.mode)
-					except Exception, e:
+					except Exception as e:
 						raise BuildException('Error copying from "%s" to "%s"'%(srcAbs, dest), causedBy=True)
 						
 					copied += 1
@@ -175,48 +175,54 @@ class FilteredCopy(Copy):
 	filtering each line through the specified line mappers. 
 	
 	The parent directory will be created if it doesn't exist already. 
-
+	
+	Any source files determines to be binary/non-text by 
+	L{ExtensionBasedFileEncodingDecider.BINARY} are copied without any mappers 
+	being invoked. 
 	"""
 	
 	def __init__(self, dest, src, *mappers, **kwargs):
 		"""
 		@param dest: the output directory (ending with a "/") or file. Never 
-		   specify a dest directory that is also written to by another 
-		   target (e.g. do not specify an output directory here). If you need 
-		   to write multiple files to the output directory, use separate Copy 
-		   targets for each. 
-			
-		@param src: the input, which may be any combination of strings, PathSets and 
-		   lists of these. 
+		specify a dest directory that is also written to by another 
+		target (e.g. do not specify an output directory here). If you need 
+		to write multiple files to the output directory, use separate Copy 
+		targets for each. 
 		
-		@param mappers: a list of mapper objects that will be used to transform 
-		   the file, line by line. Can be empty in which case this behaves the same 
-		   as a normal Copy target. 
+		@param src: the input, which may be any combination of strings, PathSets and 
+		lists of these. 
+		
+		@param mappers: a list of objects subclassing L{FileContentsMapper} 
+		that will be used to transform 
+		the file, line by line. Can be empty in which case this behaves the same 
+		as a normal Copy target. Any items in this list with the value None 
+		are ignored. 
+		
+		For simple @TOKEN@ replacement see createReplaceDictLineMappers. 
+		In addition to per-line changes, it is also possible to specify 
+		mappers that add header/footer content to the file. 
 			
-		   For simple @TOKEN@ replacement see createReplaceDictLineMappers. 
-		   In addition to per-line changes, it is also possible to specify 
-		   mappers that add header/footer content to the file. 
-			
-		   Note that files are read and written in binary mode, so mappers 
-		   will be dealing directly with platform-specific \\n and \\r 
-		   characters; python's os.linesep should be used where a 
-		   platform-neutral newline is required. 
+		Note that files are read and written in binary mode, so mappers 
+		will be dealing directly with platform-specific \\n and \\r 
+		characters; python's os.linesep should be used where a 
+		platform-neutral newline is required. 
 		
 		@param kwargs: Additional parameter: allowUnusedMappers:
-		   To avoid build files that accumulate unused 
-		   cruft or are hard to understand, it by default an an error to include a 
-		   mapper in this list that is not used, i.e. that does not in any way 
-		   change the output for any file. We recommend using conditionalization 
-		   to avoid passing in such mappers e.g. 
-		   FilteredCopy(target, src, [StringReplaceLineMapper(os.linesep,'\\n') if isWindows() else None]). 
-		   If this is not practical, set allowUnusedMappers=True to prevent this 
-		   check. 
+		To avoid build files that accumulate unused 
+		cruft or are hard to understand, by default it is an error to include a 
+		mapper in this list that is not used, i.e. that does not in any way 
+		change the output for any file. We recommend using conditionalization 
+		to avoid passing in such mappers e.g. 
+		FilteredCopy(target, src, [StringReplaceLineMapper(os.linesep,'\\n') if IS_WINDOWS else None]). 
+		If this is not practical, set allowUnusedMappers=True to prevent this 
+		check. 
 		
 		"""
 		self.mappers = [m.getInstance() for m in flatten(mappers)]
 		self.allowUnusedMappers = kwargs.pop('allowUnusedMappers', False)
 		assert not kwargs, 'unknown keyword arg(s): %s'%kwargs
 		super(FilteredCopy, self).__init__(dest, src, implicitDependencies=[m.getDependencies() for m in self.mappers])
+		self.addHashableImplicitInputOption('common.fileEncodingDecider')
 	
 	def run(self, context):
 		self.__unusedMappers = set(self.mappers)
@@ -235,32 +241,42 @@ class FilteredCopy(Copy):
 		return r
 		
 	def _copyFile(self, context, src, dest):
+		if self.getOption('common.fileEncodingDecider')(context, src) == ExtensionBasedFileEncodingDecider.BINARY:
+			return super()._copyFile(context, src, dest)
+	
 		mappers = [m for m in self.mappers if m.startFile(context, src, dest) is not False]
 		
-		with open(src, 'rb') as s:
-			with openForWrite(dest, 'wb') as d:
-				for m in mappers:
-					x = m.getHeader(context)
-					if x: 
-						self.__unusedMappers.discard(m)
-						d.write(x)
-				
-				for l in s:
+		try:
+			with self.openFile(context, src, 'r', newline='\n') as s:
+				# newline: for compatibility with existing builds, we don't expand \n to os.linesep (i.e. don't use Python universal newlines)
+				with self.openFile(context, dest, 'w', newline='\n') as d:
 					for m in mappers:
-						prev = l
-						l = m.mapLine(context, l)
-						if prev != l:
+						x = m.getHeader(context)
+						if x: 
 							self.__unusedMappers.discard(m)
-						if None == l:
-							break
-					if None != l:
-						d.write(l)
+							d.write(x)
+					
+					for l in s:
+						for m in mappers:
+							prev = l
+							l = m.mapLine(context, l)
+							if prev != l:
+								self.__unusedMappers.discard(m)
+							if None == l:
+								break
+						if None != l:
+							d.write(l)
 
-				for m in mappers:
-					x = m.getFooter(context)
-					if x: 
-						self.__unusedMappers.discard(m)
-						d.write(x)
+					for m in mappers:
+						x = m.getFooter(context)
+						if x: 
+							self.__unusedMappers.discard(m)
+							d.write(x)
+		except Exception as ex:
+			exceptionsuffix = ''
+			if isinstance(ex, UnicodeDecodeError):
+				exceptionsuffix = ' due to encoding problem; consider setting the "common.fileEncodingDecider" option'
+			raise BuildException(f'Failed to perform filtered copy of {src}{exceptionsuffix}',causedBy=True)
 		shutil.copymode(src, dest)
 		assert os.path.exists(dest)
 

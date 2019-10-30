@@ -6,6 +6,10 @@ class PySysTest(XpybuildBaseTest):
 
 	def execute(self):
 		if not hasattr(os, 'symlink'): self.skipTest('this OS does not support symlinks')
+
+		if IS_WINDOWS: # skip for now since it doesn't work - FindPaths() treats dir symlinks as files
+			self.skipTest('Although Python 3 support symlinks on Windows, xpybuild does not yet')
+
 		self.mkdir('symlink-relative/foo/')
 		self.mkdir('symlink-relative/foo/subdir/')
 		self.mkdir('symlink-absolute/foo/subdir/')
@@ -14,8 +18,12 @@ class PySysTest(XpybuildBaseTest):
 		with open(self.output+'/symlink-absolute/foo/subdir/sourcefile.txt', 'wb') as f:
 			f.write(b'Hello world')
 		# source, linkname
-		os.symlink(self.output+'/symlink-absolute/foo/subdir/sourcefile.txt',
-			self.output+'/symlink-absolute/foo/subdir/mylink.txt')
+		try:
+			os.symlink(self.output+'/symlink-absolute/foo/subdir/sourcefile.txt',
+				self.output+'/symlink-absolute/foo/subdir/mylink.txt')
+		except OSError:
+			if IS_WINDOWS:
+				self.abort(NOTVERIFIED, 'Cannot create symlinks without elevated/admin rights on this version of Windows')
 		os.symlink(self.output+'/symlink-absolute/foo/subdir', 
 			self.output+'/symlink-absolute/foo/subdir-link')
 

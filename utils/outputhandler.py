@@ -40,7 +40,8 @@ class ProcessOutputHandler(object):
 	Usage: the handleLine method will be invoked for every line in the stdout 
 	and stderr, then handleEnd will be called once, with the process returnCode 
 	if known. handleEnd should raise a BuildException if the process is 
-	deemed to have failed. 
+	deemed to have failed. Note that this class deals with unicode character 
+	strings; the caller must decode from the original bytes. 
 	
 	The errors and warnings lists can be inspected after handleEnd has been 
 	called to get further information if desired. 
@@ -68,7 +69,7 @@ class ProcessOutputHandler(object):
 	>>> h.handleEnd(5)
 	Traceback (most recent call last):
 	...
-	BuildException: 2 errors, first is: error: My error
+	buildexceptions.BuildException: 2 errors, first is: error: My error
 
 	>>> h = ProcessOutputHandler('myhandler')
 	>>> h.handleLine(u'some message')
@@ -77,7 +78,7 @@ class ProcessOutputHandler(object):
 	>>> h.handleEnd(5)
 	Traceback (most recent call last):
 	...
-	BuildException: myhandler failed with return code 5; no errors reported, last line was: later message
+	buildexceptions.BuildException: myhandler failed with return code 5; no errors reported, last line was: later message
 
 	"""
 	
@@ -168,7 +169,7 @@ class ProcessOutputHandler(object):
 		>>> type(ProcessOutputHandler.create('mine')).__name__
 		'ProcessOutputHandler'
 	
-		>>> def myfactory(*args, **kwargs): print 'called factory %s, kwarg keys: %s'%(args, kwargs.keys())
+		>>> def myfactory(*args, **kwargs): print('called factory %s, kwarg keys: %s'%(args, list(kwargs.keys())))
 		>>> ProcessOutputHandler.create('mine', options={ProcessOutputHandler.Options.factory: myfactory})
 		called factory ('mine',), kwarg keys: ['options']
 		
@@ -184,7 +185,7 @@ class ProcessOutputHandler(object):
 		Called once for every line in the stdout and stderr 
 		(stderr after, if not during stdout). 
 		
-		If possible, line should be a unicode object rather than a byte string. 
+		Line must be a unicode str (not bytes). 
 		
 		The default implementation uses _decideLogLevel to decide how to 
 		interpret each line, then calls _preprocessLine and _parseLocationFromLine 
@@ -251,7 +252,7 @@ class ProcessOutputHandler(object):
 		None. 
 		"""
 		
-		assert isinstance(line, unicode) # only accept unicode - force caller to explicitly decode their output before calling this, e.g. l.decode(getStdoutEncoding())
+		assert isinstance(line, str), 'ProcessOutputHandler does not accept bytes - caller must decode bytes to a character str (e.g. l.decode(getStdoutEncoding()))'
 		
 		if (isstderr and self._treatStdErrAsErrors) or re.search(r'error[\s]*([A-Z]+\d+)?:', line, flags=re.IGNORECASE): return logging.ERROR
 		if re.search('warning[\s]*([A-Z]+\d+)?:', line, flags=re.IGNORECASE): return logging.WARNING
@@ -320,7 +321,7 @@ class StdoutRedirector(ProcessOutputHandler):
 		if isstderr:
 			ProcessOutputHandler.handleLine(self, line, isstderr)
 		else:
-			self.fd.write(line.encode("UTF-8")+os.linesep)
+			self.fd.write((line+os.linesep).encode("UTF-8"))
 	
 	def handleEnd(self, returnCode=None):
 		ProcessOutputHandler.handleEnd(self, returnCode)

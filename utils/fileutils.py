@@ -23,6 +23,7 @@
 
 import shutil, os, os.path, time, platform, threading
 import stat, sys
+import io
 from utils.flatten import getStringList
 import subprocess, errno
 
@@ -31,36 +32,53 @@ log = logging.getLogger('fileutils')
 
 __isWindows = platform.system()=='Windows'
 
-if __isWindows: # ugly ugly hacks due to stupid windows filesystem semantics. See http://bugs.python.org/issue4944
+if __isWindows: # Workaround required for windows filesystem semantics having a stupid race condition between writes from POSIX API (which Python uses) and win32 API (e.g. used by Java/C++)
 	try:
 		import win32file
-		class openForWrite:
-			def __init__(self, dest, mode):
-				assert mode == 'wb' # the Win32 API only has binary mode, not text mode, so only accept opening in this mode. This also means you must deal with any line ending issues yourself when using this.
+		class Win32FileWriter(io.RawIOBase):
+			def __init__(self, dest, mode='w', encoding=None, errors=None, newline=None):
+				super(Win32FileWriter, self).__init__()
+				assert 'w' in mode, 'Currently the Win32FileWriter class only supports writing, not reading'
 				self.dest = dest
+				self.__textWrapper = None if 'b' in mode else io.TextIOWrapper(self, encoding=encoding, errors=errors, newline=newline)
+				self.__alreadyclosed = False
+				
 			def __enter__(self):
 				self.Fd = win32file.CreateFile(self.dest, win32file.GENERIC_WRITE, 
 					win32file.FILE_SHARE_READ | win32file.FILE_SHARE_WRITE  | win32file.FILE_SHARE_DELETE, 
 					None, win32file.CREATE_ALWAYS, win32file.FILE_ATTRIBUTE_NORMAL, None)
+
+				if self.__textWrapper is not None: return self.__textWrapper
 				return self
-			def write(self, string):
-				if isinstance(string, unicode):
-					# must pass byte strings not unicode objects when writing in binary mode; for backwards compatibility, automatically convert 7-bit ascii (which is what the Unix impl will do), but give errors for anything else as user should be explicitly specifying their encoding
-					string = string.encode('ascii', errors='strict') 
-				assert isinstance(string, str), 'cannot write unicode character string to binary file; please use byte str instead: %s'%repr(string) 
-				win32file.WriteFile(self.Fd, string)
-			def writelines(self, lines):
-				for l in lines:
-					self.write(l)
+
+			def writable(self): return True
+			def write(self, data):
+				# writes bytes to the file using the Win32 (not POSIX api)
+			
+				err, byteswritten = win32file.WriteFile(self.Fd, data)
+				return byteswritten
+
 			def close(self):
+				if self.__alreadyclosed: return # make this idempotent (not least to avoid infinite loop when the text wrapper tries to close us)
+				self.__alreadyclosed = True
+				
+				if self.__textWrapper is not None: self.__textWrapper.close()
 				win32file.CloseHandle(self.Fd)
+				
 			def __exit__(self, ex_type, ex_val, tb):
 				self.close()
-	except:
-		openForWrite = open
-else:
-	openForWrite = open
+			
+	except Exception:
+		raise # need to know about this
 
+openForWrite = Win32FileWriter if __isWindows else open
+"""
+Open file for writing and return a corresponding text or binary stream file object. 
+
+This has the same semantics as open/io.open, but should be used instead of open/io.open 
+to avoid file system race conditions on Windows. This class must be used from a 
+`with` clause. 
+"""
 
 def mkdir(newdir):
 	""" Recursively create the specified directory if it doesn't already exist. 
@@ -81,9 +99,9 @@ def mkdir(newdir):
 	#when multiple threads/processes are creating directories  
 	#at the same time, it can be a race
 	try:
-		os.makedirs(newdir)
-	except Exception, e:
-		if os.path.isdir(newdir):
+		os.makedirs(newdir, exist_ok=True)
+	except Exception as e:
+		if os.path.isdir(newdir): # probably won't happen now we've added exist_ok
 			pass
 		else:
 			raise IOError('Problem creating directory %s: %s' % (newdir, e))
@@ -127,7 +145,7 @@ def deleteDir(path, allowRetry=True):
 			elif excvalue.errno == errno.ENOTEMPTY: # directory not empty, try again
 				try:
 					log.info("handleRemoveReadonly: ENOTEMPTY dir - has contents: %s", os.listdir(path))
-				except Exception, e:
+				except Exception as e:
 					log.info("handleRemoveReadonly: ENOTEMPTY dir, could not get contents: %s"%e)
 					
 				if allowRetry: # avoid danger of infinite recursion if things are going really wrong
@@ -152,7 +170,7 @@ def deleteDir(path, allowRetry=True):
 		
 	except OSError as e:
 		if os.path.isfile(path):
-			raise OSError, "Unable to delete dir %s as this is a file not a directory" % (path)
+			raise OSError("Unable to delete dir %s as this is a file not a directory" % (path))
 			
 		if allowRetry:
 			log.warn("Failed to delete dir %s (%s), will retry in 10 seconds" %(path, e))
@@ -170,7 +188,7 @@ def deleteDir(path, allowRetry=True):
 			# on windows, try again using a separate process, just in case that 
 			# helps to avoid problems with virus checkers, etc
 			if __isWindows:
-				rmdirresult = os.system(u'rmdir /s /q "%s" 2>1 > /dev/nul'%path)
+				rmdirresult = os.system('rmdir /s /q "%s" 2>1 > /dev/nul'%path)
 				log.info("Directory deletion retry using rmdir returned code %d: %s", rmdirresult, path)
 				
 				# continue to run deleteDir regardless of result, to check it's 
@@ -210,9 +228,9 @@ def deleteFile(path, allowRetry=True):
 			if os.path.lexists(path): 
 				raise
 		
-	except OSError, e:
+	except OSError as e:
 		if os.path.isdir(path):
-			raise OSError, "Unable to delete file %s as this is a directory not a file" % (path)
+			raise OSError("Unable to delete file %s as this is a directory not a file" % (path))
 		
 		if allowRetry:
 			log.debug("Failed to delete file %s on first attempt (%s), will retry in 5 seconds", path, e)
@@ -261,7 +279,7 @@ def parsePropertiesFile(lines, excludeLines=None):
 		key = line[:line.find('=')].strip()
 		value = line[line.find('=')+1:].strip()
 
-		if filter(lambda x: x in key, excludeLines):
+		if [x for x in excludeLines if x in key]:
 			log.debug('Ignoring property line due to exclusion: %s', line)
 			continue
 		
@@ -289,7 +307,7 @@ if os.sep == '\\':
 		True
 		"""
 		try:
-			return path[-1] in ('/', '\\')
+			return path[-1] in {'/', '\\'}
 		except Exception:
 			return False
 else:
@@ -358,9 +376,9 @@ def toLongPathSafe(path, force=False):
 
 		try:
 			if path.startswith('\\\\'): 
-				path = u'\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
+				path = '\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
 			else:
-				path = u'\\\\?\\'+path
+				path = '\\\\?\\'+path
 		except Exception:
 			# can throw an exception if path is a bytestring containing non-ascii characters
 			# to be safe, fallback to original string, just hoping it isn't both 
@@ -392,21 +410,22 @@ def normLongPath(path):
 	# normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case 
 	# for drive letters (more so than directory names), with different cmd prompts frequently using different 
 	# capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts
-	if __isWindows and len(path)>2 and path[1] == ':' and path[0] >= 'A' and path[0] <= 'Z': 
+	iswindows = __isWindows
+	if iswindows and len(path)>2 and path[1] == ':' and path[0] >= 'A' and path[0] <= 'Z': 
 		path = path[0].lower()+path[1:]
 		
-	if __isWindows and path and path.startswith('\\\\?\\'):
+	if iswindows and path.startswith('\\\\?\\'):
 		path = path.replace('/', '\\')
 	else:
 		# abspath also normalizes slashes
 		path = os.path.abspath(path)+(os.path.sep if isDirPath(path) else '')
 		
-		if __isWindows and path and not path.startswith('\\\\?\\'):
+		if iswindows and not path.startswith('\\\\?\\'):
 			try:
 				if path.startswith('\\\\'): 
-					path = u'\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
+					path = '\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
 				else:
-					path = u'\\\\?\\'+path
+					path = '\\\\?\\'+path
 			except Exception:
 				# can throw an exception if path is a bytestring containing non-ascii characters
 				# to be safe, fallback to original string, just hoping it isn't both 

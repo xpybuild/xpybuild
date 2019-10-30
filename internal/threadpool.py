@@ -163,7 +163,7 @@ class ThreadPool(object):
 				self.completed=0
 				self.condition.wait(wait_time)
 				if self.completed == 0:
-					log.critical(("*** %d job%s in progress: "+" ".join(map(lambda x:str(x), self.inprogress))) % (len(self.inprogress), "" if 1==len(self.inprogress) else "s" ))
+					log.critical(("*** %d job%s in progress: "+" ".join([str(x) for x in self.inprogress])) % (len(self.inprogress), "" if 1==len(self.inprogress) else "s" ))
 					wait_time = 60.0
 				else:
 					wait_time = 15.0

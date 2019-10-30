@@ -3,7 +3,7 @@
 <pysysproject>
 
 	<requires-pysys>1.5.0</requires-pysys>
-	<requires-python>2.7.13</requires-python>
+	<requires-python>3.6</requires-python>
 	
 	<property root="testRootDir"/>
 	<property environment="env"/>
@@ -23,19 +23,12 @@
 	<property name="defaultEnvironsTempDir" value="self.output"/>
 	<property name="supportMultipleModesPerRun" value="true"/>
 
-	<!--<property file="${osfamily}.properties" /> -->
-
 	<!-- Custom test framework extensions, if needed -->
 	<path value="./test_framework" relative="true" />
 
-	<!-- 
-	Use a custom maker class for constructing new testcases. Custom maker classes can extend from the 
-	ConsoleMakeTestHelper class in order to create templated run.py scripts e.g. when a test module has
-	a repeatable pattern for running or validating etc. 
-	
-	<maker classname="MyMaker" module="com.company.test"/>
-	-->
 
+  	<property name="pythonCoverageDir" value="coverage-python"/>
+	<collect-test-output pattern=".coverage*" outputDir="${pythonCoverageDir}" outputPattern="@FILENAME@_@TESTID@_@UNIQUE@"/>
 
 	<writers>
 		<writer classname="TravisCIWriter" module="pysys.writer.ci"></writer>
@@ -51,6 +44,7 @@
 
 	<default-file-encodings>
 		<default-file-encoding pattern="run.log" encoding="utf-8"/>
+		<default-file-encoding pattern="*.log" encoding="utf-8"/>
 		
 		<default-file-encoding pattern="*.xml"  encoding="utf-8"/>
 		<default-file-encoding pattern="*.json" encoding="utf-8"/>

@@ -29,6 +29,7 @@ from utils.buildfilelocation import BuildFileLocation
 from utils.functors import Composable
 from buildexceptions import BuildException
 from utils.fileutils import openForWrite, normLongPath, mkdir
+import targets.common # ensure common options are defined
 import logging
 
 class BaseTarget(Composable):
@@ -69,10 +70,19 @@ class BaseTarget(Composable):
 		strings, PathSets and lists and may also contain unexpanded variables.
 		"""
 		
-		self._optionsTargetOverridesUnresolved = {} # for target-specific option overrides. for internal use (by buildcontext), do not use
+		self.__getAttrImpl = {
+			'path': lambda: self.__returnOrRaiseIfNone(self.__path, 'Target path has not yet been resolved by this phase of the build process: %s'%self),
+			'name': lambda: self.__name,
+			'options': lambda: self.__returnOrRaiseIfNone(self.__optionsResolved, "Cannot read the value of basetarget.targetOptions during the initialization phase of the build as the resolved option values are not yet available"),
+			'workDir': lambda: self.__workDir,
+			'type': lambda: self.__class__.__name__,
+			'baseDir': lambda: self.location.buildDir,
+		}
+		
+		self.__optionsTargetOverridesUnresolved = {} # for target-specific option overrides. for internal use (by buildcontext), do not use
 		self.__optionsResolved = None # gets assigned during end of initialization phase
 
-		if isinstance(name, basestring):
+		if isinstance(name, str):
 			if '//' in name:
 				raise BuildException('Invalid target name: double slashes are not permitted: %s'%name)
 			if '\\' in name:
@@ -99,6 +109,14 @@ class BaseTarget(Composable):
 		
 		self.__hashableImplicitInputs = []
 
+		# put the class first, since it results in better ordering (e.g. for errors)
+		# use a space to delimit these to make it easier to copy to the clipboard by double-clicking
+		self.__stringvalue = f'<{self.type}> {self.name}'
+		
+	def __returnOrRaiseIfNone(self, value, exceptionMessage):
+		if value is not None: return value
+		raise Exception(exceptionMessage)
+
 	def __setattr__(self, name, value):
 		# this is a hack to retain backwards compat for a few classes that rely on explicitly assigning to self.options
 
@@ -106,40 +124,21 @@ class BaseTarget(Composable):
 			# make this a WARN at some point
 			self.log.debug('Target class "%s" assigns to self.options which is deprecated - instead call .option(...) to set target options'%self.__class__.__name__)
 			if value:
-				self._optionsTargetOverridesUnresolved.update(value)
+				self.__optionsTargetOverridesUnresolved.update(value)
 		else:
 			object.__setattr__(self, name, value)
 
 	def __getattr__(self, name):
 		""" Getter for read-only attributes """
 		# nb this is not called for fields that have been set explicitly using self.X = ...
-		
-		if name == 'path': 
-			if not self.__path: raise Exception('Target path has not yet been resolved by this phase of the build process: %s'%self)
-			return self.__path
-		if name == 'name': return self.__name
-			
-		if name == 'options': 
-			# the 
-			# don't return self.options here, since a) that has the unresolved/unmerged options and b) setting it is 
-			# dodgy and something that must work for compat reasons but which we want to discourage
-			
-			if self.__optionsResolved == None:
-				# probably no-one is using this, but in case they are give a clear message
-				# instead, should be setting the .option(...) method, and getting
-				raise Exception("Cannot read the value of basetarget.targetOptions during the initialization phase of the build as the resolved option values are not yet available")
-			return self.__optionsResolved
-		
-		if name == 'workDir': return self.__workDir
-		if name == 'type': return self.__class__.__name__
-		if name == 'baseDir': return self.location.buildDir
-		raise AttributeError('Unknown attribute %s'%name)
+		try:
+			return self.__getAttrImpl[name]()
+		except KeyError:
+			raise AttributeError('Unknown attribute %s'%name)
 
 	def __str__(self): # string display name which is used for log statements etc
 		""" Returns a display name including the target name and the target type (class) """
-		# put the class first, since it results in better ordering (e.g. for errors)
-		# use a space to delimit these to make it easier to copy to the clipboard by double-clicking
-		return '<%s> %s' % (self.type, self.name)
+		return self.__stringvalue
 
 	def resolveToString(self, context):
 		""" Resolves this target's path and returns as a string. 
@@ -153,7 +152,7 @@ class BaseTarget(Composable):
 		
 		# if there's no explicit parent, default to ${OUTPUT_DIR} to stop 
 		# people accidentally writing to their source directories
-		if self.__path: return self.__path # cache it for consistency
+		if self.__path is not None: return self.__path # cache it for consistency
 		self.__path = context.getFullPath(self.__path_src, "${OUTPUT_DIR}")
 		self.log.debug('Resolved target name %s to canonical path %s', self.name, self.path)
 		return self.__path
@@ -172,7 +171,10 @@ class BaseTarget(Composable):
 		self.__workDir = os.path.normpath(context.getPropertyValue("BUILD_WORK_DIR")+'/targets/'+self.__class__.__name__+'/'+targetNameToUniqueId(self.name))
 		
 		# take the opportunity to provide a merged set of options
-		self.__optionsResolved = context.mergeOptions(target=self)
+		if len(self.__optionsTargetOverridesUnresolved)==0:
+			self.__optionsResolved = context._globalOptions # since is immutable so we can avoid a copy
+		else:
+			self.__optionsResolved = context._mergeListOfOptionDicts([context._globalOptions, self.__optionsTargetOverridesUnresolved], target=self)
 
 	def _resolveUnderlyingDependencies(self, context, rawdeps=False):
 		""" Internal method for resolving dependencies needed by this target, 
@@ -226,7 +228,7 @@ class BaseTarget(Composable):
 		@param optionKey: the name of an option. 
 		
 		"""
-		self.addHashableImplicitInput(lambda context: u'option %s=%s'%(optionKey, repr(self.options[optionKey])))
+		self.addHashableImplicitInput(lambda context: 'option %s=%s'%(optionKey, repr(self.options[optionKey])))
 		
 	def addHashableImplicitInput(self, item):
 		""" Adds a target-specific string giving information about an 
@@ -245,7 +247,7 @@ class BaseTarget(Composable):
 		For example, 'myparameter="foobar"'. 
 		
 		"""
-		assert isinstance(item, basestring) or callable(item)
+		assert isinstance(item, str) or callable(item)
 		self.__hashableImplicitInputs.append(item)
 	
 	def getHashableImplicitInputs(self, context):
@@ -282,7 +284,7 @@ class BaseTarget(Composable):
 		""" Stops this target from building in 'all' mode, therefore it must be called 
 		explicitly or via a tag.
 		"""
-		self.__tags = list(set(self.__tags) - set(['all']))
+		self.__tags = list(set(self.__tags) - {'all'})
 		init = getBuildInitializationContext()
 		init.removeFromTags(self, ['all'])
 		return self
@@ -314,8 +316,21 @@ class BaseTarget(Composable):
 		
 		Use self.options or L{getOption} to get resolved option values. 
 		"""
-		self._optionsTargetOverridesUnresolved[key] = value
+		self.__optionsTargetOverridesUnresolved[key] = value
 		return self
+	
+	def openFile(self, context, path, mode='r', **kwargs):
+		"""
+		Opens the specified file, using an encoding specified by the target option's 
+		`common.fileEncodingDecider` (unless explicitly provided by encoding=). 
+		
+		@param context: The context that was passed to run().
+		@param path: The full absolute path to be opened. 
+		@param mode: The file mode. 
+		@keyword kwargs: Any additional arguments for the io.open() method can be specified here. 
+		"""
+		if 'b' not in mode and not kwargs.get('encoding'): kwargs['encoding'] = self.getOption('common.fileEncodingDecider')(context, path)
+		return (openForWrite if 'w' in mode else io.open)(path, mode, **kwargs)
 	
 	def tags(self, *tags):
 		"""
@@ -327,14 +342,11 @@ class BaseTarget(Composable):
 		@param tags: the tag, tags or list of tags to add to the target.
 		
 		>>> BaseTarget('a',[]).tags('abc').getTags()
-		<using test initialization context> <using test initialization context>
-		['abc', 'all']
+		<using test initialization context> <using test initialization context> ['abc', 'all']
 		>>> BaseTarget('a',[]).tags(['abc', 'def']).getTags()
-		<using test initialization context> <using test initialization context>
-		['abc', 'def', 'all']
+		<using test initialization context> <using test initialization context> ['abc', 'def', 'all']
 		>>> BaseTarget('a',[]).tags('abc', 'def').tags('ghi').getTags()
-		<using test initialization context> <using test initialization context> <using test initialization context>
-		['ghi', 'abc', 'def', 'all']
+		<using test initialization context> <using test initialization context> <using test initialization context> ['ghi', 'abc', 'def', 'all']
 		"""
 		taglist = getStringList(list(tags))
 		self.__tags = taglist + self.__tags

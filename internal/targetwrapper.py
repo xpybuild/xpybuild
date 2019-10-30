@@ -41,14 +41,18 @@ class TargetWrapper(object):
 		scheduler during builds. 
 	"""
 	
-	__slots__ = 'target', 'path', 'name', 'isDirPath', 'lock', 'depcount', '__targetdeps', '__nontargetdeps', '__rdeps', '__isdirty', '__implicitInputs', '__implicitInputsFile', 'stampfile', 'effectivePriority', '__scheduler', '_dependencyTimes'
+	__slots__ = 'target', 'path', 'name', 'isDirPath', 'lock', 'depcount', '__targetdeps', '__nontargetdeps', '__rdeps', '__isdirty', '__implicitInputs', '__implicitInputsFile', 'stampfile', 'effectivePriority', '__scheduler', '_dependencyTimes', '__newestNonTargetDep'
 	
 	# flags
 	DEP_IS_DIR_PATH = 2**1
 	
 	DEP_SKIP_EXISTENCE_CHECK = 2**2
-	"""Flag for dependencies from a pathset where there's no point checking the existence of 
+	"""Flag for dependencies from a pathset (e.g. FindPaths) where there's no point checking the existence of 
 	dependencies because they're already known to be present - e.g. FindPaths. """
+	
+	DEP_SHORTCUT_UPTODATE_CHECK = 2**3
+	"""Flag for dependencies from a pathset (e.g. FindPaths on Windows) where pathset._newestFile will be set, 
+	to avoid the need to check the timestamps of each file individually. """
 	
 	__uptodate_log_count = 0
 	
@@ -87,13 +91,11 @@ class TargetWrapper(object):
 		""" A sorted list of dependencies that aren't targets. Each item is a tuple
 		(longpathsafepath, dep flags, pathset)
 		
-		longpathsafepath is a unicode string on Windows (on Python 3: also linux)
-		
 		flags includes: DEP_IS_DIR_PATH, DEP_SKIP_EXISTENCE_CHECK, DEP_SHORTCUT_UPTODATE_CHECK
 		
 		Can only be used after resolveUnderlyingDependencies has been called. 
 		"""
-		
+
 		self.__implicitInputsFile = toLongPathSafe(self.__getImplicitInputsFile())
 		if self.isDirPath: 
 			self.stampfile = self.__implicitInputsFile # might as well re-use this for dirs
@@ -103,6 +105,7 @@ class TargetWrapper(object):
 		self.effectivePriority = target.getPriority() # may be mutated to an effective priority
 
 	def __hash__ (self): return hash(self.target) # delegate
+	def __lt__(self, other): return self.target.path < other.target.path
 	
 	def __str__(self): return '%s'%self.target # display string for the underlying target
 	def __repr__(self): return 'TargetWrapper.%s'%str(self)
@@ -137,7 +140,6 @@ class TargetWrapper(object):
 		# also make any non-linesep \r or \n chars explicit to avoid confusion when diffing
 		x += [x.replace('\r','\\r').replace('\n','\\n') for x in os.linesep.join(self.target.getHashableImplicitInputs(context)).split(os.linesep)]
 
-		if isinstance(x, unicode): x = x.encode('utf-8') # TODO: remove when we switch to Python 3
 		self.__implicitInputs = x
 		return x
 
@@ -172,22 +174,24 @@ class TargetWrapper(object):
 		
 		for abspath, pathset in self.target._resolveUnderlyingDependencies(context):
 			# should we canonicalize the abspath for capitalization? (but then we could get different behaviour across platforms)
-			try:
-				dtargetwrapper = scheduler.targetwrappers[abspath]
-			except KeyError:
-				# non target dep
+			if abspath not in scheduler.targetwrappers:
+				# non-target dep
 
 				flags = 0
 				if isDirPath(abspath): flags |= TargetWrapper.DEP_IS_DIR_PATH
 				
 				if pathset._skipDependenciesExistenceCheck:
 					flags |= TargetWrapper.DEP_SKIP_EXISTENCE_CHECK
+
+				if pathset._shortcutUptodateCheck:
+					flags |= TargetWrapper.DEP_SHORTCUT_UPTODATE_CHECK
 				
 				# convert to long path at this point, so we know later checks will work; 
 				# unlike targetdeps, nontargetdeps are sometimes deeply nested
 				abspath = toLongPathSafe(abspath)
 				nontargetdeps.append( (abspath, flags, pathset) )
 			else: 
+				dtargetwrapper = scheduler.targetwrappers[abspath]
 				if abspath in targetdeps: continue # avoid adding dups
 				targetdeps[abspath] = dtargetwrapper
 				dtargetwrapper.__rdep(self)
@@ -212,7 +216,7 @@ class TargetWrapper(object):
 		self.depcount = len(targetdeps)
 		
 		# sort for deterministic order (as there are some sets and dicts involved)
-		nontargetdeps.sort(key=lambda (path, flags, pathset): path)
+		nontargetdeps.sort(key=lambda path_flags_pathset: path_flags_pathset[0])
 		self.__nontargetdeps, self.__targetdeps = nontargetdeps, sorted(targetdeps.values(), key=lambda wrapper: wrapper.name)
 	
 	def checkForNonTargetDependenciesUnderOutputDirs(self):
@@ -235,15 +239,17 @@ class TargetWrapper(object):
 		
 		"""
 		
+		newestTimestamp = 0
+		newestFile = None
+		
 		for dpath, flags, pathset in self.__nontargetdeps:
 			dnameIsDirPath = (flags & TargetWrapper.DEP_IS_DIR_PATH)!=0
 			
-			if (flags & TargetWrapper.DEP_SKIP_EXISTENCE_CHECK)!=0:
-				# don't bother stat-ing the file if we know it's present e.g. for FindPaths
+			if (flags & TargetWrapper.DEP_SKIP_EXISTENCE_CHECK)!=0: 
+				# if DEP_SKIP_EXISTENCE_CHECK, don't bother stat-ing the file if we know it's present (e.g. for FindPaths, where we just got it from disk)
 				continue
 			
 			dstat = getstat(dpath)
-			# TODO: optimization, could compute latest file here too (i.e. only do uptodate checking for FindPaths items)
 			
 			if dstat is False: 
 				return dpath, 'Missing dependency'
@@ -251,6 +257,15 @@ class TargetWrapper(object):
 				# just before we throw the exception, check it's not some other weird type of thing
 				assert S_ISDIR(dstat.st_mode) or S_ISREG(dstat.st_mode), dpath
 				return dpath, 'Trailing slash is required for directories'
+
+			# optimization: although not the purpose of this function, we might as well compute latest file here too
+			if not dnameIsDirPath:
+				timestamp = dstat.st_mtime
+				if timestamp>newestTimestamp:
+					newestTimestamp, newestFile = timestamp, dpath
+		
+		self.__newestNonTargetDep = (newestTimestamp, newestFile)
+		
 		return None
 		
 	def decrement(self):
@@ -344,20 +359,20 @@ class TargetWrapper(object):
 					self.__logUptodate('Up-to-date check: %s must be built because implicit inputs/stamp file does not exist: "%s"', self.name, self.__implicitInputsFile)
 					return False
 				
-				with io.open(self.__implicitInputsFile, 'rb') as f:
-					latestImplicitInputs = f.read().split(os.linesep)
+				with io.open(self.__implicitInputsFile, 'r', encoding='utf-8') as f:
+					latestImplicitInputs = f.read().split('\n')
 					if latestImplicitInputs != implicitInputs:
-						maxdifflines = int(os.getenv('XPYBUILD_IMPLICIT_INPUTS_MAX_DIFF_LINES', '30'))/2
+						maxdifflines = int(os.getenv('XPYBUILD_IMPLICIT_INPUTS_MAX_DIFF_LINES', '30'))//2
 						added = ['+ %s'%x for x in implicitInputs if x not in latestImplicitInputs]
 						removed = ['- %s'%x for x in latestImplicitInputs if x not in implicitInputs]
 						# the end is usually more informative than beginning
 						if len(added) > maxdifflines: added = ['...']+added[len(added)-maxdifflines:] 
 						if len(removed) > maxdifflines: removed = ['...']+removed[len(removed)-maxdifflines:]
 						if not added and not removed: added = ['N/A']
-						self.__logUptodate(u'Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self.__implicitInputsFile, 
+						self.__logUptodate('Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self.__implicitInputsFile, 
 							'\n\t'.join(
 								['previous build had %d lines, current build has %d lines'%(len(latestImplicitInputs), len(implicitInputs))]+removed+added
-							).replace(u'\r',u'\\r\r'))
+							).replace('\r','\\r\r'))
 						return False
 					else:
 						log.debug("Up-to-date check: implicit inputs file contents has not changed: %s", self.__implicitInputsFile)
@@ -368,18 +383,47 @@ class TargetWrapper(object):
 			# already in _expand_deps; if this happens it's probably a build system bug - 
 			# the following logic mirrors the logic for self.stampfile (for directories and files), reusing stat's we've already done to save time
 			stampmodtime = implicitInputsFile_stat.st_mtime if self.isDirPath else path_stat.st_mtime
+			assert stampmodtime > 0, stampmodtime # this invariant is important for the later checks 
 			
+			def logNewerFile(path, pathmodtime):
+				if pathmodtime-stampmodtime < 1: # such a small time gap seems dodgy, so always log
+					uptodatelog.warn('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" by just %0.1f seconds', 
+						self.name, path, self.stampfile, pathmodtime-stampmodtime)
+				else:
+					self.__logUptodate('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" (by %0.1f seconds)', 
+						self.name, path, self.stampfile, pathmodtime-stampmodtime)
+								
 			def isNewer(path):
 				# assumes already long path safe
 				pathmodtime = getmtime(path)
 				if pathmodtime <= stampmodtime: return False
-				if pathmodtime-stampmodtime < 1: # such a small time gap seems dodgy
-					uptodatelog.warn('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" by just %0.1f seconds', self.name, path, self.stampfile, pathmodtime-stampmodtime)
-				else:
-					self.__logUptodate('Up-to-date check: %s must be rebuilt because input file "%s" is newer than "%s" (by %0.1f seconds)', self.name, path, self.stampfile, pathmodtime-stampmodtime)
+
+				logNewerFile(path, pathmodtime)
 				return True
 
-			# first check if any target dependencies are newer than output (e.g. from an aborted or partial previous build)
+			# first get output from the files we've stat'ed during the missing files check, i.e. the ones without DEP_SKIP_EXISTENCE_CHECK
+			newestTimestamp, newestFile = self.__newestNonTargetDep
+			if newestTimestamp > stampmodtime:
+				logNewerFile(newestFile, newestTimestamp)
+				return False
+			
+			# then check the other non-target file deps
+			for abslongpath, depflags, pathset in self.__nontargetdeps: 
+				if depflags & TargetWrapper.DEP_IS_DIR_PATH != 0: continue # ignore directories as timestamp is meaningless
+				if depflags & TargetWrapper.DEP_SKIP_EXISTENCE_CHECK == 0: continue # the files without skip existence check have already been done
+
+				# in practice the only PathSets left at this point are (currently) FindPaths
+				
+				if depflags & TargetWrapper.DEP_SHORTCUT_UPTODATE_CHECK != 0: 
+					# shortcut:
+					if pathset._newestFile[0] > stampmodtime:
+						logNewerFile(pathset._newestFile[1], pathset._newestFile[0])
+						return False
+					return True
+				else: # this branch will be tested only on Linux, just as the shortcut will be tested only on Windows
+					if isNewer(abslongpath): return False
+
+			# then check if any target dependencies are newer than output (e.g. from an aborted or partial previous build)
 			for dtargetwrapper in self.__targetdeps:
 				if not dtargetwrapper.isDirPath:
 					f = dtargetwrapper.path # might have an already built target dependency which is still newer
@@ -390,9 +434,6 @@ class TargetWrapper(object):
 					f = dtargetwrapper.stampfile
 				if isNewer(toLongPathSafe(f)): return False
 
-			for abslongpath, depflags, pathset in self.__nontargetdeps: 
-				if depflags & TargetWrapper.DEP_IS_DIR_PATH == 0: # ignore directories as timestamp is meaningless
-					if isNewer(abslongpath): return False
 		return True
 
 
@@ -433,7 +474,7 @@ class TargetWrapper(object):
 			log.debug('writing implicitInputsFile: %s', self.__implicitInputsFile)
 			mkdir(os.path.dirname(self.__implicitInputsFile))
 			with openForWrite(self.__implicitInputsFile, 'wb') as f:
-				f.write(os.linesep.join(implicitInputs))
+				f.write(os.linesep.join(implicitInputs).encode('utf-8'))
 		
 	def clean(self, context):
 		"""

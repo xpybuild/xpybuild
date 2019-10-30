@@ -1,12 +1,24 @@
-# 1.16 - current release
+# 3.0 - current release
 ## Breaking changes
+- Now requires Python 3.6+ instead of Python 2
+- Added `output` and `buildOptions` required arguments to ConsoleFormatter base class constructor.
+- FilteredCopy mappers and the WriteFilter target now handle only unicode str objects and not bytes.
+- BuildContext.defaultOptions() was removed, as there is no legitimate use case for it. 
+- `tmpdir` has been removed from the target's `self.options`; instead if needed the target's `self.workDir` should be used explicitly. 
 
 ## Deprecation
+- The isWindows() function is deprecated in favour of the IS_WINDOWS constant (which is faster). 
+- BuildContext.mergeOptions() is deprecated in favour of BaseTarget.options, or (for situations where there is no target such as PathSets) BuildContext.getGlobalOption().
 
 ## Fixes
 - Fixed a couple of bugs in incremental C++ compilation - one that could cause unnecessary incremental compilation of targets that depend on generated C/C++ source or include files, and another in which the build would fail rather than re-running makedepends if some of the cached dependencies no longer exist. 
  
 ## Enhancements
+- FilteredCopy, WriteFile: Added option `common.fileEncodingDecider` which is used by FilteredCopy and WriteFile to decide what encoding to use for reading/writing text files. The default is an ExtensionBasedFileEncodingDecider instance which specifies UTF-8 for yaml/json/xml files, binary for some common binary types such as images, and 'ascii' for everything else - which means an exception will be thrown if any files containing characters outside the 7-bit ASCII range are present. Alternative encodings such as utf-8 can be specified for a given file extension, globally or on a per-target basis. 
+- WriteFile: added `encoding=` option to WriteFile (`common.fileEncodingDecider` option is used if not specified). 
+- WriteFile: added support for writing binary bytes. 
+- BaseTarget: Added `BaseTarget.openFile` which should be used for opening files (especially text files) from targets. It automatically picks the correct encoding to use for text files using the `common.fileEncodingDecider` option. This uses the `openForWrite` method which can now be used to write unicode strings in text mode, not only binary bytes. The available options are now pretty similar to what `io.open` supports, and `openForWrite` should be used instead of io.open/open to avoid possible file system races on Windows. 
+- Added `buildcommon.compareVersions` method for comparing version strings. 
 
 # 1.15
 ## Breaking changes

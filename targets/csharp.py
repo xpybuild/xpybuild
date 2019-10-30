@@ -83,8 +83,8 @@ class CSharp(BaseTarget):
 
 	def run(self, context):
 		libs = self.libs.resolve(context)
-		libnames = map(lambda x:os.path.basename(x), libs)
-		libpaths = map(lambda x:os.path.dirname(x), libs)
+		libnames = [os.path.basename(x) for x in libs]
+		libpaths = [os.path.dirname(x) for x in libs]
 		flags = [context.expandPropertyValues(x) for x in self.flags]
 
 		args = [self.getOption('csharp.compiler'), "-out:"+self.path]

@@ -180,7 +180,7 @@ class CustomCommand(BaseTarget):
 	def _resolveItem(self, x, context):
 		if x == self.DEPENDENCIES: return self.deps.resolve(context)
 		if x == self.TARGET: x = self.path
-		if isinstance(x, basestring): return context.expandPropertyValues(x)
+		if isinstance(x, str): return context.expandPropertyValues(x)
 		if hasattr(x, 'resolveToString'): return x.resolveToString(context) # supports Composables too
 		if isinstance(x, BasePathSet): 
 			result = x.resolve(context)
@@ -194,7 +194,7 @@ class CustomCommand(BaseTarget):
 	def _resolveCommand(self, context):
 		if callable(self.command):
 			self.command = self.command(self.path, self.deps.resolve(context), context)
-		assert not isinstance(self.command, basestring) # must be a list of strings, not a string
+		assert not isinstance(self.command, str) # must be a list of strings, not a string
 			
 		self.command = flatten([self._resolveItem(x, context) for x in self.command])
 		self.command[0] = os.path.normpath(self.command[0])
@@ -234,7 +234,7 @@ class CustomCommand(BaseTarget):
 		for k in os.environ:
 			if k not in env: env[k] = os.getenv(k)
 
-		for k in env.keys():
+		for k in list(env.keys()):
 			if None == env[k]:
 				del env[k]
 		self.log.info('Output from %s will be written to "%s" and "%s"', self.name, 
@@ -242,7 +242,7 @@ class CustomCommand(BaseTarget):
 			stderrPath)
 		
 				
-		if not os.path.exists(cmd[0]) and not (isWindows() and os.path.exists(cmd[0]+'.exe')):
+		if not os.path.exists(cmd[0]) and not (IS_WINDOWS and os.path.exists(cmd[0]+'.exe')):
 			raise BuildException('Cannot run command because the executable does not exist: "%s"'%(cmd[0]), location=self.location)
 		
 		try:
@@ -251,8 +251,8 @@ class CustomCommand(BaseTarget):
 			try:
 				# maybe send output to a file instead
 				mkdir(os.path.dirname(logbasename))
-				with open(stderrPath, 'w') as fe:
-					with open(stdoutPath, 'w') as fo:
+				with open(stderrPath, 'wb') as fe: # can't use openForWrite with subprocess
+					with open(stdoutPath, 'wb') as fo:
 						process = subprocess.Popen(cmd, 
 							stderr=fe, 
 							stdout=fo,
@@ -266,7 +266,7 @@ class CustomCommand(BaseTarget):
 				try:
 					if os.path.getsize(stderrPath) == 0 and not self.stderr: deleteFile(stderrPath, allowRetry=True)
 					if not self.redirectStdOutToTarget and os.path.getsize(stdoutPath) == 0 and not self.stdout: deleteFile(stdoutPath, allowRetry=True)
-				except Exception, e:
+				except Exception as e:
 					# stupid windows, it passes understanding
 					self.log.info('Failed to delete empty .out/.err files (ignoring error as its not critical): %s', e)
 					

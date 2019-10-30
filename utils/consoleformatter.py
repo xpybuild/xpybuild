@@ -65,8 +65,8 @@ def publishArtifact(displayName, path):
 
 class ConsoleFormatter(object):
 	"""
-	An xpybuild-specific base class for customizing how log output is formatted 
-	for output to the command console/stdout. 
+	An xpybuild-specific base class for customizing the output format used 
+	for handling log records when displaying to the command console/stdout. 
 	
 	This allows to output to be customized for the tool that is executing 
 	xpybuild, for example e.g. teamcity, visual studio IDE, etc. 
@@ -81,7 +81,13 @@ class ConsoleFormatter(object):
 
 	level = logging.ERROR
 	
-	def __init__(self):
+	def __init__(self, output, buildOptions, **kwargs):	
+		"""
+		@param output: The output stream, which can cope with unicode characters. 
+		@param buildOptions: Dictionary of build options
+		"""
+		super().__init__()
+		self.output = output
 		self.fmt = logging.Formatter()
 		self.bufferingDisabled = False # can be set to True to prevent it for handlers for which it's not appropriate
 		_outputFormattersInUse.append(self)
@@ -89,7 +95,7 @@ class ConsoleFormatter(object):
 	def setLevel(self, level):
 		self.level = level
 	def handle(self, record):
-		raise "Not Implemented"
+		raise NotImplementedError("Not Implemented")
 	
 	def publishArtifact(self, logger, displayName, path):
 		""" Publishes the specified local path (e.g. a log file) as an artifact, 
@@ -114,8 +120,8 @@ class DefaultConsoleFormatter(ConsoleFormatter):
 	"""
 	The default text output formatter for xpybuild. 
 	"""
-	def __init__(self, stream, buildOptions):
-		ConsoleFormatter.__init__(self)
+	def __init__(self, stream, buildOptions, **kwargs):
+		ConsoleFormatter.__init__(self, stream, buildOptions, **kwargs)
 		self.delegate = logging.StreamHandler(stream)
 		self.delegate.setFormatter(logging.Formatter('[%(threadName)4s] %(message)s', None))
 		self.lastDepTime = time.time()

@@ -5,7 +5,7 @@
 #
 # $Id: ftp.py 318763 2017-10-20 09:56:15Z matj $
 
-import os, urllib
+import os, urllib.request, urllib.parse, urllib.error
 
 from basetarget import *
 from buildcommon import *
@@ -24,5 +24,5 @@ class Download(BaseTarget):
 	def run(self, context):
 		mkdir(os.path.dirname(self.path))
 		uri = context.expandPropertyValues(self.uri)
-		urllib.urlretrieve(uri, self.path)
+		urllib.request.urlretrieve(uri, self.path)
 

@@ -11,5 +11,4 @@ set PYSYS_PERFORMANCE_BASELINES=v1.12=c:\dev\xpybuild\tests\performance_output\v
 set XPYBUILD_PPROFILE=<path to pprofile>\pprofile.py
 
 - to enable coverage reporting:
-pysys run -X PYTHON_COVERAGE=true
-pysys run -X PYTHON_COVERAGE_REPORT=true (to also generate an HTML report)
+pysys run -XpythonCoverage=true

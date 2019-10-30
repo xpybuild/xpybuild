@@ -24,12 +24,20 @@ class CustomPathSet(BasePathSet):
 		BasePathSet.__init__(self)
 		self.delegate = PathSet(*args)
 	def resolveWithDestinations(self, context):
-		assert self.target.options
+		assert self.target.options, self.target.options
+		
+		assert context.getGlobalOption('testoption.globalOverride')=='expectedval', context.getGlobalOption('testoption.globalOverride')
+		assert context.getGlobalOption('testoption.targetOverride')=='defaultval', context.getGlobalOption('testoption.targetOverride')
+		
 		return self.delegate.resolveWithDestinations(context)
 	def _resolveUnderlyingDependencies(self, context):
 		# this might be needed in some targets, so check it works
-		assert self.target.options
+		assert self.target.options, self.target.options
 		logging.getLogger('custompathset').critical('PathSet._resolveUnderlyingDependencies got options: %s', self.target.options)
+
+		assert context.getGlobalOption('testoption.globalOverride')=='expectedval', context.getGlobalOption('testoption.globalOverride')
+		assert context.getGlobalOption('testoption.targetOverride')=='defaultval', context.getGlobalOption('testoption.targetOverride')
+
 		return self.delegate._resolveUnderlyingDependencies(context)
 
 class MyTarget(basetarget.BaseTarget):
@@ -43,8 +51,8 @@ class MyTarget(basetarget.BaseTarget):
 		try:
 			x = self.options
 			self.log.error('ERROR - should be impossible to read self.options in the constructor unexpectedly: %s', x)
-		except Exception, e:
-			self.log.critical('Exception from trying to read self.options: %s'%e)
+		except Exception as e:
+			self.log.critical('Got exception as expected from trying to read self.options during constructor: %s'%e)
 		
 	def run(self, context):
 		name = os.path.basename(self.path)
@@ -54,7 +62,7 @@ class MyTarget(basetarget.BaseTarget):
 				for k in sorted(o.keys()):
 					if k.startswith('testoption.'): 
 						self.log.critical('-- %s %s=%s', display, k, o[k])
-						print >>f, '%s %s=%s'%(display, k, o[k])
+						print('%s %s=%s'%(display, k, o[k]), file=f)
 		
 			printit(context.mergeOptions(self), name+' mergeOptions')
 			assert context.mergeOptions(self) == self.options, '%s != %s'%(context.mergeOptions(self), self.options)
@@ -63,7 +71,7 @@ class MyTarget(basetarget.BaseTarget):
 			try:
 				self.getOption('testoption2.empty')
 				self.log.error('ERROR - getOption should throw if empty')
-			except Exception, e:
+			except Exception as e:
 				self.log.critical('Got expected exception: %s', e)
 			
 			

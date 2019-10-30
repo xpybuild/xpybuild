@@ -3,7 +3,7 @@
 # Support for defining properties of various types, for use by build files. 
 # Assumes the buildLoader global variable has been set
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ def defineOption(name, default):
 	init = getBuildInitializationContext()
 	if init:
 		init._defineOption(name, default)
-	elif 'doctest' not in sys.argv[0] and 'epydoc' not in sys.modules:
+	elif 'doctest' not in sys.argv[0] and 'sphinx-build' not in sys.argv[0]:
 		# this check is so we notice if unfortunate module order causes us to try to 
 		# define options before we have a real context to put them in
 		assert False, 'Cannot define options at this point in the build as there is no initialization build context active'
@@ -207,14 +207,14 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 	keys e.g. "FOO<condition>=bar" where lines with no condition in this list 
 	are ignored. Conditions are typically lowercase. 
 	"""
-	if conditions: assert not isinstance(conditions,basestring), 'conditions parameter must be a list'
+	if conditions: assert not isinstance(conditions,str), 'conditions parameter must be a list'
 	__log.info('Defining properties from file: %s', propertiesFile)
 	context = getBuildInitializationContext()
 	
 	propertiesFile = context.getFullPath(propertiesFile, BuildFileLocation(raiseOnError=True).buildDir)
 	try:
 		f = open(propertiesFile, 'r') 
-	except Exception, e:
+	except Exception as e:
 		raise BuildException('Failed to open properties file "%s"'%(propertiesFile), causedBy=True)
 	missingKeysFound = set()
 	try:
@@ -247,7 +247,7 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 			try:
 				value = context.expandPropertyValues(value)
 				context.defineProperty(key, value, debug=True)
-			except BuildException, e:
+			except BuildException as e:
 				raise BuildException('Error processing properties file %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
 	finally:
 		f.close()
@@ -257,7 +257,7 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 	for k in missingKeysFound:
 		try:
 			context.getPropertyValue(k)
-		except BuildException, e:
+		except BuildException as e:
 			raise BuildException('Error processing properties file %s: no property key found for "%s" matched any of the conditions: %s'%(
 				propertiesFile, k, conditions), causedBy=False)
 
@@ -327,3 +327,90 @@ def enableEnvironmentPropertyOverrides(prefix):
 	init = getBuildInitializationContext()
 	if init:
 		init.enableEnvironmentPropertyOverrides(prefix)
+
+class ExtensionBasedFileEncodingDecider:
+	"""Can be used for the `common.fileEncodingDecider` option which decides what file encoding to use for 
+	reading/writing a text file given its path. 
+	
+	The decider option is called with arguments: (context, path), and returns the name of the encoding to be used for this path. 
+	Additional keyword arguments may be passed to the decider in future. 
+	
+	This extension-based decider uses the specified dictionary of extensions to determine which 
+	extension to use, including the special value L{ExtensionBasedFileEncodingDecider.BINARY} 
+	which indicates non-text files. 
+
+	"""
+	
+	BINARY = '<binary>'
+	"""This constant should be used with ExtensionBasedFileEncodingDecider to indicate binary files that 
+	should not be opened in text mode. """
+	
+	def __init__(self, extToEncoding={}, default=None): 
+		"""
+		@param defaultEncoding: The name of the default encoding to be used, another decider to delegate to, or None to defer to the configured global option. 
+		Recommended values are: 'utf-8', 'ascii' or locale.getpreferredencoding().
+		
+		@param extToEncoding: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one, 
+		or the constant L{ExtensionBasedFileEncodingDecider.BINARY} which indicates a non-text file (not all targets support binary). 
+		The extensions can contain ${...} properties. 
+		"""
+		self.extToEncodingDict, self.defaultEncoding = dict(extToEncoding), default
+		# enforce starts with a . to prevent mistakes and allow us to potentially optimize the implementation in future
+		for k in extToEncoding: 
+			if not k.startswith('.'): raise BuildException(f'ExtensionBasedFileEncodingDecider extension does not start with the required "." character: "{k}"')
+		self.__cache = None,None
+		self.__stringified = f'ExtensionBasedFileEncodingDecider({self.extToEncodingDict}; default={self.defaultEncoding})'
+		
+	def __repr__(self): return self.__stringified
+	def __call__(self, context, path, **forfutureuse):
+		(cachecontext, cache) = self.__cache # single field access - probably sufficiently thread-safe given how the GIL works
+		
+		if cachecontext != context:
+			# (re)build the cache if it doesn't already exist, or if for some unexpected reason the context has changed
+			cache = {}
+			for ext, enc in self.extToEncodingDict.items():
+				cache[context.expandPropertyValues(ext)] = enc or self.defaultEncoding
+			self.cache = (context, cache)
+		
+		p = os.path.basename(path).split('.')
+		for i in range(1, len(p)): # in case it has an .x.y multi-part extension
+			result = cache.get('.' + '.'.join(p[i:]), None)
+			if result is not None: return result
+		
+		if self.defaultEncoding is not None: 
+			# could be another decider, so call it
+			if callable(self.defaultEncoding): return self.defaultEncoding(context, path, **forfutureuse)
+			assert isinstance(self.defaultEncoding, str), 'Encoding must be a str (or callable): '+repr(self.defaultEncoding)
+			return self.defaultEncoding
+		
+		fallbackDecider = context.getGlobalOption('common.fileEncodingDecider')
+		if fallbackDecider is not self: return fallbackDecider(context, path, **forfutureuse)
+		raise Exception(f'File encoding decider cannot handle path \'{path}\': {self}')
+	
+	@staticmethod
+	def getDefaultFileEncodingDecider():
+		""" Creates the file encoding decider that is used by default if per-target 
+		or global option is specified. 
+		
+		Currently this supports utf-8 encoding of json/xml/yaml/yml files, 
+		and binary for common non-application/text mime types such as image files 
+		(based on the mime settings of the current machine). 
+		
+		Additional types may be added to this in future releases, so you should 
+		use `setGlobalOption('common.fileEncodingDecider', ...)` if you wish to control 
+		the encodings precisely and ensure identical behaviour across machines.
+
+		"""
+		import mimetypes
+		d = {
+			'.json':'utf-8',
+			'.xml':'utf-8',
+			'.yaml':'utf-8', '.yml':'utf-8',
+		}
+		# add binary for known non-text types such as images. Don't do it for application/ as that includes 
+		# text formats such as js and json
+		for (ext,contenttype) in sorted(mimetypes.types_map.items()):
+			if not contenttype.startswith(('text/', 'application/')):
+				d[ext] = ExtensionBasedFileEncodingDecider.BINARY
+		return ExtensionBasedFileEncodingDecider(d, default='ascii')
+		

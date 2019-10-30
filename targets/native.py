@@ -63,7 +63,7 @@ if ever change.
 
 defineOption('native.link.flags', [])
 
-if isWindows():
+if IS_WINDOWS:
 	defineOption('native.cxx.exenamefn', FilenameStringFormatter("%s.exe"))
 	defineOption('native.cxx.libnamefn', FilenameStringFormatter("%s.dll"))
 	defineOption('native.cxx.staticlibnamefn', FilenameStringFormatter("%s.lib"))
@@ -212,7 +212,7 @@ class Cpp(BaseTarget):
 		if ignoreregex: 
 			ignoreregex = xpybuild_normcase(ignoreregex)
 			r.append('option native.include.upToDateCheckIgnoreRegex=%s'%ignoreregex)
-		makedependsoptions = u"upToDateCheckIgnoreRegex='%s', upToDateCheckIgnoreSystemHeaders=%s, flags=%s"%(
+		makedependsoptions = "upToDateCheckIgnoreRegex='%s', upToDateCheckIgnoreSystemHeaders=%s, flags=%s"%(
 			ignoreregex,
 			self.options['native.include.upToDateCheckIgnoreSystemHeaders'],
 			self._getCompilerFlags(context), 
@@ -243,18 +243,18 @@ class Cpp(BaseTarget):
 				else:
 					for path in f:
 						path = path.strip()
-						try:
-							mtime = getmtime(path)
-						except Exception:
+						pathstat = getstat(path, errorIfMissing=False)
+						if pathstat is False:
 							# file doesn't exist - must rebuild
 							runmakedepends = True
 							(self.log.critical if Cpp.__rebuild_makedepend_count <= 5 else self.log.info)(
 								'Recalculating C/C++ dependencies of %s as dependency no longer exists: %s', self, newestFile)
 
 							break
-						else:
-							alreadychecked.add(path)
-							if mtime > newestTime: newestFile, newestTime = path, mtime
+						mtime = pathstat.st_mtime
+						alreadychecked.add(path)
+						if mtime > newestTime: newestFile, newestTime = path, mtime
+						
 			if newestTime > targetmtime: runmakedepends = True
 		
 		# (re-)run makedepends
@@ -296,9 +296,9 @@ class Cpp(BaseTarget):
 			assert '\n' not in makedependsoptions, makedependsoptions # sanity check
 			with io.open(makedependsfile, 'w', encoding='utf-8') as f:
 				f.write(makedependsoptions)
-				f.write(u'\n')
+				f.write('\n')
 				for path in makedependsoutput:
-					f.write(u'%s\n'%path)
+					f.write('%s\n'%path)
 
 		# endif runmakedepends
 		
@@ -306,7 +306,7 @@ class Cpp(BaseTarget):
 		# no need to log this, as targetwrapper already logs differences in implicit inputs
 		if newestFile is not None:
 			newestDateTime = datetime.datetime.fromtimestamp(newestTime)
-			r.append(u'newest dependency was modified at %s.%03d: %s'%(
+			r.append('newest dependency was modified at %s.%03d: %s'%(
 				newestDateTime.strftime('%a %Y-%m-%d %H:%M:%S'), 
 				newestDateTime.microsecond/1000, 
 				os.path.normcase(newestFile)))
@@ -380,7 +380,7 @@ class Link(BaseTarget):
 				flags=options['native.link.flags']+self.flags, 
 				shared=self.shared,
 				src=self.objects.resolve(context),
-				libs=flatten([map(string.strip, context.expandPropertyValues(x, expandList=True)) for x in self.libs+options['native.libs'] if x]),
+				libs=flatten([(y.strip() for y in context.expandPropertyValues(x, expandList=True)) for x in self.libs+options['native.libs'] if x]),
 				libdirs=flatten(self.libpaths.resolve(context)+[context.expandPropertyValues(x, expandList=True) for x in options['native.libpaths']]))
 
 	def getHashableImplicitInputs(self, context):
@@ -424,8 +424,8 @@ class Ar(BaseTarget):
 		
 		return r
 		
-exename = make_functor(lambda c, i:c.mergeOptions()['native.cxx.exenamefn'](c.expandPropertyValues(i)), name='exename')
-objectname = make_functor(lambda c, i:c.mergeOptions()['native.cxx.objnamefn'](c.expandPropertyValues(i)), name='objectname')
-libname = make_functor(lambda c, i:c.mergeOptions()['native.cxx.libnamefn'](c.expandPropertyValues(i)), name='libname')
-staticlibname = make_functor(lambda c, i:c.mergeOptions()['native.cxx.staticlibnamefn'](c.expandPropertyValues(i)), name='staticlibname')
+exename = make_functor(lambda c, i:c.getGlobalOption('native.cxx.exenamefn')(c.expandPropertyValues(i)), name='exename')
+objectname = make_functor(lambda c, i:c.getGlobalOption('native.cxx.objnamefn')(c.expandPropertyValues(i)), name='objectname')
+libname = make_functor(lambda c, i:c.getGlobalOption('native.cxx.libnamefn')(c.expandPropertyValues(i)), name='libname')
+staticlibname = make_functor(lambda c, i:c.getGlobalOption('native.cxx.staticlibnamefn')(c.expandPropertyValues(i)), name='staticlibname')
 

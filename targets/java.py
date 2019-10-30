@@ -103,8 +103,8 @@ class SignJars(BaseTarget):
 							fn = zi.filename
 							if fn.lower().endswith('manifest.mf'):
 								try:
-									manifest_txt = zf.read(zi.filename)
-								except Exception, e:
+									manifest_txt = zf.read(zi.filename).decode('utf-8', errors='strict')
+								except Exception as e:
 									raise BuildException('Failed reading the manifest file %s with exception:%s' % (fn, e))
 
 								# if we have all manifest text, parse and save each line
@@ -147,7 +147,7 @@ class SignJars(BaseTarget):
 	
 				signjar(os.path.join(self.path, dest), self.keystore, options, alias=self.alias, storepass=self.storepass, 
 					outputHandler=ProcessOutputHandler.create('signjars', treatStdErrAsErrors=False, options=options))
-			except BuildException, e:
+			except BuildException as e:
 				raise BuildException('Error processing %s: %s'%(os.path.basename(dest), e))
 
 class Javac(BaseTarget):
@@ -170,7 +170,8 @@ class Javac(BaseTarget):
 		self.classpath = PathSet(classpath)
 		
 		BaseTarget.__init__(self, output, [self.compile,self.classpath])
-		for k,v in (options or {}).items(): self.option(k, v)
+		if options is not None:
+			for k,v in options.items(): self.option(k, v)
 
 	def run(self, context):
 		# make sure outputdir exists
@@ -182,7 +183,7 @@ class Javac(BaseTarget):
 
 		# compile everything
 		mkdir(self.getOption('javac.logs'))
-		javac(self.path, self.compile.resolve(context), classpath, options=self.options, logbasename=self.options['javac.logs']+'/'+targetNameToUniqueId(self.name), targetname=self.name)
+		javac(self.path, self.compile.resolve(context), classpath, options=self.options, logbasename=self.options['javac.logs']+'/'+targetNameToUniqueId(self.name), targetname=self.name, workDir=self.workDir)
 
 	def getHashableImplicitInputs(self, context):
 		# changes in the manifest text should cause a rebuild
@@ -232,7 +233,7 @@ class Jar(BaseTarget):
 		self.package = PathSet(package)
 		self.manifest = manifest
 		BaseTarget.__init__(self, jar, [self.compile,self.classpath,self.package, 
-			manifest if isinstance(manifest, basestring) else None])
+			manifest if isinstance(manifest, str) else None])
 			
 		for k,v in (options or {}).items(): self.option(k, v)
 		self.preserveManifestFormatting = preserveManifestFormatting
@@ -253,11 +254,11 @@ class Jar(BaseTarget):
 		mkdir(classes) # (need this for assembling other files to package later on, even if we don't do any javac)
 		if self.compile:
 			mkdir(self.getOption('javac.logs'))
-			javac(classes, self.compile.resolve(context), classpath, options=options, logbasename=options.get('javac.logs')+'/'+targetNameToUniqueId(self.name), targetname=self.name)
+			javac(classes, self.compile.resolve(context), classpath, options=options, logbasename=options.get('javac.logs')+'/'+targetNameToUniqueId(self.name), targetname=self.name, workDir=self.workDir)
 
 		manifest = os.path.join(self.workDir, "MANIFEST.MF") # manifest file
 	
-		if isinstance(self.manifest, basestring):
+		if isinstance(self.manifest, str):
 			manifest = context.getFullPath(self.manifest, self.baseDir)
 		elif self.manifest == None:
 			manifest = None
@@ -339,7 +340,7 @@ class Javadoc(BaseTarget):
 		options = self.options
 		classpath = os.pathsep.join(self.classpath.resolve(context))
 		javadoc(self.path, self.sources.resolve(context), classpath, options, 
-			outputHandler=ProcessOutputHandler.create('javadoc', treatStdErrAsErrors=False, options=options))
+			outputHandler=ProcessOutputHandler.create('javadoc', treatStdErrAsErrors=False, options=options), workDir=self.workDir)
 
 	def getHashableImplicitInputs(self, context):
 		# changes in the manifest text should cause a rebuild

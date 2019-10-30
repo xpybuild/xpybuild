@@ -30,10 +30,11 @@ class XpybuildPerfReporter(CSVPerformanceReporter):
 		d['xpybuildVersion'] = self.XPYBUILD_VERSION
 		
 		try:
-			gitcommit = subprocess.check_output(['git', 'show', '-s', '--format=%h']).strip()
+			gitcommit = subprocess.run(['git', 'show', '-s', '--format=%h'], encoding='ascii', errors='replace', 
+				check=True, stdout=subprocess.PIPE).stdout.strip()
 			assert '\n' not in gitcommit, gitcommit
 		except Exception as ex:
-			_log.debug('Failed to get git commit hash: %s', ex)
+			_log.info('Failed to get git commit hash: %s', ex)
 		else:
 			d['gitCommit'] = gitcommit
 

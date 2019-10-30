@@ -40,9 +40,8 @@ class VisualStudioConsoleFormatter(ConsoleFormatter):
 
 	"""
 	output = None
-	def __init__(self, output, buildOptions):
-		ConsoleFormatter.__init__(self)
-		self.output = output
+	def __init__(self, output, **kwargs):
+		ConsoleFormatter.__init__(self, output, **kwargs)
 		self.fmt = logging.Formatter()
 	def handle(self, record):
 		if record.levelno == logging.ERROR:

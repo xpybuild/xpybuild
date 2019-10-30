@@ -33,11 +33,8 @@ def _publishArtifact(path):
 	publishArtifact('<artifact>', path)
 
 def _teamcityEscape(s):
-	# to be on the safe side, remove all non-ascii chars and convert to bit string
-	if isinstance(s, unicode):
-		s = s.encode('ascii', errors='replace')
-	else:
-		s = s.decode('ascii', errors='ignore').encode('ascii')
+	# to be on the safe side, remove all non-ascii chars
+	s = s.encode('ascii', errors='replace').decode('ascii')
 	
 	s = s.replace('\r','').strip()
 	s = s.replace('|', '||')
@@ -52,10 +49,8 @@ class TeamcityHandler(ConsoleFormatter):
 	"""
 	An alternative log handler than adds some teamcity-format output messages.
 	"""
-	output = None
-	def __init__(self, output, buildOptions):
-		ConsoleFormatter.__init__(self)
-		self.output = output
+	def __init__(self, output, buildOptions, **kwargs):
+		ConsoleFormatter.__init__(self, output, buildOptions, **kwargs)
 		
 		self.bufferingDisabled = True # useful to let teamcity know as soon as there is an error
 		
