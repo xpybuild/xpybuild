@@ -345,24 +345,38 @@ class ExtensionBasedFileEncodingDecider:
 	"""This constant should be used with ExtensionBasedFileEncodingDecider to indicate binary files that 
 	should not be opened in text mode. """
 	
-	def __init__(self, extToEncodingDict={}, default=None): 
+	def __init__(self, extToEncoding={}, default=None): 
 		"""
 		@param defaultEncoding: The name of the default encoding to be used, another decider to delegate to, or None to defer to the configured global option. 
 		Recommended values are: 'utf-8', 'ascii' or locale.getpreferredencoding().
 		
-		@param extToEncodingDict: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one, 
+		@param extToEncoding: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one, 
 		or the constant L{ExtensionBasedFileEncodingDecider.BINARY} which indicates a non-text file (not all targets support binary). 
 		The extensions can contain ${...} properties. 
 		"""
-		self.extToEncodingDict, self.defaultEncoding = dict(extToEncodingDict), default
-		# enforce starts with a . to prevent mistakes and allow su to potentially optimize the implementation in future
-		for k in extToEncodingDict: 
+		self.extToEncodingDict, self.defaultEncoding = dict(extToEncoding), default
+		# enforce starts with a . to prevent mistakes and allow us to potentially optimize the implementation in future
+		for k in extToEncoding: 
 			if not k.startswith('.'): raise BuildException(f'ExtensionBasedFileEncodingDecider extension does not start with the required "." character: "{k}"')
-	def __repr__(self): return f'ExtensionBasedFileEncodingDecider({self.extToEncodingDict}; default={self.defaultEncoding})'
+		self.__cache = None,None
+		self.__stringified = f'ExtensionBasedFileEncodingDecider({self.extToEncodingDict}; default={self.defaultEncoding})'
+		
+	def __repr__(self): return self.__stringified
 	def __call__(self, context, path, **forfutureuse):
-		# could definitely be made more efficient if needed
-		for ext, enc in self.extToEncodingDict.items():
-			if path.endswith(context.expandPropertyValues(ext)): return enc or self.defaultEncoding
+		(cachecontext, cache) = self.__cache # single field access - probably sufficiently thread-safe given how the GIL works
+		
+		if cachecontext != context:
+			# (re)build the cache if it doesn't already exist, or if for some unexpected reason the context has changed
+			cache = {}
+			for ext, enc in self.extToEncodingDict.items():
+				cache[context.expandPropertyValues(ext)] = enc or self.defaultEncoding
+			self.cache = (context, cache)
+		
+		p = os.path.basename(path).split('.')
+		for i in range(1, len(p)): # in case it has an .x.y multi-part extension
+			result = cache.get('.' + '.'.join(p[i:]), None)
+			if result is not None: return result
+		
 		if self.defaultEncoding is not None: 
 			# could be another decider, so call it
 			if callable(self.defaultEncoding): return self.defaultEncoding(context, path, **forfutureuse)
