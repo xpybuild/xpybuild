@@ -84,7 +84,9 @@ deploy:
     skip_cleanup: true
     overwrite: true
     on: 
-       branch: master
+       branch: 
+         - release
+         - master
        condition: $XPYBUILD_DOC_AND_DEPLOY = true
 
     name: "xpybuild v$XPYBUILD_VERSION"
@@ -102,7 +104,7 @@ deploy:
     project-name: "XPyBuild $XPYBUILD_VERSION"
     
     on: 
-       branch: master
+       branch: release
        condition: $XPYBUILD_DOC_AND_DEPLOY = true
        tags: true
 
