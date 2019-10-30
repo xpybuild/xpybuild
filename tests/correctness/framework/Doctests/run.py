@@ -37,7 +37,7 @@ class PySysTest(XpybuildBaseTest):
 				skipped += 1
 				continue
 			
-			environs = self.createEnvirons({'PYTHONPATH':DIR}, command=sys.executable)
+			environs = self.createEnvirons({'PYTHONPATH':DIR+os.pathsep+DIR+'/xpybuild'}, command=sys.executable)
 			args = ['-m', 'doctest', '-v', f]
 			pythoncoverage = getattr(self, 'pythonCoverage', False)
 			if pythoncoverage:
