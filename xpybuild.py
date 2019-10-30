@@ -19,7 +19,7 @@
 #
 #
 # $Id: xpybuild.py 305815 2017-04-13 17:20:20Z bsp $
-# Requires: Python 2.7
+# Requires: Python 3.6+
 #
 # Goals:
 #   - correct build
@@ -46,7 +46,7 @@
 import sys, os, getopt, time, traceback, logging, multiprocessing, threading, re
 from functools import reduce
 
-if float(sys.version[:3]) < 2.7: raise Exception('xpybuild.py requires at least Python 2.7 - unsupported python version %s'%sys.version[:3])
+if float(sys.version[:3]) < 3.6: raise Exception('xpybuild.py requires at least Python 3.6 - unsupported python version %s'%sys.version[:3])
 
 # a general-purpose mechanism for adding extra python modules when invoking 
 # xpybuild, useful for third party plugins that may only be present on some 

@@ -84,7 +84,7 @@ deploy:
     skip_cleanup: true
     overwrite: true
     on: 
-       # TODO: re-add this branch: master
+       branch: master
        condition: $XPYBUILD_DOC_AND_DEPLOY = true
 
     name: "xpybuild v$XPYBUILD_VERSION"
