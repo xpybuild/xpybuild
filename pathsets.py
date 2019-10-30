@@ -557,7 +557,9 @@ class FindPaths(BasePathSet):
 								# for simplicity and because it doesn't cost anything we do this before processing include/exclude
 								if _shortcutUptodateCheck:
 									thisTimestamp = entry.stat().st_mtime
-									if thisTimestamp > newestTimestamp:
+									# main thing is to compare the timestamp, but if there's a tie then pick the lexical latest filename, 
+									# which is better than being file-system-non-deterministic
+									if thisTimestamp > newestTimestamp or (thisTimestamp == newestTimestamp and newestFile is not None and root+entry.name > newestFile):
 										newestTimestamp, newestFile = thisTimestamp, root+entry.name
 					
 						# optimization: if this doesn't require walking down the dir tree, don't do any!
