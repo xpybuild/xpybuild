@@ -1,8 +1,16 @@
 xpybuild
 ========
-[![Build Status](https://travis-ci.com/xpybuild/xpybuild.svg?branch=master)](https://travis-ci.com/xpybuild/xpybuild)
+.. image:: https://travis-ci.com/xpybuild/xpybuild.svg?branch=master
+	:target: https://travis-ci.com/xpybuild/xpybuild
 
-XPyBuild is a cross-platform, cross-language, multi-threaded build system that uses Python as the build file format. 
+.. image:: https://codecov.io/gh/xpybuild/xpybuild/branch/master/graph/badge.svg
+	:target: https://codecov.io/gh/xpybuild/xpybuild
+
+API Documentation: https://xpybuild.github.io/xpybuild/
+
+Introduction
+------------
+Xpybuild is a cross-platform, cross-language, multi-threaded build system that uses Python as the build file format. 
 
 It combines the best features of Make with those from Ant along with an easy to use but powerful blend of declarative statements and imperative python code.
 
@@ -10,9 +18,9 @@ XPyBuild requires Python 3.6+.
 
 The values behind this build system are:
    - correct build
-   - fast, parallelisable, scalable build
-   - simple build files, all complexities abstracted away in reusable helper 
-       classes
+   - fast, multi-threaded, scalable build with very fast no-op/incremental build times
+   - simple build files, all complexities around dependencies, up-to-dateness 
+     checking and cleaning abstracted away in reusable helper classes
    - fail-early on build configuration bugs (e.g. setting an unknown property)
 
 Key concepts:
@@ -33,15 +41,14 @@ Key concepts:
        dependencies. PathSets can efficiently detect whether their source 
        files are up-to-date, and also have the ability to specify a 
        "destination" for each source path, which is used by targets such as 
-       Copy. 
-
-Links
-=====
-* [API Documentation](https://xpybuild.github.io/xpybuild/)
-* [Change Log](https://github.com/xpybuild/xpybuild/blob/master/doc/changelog.md)
+       Copy. Common PathSets are DirBasedPathSet (when the files are known 
+       statically) and FindPaths which uses ant-style globbing to dynamically 
+       search the file system during the build process, e.g.::
+       
+         FindPaths('./src', includes=['**/*.java', 'META-INF/*.xml'])
 
 Copyright and license
-=====================
+---------------------
 Copyright (c) 2013-2019 Ben Spiller and Matthew Johnson
 Copyright (c) 2013-2019 Software AG, Darmstadt, Germany and/or its licensors
 

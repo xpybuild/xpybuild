@@ -62,7 +62,7 @@ Zip('${OUTPUT_DIR}/xpybuild_${VERSION}.zip', [
 			FindPaths('./xpybuild/', includes=['**/*.py']),
 			'xpybuild/XPYBUILD_VERSION',
 			'LICENSE.txt',
-			MapDest(markdownToTxt, 'README.md'),
+			'README.rst',
 			MapDest(markdownToTxt, 'doc/changelog.md'),
 		]),
 		'xpybuild.py',
