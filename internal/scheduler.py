@@ -23,6 +23,7 @@
 import traceback, os, re, stat
 import threading
 import io
+from functools import reduce
 
 from xpybuild import _XPYBUILD_VERSION
 from basetarget import BaseTarget
@@ -592,7 +593,7 @@ def logTargetTimes(file, scheduler, context):
 					maxcrit = edgecrit # update our maximum
 					localcritpath = list(edgepath)
 		deps.add((target, time))
-		sum = reduce((lambda s, (_, time): s+time), deps, 0)
+		sum = reduce((lambda s, targetAndTime: s+targetAndTime[1]), deps, 0)
 		localcritpath.insert(0, (target, time))
 		dots.add('%s[label="{{%s|{%s|%s}}}"];\n' % (_getKey(target), _getPrintable(target), _formatTime(time), _formatTime(sum)))
 		target._dependencyTimes = (time+maxcrit, sum, deps, localcritpath) # return the critical path sum and all deps sum
