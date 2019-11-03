@@ -83,7 +83,7 @@ class WriteFile(BaseTarget):
 		""" The literal content text is considered the dependency of this target """
 		stringifiedcontents = self._getContents(context)
 		if isinstance(stringifiedcontents, bytes): stringifiedcontents = repr(stringifiedcontents)
-		return super(WriteFile, self).getHashableImplicitInputs(context) + [stringifiedcontents] + ['mode: %s, executable: %s'%(self.__mode, self.__executable)]
+		return super(WriteFile, self).getHashableImplicitInputs(context) + stringifiedcontents.split('\n') + ['mode: %s, executable: %s'%(self.__mode, self.__executable)]
 		
 	def run(self, context):
 		contents = self._getContents(context)
