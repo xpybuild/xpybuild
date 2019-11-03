@@ -52,7 +52,7 @@ def defineOption(name, default):
 	init = getBuildInitializationContext()
 	if init:
 		init._defineOption(name, default)
-	elif 'doctest' not in sys.argv[0] and 'sphinx-build' not in sys.argv[0]:
+	elif 'doctest' not in sys.argv[0] and 'sphinx' not in sys.argv[0]:
 		# this check is so we notice if unfortunate module order causes us to try to 
 		# define options before we have a real context to put them in
 		assert False, 'Cannot define options at this point in the build as there is no initialization build context active'
