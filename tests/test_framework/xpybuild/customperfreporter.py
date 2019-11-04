@@ -9,7 +9,7 @@ from pysys.constants import PROJECT
 
 def getXpybuildVersion(project):
 	assert project, 'not initialized yet'
-	with io.open(project.XPYBUILD_ROOT+'/XPYBUILD_VERSION', encoding='ascii') as f:
+	with io.open(project.XPYBUILD_ROOT+'/xpybuild/XPYBUILD_VERSION', encoding='ascii') as f:
 		return f.read().strip()
 
 _log = logging.getLogger('perfreporter')
@@ -30,10 +30,11 @@ class XpybuildPerfReporter(CSVPerformanceReporter):
 		d['xpybuildVersion'] = self.XPYBUILD_VERSION
 		
 		try:
-			gitcommit = subprocess.check_output(['git', 'show', '-s', '--format=%h']).strip()
+			gitcommit = subprocess.run(['git', 'show', '-s', '--format=%h'], encoding='ascii', errors='replace', 
+				check=True, stdout=subprocess.PIPE).stdout.strip()
 			assert '\n' not in gitcommit, gitcommit
 		except Exception as ex:
-			_log.debug('Failed to get git commit hash: %s', ex)
+			_log.info('Failed to get git commit hash: %s', ex)
 		else:
 			d['gitCommit'] = gitcommit
 

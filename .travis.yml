@@ -9,20 +9,32 @@
 matrix:
   include:
   
-  - name: Python 2.7 Linux + doc + deploy
+  - name: Python 3.6 Linux + doc + deploy
     os: linux
-    python: 2.7
+    python: 3.6
     env: XPYBUILD_DOC_AND_DEPLOY=true
-  
-  - name: Python 2.7 Windows
+
+  - name: Python 3.6 Windows
     os: windows
+    # until Travis has language=python support on Windows, manually install using choco and sh(ell)
     language: sh
     before_install: 
       - unset GITHUB_API_KEY
-      - choco install python2 vcredist2008 -i vcpython27
+      - choco install python --version 3.6
       - choco install jdk8 -params 'installdir=c:\\jdk1.8'
-      - export "PATH=/c/Python27:/c/Python27/Scripts:/c/jdk1.8/bin:$PATH"
+      - export "PATH=/c/Python36:/c/Python36/Scripts:/c/jdk1.8/bin:$PATH"
+
+    # workaround for Travis Windows bug: disable secret filtering and hide secret env by unsetting it
     filter_secrets: false
+
+  - name: Python 3.7 Linux
+    os: linux
+    python: 3.7
+    env: XPYBUILD_PERFORMANCE_TESTS=true
+
+  - name: Python 3.8 Linux
+    os: linux
+    python: 3.8
 
 # Default Linux build runs on Ubuntu
 language: python
@@ -36,6 +48,7 @@ install:
   - $PY -m pip install coverage codecov
   
   - $PY -m pip install pysys==1.5.0
+  - env
 
 # for running tests and building documentation:
 script:
@@ -43,22 +56,24 @@ script:
   - |
     if [[ -n $XPYBUILD_DOC_AND_DEPLOY ]]; then (
        set -e
-       $PY -m pip install epydoc
-       $PY ./xpybuild.py EPYDOC_ROOT=.
+       $PY -m pip install sphinx==2.2.0 sphinx-epytext==0.0.4
+       $PY ./xpybuild.py --buildfile release.xpybuild.py
     )
     fi
 
   # run tests
   - cd tests/correctness
-  - pysys.py run --threads auto -X PYTHON_COVERAGE=true --exclude skip_ci
+  - pysys.py --help
+  - pysys.py run --threads auto -XpythonCoverage=true --exclude skip_ci --purge --record --mode ALL
+  - cd ../performance
+  - if [[ -n $XPYBUILD_PERFORMANCE_TESTS ]]; then pysys.py run --threads auto --exclude skip_ci --purge --record --mode ALL; fi
   - cd ../..
 
 after_script:
   # upload Python code coverage
-  - cd tests
-  - $PY combine_coverage.py
+  - cd tests/coverage-python
   - codecov
-  - cd ..
+  - cd ../..
   
 deploy:
   - provider: releases
@@ -69,7 +84,9 @@ deploy:
     skip_cleanup: true
     overwrite: true
     on: 
-       branch: master
+       branch: 
+         - release
+         - master
        condition: $XPYBUILD_DOC_AND_DEPLOY = true
 
     name: "xpybuild v$XPYBUILD_VERSION"
@@ -81,13 +98,13 @@ deploy:
   - provider: pages
     github-token: $GITHUB_API_KEY
     target-branch: gh-pages
-    local-dir: release-output/doc/api/
+    local-dir: release-output/doc
     skip_cleanup: true
     keep-history: true
     project-name: "XPyBuild $XPYBUILD_VERSION"
     
     on: 
-       branch: master
+       branch: release
        condition: $XPYBUILD_DOC_AND_DEPLOY = true
        tags: true
 

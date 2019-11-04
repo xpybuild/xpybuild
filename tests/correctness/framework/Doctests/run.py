@@ -32,14 +32,14 @@ class PySysTest(XpybuildBaseTest):
 			i += 1
 			moduleName = f.replace(DIR,'').replace('/','.').replace('\\','.').strip('.').replace('.py','')
 			
-			if any(map(lambda x: re.search(x, moduleName), EXCLUDED_MODULES)):
+			if any([re.search(x, moduleName) for x in EXCLUDED_MODULES]):
 				self.log.info("skipping excluded module %s"%moduleName)
 				skipped += 1
 				continue
 			
-			environs = self.createEnvirons({'PYTHONPATH':DIR}, command=sys.executable)
+			environs = self.createEnvirons({'PYTHONPATH':DIR+os.pathsep+DIR+'/xpybuild'}, command=sys.executable)
 			args = ['-m', 'doctest', '-v', f]
-			pythoncoverage = getattr(self, 'PYTHON_COVERAGE', '')=='true'
+			pythoncoverage = getattr(self, 'pythonCoverage', False)
 			if pythoncoverage:
 				self.log.info('Enabling Python code coverage')
 				# use -a to aggregate the coverage together rather than overwriting
@@ -49,7 +49,7 @@ class PySysTest(XpybuildBaseTest):
 				stdout=moduleName+'.out', stderr=moduleName+'.err', displayName='doctest '+moduleName, 
 				abortOnError=True, ignoreExitStatus=True)
 
-			if getattr(self, 'PYTHON_COVERAGE_REPORT', '')=='true':
+			if getattr(self, 'pythonDoctestCoverageReport', False):
 				self.startProcess(sys.executable, ['-m', 'coverage', 'html'], 
 				environs=environs, 
 				stdout='python-coverage.out', stderr='python-coverage.err', displayName='python coverage', 
