@@ -17,21 +17,25 @@
 # $Id: touch.py 301527 2017-02-06 15:31:43Z matj $
 #
 
-import os, inspect
+import os, inspect, time
 
 from buildcommon import *
 from basetarget import BaseTarget
 
-class Touch(BaseTarget):
+class Sleep(BaseTarget):
 	""" A target that creates an empty file
 	"""
 	
-	def __init__(self, name):
+	def __init__(self, name, time, dependencies=None):
 		"""
 		name: the output filename
+		time: the length of time to sleep (in seconds)
 		"""
-		BaseTarget.__init__(self, name, [])
+		BaseTarget.__init__(self, name, dependencies or [])
+		self.time=float(time)
 	
 	def run(self, context):
+		self.log.info("Sleeping for %s", self.time)
+		time.sleep(self.time)
 		self.log.info("Touching %s", self.path)
 		self.updateStampFile()

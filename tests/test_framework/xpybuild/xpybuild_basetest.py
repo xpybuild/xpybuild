@@ -25,6 +25,7 @@ class XpybuildBaseTest(BaseTest):
 				environs = self.createEnvirons(env, command=sys.executable)
 				environs['COVERAGE_FILE'] = '.coverage.%s'%stdouterr # use unique names to avoid overwriting
 				environs['PYSYS_TEST_ROOT_DIR'] = self.project.testRootDir
+				environs['PYTHONPATH'] = self.project.testRootDir
 				
 				# need to inherit parent PATH so we can find Java
 				environs['PATH'] = environs['PATH']+os.pathsep+os.getenv('PATH', '')
