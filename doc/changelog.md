@@ -20,7 +20,7 @@
 - WriteFile: added `encoding=` option to WriteFile (`common.fileEncodingDecider` option is used if not specified). 
 - WriteFile: added support for writing binary bytes. 
 - BaseTarget: Added `BaseTarget.openFile` which should be used for opening files (especially text files) from targets. It automatically picks the correct encoding to use for text files using the `common.fileEncodingDecider` option. This uses the `openForWrite` method which can now be used to write unicode strings in text mode, not only binary bytes. The available options are now pretty similar to what `io.open` supports, and `openForWrite` should be used instead of io.open/open to avoid possible file system races on Windows. 
-- Added `buildcommon.compareVersions` method for comparing version strings. 
+- Added `utils.stringutils.compareVersions` method for comparing dotted version strings. 
 
 # 1.15
 ## Breaking changes
