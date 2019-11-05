@@ -27,7 +27,7 @@ from buildcontext import BaseContext
 from pathsets import PathSet, BasePathSet
 
 class dirname(Composable):
-	""" A late-binding function which performs property expansion on it's argument and then
+	""" A late-binding function which performs property expansion on its argument and then
 	    removes the file parts of the argument.
 	"""
 	def __init__(self, path):
@@ -77,7 +77,7 @@ class dirname(Composable):
 
 
 class basename(Composable):
-	""" A late-binding function which performs property expansion on it's argument and then
+	""" A late-binding function which performs property expansion on its argument and then
 	    removes the directory parts of the argument.
 	"""
 	def __init__(self, path):

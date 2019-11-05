@@ -153,12 +153,12 @@ def compareVersions(v1, v2):
 	return 0
 
 
-def requireXpyBuildVersion(version):
+def requireXpyBuildVersion(version: str):
 	""" Checks that this xpybuild is at least a certain version number """
 	if compareVersions(_XPYBUILD_VERSION, version) < 0: raise Exception("This build file requires xpyBuild at least version "+version+" but this is xpyBuild "+_XPYBUILD_VERSION)
 
-""" Returns true if the path is a directory (ends with / or \\). """
 isDirPath = utils.fileutils.isDirPath
+""" Returns true if the path is a directory (ends with / or \\). """
 
 def normpath(path):
 	""" Normalizes the specified file or dir path to remove ".." sequences and 

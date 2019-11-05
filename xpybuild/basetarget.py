@@ -357,7 +357,7 @@ class BaseTarget(Composable):
 
 	def priority(self, priority):
 		"""
-		Set the priority of this target it encourage it (and its deps) to be 
+		Set the priority of this target to encourage it (and its deps) to be 
 		built earlier in the process. The default priority is 0.0
 
 		@param priority: a float representing the priority. Higher numbers will be built
