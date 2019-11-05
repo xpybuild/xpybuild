@@ -86,9 +86,8 @@ class PySysTest(XpybuildBaseTest):
 			self.assertTrue(maxcrit < 6*N+1 and maxcrit > 6*N-1, assertMessage="Critical path is 6*N +/- 1 (it was %s)" % maxcrit)
 
 		# check cpu stats
-		self.logFileContents('xpybuild.log') # temporary to see what's going on in travis
 		self.assertOrderedGrep('xpybuild.log', exprList=[
-				r'Utilisation average: 0[0-9]\.[0-9]*/%s'%multiprocessing.cpu_count(),
+				r'Utilisation average: 01\.[0-9]*/%2d'%multiprocessing.cpu_count(),
 				r'Utilisation histogram:',
 				r'1\] \([0-9\.]*[1-9][0-9\.]*%\) ==============',
 				r'2\] \([0-9\.]*[1-9][0-9\.]*%\) ==========',
