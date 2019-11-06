@@ -36,39 +36,6 @@ from xpybuild.buildexceptions import BuildException
 
 # All the public methods that build authors are expected to use to interact with properties and options
 
-def defineOption(name, default):
-	""" Define an option with a default (can be overridden globally using setGlobalOption() or on individual targets).
-	
-	This method is typically used only when implementing a new kind of target. 
-	
-	Options are not available for ${...} expansion (like properties), but 
-	rather as used for (optionally inheritably) settings that affect the 
-	behaviour of one or more targets. They are accessed using self.options 
-	in any target instance. 
-	
-	@param name: The option name, which should usually be in lowerCamelCase, with 
-	a TitleCase prefix specific to this target or group of targets, often 
-	matching the target name, e.g. "Javac.compilerArgs". 
-
-	@param default: The default value of the option
-	"""
-	init = BuildInitializationContext.getBuildInitializationContext()
-	if init:
-		init._defineOption(name, default)
-	elif 'doctest' not in sys.argv[0] and 'sphinx' not in sys.argv[0]:
-		# this check is so we notice if unfortunate module order causes us to try to 
-		# define options before we have a real context to put them in
-		assert False, 'Cannot define options at this point in the build as there is no initialization build context active'
-
-def setGlobalOption(key, value):
-	"""
-		Globally override the default for an option
-	"""
-	init = BuildInitializationContext.getBuildInitializationContext()
-	if init:
-		init.setGlobalOption(key, value)
-
-
 def defineStringProperty(name, default):
 	""" Define a string property which can be used in ${...} substitution. 
 	
@@ -444,3 +411,35 @@ def enableLegacyXpybuildModuleNames():
 			exec(f'sys.modules["{modulename}"] = sys.modules["xpybuild.{modulename}"]')
 	assert 'utils.fileutils' in sys.modules, sys.modules # sanity check that it worked
 	assert 'targets.copy' in sys.modules, sys.modules # sanity check that it worked
+
+def defineOption(name, default):
+	""" Define an option with a default (can be overridden globally using setGlobalOption() or on individual targets).
+	
+	This method is typically used only when implementing a new kind of target. 
+	
+	Options are not available for ${...} expansion (like properties), but 
+	rather as used for (optionally inheritably) settings that affect the 
+	behaviour of one or more targets. They are accessed using self.options 
+	in any target instance. 
+	
+	@param name: The option name, which should usually be in lowerCamelCase, with 
+	a TitleCase prefix specific to this target or group of targets, often 
+	matching the target name, e.g. "Javac.compilerArgs". 
+
+	@param default: The default value of the option
+	"""
+	init = BuildInitializationContext.getBuildInitializationContext()
+	if init:
+		init._defineOption(name, default)
+	elif 'doctest' not in sys.argv[0] and 'sphinx' not in sys.argv[0]:
+		# this check is so we notice if unfortunate module order causes us to try to 
+		# define options before we have a real context to put them in
+		assert False, 'Cannot define options at this point in the build as there is no initialization build context active'
+
+def setGlobalOption(key, value):
+	"""
+		Globally override the default for an option
+	"""
+	init = BuildInitializationContext.getBuildInitializationContext()
+	if init:
+		init.setGlobalOption(key, value)
