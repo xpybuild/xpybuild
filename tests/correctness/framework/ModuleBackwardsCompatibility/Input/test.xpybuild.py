@@ -20,3 +20,7 @@ WriteFile('${OUTPUT_DIR}/foo.txt', 'Hello world')
 # this is to check that the isinstance checks used by PathSet are working right - new and old package names should not have different pathsets! If they do, this will error. 
 Copy('${OUTPUT_DIR}/copy1/', newpathsets.PathSet(oldpathsets.PathSet('${OUTPUT_DIR}/foo.txt')))
 Copy('${OUTPUT_DIR}/copy2/', oldpathsets.PathSet(newpathsets.PathSet('${OUTPUT_DIR}/foo.txt')))
+
+# check that names from before v3.0 still work and map to the new names
+import xpybuild.buildcontext
+assert xpybuild.buildcontext.getBuildInitializationContext() == xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext()

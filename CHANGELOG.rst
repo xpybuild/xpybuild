@@ -40,6 +40,9 @@ Deprecation
 -  All xpybuild modules and classes should now be accessed via
    ``xpybuild.` (e.g. ``xpybuild.targets.copy`` etc), and importing names
    without the ``xpybuild.`` prefix is deprecated.
+-  ``buildcontext.getBuildInitializationContext`` is deprecated and replaced by 
+   `xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext`.
+
 
 Fixes
 -----

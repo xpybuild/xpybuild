@@ -35,29 +35,6 @@ import re
 import logging
 log = logging.getLogger('xpybuild')
 
-
-__buildInitializationContext = None
-
-
-def getBuildInitializationContext():
-	""" Return the context build used during build-file parsing and initialization.
-
-	This should be used by any target or build file that needs to call context methods 
-	during build-file parsing, but not once the build has started.
-	"""
-	global __buildInitializationContext
-
-	if not __buildInitializationContext: # just for pydoc testing
-		print("<using test initialization context>", end=' ')
-		return None
-	assert __buildInitializationContext != 'build phase', 'cannot use this method once the build has started, use context argument instead'
-		
-	return __buildInitializationContext
-
-def _setBuildInitializationContext(context):
-	global __buildInitializationContext
-	__buildInitializationContext = context
-
 class BaseContext(object):
 	""" Common functionality needed during initialization and build phases. 
 	"""
@@ -439,6 +416,8 @@ class BuildInitializationContext(BaseContext):
 	# how python's module system works
 	_definedOptions = {} 
 	
+	__buildInitializationContext = None
+	
 	def __init__(self, propertyOverrides):
 		""" Creates a new BuildInitializationContext object.
 
@@ -461,7 +440,22 @@ class BuildInitializationContext(BaseContext):
 		self._envPropertyOverrides = {}
 		self._preBuildCallbacks = []
 		self._globalOptions = {}
+
+	@staticmethod
+	def getBuildInitializationContext():
+		"""Returns the singleton `BuildInitializationContext` instance during parsing of build files, 
+		which is occasionally necessary for looking up properties etc. 
+		
+		It is an error to call this method after parsing of build files has completed, 
+		since a `BuildContext` is used for that phase of the build instead. 
+		"""
+		if not BuildInitializationContext.__buildInitializationContext: # just for pydoc testing
+			print("<using test initialization context>", end=' ')
+			return None
+		assert BuildInitializationContext.__buildInitializationContext != 'build phase', 'cannot use this method once the build has started, use context argument instead'
 			
+		return BuildInitializationContext.__buildInitializationContext
+
 	def initializeFromBuildFile(self, buildFile, isRealBuild=True):
 		""" Load the specified build file, which is the initialization phase during which properties are defined and 
 		the build file target definitions will register themselves with this object. 
@@ -481,7 +475,7 @@ class BuildInitializationContext(BaseContext):
 		sys.path.append(os.path.dirname(buildFile))
 		startTime = time.time()
 		log.debug("Loading build file ...")
-		_setBuildInitializationContext(self)
+		BuildInitializationContext.__buildInitializationContext = self
 		self._rootDir = os.path.abspath(os.path.dirname(buildFile))
 
 		try:
@@ -515,7 +509,7 @@ class BuildInitializationContext(BaseContext):
 		# which must happen before hte build phase begins
 		import xpybuild.utils.outputhandler
 
-		_setBuildInitializationContext('build phase')
+		BuildInitializationContext.__buildInitializationContext = 'build phase'
 		self._initializationCompleted = True
 		
 		# Definitions for common options used by multiple targets
@@ -823,3 +817,6 @@ class BuildContext(BaseContext):
 			return target.name in self.init.targets()
 		target = str(target)
 		return target in self.init.targets() or target in self.__targetPaths
+
+# as of v3.0 this is not documented and retained only for compatibility - better to use static singleton method
+getBuildInitializationContext = BuildInitializationContext.getBuildInitializationContext
