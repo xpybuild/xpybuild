@@ -41,7 +41,7 @@ language: python
 cache: pip
 
 install:
-  - export XPYBUILD_VERSION=`cat XPYBUILD_VERSION`
+  - export XPYBUILD_VERSION=`cat xpybuild/XPYBUILD_VERSION`
   - export "TRAVIS_TAG=$XPYBUILD_VERSION"
 
   - if [[ -z $PY ]]; then export PY=python$TRAVIS_PYTHON_VERSION; fi
