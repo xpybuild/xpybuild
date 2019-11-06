@@ -5,8 +5,8 @@ Breaking changes
 ----------------
 
 -  Now requires Python 3.6+ instead of Python 2
--  Added ``output`` and ``buildOptions`` required arguments to
-   ConsoleFormatter base class constructor.
+-  Added ``output`` and ``buildOptions`` required arguments to the 
+   `ConsoleFormatter` base class constructor.
 -  FilteredCopy mappers and the WriteFilter target now handle only
    unicode str objects and not bytes.
 -  BuildContext.defaultOptions() was removed, as there is no legitimate
@@ -18,28 +18,28 @@ Breaking changes
    which will require changes to build files in some cases:
 
    -  All xpybuild modules have been moved to a new ``xpybuild.`` module
-      for namespacing purposes. The enableLegacyXpybuildModuleNames()
+      for namespacing purposes. The `enableLegacyXpybuildModuleNames()`
       function can be called (after importing xpybuild.propertysupport)
       to allow unqualified access to the names if you have a large
       project, though this is a temporary measure and willbe removed
       eventually.
    -  The xpybuild.py entry-point script is now one level above the
       directory for the ``xpybuild`` package.
-   -  The ``xpybuild.main()`` function (which some scripts may have
+   -  The `xpybuild.main()` function (which some scripts may have
       directly referenced) is replaced by
-      :obj:``xpybuild.__main__.main``.
+      `xpybuild.__main__.main`.
 
 Deprecation
 -----------
 
--  The isWindows() function is deprecated in favour of the IS\_WINDOWS
+-  The ``isWindows()`` function is deprecated in favour of the `xpybuild.buildcommon.IS_WINDOWS` 
    constant (which is faster).
--  BuildContext.mergeOptions() is deprecated in favour of
-   BaseTarget.options, or (for situations where there is no target such
-   as PathSets) BuildContext.getGlobalOption().
+-  ``BuildContext.mergeOptions()`` is deprecated in favour of
+   `xpybuild.basetarget.BaseTarget.options`, or (for situations where there is no target such
+   as PathSets) `xpybuild.buildcontext.BuildContext.getGlobalOption()`.
 -  All xpybuild modules and classes should now be accessed via
-   "xpybuild." (e.g. "xpybuild.targets.copy" etc), and importing names
-   without the ``xpybuild.`` prefix is now deprecated.
+   ``xpybuild.` (e.g. ``xpybuild.targets.copy`` etc), and importing names
+   without the ``xpybuild.`` prefix is deprecated.
 
 Fixes
 -----
@@ -53,7 +53,7 @@ Fixes
 Enhancements
 ------------
 
--  FilteredCopy, WriteFile: Added option ``common.fileEncodingDecider``
+-  `FilteredCopy`, `WriteFile`: Added option ``common.fileEncodingDecider``
    which is used by FilteredCopy and WriteFile to decide what encoding
    to use for reading/writing text files. The default is an
    ExtensionBasedFileEncodingDecider instance which specifies UTF-8 for
