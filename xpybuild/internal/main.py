@@ -34,7 +34,7 @@ if os.getenv('XPYBUILD_IMPORTS'):
 	for i in os.getenv('XPYBUILD_IMPORTS').split(','):
 		importlib.import_module(i)
 
-from xpybuild.buildcommon import _XPYBUILD_VERSION, getStdoutEncoding
+from xpybuild.buildcommon import XPYBUILD_VERSION, getStdoutEncoding
 from xpybuild.buildcontext import *
 from xpybuild.utils.fileutils import mkdir, deleteDir
 from xpybuild.propertysupport import defineOption, parsePropertiesFile
@@ -69,7 +69,7 @@ def main(args):
 	try:
 		usage = [
 '',
-'eXtensible Python-based Build System %s on Python %s.%s.%s'% (_XPYBUILD_VERSION, sys.version_info[0], sys.version_info[1], sys.version_info[2]),
+'eXtensible Python-based Build System %s on Python %s.%s.%s'% (XPYBUILD_VERSION, sys.version_info[0], sys.version_info[1], sys.version_info[2]),
 '',
 'xpybuild.py [operation]? [options]* [property=value]* [-x] [target|tag|regex]* ', 
 '',
@@ -454,7 +454,7 @@ def main(args):
 			hdlr.setLevel(logLevel or logging.INFO)
 			logging.getLogger().addHandler(hdlr)
 			
-			log.info('Using xpybuild %s from %s on Python %s.%s.%s', _XPYBUILD_VERSION, os.path.normpath(os.path.dirname(__file__)), sys.version_info[0], sys.version_info[1], sys.version_info[2])
+			log.info('Using xpybuild %s from %s on Python %s.%s.%s', XPYBUILD_VERSION, os.path.normpath(os.path.dirname(__file__)), sys.version_info[0], sys.version_info[1], sys.version_info[2])
 			log.info('Using build options: %s', buildOptions)
 
 			try:

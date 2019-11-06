@@ -26,7 +26,7 @@ import threading
 import io
 from functools import reduce
 
-from xpybuild.buildcommon import _XPYBUILD_VERSION
+from xpybuild.buildcommon import XPYBUILD_VERSION
 from xpybuild.basetarget import BaseTarget
 from xpybuild.buildcontext import BuildContext
 from xpybuild.buildexceptions import BuildException
@@ -276,7 +276,7 @@ class BuildScheduler(object):
 			targetinfodir = mkdir(self.context.expandPropertyValues('${BUILD_WORK_DIR}/targets/'))
 			with io.open(targetinfodir+'/xpybuild-version.properties', 'w', encoding='utf-8') as f:
 				# write this file in case we want to avoid mixed xpybuild versions in working dir
-				f.write('xpybuildVersion=%s\n'%_XPYBUILD_VERSION)
+				f.write('xpybuildVersion=%s\n'%XPYBUILD_VERSION)
 				f.write('workDirVersion=%d\n' % 1) # bump this when we make a breaking change that should force a rebuild
 
 			with io.open(targetinfodir+'/selected-targets.txt', 'w', encoding='utf-8') as f:

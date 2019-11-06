@@ -39,8 +39,8 @@ def __getXpybuildVersion():
 	except Exception:
 		raise
 		return "<unknown>"
-_XPYBUILD_VERSION = __getXpybuildVersion()
-
+XPYBUILD_VERSION: str = __getXpybuildVersion()
+"""The current xpybuild version."""
 
 
 def include(file):
@@ -74,7 +74,7 @@ def include(file):
 def requireXpyBuildVersion(version: str):
 	""" Checks that this xpybuild is at least a certain version number. """
 	from xpybuild.utils.stringutils import compareVersions
-	if compareVersions(_XPYBUILD_VERSION, version) < 0: raise Exception("This build file requires xpyBuild at least version "+version+" but this is xpyBuild "+_XPYBUILD_VERSION)
+	if compareVersions(XPYBUILD_VERSION, version) < 0: raise Exception("This build file requires xpyBuild at least version "+version+" but this is xpyBuild "+XPYBUILD_VERSION)
 
 isDirPath = xpybuild.utils.fileutils.isDirPath
 """ Returns true if the path is a directory (ends with / or \\). """

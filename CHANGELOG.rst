@@ -17,17 +17,19 @@ Breaking changes
 -  Module names and contents have been re-organized in this release,
    which will require changes to build files in some cases:
 
-   -  All xpybuild modules have been moved to a new ``xpybuild.`` module
-      for namespacing purposes. The `enableLegacyXpybuildModuleNames()`
-      function can be called (after importing xpybuild.propertysupport)
-      to allow unqualified access to the names if you have a large
-      project, though this is a temporary measure and willbe removed
-      eventually.
-   -  The xpybuild.py entry-point script is now one level above the
-      directory for the ``xpybuild`` package.
-   -  The `xpybuild.main()` function (which some scripts may have
-      directly referenced) is replaced by
-      `xpybuild.__main__.main`.
+   - All xpybuild modules have been moved to a new ``xpybuild.`` module
+     for namespacing purposes. The `enableLegacyXpybuildModuleNames()`
+     function can be called (after importing xpybuild.propertysupport)
+     to allow unqualified access to the names if you have a large
+     project, though this is a temporary measure and willbe removed
+     eventually.
+   - The xpybuild.py entry-point script is now one level above the
+     directory for the ``xpybuild`` package.
+   - The `xpybuild.main()` function (which some scripts may have
+     directly referenced) is replaced by
+     `xpybuild.__main__.main`.
+   - The undocumented ``_XPYBUILD_VERSION`` constant was renamed to 
+     `xpybuild.buildcommon.XPYBUILD_VERSION`. 
 
 Deprecation
 -----------
