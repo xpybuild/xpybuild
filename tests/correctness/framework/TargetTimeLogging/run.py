@@ -36,6 +36,8 @@ class PySysTest(XpybuildBaseTest):
 		TIME=1
 		SUM=2
 		CRIT=3
+		sleep_fudgefactor = 2
+
 		with open(os.path.join(self.output, 'timefile-output.csv')) as f:
 			csv_reader = csv.reader(f, delimiter=',')
 			header = True
@@ -79,12 +81,12 @@ class PySysTest(XpybuildBaseTest):
 						self.assertEval('{a}<{b}', a=row[CRIT], b=row[SUM])
 					# target with lots of overlapping dependencies has sum about right
 					if 'sleepG' in row[NAME]:
-						self.assertTrue(row[SUM] < 7*N+1 and row[SUM] > 7*N-1, assertMessage="sleepG's cumulative time is 7*N +/- 1 (it was %s)"%row[SUM])
-						self.assertTrue(row[CRIT] < 4*N+1 and row[CRIT] > 4*N-1, assertMessage="sleepG's crit time is 4*N +/- 1 (it was %s)"%row[CRIT])
+						self.assertTrue(row[SUM] < 7*N+sleep_fudgefactor and row[SUM] > 7*N-sleep_fudgefactor, assertMessage=f"sleepG's cumulative time is 7*N +/- {sleep_fudgefactor} (it was %s)"%row[SUM])
+						self.assertTrue(row[CRIT] < 4*N+sleep_fudgefactor and row[CRIT] > 4*N-sleep_fudgefactor, assertMessage=f"sleepG's crit time is 4*N +/- {sleep_fudgefactor} (it was %s)"%row[CRIT])
 					
 			# critical path is correct target and about the right time
 			self.assertTrue('sleepJ' in maxcritname, assertMessage="sleepJ is the critical path (it was %s/%s)" % (maxcritname, maxcrit))
-			self.assertTrue(maxcrit < 6*N+1 and maxcrit > 6*N-1, assertMessage="Critical path is 6*N +/- 1 (it was %s)" % maxcrit)
+			self.assertTrue(maxcrit < 6*N+sleep_fudgefactor and maxcrit > 6*N-sleep_fudgefactor, assertMessage=f"Critical path is 6*N +/- {sleep_fudgefactor} (it was %s)" % maxcrit)
 
 		# check cpu stats
 		self.assertOrderedGrep('xpybuild.log', exprList=[
