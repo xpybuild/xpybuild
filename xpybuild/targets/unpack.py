@@ -66,7 +66,7 @@ def _getfilename(info):
 		assert False, "Should not happen, it's not a tarfile or a zipfile"
 
 class Unpack(BaseTarget):
-	""" A target that creates a new directory containing the unpacked contents 
+	""" Target that creates a new directory containing the unpacked contents 
 	of one or more archives (e.g. .zip files). 
 	
 	The parent directory will be created if it doesn't exist already. 

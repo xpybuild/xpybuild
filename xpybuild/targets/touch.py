@@ -23,7 +23,7 @@ from xpybuild.buildcommon import *
 from xpybuild.basetarget import BaseTarget
 
 class Touch(BaseTarget):
-	""" A target that creates an empty file
+	""" Target that creates an empty file
 	"""
 	
 	def __init__(self, name):

@@ -29,7 +29,7 @@ from xpybuild.utils.flatten import flatten
 from xpybuild.buildexceptions import BuildException
 
 class Zip(BaseTarget):
-	""" A target that creates a zip archive from a set of input files.
+	""" Target that creates a zip archive from a set of input files.
 	"""
 
 	def __init__(self, archive, inputs):

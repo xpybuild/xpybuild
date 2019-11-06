@@ -97,7 +97,7 @@ class _AddTrailingDirectorySlashesPathSet(BasePathSet):
 		return (((src if isDirPath(src) or '.h' in os.path.basename(src) else src+os.path.sep), pathset) for src,pathset in self._pathSet._resolveUnderlyingDependencies(context))
 
 class Cpp(BaseTarget):
-	""" A target that compiles a C++ source file to a single object file. 
+	""" Target that compiles a C++ source file to a single object file. 
 	"""
 	
 	__rebuild_makedepend_count = 0
@@ -318,7 +318,7 @@ class Cpp(BaseTarget):
 		return r
 		
 class C(Cpp):
-	""" A target that compiles a C source file to a .o
+	""" Target that compiles a C source file to a .o
 	"""
 	
 	# identical to Cpp except for actual run method
@@ -340,7 +340,7 @@ class C(Cpp):
 
 		
 class Link(BaseTarget):
-	""" A target that links object files to binaries
+	""" Target that links object files to binaries
 	"""
 	
 	def __init__(self, bin, objects, libs=None, libpaths=None, shared=False, options=None, flags=None, dependencies=None):
@@ -396,7 +396,7 @@ class Link(BaseTarget):
 		return r
 		
 class Ar(BaseTarget):
-	""" A target that compiles .a files from collections of .o files
+	""" Target that compiles .a files from collections of .o files
 	"""
 	
 	def __init__(self, bin, objects):

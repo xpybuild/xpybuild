@@ -30,7 +30,7 @@ from xpybuild.utils.buildfilelocation import BuildFileLocation
 from xpybuild.buildexceptions import BuildException
 
 class Copy(BaseTarget):
-	""" A target that copies input file(s) to an output file or directory. 
+	""" Target that copies input file(s) to an output file or directory. 
 	
 	The parent directory will be created if it doesn't exist already. 
 
@@ -171,7 +171,7 @@ are handled by copying the contents of the linked files.
 
 class FilteredCopy(Copy):
 	"""
-	A target that copies one or more input text file(s) to an output file or directory, 
+	Target that copies one or more input text file(s) to an output file or directory, 
 	filtering each line through the specified line mappers. 
 	
 	The parent directory will be created if it doesn't exist already. 

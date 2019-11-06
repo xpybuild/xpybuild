@@ -34,7 +34,7 @@ defineOption('docker.buildoptions', [])
 defineOption('docker.outputHandlerFactory', ProcessOutputHandler) 
 
 class DockerBase(BaseTarget):
-	""" A target that runs commands in docker, using stamp files for up-to-dateness
+	""" Target that runs commands in docker, using stamp files for up-to-dateness
 	"""
 	
 	def __init__(self, imagename, inputs, depimage=None, dockerfile=None, buildArgs=None, dockerArgs=None):

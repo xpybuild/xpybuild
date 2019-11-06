@@ -28,7 +28,7 @@ from xpybuild.utils.fileutils import mkdir, deleteDir, normLongPath
 from xpybuild.utils.flatten import flatten
 
 class Tarball(BaseTarget):
-	""" A target that creates a zip archive from a set of input files.
+	""" Target that creates a zip archive from a set of input files.
 	"""
 
 	def __init__(self, archive, inputs):
