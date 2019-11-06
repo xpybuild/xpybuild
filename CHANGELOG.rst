@@ -45,6 +45,8 @@ if you're using them:
   without the ``xpybuild.`` prefix is deprecated.
 - ``getBuildInitializationContext()`` is deprecated and replaced by 
   `xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext()`.
+- ``propertysupport.getProperty`` is deprecated in favour of 
+  `xpybuild.propertysupport.getPropertyValue`. 
 
 The following have also been deprecated:  
 - The ``isWindows()`` function is deprecated in favour of the `xpybuild.buildcommon.IS_WINDOWS` 

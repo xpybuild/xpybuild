@@ -24,6 +24,8 @@ import os
 import re
 import logging
 import mimetypes
+import typing
+
 __log = logging.getLogger('propertysupport') # cannot call it log cos this gets imported a lot
 
 from xpybuild.buildcommon import *
@@ -262,8 +264,11 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 			raise BuildException('Error processing properties file %s: no property key found for "%s" matched any of the conditions: %s'%(
 				propertiesFile, k, conditions), causedBy=False)
 
-def getPropertyValue(propertyName):
+def getPropertyValue(propertyName) -> object:
 	""" Return the current value of the given property (can only be used during build file parsing).
+	
+	Where possible, instead of using this method defer property resolution until 
+	the build phase (after all files have been parsed) and use `xpybuild.buildcontext.BuildContext.getPropertyValue` instead.
 	
 	For Boolean properties this will be a python Boolean, for everything else it will be a string. 
 	"""
@@ -272,14 +277,15 @@ def getPropertyValue(propertyName):
 	return context.getPropertyValue(propertyName)
 
 def getProperty(propertyName):
-	""" Deprecated name; for consistency, use getPropertyValue instead. 
+	"""
+	.. private: Hidden from documentation from v3.0 to avoid confusing people. 
 	
-	@deprecated: use getPropertyValue instead. 
+	@deprecated: For consistency use getPropertyValue instead. 
 	"""
 	return getPropertyValue(propertyName)
 
-def expandListProperty(propertyName):
-	""" Utility method for use during property and target definition 
+def expandListProperty(propertyName) -> typing.List[str]:
+	""" Utility method for use during build file parsing  property and target definition 
 	that returns a list containing the values of the specified 
 	list property. 
 	
