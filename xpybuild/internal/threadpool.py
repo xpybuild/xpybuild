@@ -76,7 +76,7 @@ class Utilisation(object):
 				utiltot = utiltot + elapsed
 				util[count] = utiltot
 				totalUtil = totalUtil + (count*elapsed)
-			log.critical("Utilisation average: %05.2f/%2d" % (totalUtil/totalTime, self.max))
+			log.critical("Utilisation average: %05.2f/%d" % (totalUtil/totalTime, self.max))
 			log.critical("Utilisation histogram:")
 			for i in range(1, self.max+1):
 				log.critical("  [%2d] (%05.2f%%) %s" % (i, 100*(util.get(i, 0)/totalTime), self.bar(util.get(i, 0), totalTime)))

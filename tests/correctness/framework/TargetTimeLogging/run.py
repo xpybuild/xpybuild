@@ -30,6 +30,8 @@ class PySysTest(XpybuildBaseTest):
 		# check , in input name doesn't break csv
 		self.assertGrep('timefile-output.csv', expr='test_target5')
 
+		self.logFileContents('xpybuild.log', maxLines=0) # temporary to see what's going on in travis
+
 		# check header and times roughly correct
 		N = 1.39728
 		NAME=0
@@ -59,7 +61,8 @@ class PySysTest(XpybuildBaseTest):
 					
 					# check time is about right
 					if 'sleep' in row[NAME]:
-						self.assertTrue(row[TIME] < N+0.2 and row[TIME] > N-0.2, assertMessage="Time for row %s wasn't N +/- 0.2 (it was %s)" %(row[NAME], row[TIME]))
+						fudgefactor = 0.4 # needs to be fairly large to cope with running on TravisCI
+						self.assertTrue(row[TIME] < N+fudgefactor and row[TIME] > N-fudgefactor, assertMessage=f"Time for row {row[NAME]} wasn't N={N} +/-{fudgefactor} (it was {row[TIME]})")
 
 					# find largest crit
 					if row[CRIT] > maxcrit:
@@ -87,7 +90,7 @@ class PySysTest(XpybuildBaseTest):
 
 		# check cpu stats
 		self.assertOrderedGrep('xpybuild.log', exprList=[
-				r'Utilisation average: 01\.[0-9]*/%2d'%multiprocessing.cpu_count(),
+				r'Utilisation average: 01\.[0-9]*/%d'%multiprocessing.cpu_count(),
 				r'Utilisation histogram:',
 				r'1\] \([0-9\.]*[1-9][0-9\.]*%\) ==============',
 				r'2\] \([0-9\.]*[1-9][0-9\.]*%\) ==========',
