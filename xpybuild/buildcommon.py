@@ -71,11 +71,6 @@ def include(file):
 	
 	return namespace
 
-def requireXpyBuildVersion(version: str):
-	""" Checks that this xpybuild is at least a certain version number. """
-	from xpybuild.utils.stringutils import compareVersions
-	if compareVersions(XPYBUILD_VERSION, version) < 0: raise Exception("This build file requires xpyBuild at least version "+version+" but this is xpyBuild "+XPYBUILD_VERSION)
-
 isDirPath = xpybuild.utils.fileutils.isDirPath
 """Returns true if the path is a directory (ends with a slash, / or \\\\). """
 
@@ -148,6 +143,11 @@ def defineAtomicTargetGroup(*targets):
 	targets = flatten(targets)
 	getBuildInitializationContext().defineAtomicTargetGroup(targets)
 	return targets
+
+def requireXpyBuildVersion(version: str):
+	""" Checks that this xpybuild is at least a certain version number. """
+	from xpybuild.utils.stringutils import compareVersions
+	if compareVersions(XPYBUILD_VERSION, version) < 0: raise Exception("This build file requires xpyBuild at least version "+version+" but this is xpyBuild "+XPYBUILD_VERSION)
 
 def registerPreBuildCheck(fn):
 	""" Defines a check which will be called after any clean but before any build actions take place.
