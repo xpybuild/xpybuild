@@ -90,7 +90,7 @@ deploy:
        condition: $XPYBUILD_DOC_AND_DEPLOY = true
 
     name: "xpybuild v$XPYBUILD_VERSION"
-    body: This release adds <TODO>. There are also a number of bug fixes and other improvements. See CHANGELOG.md for a full list of changes. 
+    body: This release adds <TODO>. There are also a number of bug fixes and other improvements. See CHANGELOG.rst for a full list of changes. 
   
     # this is a draft release, allows manually editing details in github UI
     draft: true
