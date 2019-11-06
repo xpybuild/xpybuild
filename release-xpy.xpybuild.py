@@ -36,7 +36,8 @@ requireXpyBuildVersion('3.0')
 defineOutputDirProperty('OUTPUT_DIR', 'release-output')
 with open('xpybuild/XPYBUILD_VERSION') as f: defineStringProperty('VERSION', f.read().strip())
 
-Copy('${OUTPUT_DIR}/doc/', 'README.rst')#FindPaths('doc/', includes='*.md')) # simulate creation of API docs
+Copy('${OUTPUT_DIR}/doc/', 'README.rst')
+
 """CustomCommand('${OUTPUT_DIR}/doc/api/', 
 	command=[ 
 		sys.executable, 
