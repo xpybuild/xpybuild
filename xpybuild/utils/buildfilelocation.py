@@ -20,6 +20,13 @@
 
 import traceback, inspect, os, sys
 
+
+def formatFileLocation(path: str, lineNumber: int) -> str: 
+	""" Formats a file and a line number for output. 
+	
+	Uses a format that works in vim and is easy to adapt for other editors. """
+	return '"%s" +%d' % (os.path.normpath(path), lineNumber)
+
 class BuildFileLocation(object):
 	""" Represents information about a location in the user's build file.
 	"""
@@ -89,6 +96,3 @@ class BuildFileLocation(object):
 				return filename, lineno
 				
 			frame = frame.f_back
-
-# down here to avoid circular reference
-from xpybuild.buildcommon import formatFileLocation

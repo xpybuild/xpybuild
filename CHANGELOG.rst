@@ -30,6 +30,8 @@ Breaking changes
      `xpybuild.__main__.main`.
    - The undocumented ``_XPYBUILD_VERSION`` constant was renamed to 
      `xpybuild.buildcommon.XPYBUILD_VERSION`. 
+   - ``formatFileLocation`` was moved from ``buildcommon`` to 
+     `xpybuild.utils.buildfilelocation.formatFileLocation`.
 
 Deprecation
 -----------

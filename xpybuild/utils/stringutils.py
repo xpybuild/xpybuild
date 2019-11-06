@@ -30,7 +30,7 @@ import re
 import platform
 import logging
 
-def compareVersions(v1, v2):
+def compareVersions(v1: str, v2: str) -> int:
 	""" Compares two alphanumeric dotted version strings to see which is more recent. 
 
 		Example usage::
@@ -109,4 +109,3 @@ def compareVersions(v1, v2):
 			if v1[i] > v2[i]: return 1
 			if v1[i] < v2[i]: return -1
 	return 0
-

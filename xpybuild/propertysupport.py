@@ -29,7 +29,7 @@ __log = logging.getLogger('propertysupport') # cannot call it log cos this gets 
 from xpybuild.buildcommon import *
 from xpybuild.buildcontext import getBuildInitializationContext
 from xpybuild.utils.fileutils import parsePropertiesFile
-from xpybuild.utils.buildfilelocation import BuildFileLocation
+from xpybuild.utils.buildfilelocation import BuildFileLocation, formatFileLocation
 from xpybuild.buildexceptions import BuildException
 
 # All the public methods that build authors are expected to use to interact with properties and options

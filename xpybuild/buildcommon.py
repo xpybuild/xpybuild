@@ -128,11 +128,6 @@ def getStdoutEncoding() -> str:
 	"""
 	return _stdoutEncoding
 
-def formatFileLocation(path, lineNumber): 
-	""" A functor to format a file and a line number for output. """
-	# use format vim uses for opening file at line number; easy enough to convert to ultra edit path/linenumber syntax
-	return '"%s" +%d' % (os.path.normpath(path), lineNumber)
-
 def defineAtomicTargetGroup(*targets):
 	""" The given targets must all be built before anything which depends on any of those targets.
 	
