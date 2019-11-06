@@ -318,15 +318,17 @@ class BaseContext(object):
 				
 
 	def mergeOptions(self, target=None, options=None): 
-		""" [DEPRECATED] Merges together the default options, the globally overridden options and any set on the target.
+		""" [DEPRECATED] 
 		
-		DEPRECATED: Use the target's self.options to get the resolved dictionary of options instead of this method, or L{getGlobalOptions} 
-		for PathSets and functors where there is no target available. 
+		@deprecated: Use the target's self.options to get the resolved dictionary of options instead of this method, or L{getGlobalOptions} 
+			for PathSets and functors where there is no target available. 
+		
+		Merges together the default options, the globally overridden options and any set on the target.
 
 		This is usually called from within a target run() method. Any options provided on the target 
 		will take priority, followed by anything overridden globally, finally anything left is taken
 		from the option defaults.
-
+		
 		@param target: the target from which to take option values overriding the global defaults. 
 
 		@param options: options to override directly - this is retained for backwards compatibility only and should not be used. 
