@@ -37,13 +37,14 @@ import os, sys
 import threading
 import logging
 import time
-from utils.antglob import *
-from utils.flatten import flatten
-from utils.buildfilelocation import BuildFileLocation
-from utils.fileutils import normLongPath
-from buildexceptions import BuildException
-from buildcommon import isDirPath, normpath, IS_WINDOWS
-from buildcontext import BaseContext, getBuildInitializationContext
+
+from xpybuild.utils.antglob import *
+from xpybuild.utils.flatten import flatten
+from xpybuild.utils.buildfilelocation import BuildFileLocation
+from xpybuild.utils.fileutils import normLongPath
+from xpybuild.buildexceptions import BuildException
+from xpybuild.buildcommon import isDirPath, normpath, IS_WINDOWS
+from xpybuild.buildcontext import BaseContext, getBuildInitializationContext
 
 # don't define a 'log' variable here or targets will use it by mistake when importing this file
 
@@ -252,7 +253,7 @@ def PathSet(*items):
 	>>> PathSet('a/*').resolve(BaseContext({})) #doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	buildexceptions.BuildException:
+	xpybuild.buildexceptions.BuildException:
 	"""
 	# This function is called a lot so its performance matters
 	
@@ -305,7 +306,7 @@ class DirBasedPathSet(BasePathSet):
 	>>> DirBasedPathSet('mydir', 'a*b').resolve(BaseContext({})) #doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	buildexceptions.BuildException:
+	xpybuild.buildexceptions.BuildException:
 
 	>>> str(PathSet('a', DirBasedPathSet(DirGeneratedByTarget('4/5/6/'), '7/8')))
 	'PathSet("a", DirBasedPathSet(DirGeneratedByTarget("4/5/6/"), [\\'7/8\\']))'
@@ -418,12 +419,12 @@ class FindPaths(BasePathSet):
 	>>> FindPaths('x', includes=['*.x', 'c:\\d'], excludes=[])#doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	buildexceptions.BuildException:
+	xpybuild.buildexceptions.BuildException:
 
 	>>> FindPaths('x', includes=['*.x', '${foo}'], excludes=[])#doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	buildexceptions.BuildException:
+	xpybuild.buildexceptions.BuildException:
 
 	"""
 	
@@ -953,12 +954,12 @@ class RemoveDestParents(_DerivedPathSet):
 	>>> str(RemoveDestParents(1, DirBasedPathSet('mydir/', 'a')).resolveWithDestinations(BaseContext({}) )).replace('\\\\\\\\','/') #doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	buildexceptions.BuildException: Cannot strip 1 parent dir(s) from "a" as it does not have that many parent directories
+	xpybuild.buildexceptions.BuildException: Cannot strip 1 parent dir(s) from "a" as it does not have that many parent directories
 
 	>>> str(RemoveDestParents(1, DirBasedPathSet('mydir/', 'b/')).resolveWithDestinations(BaseContext({}) )).replace('\\\\\\\\','/')
 	Traceback (most recent call last):
 	...
-	buildexceptions.BuildException: Cannot strip 1 parent dir(s) from "b/" as it does not have that many parent directories
+	xpybuild.buildexceptions.BuildException: Cannot strip 1 parent dir(s) from "b/" as it does not have that many parent directories
 
 	"""
 	def __init__(self, dirsToRemove, pathSet):
@@ -1084,4 +1085,4 @@ class DirGeneratedByTarget(BasePathSet):
 		# suffix is probably a string but might be a Composable/callable
 		return DirBasedPathSet(self, suffix)
 
-from basetarget import BaseTarget
+from xpybuild.basetarget import BaseTarget

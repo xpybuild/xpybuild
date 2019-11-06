@@ -21,11 +21,11 @@ import os, inspect, os.path
 import time
 import tarfile
 
-from buildcommon import *
-from pathsets import PathSet, BasePathSet
-from basetarget import BaseTarget
-from utils.fileutils import mkdir, deleteDir, normLongPath
-from utils.flatten import flatten
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import PathSet, BasePathSet
+from xpybuild.basetarget import BaseTarget
+from xpybuild.utils.fileutils import mkdir, deleteDir, normLongPath
+from xpybuild.utils.flatten import flatten
 
 class Tarball(BaseTarget):
 	""" A target that creates a zip archive from a set of input files.

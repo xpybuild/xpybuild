@@ -14,11 +14,11 @@
 #   limitations under the License.
 #
 import os
-from propertysupport import *
-from buildcommon import *
-from pathsets import *
+from xpybuild.propertysupport import *
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import *
 
-from targets.copy import *
+from xpybuild.targets.copy import *
 
 Copy('${OUTPUT_DIR}/symlink-relative/', FindPaths('${OUTPUT_DIR}/../../symlink-relative/', includes=['**','**/']))
 FilteredCopy('${OUTPUT_DIR}/symlink-absolute/', FindPaths('${OUTPUT_DIR}/../../symlink-absolute/', includes=['**','**/']))

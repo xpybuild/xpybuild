@@ -20,10 +20,11 @@
 
 import subprocess, os, time
 from threading import Lock
-from buildcommon import *
-from utils.outputhandler import ProcessOutputHandler
 import threading
-from buildexceptions import BuildException
+
+from xpybuild.buildcommon import *
+from xpybuild.utils.outputhandler import ProcessOutputHandler
+from xpybuild.buildexceptions import BuildException
 
 import logging
 log = logging.getLogger('process')

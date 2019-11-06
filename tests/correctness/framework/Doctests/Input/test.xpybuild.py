@@ -1,11 +1,11 @@
 import os, logging
-from propertysupport import *
-from buildcommon import *
-from pathsets import *
+from xpybuild.propertysupport import *
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import *
 
 defineOutputDirProperty('OUTPUT_DIR', None)
 
-import basetarget 
+import xpybuild.basetarget 
 
 defineStringProperty('MY_PROP', 'expectedval')
 

@@ -19,8 +19,8 @@
 
 import os, inspect, time
 
-from buildcommon import *
-from basetarget import BaseTarget
+from xpybuild.buildcommon import *
+from xpybuild.basetarget import BaseTarget
 
 class Sleep(BaseTarget):
 	""" A target that creates an empty file

@@ -7,10 +7,10 @@
 
 import os, urllib.request, urllib.parse, urllib.error
 
-from basetarget import *
-from buildcommon import *
-from buildexceptions import *
-from utils.fileutils import mkdir
+from xpybuild.basetarget import *
+from xpybuild.buildcommon import *
+from xpybuild.buildexceptions import *
+from xpybuild.utils.fileutils import mkdir
 
 class Download(BaseTarget):
 	""" A target for downloading from FTP or HTTP

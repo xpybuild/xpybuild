@@ -22,7 +22,7 @@
 
 import traceback, signal, sys, threading
 
-from buildcommon import isWindows
+from xpybuild.buildcommon import IS_WINDOWS
 
 def print_stack_trace(sig, frame):
 	"""Dump a python stack trace to stderr on a signal"""
@@ -40,5 +40,5 @@ def print_stack_trace(sig, frame):
 		sys.stderr.flush()
 
 def listen_for_stack_signal():
-	if not isWindows():
+	if not IS_WINDOWS:
 		signal.signal(signal.SIGUSR1, print_stack_trace)

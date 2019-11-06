@@ -24,19 +24,20 @@
 import os, inspect, re, string, time
 import datetime
 
-from buildcommon import *
-from basetarget import BaseTarget
-from propertysupport import defineOption
-from utils.process import call
-from pathsets import PathSet, BasePathSet
-from buildcontext import getBuildInitializationContext
-from buildexceptions import BuildException
-from propertyfunctors import make_functor, Composable
-from utils.fileutils import openForWrite, mkdir, deleteFile, getmtime, exists, toLongPathSafe, getstat
+from xpybuild.buildcommon import *
+from xpybuild.basetarget import BaseTarget
+from xpybuild.propertysupport import defineOption
+from xpybuild.utils.process import call
+from xpybuild.pathsets import PathSet, BasePathSet
+from xpybuild.buildcontext import getBuildInitializationContext
+from xpybuild.buildexceptions import BuildException
+from xpybuild.propertyfunctors import make_functor, Composable
+from xpybuild.utils.fileutils import openForWrite, mkdir, deleteFile, getmtime, exists, toLongPathSafe, getstat
 
 class __CompilersNotSpecified(object):
 	def __getattr__(self, attr):
 		raise Exception('Cannot use native targets until a compiler is configured by setting the native.compilers option')
+	def __repr__(self): return '<native.compilers option is not configured>'
 defineOption('native.compilers', __CompilersNotSpecified())
 defineOption('native.libs', [])
 defineOption('native.libpaths', [])

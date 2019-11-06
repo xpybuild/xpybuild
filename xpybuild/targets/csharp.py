@@ -19,15 +19,15 @@
 
 import os, inspect
 
-from buildcommon import *
-from basetarget import BaseTarget
-from propertysupport import defineOption
-from utils.process import call
-from pathsets import PathSet, FilteredPathSet
-from buildcontext import getBuildInitializationContext
-from buildexceptions import BuildException
-from utils.outputhandler import ProcessOutputHandler
-from utils.fileutils import mkdir
+from xpybuild.buildcommon import *
+from xpybuild.basetarget import BaseTarget
+from xpybuild.propertysupport import defineOption
+from xpybuild.utils.process import call
+from xpybuild.pathsets import PathSet, FilteredPathSet
+from xpybuild.buildcontext import getBuildInitializationContext
+from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.outputhandler import ProcessOutputHandler
+from xpybuild.utils.fileutils import mkdir
 
 import logging, re
 

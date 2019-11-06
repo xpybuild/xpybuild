@@ -1,6 +1,6 @@
 # platformutils - OS-specific utility functions
 #
-# Copyright (c) 2015 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2015 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,11 +18,12 @@
 #
 
 import os, platform
+import logging
 
-import logging, buildcommon
+import xpybuild.buildcommon
 
 def lowerCurrentProcessPriority():
-	if buildcommon.IS_WINDOWS:
+	if xpybuild.buildcommon.IS_WINDOWS:
 		import win32process, win32api,win32con
 		win32process.SetPriorityClass(win32api.GetCurrentProcess(), win32process.BELOW_NORMAL_PRIORITY_CLASS)
 	else:

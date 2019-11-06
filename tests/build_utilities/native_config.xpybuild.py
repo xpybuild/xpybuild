@@ -1,8 +1,8 @@
 import os
-from propertysupport import *
-from buildcommon import *
-from pathsets import *
-from utils.compilers import GCC, VisualStudio
+from xpybuild.propertysupport import *
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import *
+from xpybuild.utils.compilers import GCC, VisualStudio
 
 # some basic defaults for recent default compilers for running our testcases with
 if IS_WINDOWS:

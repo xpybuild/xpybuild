@@ -1,8 +1,8 @@
-from propertysupport import *
-from buildcommon import *
-from pathsets import *
+from xpybuild.propertysupport import *
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import *
 
-from targets.java import Jar
+from xpybuild.targets.java import Jar
 import logging
 
 # also useful to test with the jar target since the jar executable munges it further

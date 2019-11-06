@@ -1,8 +1,8 @@
 import os, logging
-from propertysupport import *
-from buildcommon import *
-from pathsets import *
-from targets.copy import Copy
+from xpybuild.propertysupport import *
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import *
+from xpybuild.targets.copy import Copy
 
 defineOutputDirProperty('OUTPUT_DIR', None)
 

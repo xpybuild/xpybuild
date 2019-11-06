@@ -2,7 +2,7 @@
 #
 # visual studio format logging handler
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 # ##teamcity[progressMessage '(%d/%d) %s']
 
 import logging, re, os
-from utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
+from xpybuild.utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
 
 class VisualStudioConsoleFormatter(ConsoleFormatter):
 	"""

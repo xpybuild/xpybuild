@@ -20,14 +20,14 @@
 import os, inspect, os.path, re, shutil
 from stat import S_ISLNK
 
-from buildcommon import *
-from propertysupport import defineOption, ExtensionBasedFileEncodingDecider
-from pathsets import PathSet
-from basetarget import BaseTarget
-from utils.fileutils import mkdir, deleteDir, openForWrite, normLongPath
-from utils.flatten import flatten
-from utils.buildfilelocation import BuildFileLocation
-from buildexceptions import BuildException
+from xpybuild.buildcommon import *
+from xpybuild.propertysupport import defineOption, ExtensionBasedFileEncodingDecider
+from xpybuild.pathsets import PathSet
+from xpybuild.basetarget import BaseTarget
+from xpybuild.utils.fileutils import mkdir, deleteDir, openForWrite, normLongPath
+from xpybuild.utils.flatten import flatten
+from xpybuild.utils.buildfilelocation import BuildFileLocation
+from xpybuild.buildexceptions import BuildException
 
 class Copy(BaseTarget):
 	""" A target that copies input file(s) to an output file or directory. 

@@ -6,7 +6,7 @@
 - BuildContext.defaultOptions() was removed, as there is no legitimate use case for it. 
 - `tmpdir` has been removed from the target's `self.options`; instead if needed the target's `self.workDir` should be used explicitly. 
 - Module names and contents have been re-organized in this release, which will require changes to build files in some cases:
-	- All xpybuild modules have been moved to a new `xpybuild.` module for namespacing purposes (though unqualified access to the names is still permitted to avoid the need to update existing builds).
+	- All xpybuild modules have been moved to a new `xpybuild.` module for namespacing purposes. The enableLegacyXpybuildModuleNames() function can be called (after importing xpybuild.propertysupport) to allow unqualified access to the names if you have a large project, though this is a temporary measure and willbe removed eventually. 
 	- The xpybuild.py entry-point script is now one level above the directory for the `xpybuild` package. 
 	- The `xpybuild.main()` function (which some scripts may have directly referenced) is replaced by :obj:`xpybuild.__main__.main`.
 

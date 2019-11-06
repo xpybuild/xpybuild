@@ -1,3 +1,6 @@
+from xpybuild.propertysupport import enableLegacyXpybuildModuleNames
+enableLegacyXpybuildModuleNames()
+
 import os, logging, time
 from propertysupport import *
 from buildcommon import *

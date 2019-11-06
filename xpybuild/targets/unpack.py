@@ -22,14 +22,14 @@ import time
 import zipfile
 import tarfile
 
-from buildcommon import *
-from pathsets import PathSet, BasePathSet
-from basetarget import BaseTarget
-from utils.fileutils import mkdir, deleteDir, normLongPath
-from utils.antglob import antGlobMatch
-from utils.flatten import flatten
-from utils.buildfilelocation import BuildFileLocation
-from buildexceptions import BuildException
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import PathSet, BasePathSet
+from xpybuild.basetarget import BaseTarget
+from xpybuild.utils.fileutils import mkdir, deleteDir, normLongPath
+from xpybuild.utils.antglob import antGlobMatch
+from xpybuild.utils.flatten import flatten
+from xpybuild.utils.buildfilelocation import BuildFileLocation
+from xpybuild.buildexceptions import BuildException
 
 def _getnames(file):
 	if isinstance(file, zipfile.ZipFile):

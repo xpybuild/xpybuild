@@ -19,14 +19,14 @@
 
 import os, inspect
 
-from buildcommon import *
-from propertysupport import *
-from basetarget import BaseTarget
-from pathsets import PathSet
-from utils.fileutils import openForWrite, normLongPath, mkdir
-from utils.process import call
-from buildexceptions import BuildException
-from utils.outputhandler import ProcessOutputHandler
+from xpybuild.buildcommon import *
+from xpybuild.propertysupport import *
+from xpybuild.basetarget import BaseTarget
+from xpybuild.pathsets import PathSet
+from xpybuild.utils.fileutils import openForWrite, normLongPath, mkdir
+from xpybuild.utils.process import call
+from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.outputhandler import ProcessOutputHandler
 
 defineOption('docker.path', 'docker')
 defineOption('docker.host', None)

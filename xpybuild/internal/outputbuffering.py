@@ -23,12 +23,10 @@
 
 import threading, re, os, time
 import locale
-
-from buildcommon import *
-
-from utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
 from threading import Lock
-from utils.terminal import getTerminalSize
+
+from xpybuild.utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
+from xpybuild.utils.terminal import getTerminalSize
 
 class OutputBufferingManager(object):
 	"""

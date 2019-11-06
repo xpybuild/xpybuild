@@ -23,7 +23,7 @@
 
 import logging, re, os
 
-from utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter, publishArtifact
+from xpybuild.utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter, publishArtifact
 
 def _publishArtifact(path):
 	"""

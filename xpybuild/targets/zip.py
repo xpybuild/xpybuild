@@ -21,12 +21,12 @@ import os, inspect, os.path
 import time
 import zipfile
 
-from buildcommon import *
-from pathsets import PathSet, BasePathSet
-from basetarget import BaseTarget
-from utils.fileutils import mkdir, deleteDir, normLongPath
-from utils.flatten import flatten
-from buildexceptions import BuildException
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import PathSet, BasePathSet
+from xpybuild.basetarget import BaseTarget
+from xpybuild.utils.fileutils import mkdir, deleteDir, normLongPath
+from xpybuild.utils.flatten import flatten
+from xpybuild.buildexceptions import BuildException
 
 class Zip(BaseTarget):
 	""" A target that creates a zip archive from a set of input files.

@@ -2,7 +2,7 @@
 #
 # Contains the base classes for creating various kinds of target. 
 #
-# Copyright (c) 2013 - 2018 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -21,15 +21,17 @@
 
 import os, inspect, shutil, re
 
-from buildcommon import *
-from buildcontext import getBuildInitializationContext
-import utils.fileutils as fileutils
-from utils.flatten import flatten, getStringList
-from utils.buildfilelocation import BuildFileLocation
-from utils.functors import Composable
-from buildexceptions import BuildException
-from utils.fileutils import openForWrite, normLongPath, mkdir
-import targets.common # ensure common options are defined
+from xpybuild.buildcommon import *
+from xpybuild.buildcontext import getBuildInitializationContext
+import xpybuild.utils.fileutils as fileutils
+from xpybuild.utils.flatten import flatten, getStringList
+from xpybuild.utils.buildfilelocation import BuildFileLocation
+from xpybuild.utils.functors import Composable
+from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.fileutils import openForWrite, normLongPath, mkdir
+
+import xpybuild.targets.common # ensure common options are defined
+
 import logging
 
 class BaseTarget(Composable):
@@ -391,4 +393,4 @@ def targetNameToUniqueId(name):
 	if len(x) < 256: x = x.replace('/','.') # avoid deeply nested directories in general
 	return x
 
-from pathsets import PathSet, BasePathSet
+from xpybuild.pathsets import PathSet, BasePathSet

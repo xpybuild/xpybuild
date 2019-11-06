@@ -22,7 +22,7 @@
 # ##teamcity[progressMessage '(%d/%d) %s']
 
 import logging, re, os
-from utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
+from xpybuild.utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
 
 class MakeConsoleFormatter(ConsoleFormatter):
 	"""

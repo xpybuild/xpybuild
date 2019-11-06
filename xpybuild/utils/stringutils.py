@@ -28,7 +28,6 @@
 import traceback, os, sys, io
 import re
 import platform
-
 import logging
 
 def compareVersions(v1, v2):

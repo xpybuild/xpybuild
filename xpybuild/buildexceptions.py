@@ -1,6 +1,6 @@
 # exceptions - Holds the main exception(s) used by build targets
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 
 import traceback, os, sys
 
-from utils.buildfilelocation import BuildFileLocation
+from xpybuild.utils.buildfilelocation import BuildFileLocation
 
 
 class BuildException(Exception):

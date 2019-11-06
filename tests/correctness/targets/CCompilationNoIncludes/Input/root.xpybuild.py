@@ -13,13 +13,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from propertysupport import *
-from buildcommon import *
-from pathsets import *
+from xpybuild.propertysupport import *
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import *
 
-from targets.native import *
-from targets.copy import Copy
-from utils.compilers import GCC, VisualStudio
+from xpybuild.targets.native import *
+from xpybuild.targets.copy import Copy
+from xpybuild.utils.compilers import GCC, VisualStudio
 
 include('../../../../build_utilities/native_config.xpybuild.py')
 

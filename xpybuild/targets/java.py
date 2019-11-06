@@ -19,15 +19,16 @@
 
 import os, inspect, os.path, shutil
 
-from buildcommon import *
-from basetarget import BaseTarget, targetNameToUniqueId
-from propertysupport import defineOption
-from pathsets import PathSet, FilteredPathSet, BasePathSet
-from utils.fileutils import mkdir, deleteDir, openForWrite, normLongPath
-from utils.java import jar, javac, create_manifest, javadoc, signjar
-from utils.flatten import flatten
-from utils.outputhandler import ProcessOutputHandler
-from buildexceptions import BuildException
+from xpybuild.buildcommon import *
+from xpybuild.basetarget import BaseTarget, targetNameToUniqueId
+from xpybuild.propertysupport import defineOption
+from xpybuild.pathsets import PathSet, FilteredPathSet, BasePathSet
+from xpybuild.utils.fileutils import mkdir, deleteDir, openForWrite, normLongPath
+from xpybuild.utils.java import jar, javac, create_manifest, javadoc, signjar
+from xpybuild.utils.flatten import flatten
+from xpybuild.utils.outputhandler import ProcessOutputHandler
+from xpybuild.buildexceptions import BuildException
+
 import logging
 import zipfile
 import collections

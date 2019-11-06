@@ -19,9 +19,9 @@
 
 import os, re, stat
 
-from buildcommon import *
-from basetarget import BaseTarget
-from utils.fileutils import mkdir, openForWrite, normLongPath
+from xpybuild.buildcommon import *
+from xpybuild.basetarget import BaseTarget
+from xpybuild.utils.fileutils import mkdir, openForWrite, normLongPath
 
 class WriteFile(BaseTarget):
 	""" Target for writing out a text or binary file with hardcoded contents. 

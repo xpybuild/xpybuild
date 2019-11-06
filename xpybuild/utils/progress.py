@@ -22,12 +22,12 @@
 # ##teamcity[progressMessage '(%d/%d) %s']
 
 import logging, re, os, time, traceback
-
-from buildcommon import *
-
-from utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
 from threading import Lock
-from utils.terminal import getTerminalSize
+
+from xpybuild.buildcommon import *
+
+from xpybuild.utils.consoleformatter import registerConsoleFormatter, ConsoleFormatter
+from xpybuild.utils.terminal import getTerminalSize
 
 class ProgressBarConsoleFormatter(ConsoleFormatter):
 	"""

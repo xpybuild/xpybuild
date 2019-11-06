@@ -15,12 +15,12 @@
 #
 import os
 import copy
-from propertysupport import *
-from buildcommon import *
-from pathsets import *
+from xpybuild.propertysupport import *
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import *
 
 # this is a convenient place to check we can use both with an without xpybuild.* qualification
-from targets.copy import *
+from xpybuild.targets.copy import *
 from xpybuild.targets.writefile import *
 
 defineStringProperty('MY_PROP', 'prop_value')

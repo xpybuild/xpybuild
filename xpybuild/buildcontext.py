@@ -21,12 +21,15 @@
 #
 import sys, os, getopt, time, traceback, types
 import threading
-from buildcommon import *
-from utils.flatten import flatten
-from utils.buildfilelocation import BuildFileLocation
-from buildexceptions import BuildException
-from utils.functors import Composable, Compose
-from utils.consoleformatter import publishArtifact
+
+from xpybuild.utils.flatten import flatten
+from xpybuild.utils.buildfilelocation import BuildFileLocation
+from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.functors import Composable, Compose
+from xpybuild.utils.consoleformatter import publishArtifact
+from xpybuild.utils.fileutils import isDirPath
+from xpybuild.buildcommon import normpath, IS_WINDOWS
+
 import traceback
 import re
 import logging
@@ -95,15 +98,15 @@ class BaseContext(object):
 		>>> BaseContext({'A':'b'}).getPropertyValue('UNDEFINED_PROPERTY')
 		Traceback (most recent call last):
 		...
-		buildexceptions.BuildException: Property "UNDEFINED_PROPERTY" is not defined
+		xpybuild.buildexceptions.BuildException: Property "UNDEFINED_PROPERTY" is not defined
 		>>> BaseContext({'A':'b'}).getPropertyValue(None)
 		Traceback (most recent call last):
 		...
-		buildexceptions.BuildException: Property "None" is not defined
+		xpybuild.buildexceptions.BuildException: Property "None" is not defined
 		>>> BaseContext({'A':'b'}).getPropertyValue('')
 		Traceback (most recent call last):
 		...
-		buildexceptions.BuildException: Property "" is not defined
+		xpybuild.buildexceptions.BuildException: Property "" is not defined
 		
 		"""
 			
@@ -177,15 +180,15 @@ class BaseContext(object):
 		>>> BaseContext({'A':'b'}).expandPropertyValues('${UNDEFINED_PROPERTY}')
 		Traceback (most recent call last):
 		...
-		buildexceptions.BuildException: Property "UNDEFINED_PROPERTY" is not defined
+		xpybuild.buildexceptions.BuildException: Property "UNDEFINED_PROPERTY" is not defined
 		>>> BaseContext({'A':'b'}).expandPropertyValues('${A')
 		Traceback (most recent call last):
 		...
-		buildexceptions.BuildException: Incorrectly formatted property string "${A"
+		xpybuild.buildexceptions.BuildException: Incorrectly formatted property string "${A"
 		>>> BaseContext({'A[]':'a, b'}).expandPropertyValues('${A[]}${A[]}', expandList=True)
 		Traceback (most recent call last):
 		...
-		buildexceptions.BuildException: Cannot expand as a list a string containing multiple list variables
+		xpybuild.buildexceptions.BuildException: Cannot expand as a list a string containing multiple list variables
 		
 		"""
 		if not string: return [] if expandList else string
@@ -310,7 +313,7 @@ class BaseContext(object):
 				
 			for key in source:
 				try:
-					if key not in _definedOptions: raise BuildException("Unknown option %s" % key)
+					if key not in BuildInitializationContext._definedOptions: raise BuildException("Unknown option %s" % key)
 					fulloptions[key] = self._recursiveExpandProperties(source[key])
 				except BuildException as e:
 					raise BuildException('Failed to resolve option "%s"'%key, location=target.location if target else None, causedBy=True)
@@ -338,7 +341,7 @@ class BaseContext(object):
 		# search defaults, then replace if in globals, then replace if in target.options
 		if target is None:
 			return self._mergeListOfOptionDicts([
-				_definedOptions, self._globalOptions, target and target._optionsTargetOverridesUnresolved, options])
+				BuildInitializationContext._definedOptions, self._globalOptions, target and target._optionsTargetOverridesUnresolved, options])
 		else: # if we're given a target, assume we're past the initialization phase
 			return self._mergeListOfOptionDicts([target.options, options], target=target)
 
@@ -430,6 +433,12 @@ class BuildInitializationContext(BaseContext):
 	state of the build. 
 	"""
 	
+	# hold option definitions in this static field, to support re-loading 
+	# build file (with a new init context) without losing definitions from 
+	# 'imported' modules (typically targets) which would not be reloaded due to 
+	# how python's module system works
+	_definedOptions = {} 
+	
 	def __init__(self, propertyOverrides):
 		""" Creates a new BuildInitializationContext object.
 
@@ -474,6 +483,7 @@ class BuildInitializationContext(BaseContext):
 		log.debug("Loading build file ...")
 		_setBuildInitializationContext(self)
 		self._rootDir = os.path.abspath(os.path.dirname(buildFile))
+
 		try:
 			BuildFileLocation._currentBuildFile = [buildFile]
 			exec(compile(open(buildFile, "rb").read(), buildFile, 'exec'), {})
@@ -503,7 +513,7 @@ class BuildInitializationContext(BaseContext):
 
 		# make sure this has been imported, since it's used for implementing many targets and defines some options of its own
 		# which must happen before hte build phase begins
-		import utils.outputhandler
+		import xpybuild.utils.outputhandler
 
 		_setBuildInitializationContext('build phase')
 		self._initializationCompleted = True
@@ -515,7 +525,7 @@ class BuildInitializationContext(BaseContext):
 	def _finalizeGlobalOptions(self): # internal method called at end of build initialization phase
 		# use this proxy to make it unmodifiable so we can pass it around (most targets don't need to override any options)
 		self._globalOptions = types.MappingProxyType(self._mergeListOfOptionDicts([
-			_definedOptions, self._globalOptions]))
+			BuildInitializationContext._definedOptions, self._globalOptions]))
 		assert self._globalOptions # there will always be at least some options defined
 	
 	def _initializationCheck(self):
@@ -689,17 +699,17 @@ class BuildInitializationContext(BaseContext):
 		Called internally from L{propertysupport.defineOption} and does not 
 		need to be called directly
 		"""
-		if name in _definedOptions and _definedOptions[name] != default:
+		if name in BuildInitializationContext._definedOptions and BuildInitializationContext._definedOptions[name] != default:
 			raise BuildException('Cannot define option "%s" more than once'%name)
 
-		_definedOptions[name] = default
+		BuildInitializationContext._definedOptions[name] = default
 	def setGlobalOption(self, key, value):
 		""" Set a global value for an option
 
 		Called internally from L{propertysupport.setGlobalOption} and does not 
 		need to be called directly
 		"""
-		if not key in _definedOptions:
+		if not key in BuildInitializationContext._definedOptions:
 			raise BuildException("Cannot specify value for option that has not been defined \"%s\"" % key)
 		if key in self._globalOptions:
 			log.warn("Resetting global option %s to %s at %s", key, value, BuildFileLocation().getLineString())
@@ -809,9 +819,3 @@ class BuildContext(BaseContext):
 			return target.name in self.init.targets()
 		target = str(target)
 		return target in self.init.targets() or target in self.__targetPaths
-
-# hold option definitions outside of init context object, to support re-loading 
-# build file (with a new init context) without losing definitions from 
-# 'imported' modules (typically targets) which would not be reloaded due to 
-# how python's module system works
-_definedOptions = {} 

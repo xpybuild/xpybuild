@@ -21,20 +21,21 @@
 #
 
 import traceback, os, re, stat
+import sys
 import threading
 import io
 from functools import reduce
 
-from buildcommon import _XPYBUILD_VERSION
-from basetarget import BaseTarget
-from buildcommon import *
-from buildcontext import BuildContext
-from buildexceptions import BuildException
-from internal.targetwrapper import TargetWrapper
-from internal.threadpool import ThreadPool, Utilisation
-from internal.outputbuffering import outputBufferingManager
-from utils.fileutils import deleteFile, exists, isfile, isdir, resetStatCache, getstat, toLongPathSafe, _getStatCacheSize, mkdir
-from utils.timeutils import formatTimePeriod
+from xpybuild.buildcommon import _XPYBUILD_VERSION
+from xpybuild.basetarget import BaseTarget
+from xpybuild.buildcontext import BuildContext
+from xpybuild.buildexceptions import BuildException
+from xpybuild.internal.targetwrapper import TargetWrapper
+from xpybuild.internal.threadpool import ThreadPool, Utilisation
+from xpybuild.internal.outputbuffering import outputBufferingManager
+from xpybuild.utils.fileutils import deleteFile, exists, isfile, isdir, resetStatCache, getstat, toLongPathSafe, _getStatCacheSize, mkdir, isDirPath
+from xpybuild.utils.timeutils import formatTimePeriod
+
 from threading import Lock
 
 import time

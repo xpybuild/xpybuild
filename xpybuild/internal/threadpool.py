@@ -22,12 +22,12 @@
 
 import traceback, os, signal, threading, time, math, cProfile
 import pstats
-from basetarget import BaseTarget
-from buildcommon import *
-from threading import Lock
-from threading import Condition
-from utils.process import _processCleanupMonitor
-from utils.fileutils import mkdir
+from threading import Lock, Condition
+
+from xpybuild.basetarget import BaseTarget
+from xpybuild.buildcommon import *
+from xpybuild.utils.process import _processCleanupMonitor
+from xpybuild.utils.fileutils import mkdir
 
 import logging
 log = logging.getLogger('xpybuild.scheduler')

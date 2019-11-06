@@ -21,10 +21,10 @@
 
 import os, re
 
-from utils.functors import *
+from xpybuild.utils.functors import Composable, ComposableWrapper
 
-from buildcontext import BaseContext
-from pathsets import PathSet, BasePathSet
+from xpybuild.buildcontext import BaseContext
+from xpybuild.pathsets import PathSet, BasePathSet
 
 class dirname(Composable):
 	""" A late-binding function which performs property expansion on its argument and then

@@ -24,7 +24,9 @@
 import shutil, os, os.path, time, platform, threading
 import stat, sys
 import io
-from utils.flatten import getStringList
+
+from xpybuild.utils.flatten import getStringList
+
 import subprocess, errno
 
 import logging

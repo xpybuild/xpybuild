@@ -19,10 +19,10 @@
 
 import os
 
-from buildcommon import *
-from pathsets import *
-from basetarget import BaseTarget
-from utils.fileutils import mkdir
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import *
+from xpybuild.basetarget import BaseTarget
+from xpybuild.utils.fileutils import mkdir
 
 class SymLink(BaseTarget):
 	""" Target for creating a file symbolic link (on supported platforms). 

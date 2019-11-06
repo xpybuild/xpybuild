@@ -23,13 +23,14 @@
 import os
 import re
 import logging
+import mimetypes
 __log = logging.getLogger('propertysupport') # cannot call it log cos this gets imported a lot
 
-from buildcommon import *
-from buildcontext import getBuildInitializationContext
-from utils.fileutils import parsePropertiesFile
-from utils.buildfilelocation import BuildFileLocation
-from buildexceptions import BuildException
+from xpybuild.buildcommon import *
+from xpybuild.buildcontext import getBuildInitializationContext
+from xpybuild.utils.fileutils import parsePropertiesFile
+from xpybuild.utils.buildfilelocation import BuildFileLocation
+from xpybuild.buildexceptions import BuildException
 
 # All the public methods that build authors are expected to use to interact with properties and options
 
@@ -401,7 +402,6 @@ class ExtensionBasedFileEncodingDecider:
 		the encodings precisely and ensure identical behaviour across machines.
 
 		"""
-		import mimetypes
 		d = {
 			'.json':'utf-8',
 			'.xml':'utf-8',
@@ -413,4 +413,28 @@ class ExtensionBasedFileEncodingDecider:
 			if not contenttype.startswith(('text/', 'application/')):
 				d[ext] = ExtensionBasedFileEncodingDecider.BINARY
 		return ExtensionBasedFileEncodingDecider(d, default='ascii')
-		
+
+import pkgutil
+
+def enableLegacyXpybuildModuleNames():
+	"""
+	Adds aliases for pre-3.0 module names e.g. `buildcommon` instead of `xpybuild.buildcommon`, etc. 
+	
+	The old names are deprecated, so this should be used only as a temporary measure. 
+	"""
+	# must manually import every single module from 'utils' and 'targets'; 
+	# although just importing 'utils' appears to work, 
+	# we end up with duplicate packages for the modules underneath it 
+	# (and so may attempt to import and hence define the same option twice)
+	import xpybuild.utils
+	import xpybuild.targets
+	for parentpackage in [xpybuild, xpybuild.utils, xpybuild.targets]:
+		for _, modulename, ispkg in pkgutil.iter_modules(
+				path=parentpackage.__path__, prefix=(parentpackage.__name__[len('xpybuild.'):]+'.').lstrip('.')):
+			__log.debug('enableLegacyXpybuildModuleNames: Importing legacy package name %s', modulename)
+			if modulename!='propertysupport': # first make sure the original one has been imported
+				exec(f'import xpybuild.{modulename}', {})
+			# then define an alias
+			exec(f'sys.modules["{modulename}"] = sys.modules["xpybuild.{modulename}"]')
+	assert 'utils.fileutils' in sys.modules, sys.modules # sanity check that it worked
+	assert 'targets.copy' in sys.modules, sys.modules # sanity check that it worked

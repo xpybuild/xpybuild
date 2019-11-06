@@ -19,8 +19,8 @@
 #
 
 import subprocess, os, re, logging
-from buildexceptions import BuildException
-from propertysupport import defineOption
+from xpybuild.buildexceptions import BuildException
+from xpybuild.propertysupport import defineOption
 
 # we might want a wrapper that stores all content and writes it to a file for artifact publishing, 
 # perhaps only iff an exception occurs and/or its not empty
@@ -69,7 +69,7 @@ class ProcessOutputHandler(object):
 	>>> h.handleEnd(5)
 	Traceback (most recent call last):
 	...
-	buildexceptions.BuildException: 2 errors, first is: error: My error
+	xpybuild.buildexceptions.BuildException: 2 errors, first is: error: My error
 
 	>>> h = ProcessOutputHandler('myhandler')
 	>>> h.handleLine(u'some message')
@@ -78,7 +78,7 @@ class ProcessOutputHandler(object):
 	>>> h.handleEnd(5)
 	Traceback (most recent call last):
 	...
-	buildexceptions.BuildException: myhandler failed with return code 5; no errors reported, last line was: later message
+	xpybuild.buildexceptions.BuildException: myhandler failed with return code 5; no errors reported, last line was: later message
 
 	"""
 	

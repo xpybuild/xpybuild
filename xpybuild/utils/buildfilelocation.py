@@ -91,4 +91,4 @@ class BuildFileLocation(object):
 			frame = frame.f_back
 
 # down here to avoid circular reference
-from buildcommon import formatFileLocation
+from xpybuild.buildcommon import formatFileLocation

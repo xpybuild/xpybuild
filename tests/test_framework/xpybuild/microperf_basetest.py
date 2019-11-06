@@ -4,11 +4,11 @@ import io, collections
 
 TEST_PY = """
 import os, logging, time
-from propertysupport import *
-from buildcommon import *
-from pathsets import *
-from targets.writefile import WriteFile
-import utils.fileutils
+from xpybuild.propertysupport import *
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import *
+from xpybuild.targets.writefile import WriteFile
+import xpybuild.utils.fileutils
 @SETUP@
 
 OUTPUT_DIR = getPropertyValue('OUTPUT_DIR')

@@ -1,7 +1,7 @@
 # xpyBuild - eXtensible Python-based Build System
 #
 # Copyright (c) 2013 - 2018 Software AG, Darmstadt, Germany and/or its licensors
-# Copyright (c) 2013 - 2018 Ben Spiller and Matthew Johnson
+# Copyright (c) 2013 - 2019 Ben Spiller and Matthew Johnson
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,16 +20,16 @@
 
 
 # xpybuild release build file. Creates pydoc API docs and versioned zip file for releases.
-from propertysupport import *
-from buildcommon import *
-from pathsets import *
+from xpybuild.propertysupport import *
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import *
 
-from targets.zip import Zip
-from targets.copy import Copy
-from targets.writefile import WriteFile
-from targets.custom import CustomCommand
+from xpybuild.targets.zip import Zip
+from xpybuild.targets.copy import Copy
+from xpybuild.targets.writefile import WriteFile
+from xpybuild.targets.custom import CustomCommand
 
-from utils.process import call
+from xpybuild.utils.process import call
 
 requireXpyBuildVersion('3.0')
 

@@ -1,4 +1,8 @@
+from xpybuild.propertysupport import enableLegacyXpybuildModuleNames
+enableLegacyXpybuildModuleNames() # a useful test to have this enabled; the unusual importing of both utils and targets showed up an extra edge case
+
 from propertysupport import *
+
 from buildcommon import *
 from pathsets import *
 

@@ -21,6 +21,7 @@
 
 import sys, os, getopt, time, traceback, logging, multiprocessing, threading, re
 from functools import reduce
+import locale
 
 # a general-purpose mechanism for adding extra python modules when invoking 
 # xpybuild, useful for third party plugins that may only be present on some 
@@ -33,23 +34,22 @@ if os.getenv('XPYBUILD_IMPORTS'):
 	for i in os.getenv('XPYBUILD_IMPORTS').split(','):
 		importlib.import_module(i)
 
-from buildcommon import *
-from buildcommon import _XPYBUILD_VERSION
-from buildcontext import *
-from utils.fileutils import mkdir, deleteDir
-from propertysupport import defineOption, parsePropertiesFile
-from internal.stacktrace import listen_for_stack_signal
-from buildexceptions import BuildException
-from utils.consoleformatter import _registeredConsoleFormatters, publishArtifact
-from utils.timeutils import formatTimePeriod
+from xpybuild.buildcommon import _XPYBUILD_VERSION, getStdoutEncoding
+from xpybuild.buildcontext import *
+from xpybuild.utils.fileutils import mkdir, deleteDir
+from xpybuild.propertysupport import defineOption, parsePropertiesFile
+from xpybuild.internal.stacktrace import listen_for_stack_signal
+from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.consoleformatter import _registeredConsoleFormatters, publishArtifact
+from xpybuild.utils.timeutils import formatTimePeriod
 
-import utils.teamcity # to get handler registered
-import utils.visualstudio # needed to create the entry in _handlers
-import utils.make # needed to create the entry in _handlers
-import utils.progress # needed to create the entry in _handlers
+import xpybuild.utils.teamcity # to get handler registered
+import xpybuild.utils.visualstudio # needed to create the entry in _handlers
+import xpybuild.utils.make # needed to create the entry in _handlers
+import xpybuild.utils.progress # needed to create the entry in _handlers
 
-import utils.platformutils 
-from internal.outputbuffering import OutputBufferingStreamWrapper, outputBufferingManager
+import xpybuild.utils.platformutils 
+from xpybuild.internal.outputbuffering import OutputBufferingStreamWrapper, outputBufferingManager
 
 log = logging.getLogger('xpybuild')
 
@@ -328,7 +328,7 @@ def main(args):
 		# nb: don't import any modules that might define options (including outputhandler) 
 		# until build file is loaded
 		# or we may not have a build context in place yet#
-		from internal.scheduler import BuildScheduler, logTargetTimes
+		from xpybuild.internal.scheduler import BuildScheduler, logTargetTimes
 
 
 		if buildOptions['profile']:
@@ -472,7 +472,7 @@ def main(args):
 				# to avoid starving machines (e.g. on windows) of resources 
 				# that should be used for interactive processes
 				if os.getenv('XPYBUILD_DISABLE_PRIORITY_CHANGE','') != 'true':
-					utils.platformutils.lowerCurrentProcessPriority()
+					xpybuild.utils.platformutils.lowerCurrentProcessPriority()
 					log.info('Successfully changed process priority to below normal')
 			except Exception as e:
 				log.warning('Failed to lower current process priority: %s'%e)

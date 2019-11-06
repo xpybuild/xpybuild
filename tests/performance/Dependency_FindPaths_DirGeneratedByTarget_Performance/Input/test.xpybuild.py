@@ -1,12 +1,12 @@
 import os, logging
-from propertysupport import *
-from buildcommon import *
-from pathsets import *
+from xpybuild.propertysupport import *
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import *
 
 
 defineOutputDirProperty('OUTPUT_DIR', None)
 
-from targets.copy import Copy
+from xpybuild.targets.copy import Copy
 
 for i in range(0, 256):
 	Copy('${OUTPUT_DIR}/outputa-%s/'%i, ["${OUTPUT_DIR}/../input-files/input-%s.txt"%x for x in range(0, 256)])

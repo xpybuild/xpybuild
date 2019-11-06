@@ -1,8 +1,8 @@
-from propertysupport import *
-from buildcommon import *
-from pathsets import *
+from xpybuild.propertysupport import *
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import *
 
-from targets.writefile import *
+from xpybuild.targets.writefile import *
 
 defineOutputDirProperty('OUTPUT_DIR', None)
 

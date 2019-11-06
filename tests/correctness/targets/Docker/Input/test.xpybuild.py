@@ -1,3 +1,6 @@
+from xpybuild.propertysupport import enableLegacyXpybuildModuleNames
+enableLegacyXpybuildModuleNames()
+
 #
 # Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
 #

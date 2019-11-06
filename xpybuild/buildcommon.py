@@ -3,7 +3,7 @@
 # This module holds definitions that are used throughout the build system, and 
 # typically all names from this module will be imported. 
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ import platform
 import logging
 # do NOT define a 'log' variable here or targets will use it by mistake
 
-from utils.flatten import flatten
-import utils.fileutils
-from utils.fileutils import parsePropertiesFile
+from xpybuild.utils.flatten import flatten
+import xpybuild.utils.fileutils
+from xpybuild.utils.fileutils import parsePropertiesFile
 
 def __getXpybuildVersion():
 
@@ -53,8 +53,8 @@ def include(file):
 	@param file: a path relative to the directory containing this file. 
 	"""
 
-	from buildcontext import getBuildInitializationContext
-	from utils.buildfilelocation import BuildFileLocation
+	from xpybuild.buildcontext import getBuildInitializationContext
+	from xpybuild.utils.buildfilelocation import BuildFileLocation
 
 	file = getBuildInitializationContext().expandPropertyValues(file)
 
@@ -76,7 +76,7 @@ def requireXpyBuildVersion(version: str):
 	from xpybuild.utils.stringutils import compareVersions
 	if compareVersions(_XPYBUILD_VERSION, version) < 0: raise Exception("This build file requires xpyBuild at least version "+version+" but this is xpyBuild "+_XPYBUILD_VERSION)
 
-isDirPath = utils.fileutils.isDirPath
+isDirPath = xpybuild.utils.fileutils.isDirPath
 """ Returns true if the path is a directory (ends with / or \\). """
 
 def normpath(path):
@@ -88,7 +88,7 @@ def normpath(path):
 	Leaves in place any  trailing platform-appropriate character to indicate 
 	directory if appropriate.
 	
-	See also L{utils.fileutils.normLongPath} and L{utils.fileutils.toLongPathSafe}. 
+	See also L{xpybuild.utils.fileutils.normLongPath} and L{xpybuild.utils.fileutils.toLongPathSafe}. 
 
 	"""
 	path = os.path.normpath(path)+(os.path.sep if isDirPath(path) else '')
@@ -144,7 +144,7 @@ def defineAtomicTargetGroup(*targets):
 	Returns the flattened list of targets. 
 	"""
 	
-	from buildcontext import getBuildInitializationContext
+	from xpybuild.buildcontext import getBuildInitializationContext
 	targets = flatten(targets)
 	getBuildInitializationContext().defineAtomicTargetGroup(targets)
 	return targets
@@ -182,5 +182,4 @@ class FilenameStringFormatter(object):
 		assert not kwargs
 		assert len(args)==1
 		return os.path.join(os.path.dirname(args[0]), self.fmt % os.path.basename(args[0]))
-	
 	

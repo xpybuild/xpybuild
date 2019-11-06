@@ -19,12 +19,12 @@
 
 import os, re, logging, time, traceback
 
-from buildcommon import *
-from buildexceptions import BuildException
-from utils.process import call
-from utils.fileutils import isdir
-from utils.outputhandler import ProcessOutputHandler
-from propertysupport import defineOption
+from xpybuild.buildcommon import *
+from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.process import call
+from xpybuild.utils.fileutils import isdir
+from xpybuild.utils.outputhandler import ProcessOutputHandler
+from xpybuild.propertysupport import defineOption
 
 class Process(object):
 	"""

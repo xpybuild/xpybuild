@@ -1,8 +1,8 @@
-from propertysupport import *
-from buildcommon import *
-from pathsets import *
+from xpybuild.propertysupport import *
+from xpybuild.buildcommon import *
+from xpybuild.pathsets import *
 
-from targets.copy import *
+from xpybuild.targets.copy import *
 from build_utilities.sleep import Sleep
 
 defineOutputDirProperty('OUTPUT_DIR', None)

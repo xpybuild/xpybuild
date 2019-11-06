@@ -24,12 +24,11 @@ import traceback, os, time
 import io
 import difflib
 from stat import S_ISREG, S_ISDIR # fast access for these is useful
-
-from basetarget import BaseTarget
-from buildcommon import *
 from threading import Lock
-from buildexceptions import BuildException
-from utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, isfile, isdir, toLongPathSafe, getstat
+
+from xpybuild.basetarget import BaseTarget
+from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, isfile, isdir, toLongPathSafe, getstat, isDirPath
 
 import logging
 log = logging.getLogger('scheduler.targetwrapper')

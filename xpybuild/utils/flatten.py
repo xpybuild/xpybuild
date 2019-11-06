@@ -17,7 +17,7 @@
 # $Id: flatten.py 301527 2017-02-06 15:31:43Z matj $
 #
 
-from utils.functors import Composable
+from xpybuild.utils.functors import Composable
 import types
 
 def flatten(input):

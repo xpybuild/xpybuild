@@ -19,15 +19,16 @@
 
 import os, sys, re, subprocess
 import locale
-from buildcommon import *
-from propertysupport import defineOption
-from utils.process import call
-from utils.outputhandler import ProcessOutputHandler
-from utils.flatten import getStringList
-from .fileutils import deleteDir, mkdir, deleteFile, openForWrite, normLongPath
-from utils.consoleformatter import publishArtifact
 
-from buildexceptions import BuildException
+from xpybuild.buildcommon import *
+from xpybuild.propertysupport import defineOption
+from xpybuild.utils.process import call
+from xpybuild.utils.outputhandler import ProcessOutputHandler
+from xpybuild.utils.flatten import getStringList
+from xpybuild.utils.fileutils import deleteDir, mkdir, deleteFile, openForWrite, normLongPath
+from xpybuild.utils.consoleformatter import publishArtifact
+
+from xpybuild.buildexceptions import BuildException
 
 import logging
 log = logging.getLogger('utils.java')
