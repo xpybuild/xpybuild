@@ -27,7 +27,7 @@ import mimetypes
 __log = logging.getLogger('propertysupport') # cannot call it log cos this gets imported a lot
 
 from xpybuild.buildcommon import *
-from xpybuild.buildcontext import BuildInitializationContext
+from xpybuild.buildcontext import BuildInitializationContext, getBuildInitializationContext # getBuildInitializationContext is here for compatibility only
 from xpybuild.utils.fileutils import parsePropertiesFile
 from xpybuild.utils.buildfilelocation import BuildFileLocation, formatFileLocation
 from xpybuild.buildexceptions import BuildException

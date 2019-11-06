@@ -43,6 +43,8 @@ if you're using them:
 - All xpybuild modules and classes should now be accessed via
   ``xpybuild.` (e.g. ``xpybuild.targets.copy`` etc), and importing names
   without the ``xpybuild.`` prefix is deprecated.
+- ``getBuildInitializationContext()`` is deprecated and replaced by 
+  `xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext()`.
 
 The following have also been deprecated:  
 - The ``isWindows()`` function is deprecated in favour of the `xpybuild.buildcommon.IS_WINDOWS` 
@@ -50,8 +52,6 @@ The following have also been deprecated:
 - ``BuildContext.mergeOptions()`` is deprecated in favour of
   `xpybuild.basetarget.BaseTarget.options`, or (for situations where there is no target such
   as PathSets) `xpybuild.buildcontext.BuildContext.getGlobalOption()`.
-- ``buildcontext.getBuildInitializationContext`` is deprecated and replaced by 
-  `xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext`.
 
 
 Fixes
