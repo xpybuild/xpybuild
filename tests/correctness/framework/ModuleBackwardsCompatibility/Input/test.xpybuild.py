@@ -39,3 +39,6 @@ assert propertyfunctors.make_functor == xpybuild.propertysupport.make_functor
 import buildexceptions
 import xpybuild.utils.buildexceptions
 assert buildexceptions.BuildException == xpybuild.utils.buildexceptions.BuildException
+
+import targets.touch
+assert targets.touch.Touch # aliased to writefile

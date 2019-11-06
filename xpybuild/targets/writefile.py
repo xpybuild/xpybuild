@@ -109,3 +109,17 @@ class WriteFile(BaseTarget):
 				self.__resolved = c
 			assert isinstance(self.__resolved, str) or isinstance(self.__resolved, bytes), 'WriteFile function must return a str or bytes: %r'%self.__resolved
 		return self.__resolved
+
+class Touch(BaseTarget):
+	""" Target that creates an empty file.
+	"""
+	
+	def __init__(self, path):
+		"""
+		name: the output filename
+		"""
+		BaseTarget.__init__(self, path, [])
+	
+	def run(self, context):
+		self.log.info("Touching %s", self.path)
+		self.updateStampFile()

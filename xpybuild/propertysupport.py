@@ -420,6 +420,9 @@ def enableLegacyXpybuildModuleNames():
 	exec(f'sys.modules["propertyfunctors"] = sys.modules["xpybuild.propertysupport"]')
 	exec(f'sys.modules["buildexceptions"] = sys.modules["xpybuild.utils.buildexceptions"]')
 
+	xpybuild.targets.touch = sys.modules["xpybuild.targets.writefile"]
+	exec(f'sys.modules["targets.touch"] = sys.modules["xpybuild.targets.writefile"]')
+
 ################################################################################
 # Options
 

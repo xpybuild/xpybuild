@@ -35,6 +35,7 @@ Breaking changes
    - ``propertyfunctors`` contents have been moved into `xpybuild.propertysupport`, 
      except for ``make_functor`` which has moved to `xpybuild.utils.functors.makeFunctor`. 
    - ``buildexceptions`` module was moved to `xpybuild.utils.buildexceptions`. 
+   - ``Touch`` target was moved from ``targets.touch`` to `xpybuild.targets.writefile.Touch`. 
 
 
 Deprecation
