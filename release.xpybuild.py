@@ -1,4 +1,5 @@
-# xpyBuild - eXtensible Python-based Build System
+# Build script for releasing xpybuild itself
+
 #
 # Copyright (c) 2013 - 2018 Software AG, Darmstadt, Germany and/or its licensors
 # Copyright (c) 2013 - 2019 Ben Spiller and Matthew Johnson
@@ -16,7 +17,6 @@
 #   limitations under the License.
 #
 # $Id: root.xpybuild.py 301527 2017-02-06 15:31:43Z matj $
-# Requires: Python 2.7
 
 
 # xpybuild release build file. Creates pydoc API docs and versioned zip file for releases.
@@ -29,16 +29,12 @@ from xpybuild.targets.copy import Copy
 from xpybuild.targets.writefile import WriteFile
 from xpybuild.targets.custom import CustomCommand
 
-from xpybuild.utils.process import call
-
 requireXpyBuildVersion('3.0')
 
 # Need the caller to provide the path to epydoc
 #definePathProperty('EPYDOC_ROOT', None, mustExist=True) # parent of the /lib directory; used for local builds but not Travis
 defineOutputDirProperty('OUTPUT_DIR', 'release-output')
 with open('xpybuild/XPYBUILD_VERSION') as f: defineStringProperty('VERSION', f.read().strip())
-
-def markdownToTxt(f): return f.replace('.md', '.txt')
 
 Copy('${OUTPUT_DIR}/doc/', FindPaths('doc/', includes='*.md')) # simulate creation of API docs
 """CustomCommand('${OUTPUT_DIR}/doc/api/', 
@@ -63,7 +59,7 @@ Zip('${OUTPUT_DIR}/xpybuild_${VERSION}.zip', [
 			'xpybuild/XPYBUILD_VERSION',
 			'LICENSE.txt',
 			'README.rst',
-			MapDest(markdownToTxt, 'doc/changelog.md'),
+			'CHANGELOG.rst',
 		]),
 		'xpybuild.py',
 		])
