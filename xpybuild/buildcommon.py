@@ -27,10 +27,6 @@ import platform
 import logging
 # do NOT define a 'log' variable here or targets will use it by mistake
 
-from xpybuild.utils.flatten import flatten
-import xpybuild.utils.fileutils
-from xpybuild.utils.fileutils import parsePropertiesFile
-
 def __getXpybuildVersion():
 
 	try:
@@ -71,8 +67,6 @@ def include(file):
 	
 	return namespace
 
-isDirPath = xpybuild.utils.fileutils.isDirPath
-"""Returns true if the path is a directory (ends with a slash, / or \\\\). """
 
 def normpath(path):
 	"""
@@ -178,3 +172,8 @@ class FilenameStringFormatter(object):
 		assert len(args)==1
 		return os.path.join(os.path.dirname(args[0]), self.fmt % os.path.basename(args[0]))
 	
+import xpybuild.utils.fileutils
+from xpybuild.utils.flatten import flatten
+
+isDirPath = xpybuild.utils.fileutils.isDirPath
+"""Returns true if the path is a directory (ends with a slash, / or \\\\). """

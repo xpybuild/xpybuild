@@ -26,7 +26,8 @@ import datetime
 
 from xpybuild.buildcommon import *
 from xpybuild.basetarget import BaseTarget
-from xpybuild.propertysupport import defineOption, make_functor, Composable
+from xpybuild.propertysupport import defineOption, Composable
+from xpybuild.utils.functors import makeFunctor
 from xpybuild.utils.process import call
 from xpybuild.pathsets import PathSet, BasePathSet
 from xpybuild.buildcontext import getBuildInitializationContext
@@ -424,8 +425,8 @@ class Ar(BaseTarget):
 		
 		return r
 		
-exename = make_functor(lambda c, i:c.getGlobalOption('native.cxx.exenamefn')(c.expandPropertyValues(i)), name='exename')
-objectname = make_functor(lambda c, i:c.getGlobalOption('native.cxx.objnamefn')(c.expandPropertyValues(i)), name='objectname')
-libname = make_functor(lambda c, i:c.getGlobalOption('native.cxx.libnamefn')(c.expandPropertyValues(i)), name='libname')
-staticlibname = make_functor(lambda c, i:c.getGlobalOption('native.cxx.staticlibnamefn')(c.expandPropertyValues(i)), name='staticlibname')
+exename = makeFunctor(lambda c, i:c.getGlobalOption('native.cxx.exenamefn')(c.expandPropertyValues(i)), name='exename')
+objectname = makeFunctor(lambda c, i:c.getGlobalOption('native.cxx.objnamefn')(c.expandPropertyValues(i)), name='objectname')
+libname = makeFunctor(lambda c, i:c.getGlobalOption('native.cxx.libnamefn')(c.expandPropertyValues(i)), name='libname')
+staticlibname = makeFunctor(lambda c, i:c.getGlobalOption('native.cxx.staticlibnamefn')(c.expandPropertyValues(i)), name='staticlibname')
 

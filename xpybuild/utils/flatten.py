@@ -17,10 +17,10 @@
 # $Id: flatten.py 301527 2017-02-06 15:31:43Z matj $
 #
 
-from xpybuild.utils.functors import Composable
 import types
+import typing
 
-def flatten(input):
+def flatten(input) -> typing.List:
 	"""Return the input flattened to an array.
 	
 	input: any variable composed of lists/generators/tuples, strings, lambda functions or other 
@@ -62,7 +62,7 @@ def flatten(input):
 	else:
 		return [input]
 		
-def getStringList(stringOrListOfStrings):
+def getStringList(stringOrListOfStrings) -> typing.List[str]:
 	""" Return a list of strings, either identical to the input (if it's already a list), or with the input wrapped in 
 	a new sequence (if it's a string), or an empty sequence (if its None). 
 	
@@ -101,3 +101,6 @@ def getStringList(stringOrListOfStrings):
 	elif isinstance(stringOrListOfStrings, str):
 		return [stringOrListOfStrings]
 	raise ValueError('The specified value must be a list of strings: "%s"'%(stringOrListOfStrings))
+
+
+from xpybuild.utils.functors import Composable

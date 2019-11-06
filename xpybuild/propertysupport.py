@@ -457,6 +457,8 @@ def setGlobalOption(key, value):
 ################################################################################
 # Property functors
 
+make_functor = xpybuild.utils.functors.makeFunctor
+
 class dirname(Composable):
 	""" A late-binding function which performs property expansion on its argument and then
 	    removes the file parts of the argument.
@@ -614,39 +616,3 @@ class joinPaths(Composable):
 	def __str__(self):
 		return "joinPaths(%s with %s)"%(self.pathset, self.pathsep)
 
-def make_functor(fn, name=None):
-	""" Take an arbitrary function and return a functor that can take arbitrary 
-	arguments and that can in turn be curried into
-	a composable object for use in property contexts.
-
-	Example::
-
-		def fn(context, input):
-			... # do something
-			return input
-
-		myfn = make_functor(fn)
-
-		target = "${OUTPUT_DIR}/" + myfn("${MYVAR}")
-
-	This will execute fn(context, "${MYVAR}") at property expansion time and then
-	prepend the expanded "${OUTPUT_DIR}/".
-
-	@param fn: a function of the form fn(context, *args)
-
-	>>> str(make_functor(lambda context, x: context.expandPropertyValues(x))('${INPUT}'))
-	'<lambda>(${INPUT})'
-	
-	>>> str(make_functor(lambda context, x: context.expandPropertyValues(x), name='foobar')('${INPUT}'))
-	'foobar(${INPUT})'
-	
-	>>> make_functor(lambda context, x: context.expandPropertyValues(x))('${INPUT}').resolveToString(xpybuild.buildcontext.BaseContext({'INPUT':'foo'}))
-	'foo'
-	
-	>>> str("output/"+make_functor(lambda context, x: context.expandPropertyValues(x))('${INPUT}'))
-	'output/+<lambda>(${INPUT})'
-	
-	>>> ("output/"+make_functor(lambda context, x: context.expandPropertyValues(x))('${INPUT}')).resolveToString(xpybuild.buildcontext.BaseContext({'INPUT':'foo'}))
-	'output/foo'
-	"""
-	return ComposableWrapper(fn, name)

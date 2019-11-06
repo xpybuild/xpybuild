@@ -22,14 +22,6 @@
 import sys, os, getopt, time, traceback, types
 import threading
 
-from xpybuild.utils.flatten import flatten
-from xpybuild.utils.buildfilelocation import BuildFileLocation
-from xpybuild.buildexceptions import BuildException
-from xpybuild.utils.functors import Composable, Compose
-from xpybuild.utils.consoleformatter import publishArtifact
-from xpybuild.utils.fileutils import isDirPath
-from xpybuild.buildcommon import normpath, IS_WINDOWS
-
 import traceback
 import re
 import logging
@@ -821,3 +813,12 @@ class BuildContext(BaseContext):
 
 # as of v3.0 this is not documented and retained only for compatibility - better to use static singleton method
 getBuildInitializationContext = BuildInitializationContext.getBuildInitializationContext
+
+# some import need to live down here to avoid circular dependencies
+from xpybuild.utils.functors import Composable, Compose
+from xpybuild.utils.fileutils import isDirPath
+from xpybuild.buildcommon import normpath, IS_WINDOWS
+from xpybuild.utils.flatten import flatten
+from xpybuild.utils.buildfilelocation import BuildFileLocation
+from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.consoleformatter import publishArtifact

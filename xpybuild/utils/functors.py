@@ -2,7 +2,7 @@
 #
 # Late-binding functors for use in property-expansion and modification (internal support classes)
 #
-# Copyright (c) 2014 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2014 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ class Compose(Composable):
 
 		@param context: a BuildContext
 
+		>>> import xpybuild.buildcontext
 		>>> Compose('a', 'b').resolveToString(None)
 		'ab'
 		>>> Compose(Compose('a', 'b'), 'c').resolveToString(None)
@@ -93,6 +94,7 @@ class ComposableFn(Composable):
 
 		@param context: a BuildContext
 
+		>>> import xpybuild.buildcontext
 		>>> ComposableFn(lambda context, a, b: a+b, 'a', 'b').resolveToString(None)
 		'ab'
 		>>> str("a"+ComposableFn(lambda context, x: x, 'b'))
@@ -116,3 +118,40 @@ class ComposableWrapper:
 		""" Currys fn with *args into a ComposableFn which can be used in compositions and later evaluated """
 		return ComposableFn(self.fn, *args, name=self.name)
 
+def makeFunctor(fn, name=None):
+	""" Take an arbitrary function and return a functor that can take arbitrary 
+	arguments and that can in turn be curried into
+	a composable object for use in property contexts.
+
+	Example::
+
+		def fn(context, input):
+			... # do something
+			return input
+
+		myfn = makeFunctor(fn)
+
+		target = "${OUTPUT_DIR}/" + myfn("${MYVAR}")
+
+	This will execute fn(context, "${MYVAR}") at property expansion time and then
+	prepend the expanded "${OUTPUT_DIR}/".
+
+	@param fn: a function of the form fn(context, *args)
+
+	>>> import xpybuild.buildcontext
+	>>> str(makeFunctor(lambda context, x: context.expandPropertyValues(x))('${INPUT}'))
+	'<lambda>(${INPUT})'
+	
+	>>> str(makeFunctor(lambda context, x: context.expandPropertyValues(x), name='foobar')('${INPUT}'))
+	'foobar(${INPUT})'
+	
+	>>> makeFunctor(lambda context, x: context.expandPropertyValues(x))('${INPUT}').resolveToString(xpybuild.buildcontext.BaseContext({'INPUT':'foo'}))
+	'foo'
+	
+	>>> str("output/"+makeFunctor(lambda context, x: context.expandPropertyValues(x))('${INPUT}'))
+	'output/+<lambda>(${INPUT})'
+	
+	>>> ("output/"+makeFunctor(lambda context, x: context.expandPropertyValues(x))('${INPUT}')).resolveToString(xpybuild.buildcontext.BaseContext({'INPUT':'foo'}))
+	'output/foo'
+	"""
+	return ComposableWrapper(fn, name)
