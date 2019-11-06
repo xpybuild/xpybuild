@@ -27,7 +27,7 @@ import mimetypes
 __log = logging.getLogger('propertysupport') # cannot call it log cos this gets imported a lot
 
 from xpybuild.buildcommon import *
-from xpybuild.buildcontext import getBuildInitializationContext
+from xpybuild.buildcontext import BuildInitializationContext
 from xpybuild.utils.fileutils import parsePropertiesFile
 from xpybuild.utils.buildfilelocation import BuildFileLocation, formatFileLocation
 from xpybuild.buildexceptions import BuildException
@@ -50,7 +50,7 @@ def defineOption(name, default):
 
 	@param default: The default value of the option
 	"""
-	init = getBuildInitializationContext()
+	init = BuildInitializationContext.getBuildInitializationContext()
 	if init:
 		init._defineOption(name, default)
 	elif 'doctest' not in sys.argv[0] and 'sphinx' not in sys.argv[0]:
@@ -62,7 +62,7 @@ def setGlobalOption(key, value):
 	"""
 		Globally override the default for an option
 	"""
-	init = getBuildInitializationContext()
+	init = BuildInitializationContext.getBuildInitializationContext()
 	if init:
 		init.setGlobalOption(key, value)
 
@@ -78,8 +78,8 @@ def defineStringProperty(name, default):
 	@param default: The default value of the propert (can contain other ${...} variables)
 	If set to None, the property must be set on the command line each time
 	"""
-	init = getBuildInitializationContext()
-	if init: init.defineProperty(name, default, lambda v: getBuildInitializationContext().expandPropertyValues(v))
+	init = BuildInitializationContext.getBuildInitializationContext()
+	if init: init.defineProperty(name, default, lambda v: BuildInitializationContext.getBuildInitializationContext().expandPropertyValues(v))
 
 def definePathProperty(name, default, mustExist=False):
 	""" Define a property that corresponds to a path.
@@ -106,7 +106,7 @@ def definePathProperty(name, default, mustExist=False):
 
 	# Expands properties, makes the path absolute, checks that it looks sensible and (if needed) whether the path exists
 	def _coerceToValidValue(value):
-		value = getBuildInitializationContext().expandPropertyValues(value)
+		value = BuildInitializationContext.getBuildInitializationContext().expandPropertyValues(value)
 		
 		if not os.path.isabs(value):
 			# must absolutize this, as otherwise it might be used from a build 
@@ -119,7 +119,7 @@ def definePathProperty(name, default, mustExist=False):
 			raise BuildException('Invalid path property value for "%s" - path "%s" does not exist' % (name, value))
 		return value
 		
-	init = getBuildInitializationContext()
+	init = BuildInitializationContext.getBuildInitializationContext()
 	if init: init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
 
 
@@ -138,7 +138,7 @@ def registerOutputDirProperties(*propertyNames):
 	
 	Typical usage is to call this just after definePathProperty. 
 	"""
-	init = getBuildInitializationContext()
+	init = BuildInitializationContext.getBuildInitializationContext()
 	if init:
 		for p in propertyNames:
 			p = init.getPropertyValue(p)
@@ -158,7 +158,7 @@ def defineEnumerationProperty(name, default, enumValues):
 
 	# Expands properties, then checks that it's one of the acceptible values
 	def _coerceToValidValue(value):
-		value = getBuildInitializationContext().expandPropertyValues(value)
+		value = BuildInitializationContext.getBuildInitializationContext().expandPropertyValues(value)
 		if value in enumValues: return value
 		
 		# case-insensitive match
@@ -168,7 +168,7 @@ def defineEnumerationProperty(name, default, enumValues):
 			
 		raise BuildException('Invalid property value for "%s" - value "%s" is not one of the allowed enumeration values: %s' % (name, value, enumValues))
 		
-	init = getBuildInitializationContext()
+	init = BuildInitializationContext.getBuildInitializationContext()
 	if init:
 		init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
 	
@@ -183,14 +183,14 @@ def defineBooleanProperty(name, default=False):
 
 	# Expands property values, then converts to a boolean
 	def _coerceToValidValue(value):
-		value = getBuildInitializationContext().expandPropertyValues(str(value))
+		value = BuildInitializationContext.getBuildInitializationContext().expandPropertyValues(str(value))
 		if value.lower() == 'true':
 			return True
 		if value.lower() == 'false' or value=='':
 			return False
 		raise BuildException('Invalid property value for "%s" - must be true or false' % (name))
 	
-	init = getBuildInitializationContext()
+	init = BuildInitializationContext.getBuildInitializationContext()
 	if init:
 		init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
 
@@ -210,7 +210,7 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 	"""
 	if conditions: assert not isinstance(conditions,str), 'conditions parameter must be a list'
 	__log.info('Defining properties from file: %s', propertiesFile)
-	context = getBuildInitializationContext()
+	context = BuildInitializationContext.getBuildInitializationContext()
 	
 	propertiesFile = context.getFullPath(propertiesFile, BuildFileLocation(raiseOnError=True).buildDir)
 	try:
@@ -267,7 +267,7 @@ def getPropertyValue(propertyName):
 	
 	For Boolean properties this will be a python Boolean, for everything else it will be a string. 
 	"""
-	context = getBuildInitializationContext()
+	context = BuildInitializationContext.getBuildInitializationContext()
 	assert context, 'getProperty can only be used during build file initialization phase'
 	return context.getPropertyValue(propertyName)
 
@@ -291,7 +291,7 @@ def expandListProperty(propertyName):
 	"""
 	assert not propertyName.startswith('$')
 	assert propertyName.endswith('[]')
-	context = getBuildInitializationContext()
+	context = BuildInitializationContext.getBuildInitializationContext()
 
 	# although this isn't a valid return value, it's best to avoid triggering the assertion 
 	# below to support doc-testing custom xpybuild files that happen to use this method
@@ -325,7 +325,7 @@ def enableEnvironmentPropertyOverrides(prefix):
 	have different values, and subtle bugs could result if the build 
 	property was able to be set implicitly from the environment).
 	"""
-	init = getBuildInitializationContext()
+	init = BuildInitializationContext.getBuildInitializationContext()
 	if init:
 		init.enableEnvironmentPropertyOverrides(prefix)
 
