@@ -59,7 +59,7 @@ class PySysTest(XpybuildBaseTest):
 					
 					# check time is about right
 					if 'sleep' in row[NAME]:
-						fudgefactor = 0.4 # needs to be fairly large to cope with running on TravisCI
+						fudgefactor = 0.9 # needs to be fairly large to cope with running on TravisCI
 						self.assertTrue(row[TIME] < N+fudgefactor and row[TIME] > N-fudgefactor, assertMessage=f"Time for row {row[NAME]} wasn't N={N} +/-{fudgefactor} (it was {row[TIME]})")
 
 					# find largest crit
