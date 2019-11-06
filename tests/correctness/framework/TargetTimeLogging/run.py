@@ -87,7 +87,7 @@ class PySysTest(XpybuildBaseTest):
 
 		# check cpu stats
 		self.assertOrderedGrep('xpybuild.log', exprList=[
-				r'Utilisation average: 0[0-9]\.[0-9]*/%s'%multiprocessing.cpu_count(),
+				r'Utilisation average: 01\.[0-9]*/%2d'%multiprocessing.cpu_count(),
 				r'Utilisation histogram:',
 				r'1\] \([0-9\.]*[1-9][0-9\.]*%\) ==============',
 				r'2\] \([0-9\.]*[1-9][0-9\.]*%\) ==========',
