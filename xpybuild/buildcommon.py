@@ -80,16 +80,16 @@ isDirPath = xpybuild.utils.fileutils.isDirPath
 """Returns true if the path is a directory (ends with a slash, / or \\\\). """
 
 def normpath(path):
-	""" Normalizes the specified file or dir path to remove ".." sequences and 
+	"""
+	.. private: This is deprecated in favour of fileutils.normLongPath and hidden from documentation to avoid polluting the docs. 
+
+	Normalizes the specified file or dir path to remove ".." sequences and 
 	differences in the capitalization of Windows drive letters. 
 	
 	Does not add Windows long-path safety or absolutization. 
 	
 	Leaves in place any  trailing platform-appropriate character to indicate 
 	directory if appropriate.
-	
-	See also L{xpybuild.utils.fileutils.normLongPath} and L{xpybuild.utils.fileutils.toLongPathSafe}. 
-
 	"""
 	path = os.path.normpath(path)+(os.path.sep if isDirPath(path) else '')
 	
@@ -125,7 +125,7 @@ try:
 except:
 	pass # probably in epydoc
 
-def getStdoutEncoding(): 
+def getStdoutEncoding() -> str: 
 	""" Returns the most likely encoding used by subprocesses, based on 
 	whether the build is running in a console, etc 
 	which is typically what should be used for converting byte strings from 

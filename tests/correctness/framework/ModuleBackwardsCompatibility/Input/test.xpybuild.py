@@ -24,3 +24,5 @@ Copy('${OUTPUT_DIR}/copy2/', oldpathsets.PathSet(newpathsets.PathSet('${OUTPUT_D
 # check that names from before v3.0 still work and map to the new names
 import xpybuild.buildcontext
 assert xpybuild.buildcontext.getBuildInitializationContext() == xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext()
+
+assert normpath, "buildcommon.normpath should still be defined even though it's deprecated"

@@ -37,9 +37,9 @@ __isWindows = platform.system()=='Windows'
 if __isWindows: # Workaround required for windows filesystem semantics having a stupid race condition between writes from POSIX API (which Python uses) and win32 API (e.g. used by Java/C++)
 	try:
 		import win32file
-		class Win32FileWriter(io.RawIOBase):
+		class _Win32FileWriter(io.RawIOBase):
 			def __init__(self, dest, mode='w', encoding=None, errors=None, newline=None):
-				super(Win32FileWriter, self).__init__()
+				super(_Win32FileWriter, self).__init__()
 				assert 'w' in mode, 'Currently the Win32FileWriter class only supports writing, not reading'
 				self.dest = dest
 				self.__textWrapper = None if 'b' in mode else io.TextIOWrapper(self, encoding=encoding, errors=errors, newline=newline)
@@ -73,7 +73,7 @@ if __isWindows: # Workaround required for windows filesystem semantics having a 
 	except Exception:
 		raise # need to know about this
 
-openForWrite = Win32FileWriter if __isWindows else open
+openForWrite = _Win32FileWriter if __isWindows else open
 """
 Open file for writing and return a corresponding text or binary stream file object. 
 
@@ -340,7 +340,7 @@ def toLongPathSafe(path, force=False):
 	Converts the specified path string to a form suitable for passing to API 
 	calls if it exceeds the maximum path length on this OS. 
 	
-	Currently, this is necessary only on Windows, where a unicode string 
+	Currently, this is necessary only on Windows, where a string 
 	starting with \\?\ must be used to get correct behaviour for long paths. 
 	
 	Unlike L{normLongPath} which also performs the long path conversion, this 

@@ -33,17 +33,23 @@ Breaking changes
 
 Deprecation
 -----------
+The following deprecated items are likely to be removed soon, so action is required 
+if you're using them:
 
--  The ``isWindows()`` function is deprecated in favour of the `xpybuild.buildcommon.IS_WINDOWS` 
-   constant (which is faster).
--  ``BuildContext.mergeOptions()`` is deprecated in favour of
-   `xpybuild.basetarget.BaseTarget.options`, or (for situations where there is no target such
-   as PathSets) `xpybuild.buildcontext.BuildContext.getGlobalOption()`.
--  All xpybuild modules and classes should now be accessed via
-   ``xpybuild.` (e.g. ``xpybuild.targets.copy`` etc), and importing names
-   without the ``xpybuild.`` prefix is deprecated.
--  ``buildcontext.getBuildInitializationContext`` is deprecated and replaced by 
-   `xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext`.
+- ``buildcommon.normpath`` is deprecated and should not be used - switch to 
+  `xpybuild.utils.fileutils.normLongPath` instead. 
+- All xpybuild modules and classes should now be accessed via
+  ``xpybuild.` (e.g. ``xpybuild.targets.copy`` etc), and importing names
+  without the ``xpybuild.`` prefix is deprecated.
+
+The following have also been deprecated:  
+- The ``isWindows()`` function is deprecated in favour of the `xpybuild.buildcommon.IS_WINDOWS` 
+  constant (which is faster).
+- ``BuildContext.mergeOptions()`` is deprecated in favour of
+  `xpybuild.basetarget.BaseTarget.options`, or (for situations where there is no target such
+  as PathSets) `xpybuild.buildcontext.BuildContext.getGlobalOption()`.
+- ``buildcontext.getBuildInitializationContext`` is deprecated and replaced by 
+  `xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext`.
 
 
 Fixes
