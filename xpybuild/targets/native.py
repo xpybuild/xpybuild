@@ -26,12 +26,11 @@ import datetime
 
 from xpybuild.buildcommon import *
 from xpybuild.basetarget import BaseTarget
-from xpybuild.propertysupport import defineOption
+from xpybuild.propertysupport import defineOption, make_functor, Composable
 from xpybuild.utils.process import call
 from xpybuild.pathsets import PathSet, BasePathSet
 from xpybuild.buildcontext import getBuildInitializationContext
 from xpybuild.buildexceptions import BuildException
-from xpybuild.propertyfunctors import make_functor, Composable
 from xpybuild.utils.fileutils import openForWrite, mkdir, deleteFile, getmtime, exists, toLongPathSafe, getstat
 
 class __CompilersNotSpecified(object):

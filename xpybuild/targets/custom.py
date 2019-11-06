@@ -150,7 +150,7 @@ class CustomCommand(BaseTarget):
 		@param env: a dictionary of environment overrides, or a function that 
 		returns one given a context. Values in the dictionary will 
 		be expanded using the same rules as for the command (see above). 
-		Consider using propertyfunctors.joinPaths for environment variables 
+		Consider using `xpybuild.propertysupport.joinPaths` for environment variables 
 		containing a list of paths. 
 		
 		@param redirectStdOutToTarget: usually, any stdout is treated as logging 

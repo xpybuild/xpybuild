@@ -26,3 +26,12 @@ import xpybuild.buildcontext
 assert xpybuild.buildcontext.getBuildInitializationContext() == xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext()
 
 assert normpath, "buildcommon.normpath should still be defined even though it's deprecated"
+
+import propertyfunctors, xpybuild.propertysupport
+assert propertyfunctors.joinPaths == xpybuild.propertysupport.joinPaths
+assert xpybuild.propertysupport.joinPaths == joinPaths 
+
+assert propertyfunctors.dirname == xpybuild.propertysupport.dirname
+assert propertyfunctors.basename == xpybuild.propertysupport.basename
+assert propertyfunctors.sub == xpybuild.propertysupport.sub
+assert propertyfunctors.make_functor == xpybuild.propertysupport.make_functor

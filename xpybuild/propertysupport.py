@@ -28,11 +28,15 @@ import typing
 
 __log = logging.getLogger('propertysupport') # cannot call it log cos this gets imported a lot
 
-from xpybuild.buildcommon import *
+import xpybuild.buildcontext
 from xpybuild.buildcontext import BuildInitializationContext, getBuildInitializationContext # getBuildInitializationContext is here for compatibility only
+from xpybuild.buildcommon import *
+from xpybuild.buildexceptions import BuildException
 from xpybuild.utils.fileutils import parsePropertiesFile
 from xpybuild.utils.buildfilelocation import BuildFileLocation, formatFileLocation
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.functors import Composable, ComposableWrapper
+from xpybuild.pathsets import PathSet, BasePathSet
+
 
 # All the public methods that build authors are expected to use to interact with properties and options
 
@@ -412,6 +416,12 @@ def enableLegacyXpybuildModuleNames():
 	assert 'utils.fileutils' in sys.modules, sys.modules # sanity check that it worked
 	assert 'targets.copy' in sys.modules, sys.modules # sanity check that it worked
 
+	# aliases for modules we folded into other modules in v3.0
+	exec(f'sys.modules["propertyfunctors"] = sys.modules["xpybuild.propertysupport"]')
+
+################################################################################
+# Options
+
 def defineOption(name, default):
 	""" Define an option with a default (can be overridden globally using setGlobalOption() or on individual targets).
 	
@@ -443,3 +453,200 @@ def setGlobalOption(key, value):
 	init = BuildInitializationContext.getBuildInitializationContext()
 	if init:
 		init.setGlobalOption(key, value)
+
+################################################################################
+# Property functors
+
+class dirname(Composable):
+	""" A late-binding function which performs property expansion on its argument and then
+	    removes the file parts of the argument.
+	"""
+	def __init__(self, path):
+		""" 
+		@param path: The input path, possibly containing unreplaced properties.
+		"""
+		# the input path may be composable
+		self.arg = path
+		
+	def resolveToString(self, context):
+		""" Perform the expansion and dirname on the argument path.
+
+		@param context: a BuildContext
+
+		>>> str(dirname("path/"))
+		'dirname()'
+		>>> str(dirname("path/${foo}/bar"))
+		'dirname(path/${foo})'
+		>>> str(dirname("path/${foo}/bar/"))
+		'dirname(path/${foo})'
+		>>> dirname("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'/path/base'})).replace(os.sep,'/')
+		'/path'
+		>>> dirname("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'/path/base/'})).replace(os.sep,'/')
+		'/path'
+		>>> str("${OUTPUT_DIR}/"+dirname("${INPUT}"))
+		'${OUTPUT_DIR}/+dirname(${INPUT})'
+		>>> ("${OUTPUT_DIR}"+dirname("${INPUT}")).resolveToString(xpybuild.buildcontext.BaseContext({'OUTPUT_DIR':'/target', 'INPUT':'/libs/foo'})).replace(os.sep,'/')
+		'${OUTPUT_DIR}/libs'
+		>>> str(dirname("${A}"+dirname("${B}")))
+		'dirname(${A}+dirname(${B}))'
+		>>> dirname("${A}"+dirname("${B}")).resolveToString(xpybuild.buildcontext.BaseContext({'A':'/foo/bar-', 'B':'/baz/quux'})).replace(os.sep,'/')
+		'/foo/bar-'
+		"""
+		return os.path.dirname(context.getFullPath(self.arg, "${OUTPUT_DIR}").rstrip(os.path.sep))
+	
+	def __str__(self):
+		arg = ('%s'%self.arg).replace(os.path.sep,'/').rstrip('/')
+		
+		# might as well run dirname on it before generating __str__, it 
+		# isn't expanded yet but this at least makes it as short as possible -
+		# though only if it's a string, if it's a Composable this wouldn't be 
+		# appropriate
+		if isinstance(self.arg, str) and '/' in self.arg:
+			arg = os.path.dirname(arg)
+		
+		return "dirname("+arg+")"
+
+
+class basename(Composable):
+	""" A late-binding function which performs property expansion on its argument and then
+	    removes the directory parts of the argument.
+	"""
+	def __init__(self, path):
+		""" 
+		@param path: The input path, possibly containing unreplaced properties.
+		"""
+		# the input path may be composable
+		self.arg = path
+		
+	def resolveToString(self, context):
+		""" Perform the expansion and basename on the argument path.
+
+		@param context: a BuildContext
+
+		>>> str(basename("path/"))
+		'basename(path)'
+		>>> str(basename("path/${foo}/bar"))
+		'basename(bar)'
+		>>> str(basename("path/${foo}/bar/"))
+		'basename(bar)'
+		>>> basename("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'/path/base'}))
+		'base'
+		>>> basename("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'/path/base/'}))
+		'base'
+		>>> str("${OUTPUT_DIR}/"+basename("${INPUT}"))
+		'${OUTPUT_DIR}/+basename(${INPUT})'
+		>>> ("${OUTPUT_DIR}/"+basename("${INPUT}")).resolveToString(xpybuild.buildcontext.BaseContext({'OUTPUT_DIR':'/target', 'INPUT':'/libs/foo'}))
+		'${OUTPUT_DIR}/foo'
+		>>> str(basename("${A}"+basename("${B}")))
+		'basename(${A}+basename(${B}))'
+		>>> basename("${A}"+basename("${B}")).resolveToString(xpybuild.buildcontext.BaseContext({'A':'/foo/bar-', 'B':'/baz/quux'}))
+		'bar-quux'
+		"""
+		return os.path.basename(context.getFullPath(self.arg, "${OUTPUT_DIR}").rstrip(os.path.sep))
+	
+	def __str__(self):
+		arg = ('%s'%self.arg).replace(os.path.sep,'/').rstrip('/')
+		
+		# might as well run basename on it before generating __str__, it 
+		# isn't expanded yet but this at least makes it as short as possible -
+		# though only if it's a string, if it's a Composable this wouldn't be 
+		# appropriate
+		if isinstance(self.arg, str):
+			arg = os.path.basename(arg)
+		
+		return "basename("+arg+")"
+
+class sub(Composable):
+	""" A late-binding function which performs regex substitution.
+	    The pattern is passed through verbatim, the replacement and the input
+	    have property expansion performed on them before invoking the regular
+	    expression.
+
+	    The pattern/replacement syntax is the same as re.sub
+	"""
+	def __init__(self, pat, rep, arg):
+		"""
+		@param pat: the regex pattern to match
+
+		@param rep: the replacement string
+
+		@param arg: the input
+		"""
+		self.pat = pat
+		self.rep = rep
+		self.arg = arg
+	def resolveToString(self, context):
+		""" Do property expansion on the inputs and then perform the regex 
+	
+		@param context: a BuildContext
+
+		>>> str(sub('a','b','aa'))
+		'sub(a,b,aa)'
+		>>> sub('a','b','aa').resolveToString(xpybuild.buildcontext.BaseContext({}))
+		'bb'
+		>>> str("output/"+sub('a', '${REP}', '${INPUT}'))
+		'output/+sub(a,${REP},${INPUT})'
+		>>> ("output/"+sub('a', '${REP}', '${INPUT}')).resolveToString(xpybuild.buildcontext.BaseContext({'REP':'c', 'INPUT':'aa'}))
+		'output/cc'
+		>>> str("output/"+sub('b', sub('c','d','${REP}'), sub('a','b','${INPUT}')))
+		'output/+sub(b,sub(c,d,${REP}),sub(a,b,${INPUT}))'
+		>>> ("output/"+sub('b', sub('c','d','${REP}'), sub('a','b','${INPUT}'))).resolveToString(xpybuild.buildcontext.BaseContext({'REP':'c', 'INPUT':'aa'}))
+		'output/dd'
+		"""
+		return re.sub(self.pat, context.expandPropertyValues(self.rep), context.expandPropertyValues(self.arg))
+	def __str__(self):
+		return "sub(%s,%s,%s)"%(self.pat, self.rep, self.arg)
+
+class joinPaths(Composable):
+	""" A late-binding function which resolves the specified PathSet and 
+		then joins its contents together to form a string using os.pathsep or a 
+		specified separator character. 
+	"""
+	def __init__(self, pathset, pathsep=os.pathsep):
+		self.pathset = pathset if isinstance(pathset, BasePathSet) else PathSet(pathset)
+		self.pathsep = pathsep
+	def resolveToString(self, context):
+		""" Do property expansion on the inputs and then perform the regex 
+	
+		@param context: a BuildContext
+		"""
+		return self.pathsep.join(self.pathset.resolve(context))
+	def __str__(self):
+		return "joinPaths(%s with %s)"%(self.pathset, self.pathsep)
+
+def make_functor(fn, name=None):
+	""" Take an arbitrary function and return a functor that can take arbitrary 
+	arguments and that can in turn be curried into
+	a composable object for use in property contexts.
+
+	Example::
+
+		def fn(context, input):
+			... # do something
+			return input
+
+		myfn = make_functor(fn)
+
+		target = "${OUTPUT_DIR}/" + myfn("${MYVAR}")
+
+	This will execute fn(context, "${MYVAR}") at property expansion time and then
+	prepend the expanded "${OUTPUT_DIR}/".
+
+	@param fn: a function of the form fn(context, *args)
+
+	>>> str(make_functor(lambda context, x: context.expandPropertyValues(x))('${INPUT}'))
+	'<lambda>(${INPUT})'
+	
+	>>> str(make_functor(lambda context, x: context.expandPropertyValues(x), name='foobar')('${INPUT}'))
+	'foobar(${INPUT})'
+	
+	>>> make_functor(lambda context, x: context.expandPropertyValues(x))('${INPUT}').resolveToString(xpybuild.buildcontext.BaseContext({'INPUT':'foo'}))
+	'foo'
+	
+	>>> str("output/"+make_functor(lambda context, x: context.expandPropertyValues(x))('${INPUT}'))
+	'output/+<lambda>(${INPUT})'
+	
+	>>> ("output/"+make_functor(lambda context, x: context.expandPropertyValues(x))('${INPUT}')).resolveToString(xpybuild.buildcontext.BaseContext({'INPUT':'foo'}))
+	'output/foo'
+	"""
+	return ComposableWrapper(fn, name)

@@ -32,6 +32,7 @@ Breaking changes
      `xpybuild.buildcommon.XPYBUILD_VERSION`. 
    - ``formatFileLocation`` was moved from ``buildcommon`` to 
      `xpybuild.utils.buildfilelocation.formatFileLocation`.
+   - ``propertyfunctors`` contents have been moved into `xpybuild.propertysupport`. 
 
 Deprecation
 -----------
