@@ -77,7 +77,7 @@ def requireXpyBuildVersion(version: str):
 	if compareVersions(XPYBUILD_VERSION, version) < 0: raise Exception("This build file requires xpyBuild at least version "+version+" but this is xpyBuild "+XPYBUILD_VERSION)
 
 isDirPath = xpybuild.utils.fileutils.isDirPath
-""" Returns true if the path is a directory (ends with / or \\). """
+"""Returns true if the path is a directory (ends with a slash, / or \\\\). """
 
 def normpath(path):
 	""" Normalizes the specified file or dir path to remove ".." sequences and 
@@ -101,8 +101,8 @@ def normpath(path):
 			
 	return path
 
+IS_WINDOWS: bool = platform.system()=='Windows'
 """ A boolean that specifies whether this is Windows or some other operating system. """
-IS_WINDOWS = platform.system()=='Windows'
 # (we won't want constants for every possible OS here, but since there is so much conditionalization between 
 # windows and unix-based systems, much of it on the critical path, it is worthwhile having a constant for this). 
 
