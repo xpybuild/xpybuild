@@ -30,8 +30,6 @@ from xpybuild.utils.functors import Composable
 from xpybuild.buildexceptions import BuildException
 from xpybuild.utils.fileutils import openForWrite, normLongPath, mkdir
 
-import xpybuild.targets.common # ensure common options are defined
-
 import logging
 
 class BaseTarget(Composable):

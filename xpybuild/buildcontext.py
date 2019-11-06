@@ -518,6 +518,10 @@ class BuildInitializationContext(BaseContext):
 		_setBuildInitializationContext('build phase')
 		self._initializationCompleted = True
 		
+		# Definitions for common options used by multiple targets
+		from xpybuild.propertysupport import ExtensionBasedFileEncodingDecider
+		self._defineOption('common.fileEncodingDecider', ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider())
+		
 		# all the valid ones will have been popped already
 		if self._propertyOverrides:
 			raise BuildException('Cannot specify value for undefined build property/properties: %s'%(', '.join(self._propertyOverrides.keys())))
