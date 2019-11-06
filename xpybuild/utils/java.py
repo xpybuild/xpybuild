@@ -28,7 +28,7 @@ from xpybuild.utils.flatten import getStringList
 from xpybuild.utils.fileutils import deleteDir, mkdir, deleteFile, openForWrite, normLongPath
 from xpybuild.utils.consoleformatter import publishArtifact
 
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 
 import logging
 log = logging.getLogger('utils.java')

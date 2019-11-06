@@ -31,7 +31,7 @@ __log = logging.getLogger('propertysupport') # cannot call it log cos this gets 
 import xpybuild.buildcontext
 from xpybuild.buildcontext import BuildInitializationContext, getBuildInitializationContext # getBuildInitializationContext is here for compatibility only
 from xpybuild.buildcommon import *
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.fileutils import parsePropertiesFile
 from xpybuild.utils.buildfilelocation import BuildFileLocation, formatFileLocation
 from xpybuild.utils.functors import Composable, ComposableWrapper
@@ -416,8 +416,9 @@ def enableLegacyXpybuildModuleNames():
 	assert 'utils.fileutils' in sys.modules, sys.modules # sanity check that it worked
 	assert 'targets.copy' in sys.modules, sys.modules # sanity check that it worked
 
-	# aliases for modules we folded into other modules in v3.0
+	# aliases for modules we folded into other modules in v3.0, or moved
 	exec(f'sys.modules["propertyfunctors"] = sys.modules["xpybuild.propertysupport"]')
+	exec(f'sys.modules["buildexceptions"] = sys.modules["xpybuild.utils.buildexceptions"]')
 
 ################################################################################
 # Options

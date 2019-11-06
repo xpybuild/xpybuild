@@ -24,7 +24,7 @@ from xpybuild.basetarget import BaseTarget, targetNameToUniqueId
 from xpybuild.utils.fileutils import mkdir, deleteDir, deleteFile
 from xpybuild.utils.process import _wait_with_timeout
 from xpybuild.pathsets import PathSet, BasePathSet
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.targets.copy import Copy
 
 class Custom(BaseTarget): # deprecated because error handling/logging is poor and it promotes bad practices like not using options (e.g process timeout)

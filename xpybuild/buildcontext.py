@@ -67,15 +67,15 @@ class BaseContext(object):
 		>>> BaseContext({'A':'b'}).getPropertyValue('UNDEFINED_PROPERTY')
 		Traceback (most recent call last):
 		...
-		xpybuild.buildexceptions.BuildException: Property "UNDEFINED_PROPERTY" is not defined
+		xpybuild.utils.buildexceptions.BuildException: Property "UNDEFINED_PROPERTY" is not defined
 		>>> BaseContext({'A':'b'}).getPropertyValue(None)
 		Traceback (most recent call last):
 		...
-		xpybuild.buildexceptions.BuildException: Property "None" is not defined
+		xpybuild.utils.buildexceptions.BuildException: Property "None" is not defined
 		>>> BaseContext({'A':'b'}).getPropertyValue('')
 		Traceback (most recent call last):
 		...
-		xpybuild.buildexceptions.BuildException: Property "" is not defined
+		xpybuild.utils.buildexceptions.BuildException: Property "" is not defined
 		
 		"""
 			
@@ -149,15 +149,15 @@ class BaseContext(object):
 		>>> BaseContext({'A':'b'}).expandPropertyValues('${UNDEFINED_PROPERTY}')
 		Traceback (most recent call last):
 		...
-		xpybuild.buildexceptions.BuildException: Property "UNDEFINED_PROPERTY" is not defined
+		xpybuild.utils.buildexceptions.BuildException: Property "UNDEFINED_PROPERTY" is not defined
 		>>> BaseContext({'A':'b'}).expandPropertyValues('${A')
 		Traceback (most recent call last):
 		...
-		xpybuild.buildexceptions.BuildException: Incorrectly formatted property string "${A"
+		xpybuild.utils.buildexceptions.BuildException: Incorrectly formatted property string "${A"
 		>>> BaseContext({'A[]':'a, b'}).expandPropertyValues('${A[]}${A[]}', expandList=True)
 		Traceback (most recent call last):
 		...
-		xpybuild.buildexceptions.BuildException: Cannot expand as a list a string containing multiple list variables
+		xpybuild.utils.buildexceptions.BuildException: Cannot expand as a list a string containing multiple list variables
 		
 		"""
 		if not string: return [] if expandList else string
@@ -820,5 +820,5 @@ from xpybuild.utils.fileutils import isDirPath
 from xpybuild.buildcommon import normpath, IS_WINDOWS
 from xpybuild.utils.flatten import flatten
 from xpybuild.utils.buildfilelocation import BuildFileLocation
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.consoleformatter import publishArtifact

@@ -42,7 +42,7 @@ from xpybuild.utils.antglob import *
 from xpybuild.utils.flatten import flatten
 from xpybuild.utils.buildfilelocation import BuildFileLocation
 from xpybuild.utils.fileutils import normLongPath
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.buildcommon import isDirPath, normpath, IS_WINDOWS
 from xpybuild.buildcontext import BaseContext, getBuildInitializationContext
 
@@ -253,7 +253,7 @@ def PathSet(*items):
 	>>> PathSet('a/*').resolve(BaseContext({})) #doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	xpybuild.buildexceptions.BuildException:
+	xpybuild.utils.buildexceptions.BuildException:
 	"""
 	# This function is called a lot so its performance matters
 	
@@ -306,7 +306,7 @@ class DirBasedPathSet(BasePathSet):
 	>>> DirBasedPathSet('mydir', 'a*b').resolve(BaseContext({})) #doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	xpybuild.buildexceptions.BuildException:
+	xpybuild.utils.buildexceptions.BuildException:
 
 	>>> str(PathSet('a', DirBasedPathSet(DirGeneratedByTarget('4/5/6/'), '7/8')))
 	'PathSet("a", DirBasedPathSet(DirGeneratedByTarget("4/5/6/"), [\\'7/8\\']))'
@@ -419,12 +419,12 @@ class FindPaths(BasePathSet):
 	>>> FindPaths('x', includes=['*.x', 'c:\\d'], excludes=[])#doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	xpybuild.buildexceptions.BuildException:
+	xpybuild.utils.buildexceptions.BuildException:
 
 	>>> FindPaths('x', includes=['*.x', '${foo}'], excludes=[])#doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	xpybuild.buildexceptions.BuildException:
+	xpybuild.utils.buildexceptions.BuildException:
 
 	"""
 	
@@ -954,12 +954,12 @@ class RemoveDestParents(_DerivedPathSet):
 	>>> str(RemoveDestParents(1, DirBasedPathSet('mydir/', 'a')).resolveWithDestinations(BaseContext({}) )).replace('\\\\\\\\','/') #doctest: +IGNORE_EXCEPTION_DETAIL
 	Traceback (most recent call last):
 	...
-	xpybuild.buildexceptions.BuildException: Cannot strip 1 parent dir(s) from "a" as it does not have that many parent directories
+	xpybuild.utils.buildexceptions.BuildException: Cannot strip 1 parent dir(s) from "a" as it does not have that many parent directories
 
 	>>> str(RemoveDestParents(1, DirBasedPathSet('mydir/', 'b/')).resolveWithDestinations(BaseContext({}) )).replace('\\\\\\\\','/')
 	Traceback (most recent call last):
 	...
-	xpybuild.buildexceptions.BuildException: Cannot strip 1 parent dir(s) from "b/" as it does not have that many parent directories
+	xpybuild.utils.buildexceptions.BuildException: Cannot strip 1 parent dir(s) from "b/" as it does not have that many parent directories
 
 	"""
 	def __init__(self, dirsToRemove, pathSet):

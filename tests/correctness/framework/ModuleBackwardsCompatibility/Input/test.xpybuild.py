@@ -35,3 +35,7 @@ assert propertyfunctors.dirname == xpybuild.propertysupport.dirname
 assert propertyfunctors.basename == xpybuild.propertysupport.basename
 assert propertyfunctors.sub == xpybuild.propertysupport.sub
 assert propertyfunctors.make_functor == xpybuild.propertysupport.make_functor
+
+import buildexceptions
+import xpybuild.utils.buildexceptions
+assert buildexceptions.BuildException == xpybuild.utils.buildexceptions.BuildException

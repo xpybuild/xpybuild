@@ -27,7 +27,7 @@ from xpybuild.basetarget import BaseTarget
 from xpybuild.utils.fileutils import mkdir, deleteDir, openForWrite, normLongPath
 from xpybuild.utils.flatten import flatten
 from xpybuild.utils.buildfilelocation import BuildFileLocation
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 
 class Copy(BaseTarget):
 	""" Target that copies input file(s) to an output file or directory. 

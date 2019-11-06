@@ -27,7 +27,7 @@ from stat import S_ISREG, S_ISDIR # fast access for these is useful
 from threading import Lock
 
 from xpybuild.basetarget import BaseTarget
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, isfile, isdir, toLongPathSafe, getstat, isDirPath
 
 import logging

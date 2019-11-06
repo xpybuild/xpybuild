@@ -25,7 +25,7 @@ from xpybuild.propertysupport import defineOption
 from xpybuild.utils.process import call
 from xpybuild.pathsets import PathSet, FilteredPathSet
 from xpybuild.buildcontext import getBuildInitializationContext
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.outputhandler import ProcessOutputHandler
 from xpybuild.utils.fileutils import mkdir
 

@@ -34,6 +34,8 @@ Breaking changes
      `xpybuild.utils.buildfilelocation.formatFileLocation`.
    - ``propertyfunctors`` contents have been moved into `xpybuild.propertysupport`, 
      except for ``make_functor`` which has moved to `xpybuild.utils.functors.makeFunctor`. 
+   - ``buildexceptions`` module was moved to `xpybuild.utils.buildexceptions`. 
+
 
 Deprecation
 -----------
@@ -42,13 +44,14 @@ if you're using them:
 
 - ``buildcommon.normpath`` is deprecated and should not be used - switch to 
   `xpybuild.utils.fileutils.normLongPath` instead. 
-- All xpybuild modules and classes should now be accessed via
-  ``xpybuild.` (e.g. ``xpybuild.targets.copy`` etc), and importing names
-  without the ``xpybuild.`` prefix is deprecated.
 - ``getBuildInitializationContext()`` is deprecated and replaced by 
   `xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext()`.
 - ``propertysupport.getProperty`` is deprecated in favour of 
   `xpybuild.propertysupport.getPropertyValue`. 
+
+See also the module re-organization listed under breaking changes; all xpybuild 
+modules and classes should now be accessed via their new names, typically 
+starting ``xpybuild.` (e.g. ``xpybuild.targets.copy`` etc).
 
 The following have also been deprecated:  
 - The ``isWindows()`` function is deprecated in favour of the `xpybuild.buildcommon.IS_WINDOWS` 

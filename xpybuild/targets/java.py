@@ -27,7 +27,7 @@ from xpybuild.utils.fileutils import mkdir, deleteDir, openForWrite, normLongPat
 from xpybuild.utils.java import jar, javac, create_manifest, javadoc, signjar
 from xpybuild.utils.flatten import flatten
 from xpybuild.utils.outputhandler import ProcessOutputHandler
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 
 import logging
 import zipfile

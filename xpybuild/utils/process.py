@@ -24,7 +24,7 @@ import threading
 
 from xpybuild.buildcommon import *
 from xpybuild.utils.outputhandler import ProcessOutputHandler
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 
 import logging
 log = logging.getLogger('process')

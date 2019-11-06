@@ -31,7 +31,7 @@ from xpybuild.utils.functors import makeFunctor
 from xpybuild.utils.process import call
 from xpybuild.pathsets import PathSet, BasePathSet
 from xpybuild.buildcontext import getBuildInitializationContext
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.fileutils import openForWrite, mkdir, deleteFile, getmtime, exists, toLongPathSafe, getstat
 
 class __CompilersNotSpecified(object):

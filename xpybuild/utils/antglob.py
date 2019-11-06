@@ -17,7 +17,7 @@
 # $Id: antglob.py 301527 2017-02-06 15:31:43Z matj $
 #
 
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 import re, logging, sys
 from xpybuild.utils.flatten import flatten
 

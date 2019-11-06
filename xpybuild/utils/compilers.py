@@ -20,7 +20,7 @@
 import os, re, logging, time, traceback
 
 from xpybuild.buildcommon import *
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.process import call
 from xpybuild.utils.fileutils import isdir
 from xpybuild.utils.outputhandler import ProcessOutputHandler

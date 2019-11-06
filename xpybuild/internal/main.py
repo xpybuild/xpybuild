@@ -39,7 +39,7 @@ from xpybuild.buildcontext import *
 from xpybuild.utils.fileutils import mkdir, deleteDir
 from xpybuild.propertysupport import defineOption, parsePropertiesFile
 from xpybuild.internal.stacktrace import listen_for_stack_signal
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.consoleformatter import _registeredConsoleFormatters, publishArtifact
 from xpybuild.utils.timeutils import formatTimePeriod
 

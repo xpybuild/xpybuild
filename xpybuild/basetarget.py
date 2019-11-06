@@ -27,7 +27,7 @@ import xpybuild.utils.fileutils as fileutils
 from xpybuild.utils.flatten import flatten, getStringList
 from xpybuild.utils.buildfilelocation import BuildFileLocation
 from xpybuild.utils.functors import Composable
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.fileutils import openForWrite, normLongPath, mkdir
 
 import logging

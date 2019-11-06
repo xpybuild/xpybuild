@@ -25,7 +25,7 @@ from xpybuild.basetarget import BaseTarget
 from xpybuild.pathsets import PathSet
 from xpybuild.utils.fileutils import openForWrite, normLongPath, mkdir
 from xpybuild.utils.process import call
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.outputhandler import ProcessOutputHandler
 
 defineOption('docker.path', 'docker')

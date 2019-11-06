@@ -9,7 +9,7 @@ import os, urllib.request, urllib.parse, urllib.error
 
 from xpybuild.basetarget import *
 from xpybuild.buildcommon import *
-from xpybuild.buildexceptions import *
+from xpybuild.utils.buildexceptions import *
 from xpybuild.utils.fileutils import mkdir
 
 class Download(BaseTarget):

@@ -29,7 +29,7 @@ from xpybuild.utils.fileutils import mkdir, deleteDir, normLongPath
 from xpybuild.utils.antglob import antGlobMatch
 from xpybuild.utils.flatten import flatten
 from xpybuild.utils.buildfilelocation import BuildFileLocation
-from xpybuild.buildexceptions import BuildException
+from xpybuild.utils.buildexceptions import BuildException
 
 def _getnames(file):
 	if isinstance(file, zipfile.ZipFile):
