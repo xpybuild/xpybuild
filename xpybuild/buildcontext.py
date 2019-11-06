@@ -514,7 +514,8 @@ class BuildInitializationContext(BaseContext):
 		
 		# Definitions for common options used by multiple targets
 		from xpybuild.propertysupport import ExtensionBasedFileEncodingDecider
-		self._defineOption('common.fileEncodingDecider', ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider())
+		if 'common.fileEncodingDecider' not in self._definedOptions:
+			self._defineOption('common.fileEncodingDecider', ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider())
 		
 		# all the valid ones will have been popped already
 		if self._propertyOverrides:
