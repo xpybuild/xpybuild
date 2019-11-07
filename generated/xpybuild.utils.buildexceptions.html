@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.utils.buildexceptions &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.utils.flatten" href="xpybuild.utils.flatten.html" />
+    <link rel="prev" title="xpybuild.utils.functors" href="xpybuild.utils.functors.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.utils.flatten.html" title="xpybuild.utils.flatten"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.utils.functors.html" title="xpybuild.utils.functors"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Module list</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-xpybuild.utils.buildexceptions">
+<span id="xpybuild-utils-buildexceptions"></span><h1>xpybuild.utils.buildexceptions<a class="headerlink" href="#module-xpybuild.utils.buildexceptions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="buildexception">
+<h2>BuildException<a class="headerlink" href="#buildexception" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="xpybuild.utils.buildexceptions.BuildException">
+<em class="property">exception </em><code class="sig-prename descclassname">xpybuild.utils.buildexceptions.</code><code class="sig-name descname">BuildException</code><span class="sig-paren">(</span><em class="sig-param">message</em>, <em class="sig-param">location=None</em>, <em class="sig-param">causedBy=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildexceptions.html#BuildException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildexceptions.BuildException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>A BuildException represents an error caused by an incorrect build or a runtime build problem. i.e. anything 
+that isn’t an internal xpybuild error.</p>
+<p>Typically a BuildException will not result in a python stack trace being 
+printed whereas other exception types will, so only raise one if you’re 
+sure the message includes all required diagnostic information already.</p>
+<p>BuildExceptions thrown during loading of the build config files will include the build file location 
+(from their call stack) in the message. BuildExceptions thrown during operations on a target 
+(dep resolution, execution, cleaning) will have information about that target added by xpybuild 
+when it is logged, so there is usually no reason to explicitly add the target name into the message.</p>
+<p>To avoid losing essential diagnostic information, do not catch arbitrary 
+non-BuildException classes and wrap in a BuildException.</p>
+<p>The location can optionally be specified explicitly (e.g. for pathsets with delayed evaluation).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> – the error cause (does not need to include the target name)</p></li>
+<li><p><strong>location</strong> – usually None, or else a BuildFileLocation object for the source line that caused the problem. 
+This is useful if the build file location associated with the exception is 
+something other than a target, e.g. a PathSet.</p></li>
+<li><p><strong>causedBy</strong> – if True, takes the exception currently on the stack as the caused of this exception, and 
+adds it to the build exception message. If the cause is not a BuildException, then its stack 
+trace will be captured if this is True.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="xpybuild.utils.buildexceptions.BuildException.getLoggerExtraArgDict">
+<code class="sig-name descname">getLoggerExtraArgDict</code><span class="sig-paren">(</span><em class="sig-param">target=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildexceptions.html#BuildException.getLoggerExtraArgDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildexceptions.BuildException.getLoggerExtraArgDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dict suitable for passing as extra= in a logger call, to set 
+filename/lineno location information if available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>target</strong> – optionally used to find location if not available in this exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.utils.buildexceptions.BuildException.toSingleLineString">
+<code class="sig-name descname">toSingleLineString</code><span class="sig-paren">(</span><em class="sig-param">target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildexceptions.html#BuildException.toSingleLineString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildexceptions.BuildException.toSingleLineString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the exception message formatted to be a single line.</p>
+<p>Includes the name of the failed target if called with a target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>target</strong> – The target causing the exception.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.utils.buildexceptions.BuildException.toMultiLineString">
+<code class="sig-name descname">toMultiLineString</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">includeStack=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildexceptions.html#BuildException.toMultiLineString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildexceptions.BuildException.toMultiLineString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the exception message, on multiple lines if necessary, possibly including the stack trace.</p>
+<p>If possible, includes the build file location associated with the 
+exception or with the failed target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – The target causing the exception.</p></li>
+<li><p><strong>includeStack</strong> – If true, also includes the stack trace of the exception.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">xpybuild.utils.buildexceptions</a><ul>
+<li><a class="reference internal" href="#buildexception">BuildException</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="xpybuild.utils.functors.html"
+                        title="previous chapter">xpybuild.utils.functors</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="xpybuild.utils.flatten.html"
+                        title="next chapter">xpybuild.utils.flatten</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/generated/xpybuild.utils.buildexceptions.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.utils.flatten.html" title="xpybuild.utils.flatten"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.utils.functors.html" title="xpybuild.utils.functors"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Module list</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

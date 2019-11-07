@@ -1,0 +1,436 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.targets.archive &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.targets.archive</h1><div class="highlight"><pre>
+<span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2013 - 2019 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: unpack.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">tarfile</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="k">import</span> <span class="n">BaseTarget</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteDir</span><span class="p">,</span> <span class="n">normLongPath</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.antglob</span> <span class="k">import</span> <span class="n">antGlobMatch</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">flatten</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="k">import</span> <span class="n">BuildFileLocation</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+
+<div class="viewcode-block" id="Tarball"><a class="viewcode-back" href="../../../generated/xpybuild.targets.archive.html#xpybuild.targets.archive.Tarball">[docs]</a><span class="k">class</span> <span class="nc">Tarball</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Target that creates a .tar archive from a set of input files.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		archive: the archive to be created</span>
+
+<span class="sd">		inputs: the files (usually pathsets) to be included in the archive.</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+		<span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">normLongPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="s1">&#39;w:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output</span><span class="p">:</span>
+			<span class="k">for</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+				<span class="n">output</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">normLongPath</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">),</span> <span class="n">o</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">r</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Tarball</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getHashableImplicitInputs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		
+		<span class="c1"># include source representation of deps list, so that changes to the list get reflected</span>
+		<span class="c1"># this way of doing property expansion on the repr is a convenient </span>
+		<span class="c1"># shortcut (we want to expand property values to detect changes in </span>
+		<span class="c1"># versions etc that should trigger a rebuild, but just not do any </span>
+		<span class="c1"># globbing/searches here)</span>
+		<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;src: &#39;</span><span class="o">+</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">((</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">)))</span>
+		
+		<span class="k">return</span> <span class="n">r</span></div>
+
+<div class="viewcode-block" id="Zip"><a class="viewcode-back" href="../../../generated/xpybuild.targets.archive.html#xpybuild.targets.archive.Zip">[docs]</a><span class="k">class</span> <span class="nc">Zip</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Target that creates a zip archive from a set of input files.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		archive: the archive to be created</span>
+
+<span class="sd">		inputs: the files (usually pathsets) to be included in the archive.</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+		<span class="n">alreadyDone</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+		<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">normLongPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output</span><span class="p">:</span>
+			<span class="k">for</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+				<span class="c1"># if we don&#39;t check for duplicate entries we&#39;ll end up creating an invalid zip</span>
+				<span class="k">if</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">alreadyDone</span><span class="p">:</span>
+					<span class="n">dupsrc</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">src</span> <span class="k">for</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="k">if</span> <span class="n">dest</span> <span class="o">==</span> <span class="n">o</span><span class="p">]</span>
+					<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Duplicate zip entry &quot;</span><span class="si">%s</span><span class="s1">&quot; from: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dupsrc</span><span class="p">)))</span>
+				<span class="n">alreadyDone</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+				<span class="c1"># can&#39;t compress directory entries! (it messes up Java)</span>
+				<span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">normLongPath</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">),</span> <span class="n">o</span><span class="p">,</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZIP_STORED</span> <span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">else</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZIP_DEFLATED</span><span class="p">)</span> 
+
+	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">r</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Zip</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getHashableImplicitInputs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		
+		<span class="c1"># include source representation of deps list, so that changes to the list get reflected</span>
+		<span class="c1"># this way of doing property expansion on the repr is a convenient </span>
+		<span class="c1"># shortcut (we want to expand property values to detect changes in </span>
+		<span class="c1"># versions etc that should trigger a rebuild, but just not do any </span>
+		<span class="c1"># globbing/searches here)</span>
+		<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;src: &#39;</span><span class="o">+</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">((</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">)))</span>
+		
+		<span class="k">return</span> <span class="n">r</span></div>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1"># For unpacking</span>
+
+<span class="k">def</span> <span class="nf">_getnames</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+	<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">):</span>
+		<span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">namelist</span><span class="p">()</span>
+	<span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">TarFile</span><span class="p">):</span>
+		<span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">getnames</span><span class="p">()</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Should not happen, it&#39;s not a tarfile or a zipfile&quot;</span>
+
+<span class="k">def</span> <span class="nf">_getinfo</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+	<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">):</span>
+		<span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">getinfo</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+	<span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">TarFile</span><span class="p">):</span>
+		<span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">getmember</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Should not happen, it&#39;s not a tarfile or a zipfile&quot;</span>
+
+<span class="k">def</span> <span class="nf">_setfilename</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+	<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipInfo</span><span class="p">):</span>
+		<span class="n">info</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+		<span class="k">return</span> <span class="n">info</span><span class="o">.</span><span class="n">filename</span>
+	<span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">TarInfo</span><span class="p">):</span>
+		<span class="n">info</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">filename</span>
+		<span class="k">return</span> <span class="n">info</span><span class="o">.</span><span class="n">name</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Should not happen, it&#39;s not a tarfile or a zipfile&quot;</span>
+
+<span class="k">def</span> <span class="nf">_getfilename</span><span class="p">(</span><span class="n">info</span><span class="p">):</span>
+	<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipInfo</span><span class="p">):</span>
+		<span class="k">return</span> <span class="n">info</span><span class="o">.</span><span class="n">filename</span>
+	<span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">TarInfo</span><span class="p">):</span>
+		<span class="k">return</span> <span class="n">info</span><span class="o">.</span><span class="n">name</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Should not happen, it&#39;s not a tarfile or a zipfile&quot;</span>
+
+<div class="viewcode-block" id="Unpack"><a class="viewcode-back" href="../../../generated/xpybuild.targets.archive.html#xpybuild.targets.archive.Unpack">[docs]</a><span class="k">class</span> <span class="nc">Unpack</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Target that creates a new directory containing the unpacked contents </span>
+<span class="sd">	of one or more archives (e.g. .zip files). </span>
+<span class="sd">	</span>
+<span class="sd">	The parent directory will be created if it doesn&#39;t exist already. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">archives</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		@param dest: the output directory (ending with a &quot;/&quot;). Never </span>
+<span class="sd">		specify a dest directory that is also written to by another </span>
+<span class="sd">		target (e.g. do not specify a build &#39;output&#39; directory here). </span>
+<span class="sd">			</span>
+<span class="sd">		@param archives: the input archives to be unpacked, which may be any </span>
+<span class="sd">		combination of strings, PathSets, FilteredArchiveContents and lists of these. </span>
+<span class="sd">		If these PathSets include mapping information, this </span>
+<span class="sd">		will be used to define where (under the dest directory) each </span>
+<span class="sd">		file from within that archive is copied (but cannot be used to </span>
+<span class="sd">		change the archive-relative path of each item). </span>
+<span class="sd">		</span>
+<span class="sd">		For advanced cases, FilteredArchiveContents can be used to provide </span>
+<span class="sd">		customized mapping and filtering of the archive contents, </span>
+<span class="sd">		including manipulation of the destinations encoded within the </span>
+<span class="sd">		archive itself. </span>
+<span class="sd">		</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">dest</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">):</span> <span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Unpack target destination must be a directory (ending with &quot;/&quot;), not: &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">dest</span><span class="p">)</span>
+		
+		<span class="c1"># NB: we could also support copying in non-archived files into the directory future too</span>
+		
+		<span class="c1"># we should preserve the specified order of archives since it may </span>
+		<span class="c1"># affect what happens when they contain the same files and must </span>
+		<span class="c1"># overwrite each other</span>
+		
+		<span class="n">archives</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">BasePathSet</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">FilteredArchiveContents</span><span class="p">))</span> <span class="k">else</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">flatten</span><span class="p">(</span><span class="n">archives</span><span class="p">)]</span>
+		
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="p">[</span>
+			<span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">getDependency</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">FilteredArchiveContents</span><span class="p">)</span> <span class="k">else</span> <span class="n">a</span><span class="p">)</span>
+			<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">archives</span><span class="p">])</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">archives</span> <span class="o">=</span> <span class="n">archives</span>
+	
+	<span class="k">def</span> <span class="nf">__openArchive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+		<span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.zip&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.jar&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.war&#39;</span><span class="p">):</span>
+			<span class="k">return</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.tar.gz&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.tar.bz2&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.tar&#39;</span><span class="p">):</span>
+			<span class="k">return</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+		<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Unsupported archive type: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">path</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Cleaning existing files from </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+		<span class="n">deleteDir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+		
+		<span class="n">iswindows</span> <span class="o">=</span> <span class="n">IS_WINDOWS</span>
+		
+		<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">archives</span><span class="p">:</span>
+			<span class="n">a_is_filteredarchivecontents</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">FilteredArchiveContents</span><span class="p">)</span>
+			<span class="k">if</span> <span class="n">a_is_filteredarchivecontents</span><span class="p">:</span>
+				<span class="n">items</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a</span><span class="o">.</span><span class="n">getResolvedPath</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">)]</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">BasePathSet</span><span class="p">)</span>
+				<span class="n">filteredMembers</span> <span class="o">=</span> <span class="kc">None</span>
+				<span class="n">items</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+			<span class="k">for</span> <span class="p">(</span><span class="n">srcAbs</span><span class="p">,</span> <span class="n">destRel</span><span class="p">)</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">destRel</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">destRel</span><span class="p">):</span> <span class="n">destRel</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">destRel</span><span class="p">)</span> <span class="c1"># strip off the zip filename</span>
+				<span class="k">if</span> <span class="s1">&#39;..&#39;</span> <span class="ow">in</span> <span class="n">destRel</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;This target does not permit destination paths to contain &quot;..&quot; relative path expressions&#39;</span><span class="p">)</span>
+					
+				<span class="k">try</span><span class="p">:</span>
+					<span class="n">filesize</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">srcAbs</span><span class="p">)</span>
+				<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+					<span class="n">filesize</span> <span class="o">=</span> <span class="mi">0</span>
+				
+				<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Unpacking </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%0.1f</span><span class="s2"> MB) to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">srcAbs</span><span class="p">),</span> <span class="n">filesize</span><span class="o">/</span><span class="mf">1024.0</span><span class="o">/</span><span class="mi">1024</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="n">destRel</span><span class="p">)</span>
+				<span class="n">starttime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+				<span class="k">with</span> <span class="bp">self</span><span class="o">.</span> <span class="n">__openArchive</span><span class="p">(</span><span class="n">srcAbs</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+					<span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">+</span><span class="n">destRel</span><span class="p">)</span>
+					<span class="k">if</span> <span class="n">a_is_filteredarchivecontents</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">hasIncludeExcludeFilters</span><span class="p">():</span>
+						<span class="n">fullList</span> <span class="o">=</span> <span class="n">_getnames</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+						<span class="k">if</span> <span class="ow">not</span> <span class="n">fullList</span><span class="p">:</span>
+							<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;No files were found in archive &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">srcAbs</span><span class="p">))</span>
+						<span class="n">filteredMembers</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fullList</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">isIncluded</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Unpacking </span><span class="si">%d</span><span class="s2"> of </span><span class="si">%d</span><span class="s2"> members in </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">filteredMembers</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">fullList</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">srcAbs</span><span class="p">))</span>
+						<span class="k">if</span> <span class="ow">not</span> <span class="n">filteredMembers</span><span class="p">:</span>
+							<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;No files matching the specified include/exclude filters were found in archive &quot;</span><span class="si">%s</span><span class="s1">&quot;: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">srcAbs</span><span class="p">,</span>  <span class="n">a</span><span class="p">))</span>
+						<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filteredMembers</span><span class="p">)</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">fullList</span><span class="p">):</span>
+							<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;No files were excluded from the unpacking operation by the specified filters (check filters are correct): </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">a</span><span class="p">)</span>
+					<span class="k">else</span><span class="p">:</span>
+						<span class="n">filteredMembers</span> <span class="o">=</span> <span class="n">_getnames</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+					<span class="c1"># NB: some archive types want a list of string members, others want TarInfo objects etc, so </span>
+					<span class="c1"># if we support other archive types in future might need to do a bit of work here</span>
+					<span class="n">path</span> <span class="o">=</span> <span class="n">normLongPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">+</span><span class="n">destRel</span><span class="p">)</span>
+					<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">filteredMembers</span><span class="p">:</span>						
+						<span class="k">if</span> <span class="ow">not</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+							<span class="n">info</span> <span class="o">=</span> <span class="n">_getinfo</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+							<span class="k">if</span> <span class="n">a_is_filteredarchivecontents</span><span class="p">:</span>
+								<span class="n">_setfilename</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">mapDestPath</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">_getfilename</span><span class="p">(</span><span class="n">info</span><span class="p">)))</span>
+							<span class="k">if</span> <span class="n">iswindows</span><span class="p">:</span> <span class="n">_setfilename</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">_getfilename</span><span class="p">(</span><span class="n">info</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">))</span>
+							<span class="n">f</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+						<span class="k">else</span><span class="p">:</span>
+							<span class="c1"># we should create empty directories too</span>
+							<span class="k">if</span> <span class="n">a_is_filteredarchivecontents</span><span class="p">:</span>
+								<span class="n">m</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">mapDestPath</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+
+							<span class="n">m</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">m</span>
+							<span class="k">if</span> <span class="n">iswindows</span><span class="p">:</span> <span class="n">m</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span>
+							<span class="n">mkdir</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+							
+				
+				<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Completed unpacking </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%0.1f</span><span class="s2"> MB) in </span><span class="si">%0.1f</span><span class="s2"> seconds&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">srcAbs</span><span class="p">),</span> <span class="n">filesize</span><span class="o">/</span><span class="mf">1024.0</span><span class="o">/</span><span class="mi">1024</span><span class="p">,</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">starttime</span><span class="p">))</span>
+
+	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="c1"># TODO: move this into BaseTarget</span>
+		<span class="n">r</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Unpack</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getHashableImplicitInputs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		
+		<span class="c1"># include source representation of archives list, so that changes to the list get reflected</span>
+		<span class="c1"># this way of doing property expansion on the repr is a convenient </span>
+		<span class="c1"># shortcut (we want to expand property values to detect changes in </span>
+		<span class="c1"># versions etc that should trigger a rebuild, but just not do any </span>
+		<span class="c1"># globbing/searches here)</span>
+		<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;archives: &#39;</span><span class="o">+</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">archives</span><span class="p">)))</span>
+		
+		<span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="FilteredArchiveContents"><a class="viewcode-back" href="../../../generated/xpybuild.targets.archive.html#xpybuild.targets.archive.FilteredArchiveContents">[docs]</a><span class="k">class</span> <span class="nc">FilteredArchiveContents</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span> 
+	<span class="sd">&quot;&quot;&quot;Object representing an archive to be passed to the Unpack target, with </span>
+<span class="sd">	support for filtering which files are included/excluded, and per-item </span>
+<span class="sd">	destination mapping. </span>
+<span class="sd">	</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	
+	<span class="c1"># do NOT use pathset baseclass, because we need the target to handle it in </span>
+	<span class="c1"># a custom way for both per-archived-file mapping and in-archive filtering, </span>
+	<span class="c1"># which would be wrecked by the normalization stuff that pathset does; </span>
+	<span class="c1"># also the model is a bit different for archive contents, so simplest </span>
+	<span class="c1"># just to keep it separate</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archivePath</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">destMapper</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		@param archivePath: The archive to unpack; either a string or a singleton PathSet</span>
+
+<span class="sd">		@param destMapper: A functor that takes a (context, destPath) where destPath </span>
+<span class="sd">		is an archive-relative path (guaranteed to contain / not \\), and </span>
+<span class="sd">		returns the desired destination relative path string. </span>
+<span class="sd">		The functor should have a deterministic and </span>
+<span class="sd">		user-friendly __str__ implementation. </span>
+
+<span class="sd">		@param includes: a list of include patterns (if provided excludes all non-matching files)</span>
+
+<span class="sd">		@param excludes: a list of exclude patterns (processed after includes)</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__path</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">archivePath</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__destMapper</span> <span class="o">=</span> <span class="n">destMapper</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__includes</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">includes</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__excludes</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">excludes</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__location</span> <span class="o">=</span> <span class="n">BuildFileLocation</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__isResolved</span> <span class="o">=</span> <span class="kc">False</span>
+	
+<div class="viewcode-block" id="FilteredArchiveContents.getDependency"><a class="viewcode-back" href="../../../generated/xpybuild.targets.archive.html#xpybuild.targets.archive.FilteredArchiveContents.getDependency">[docs]</a>	<span class="k">def</span> <span class="nf">getDependency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Return the dependency representing this archive (unexpanded and unresolved string, or PathSet). </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span></div>
+
+<div class="viewcode-block" id="FilteredArchiveContents.getResolvedPath"><a class="viewcode-back" href="../../../generated/xpybuild.targets.archive.html#xpybuild.targets.archive.FilteredArchiveContents.getResolvedPath">[docs]</a>	<span class="k">def</span> <span class="nf">getResolvedPath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Return the fully resolved archive path. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Invalid PathSet specified for FilteredArchiveContents, must resolve to exactly one archive: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+	
+<div class="viewcode-block" id="FilteredArchiveContents.isIncluded"><a class="viewcode-back" href="../../../generated/xpybuild.targets.archive.html#xpybuild.targets.archive.FilteredArchiveContents.isIncluded">[docs]</a>	<span class="k">def</span> <span class="nf">isIncluded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Decides whether the specified path within the archive should be </span>
+<span class="sd">		unpacked, based on the include/exclude filters</span>
+<span class="sd">		</span>
+<span class="sd">		@param path: a relative path within the archive</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__excludes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__includes</span><span class="p">:</span> <span class="k">return</span> <span class="kc">True</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__isResolved</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">__includes</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">([</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__includes</span><span class="p">])</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">__excludes</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">([</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__excludes</span><span class="p">])</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">__isResolved</span> <span class="o">=</span> <span class="kc">True</span>
+		
+		<span class="k">assert</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">path</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+				
+			<span class="c1"># first check if it matches an exclude</span>
+			<span class="k">if</span> <span class="nb">next</span><span class="p">(</span> <span class="p">(</span><span class="kc">True</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__excludes</span> <span class="k">if</span> <span class="n">antGlobMatch</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">path</span><span class="p">)),</span> <span class="kc">False</span><span class="p">):</span> <span class="k">return</span> <span class="kc">False</span>
+				
+			<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__includes</span><span class="p">:</span> <span class="c1"># include everything</span>
+				<span class="k">return</span> <span class="kc">True</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">m</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span> <span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__includes</span> <span class="k">if</span> <span class="n">antGlobMatch</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">path</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
+				<span class="k">if</span> <span class="n">m</span><span class="p">:</span> 
+					<span class="k">return</span> <span class="kc">True</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="k">return</span> <span class="kc">False</span>
+					
+		<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;FilteredArchiveContents error for </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="p">)</span></div>
+
+	<span class="k">def</span> <span class="nf">hasIncludeExcludeFilters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__includes</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__excludes</span>
+	
+	<span class="k">def</span> <span class="nf">mapDestPath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__destMapper</span><span class="p">:</span> <span class="k">return</span> <span class="n">path</span>
+		<span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__destMapper</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
+		<span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="n">x</span> <span class="o">+=</span> <span class="s1">&#39;/&#39;</span>
+		<span class="k">return</span> <span class="n">x</span>
+	
+	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot; Returns a string including this class name, the archive path, the destination prefix </span>
+<span class="sd">		and any includes/excludes.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="p">(</span><span class="s1">&#39;FilteredArchiveContents(</span><span class="si">%s</span><span class="s1">, includes=</span><span class="si">%s</span><span class="s1">, excludes=</span><span class="si">%s</span><span class="s1">, destmapper=</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="p">(</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__includes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__excludes</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__destMapper</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">__destMapper</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

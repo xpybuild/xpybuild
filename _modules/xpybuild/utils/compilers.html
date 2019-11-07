@@ -1,0 +1,611 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.utils.compilers &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.utils.compilers</h1><div class="highlight"><pre>
+<span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2014 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: compilers.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">traceback</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="k">import</span> <span class="n">call</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">cached_isdir</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="k">import</span> <span class="n">ProcessOutputHandler</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span>
+
+<div class="viewcode-block" id="Process"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Process">[docs]</a><span class="k">class</span> <span class="nc">Process</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Parent type for compiler/tool chain process classes,</span>
+<span class="sd">	contain helper method for calling the compiler process</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">environs</span> <span class="o">=</span> <span class="n">environs</span> <span class="ow">or</span> <span class="p">{}</span>
+	
+<div class="viewcode-block" id="Process.getExpandedEnvirons"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Process.getExpandedEnvirons">[docs]</a>	<span class="k">def</span> <span class="nf">getExpandedEnvirons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Return the environment variables to be used for this process, </span>
+<span class="sd">		either passed explicitly into this method, or passed into </span>
+<span class="sd">		the constructor, or else empty. </span>
+<span class="sd">		</span>
+<span class="sd">		Any ${...} substitution vars are expanded automatically.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">environs</span> <span class="o">=</span> <span class="n">environs</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">environs</span> <span class="ow">or</span> <span class="p">{}</span>
+		<span class="n">environs</span> <span class="o">=</span> <span class="n">environs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">environs</span><span class="p">:</span>
+			<span class="n">environs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">environs</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+		<span class="k">return</span> <span class="n">environs</span></div>
+	
+	<span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">args</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">([</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">args</span><span class="p">])</span>
+			
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">outputHandlerInstance</span><span class="o">=</span><span class="n">outputHandler</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+			<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+				<span class="c1"># backwards compatibility for output handlers that don&#39;t pass kwargs down</span>
+				<span class="n">outputHandlerInstance</span> <span class="o">=</span> <span class="n">outputHandler</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+			
+			<span class="n">call</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="n">outputHandlerInstance</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">cwd</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">getExpandedEnvirons</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">environs</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;process.timeout&#39;</span><span class="p">])</span>
+		<span class="k">except</span> <span class="n">BuildException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+			<span class="c1"># causedBy is not useful here</span>
+			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> process failed&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;compilers&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_checkDirExists</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">cached_isdir</span><span class="p">(</span><span class="n">dirpath</span><span class="p">):</span>
+		<span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">dirpath</span><span class="p">)</span> <span class="c1"># legitimate but useful for debugging</span>
+	<span class="k">return</span> <span class="n">dirpath</span>
+
+<div class="viewcode-block" id="Compiler"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Compiler">[docs]</a><span class="k">class</span> <span class="nc">Compiler</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	A compiler (of some sort or other)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+<div class="viewcode-block" id="Compiler.compile"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Compiler.compile">[docs]</a>	<span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		output: The object file to create</span>
+
+<span class="sd">		src: A list of source file paths</span>
+
+<span class="sd">		options: an options dictionary to override global options</span>
+
+<span class="sd">		flags: additional flags to pass to the compiler</span>
+
+<span class="sd">		includes: a list of include directory paths</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">assert</span> <span class="kc">False</span></div></div>
+
+<div class="viewcode-block" id="Depends"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Depends">[docs]</a><span class="k">class</span> <span class="nc">Depends</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	The command to use to generate a list of dependencies from a list of source files</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+<div class="viewcode-block" id="Depends.depends"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Depends.depends">[docs]</a>	<span class="k">def</span> <span class="nf">depends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		src: A list of source file paths</span>
+
+<span class="sd">		options: an options dictionary to override global options</span>
+
+<span class="sd">		flags: additional flags to pass to the compiler</span>
+
+<span class="sd">		includes: a list of include directory paths</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">assert</span> <span class="kc">False</span></div></div>
+
+<div class="viewcode-block" id="Linker"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Linker">[docs]</a><span class="k">class</span> <span class="nc">Linker</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Link a set of object files into an executable or a shared library</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+<div class="viewcode-block" id="Linker.link"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Linker.link">[docs]</a>	<span class="k">def</span> <span class="nf">link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">shared</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libdirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		output: The library/executable to create</span>
+
+<span class="sd">		src: A list of object file paths</span>
+
+<span class="sd">		options: an options dictionary to override global options</span>
+
+<span class="sd">		flags: additional flags to pass to the compiler</span>
+
+<span class="sd">		libs: A list of libraries to link against</span>
+
+<span class="sd">		libdirs: A list of paths to directories that contain libraries</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">assert</span> <span class="kc">False</span></div></div>
+
+<div class="viewcode-block" id="Archiver"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Archiver">[docs]</a><span class="k">class</span> <span class="nc">Archiver</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	A tool to put a set of object files into an archive for static linking.</span>
+<span class="sd">	Typically only used on unix.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+<div class="viewcode-block" id="Archiver.archive"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Archiver.archive">[docs]</a>	<span class="k">def</span> <span class="nf">archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		output: The archive file path to create</span>
+
+<span class="sd">		src: A list of source object file paths</span>
+
+<span class="sd">		options: an options dictionary to override global options</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">assert</span> <span class="kc">False</span></div></div>
+
+<div class="viewcode-block" id="ToolChain"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.ToolChain">[docs]</a><span class="k">class</span> <span class="nc">ToolChain</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	A collection of compilers, linkers and other tools which represents a complete native tool chain</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depends</span><span class="p">,</span> <span class="n">ccompiler</span><span class="p">,</span> <span class="n">cxxcompiler</span><span class="p">,</span> <span class="n">linker</span><span class="p">,</span> <span class="n">archiver</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		depends: A Depends object to get a list of dependencies from a list of source files</span>
+
+<span class="sd">		ccompiler: A Compiler object for compiling C files</span>
+
+<span class="sd">		cxxcompiler: A Compiler object for compiling C++ files</span>
+
+<span class="sd">		linker: A Linker object for linking object files to a shared library or executable</span>
+
+<span class="sd">		archiver: An Archiver object for making static-link archives</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">depends</span><span class="p">,</span> <span class="n">Depends</span><span class="p">)</span> <span class="ow">or</span> <span class="n">depends</span> <span class="o">==</span> <span class="kc">None</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span> <span class="o">=</span> <span class="n">depends</span>
+		<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ccompiler</span><span class="p">,</span> <span class="n">Compiler</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ccompiler</span> <span class="o">==</span> <span class="kc">None</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">ccompiler</span> <span class="o">=</span> <span class="n">ccompiler</span>
+		<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cxxcompiler</span><span class="p">,</span> <span class="n">Compiler</span><span class="p">)</span> <span class="ow">or</span> <span class="n">cxxcompiler</span> <span class="o">==</span> <span class="kc">None</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cxxcompiler</span> <span class="o">=</span> <span class="n">cxxcompiler</span>
+		<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">linker</span><span class="p">,</span> <span class="n">Linker</span><span class="p">)</span> <span class="ow">or</span> <span class="n">linker</span> <span class="o">==</span> <span class="kc">None</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">linker</span> <span class="o">=</span> <span class="n">linker</span>
+		<span class="k">assert</span> <span class="n">IS_WINDOWS</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">archiver</span><span class="p">,</span> <span class="n">Archiver</span><span class="p">)</span> <span class="ow">or</span> <span class="n">archiver</span> <span class="o">==</span> <span class="kc">None</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">archiver</span> <span class="o">=</span> <span class="n">archiver</span>
+	
+	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> instance&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="c1"># make sure we get a stable stringification of the instance stored in the native.compilers option</span></div>
+
+<div class="viewcode-block" id="UnixCompiler"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.UnixCompiler">[docs]</a><span class="k">class</span> <span class="nc">UnixCompiler</span><span class="p">(</span><span class="n">Compiler</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	A compiler using standard Unix compiler arguments/syntax</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		command: The path to the compiler</span>
+<span class="sd">		</span>
+<span class="sd">		outputHandler: a ProcessOutputHandler to parse the output of the compiler</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">Compiler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">compiler_command</span> <span class="o">=</span> <span class="n">command</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">compiler_handler</span> <span class="o">=</span> <span class="n">outputHandler</span> <span class="ow">or</span> <span class="n">ProcessOutputHandler</span>
+
+	<span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="n">args</span><span class="o">=</span><span class="p">[</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">compiler_command</span><span class="p">,</span>
+			<span class="s1">&#39;-c&#39;</span><span class="p">,</span>
+			<span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">output</span><span class="p">)]</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;-I</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_checkDirExists</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;Cannot find include directory ``</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">includes</span> <span class="ow">or</span> <span class="p">[])])</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">flags</span> <span class="ow">or</span> <span class="p">[])</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compiler_handler</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span></div>
+
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.link.wholearchive&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="UnixLinker"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.UnixLinker">[docs]</a><span class="k">class</span> <span class="nc">UnixLinker</span><span class="p">(</span><span class="n">Linker</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	A linker using standard Unix linker arguments/syntax</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		command: The path to the linker</span>
+<span class="sd">		</span>
+<span class="sd">		outputHandler: a ProcessOutputHandler to parse the output of the linker</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">Linker</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">linker_command</span> <span class="o">=</span> <span class="n">command</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">linker_handler</span> <span class="o">=</span> <span class="n">outputHandler</span> <span class="ow">or</span> <span class="n">ProcessOutputHandler</span>
+
+	<span class="k">def</span> <span class="nf">link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">shared</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libdirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="n">args</span><span class="o">=</span><span class="p">[</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">linker_command</span><span class="p">,</span>
+			<span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">output</span><span class="p">)]</span>
+		<span class="k">if</span> <span class="n">shared</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-shared&#39;</span><span class="p">)</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">flags</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">src</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.a&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.link.wholearchive&#39;</span><span class="p">]:</span>
+				<span class="p">(</span><span class="n">pref</span><span class="p">,</span> <span class="n">suff</span><span class="p">)</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.link.wholearchive&#39;</span><span class="p">]</span>
+				<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">pref</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">suff</span><span class="p">])</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;-L</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_checkDirExists</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;Cannot find lib directory ``</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">libdirs</span> <span class="ow">or</span> <span class="p">[])])</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;-l</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">libs</span> <span class="ow">or</span> <span class="p">[])])</span>
+		<span class="n">environs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getExpandedEnvirons</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		<span class="n">environs</span><span class="p">[</span><span class="s1">&#39;LD_LIBRARY_PATH&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">libdirs</span><span class="o">+</span><span class="p">[</span><span class="n">environs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;LD_LIBRARY_PATH&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)])</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">linker_handler</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UnixArchiver"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.UnixArchiver">[docs]</a><span class="k">class</span> <span class="nc">UnixArchiver</span><span class="p">(</span><span class="n">Archiver</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	A archiver using standard Unix archiver arguments/syntax</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		command: The path to the archiver</span>
+<span class="sd">		</span>
+<span class="sd">		outputHandler: a ProcessOutputHandler to parse the output of the archiver</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">Archiver</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">ar_command</span> <span class="o">=</span> <span class="n">command</span>
+		<span class="k">class</span> <span class="nc">ArHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
+			<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+				<span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">ar_handler</span> <span class="o">=</span> <span class="n">outputHandler</span> <span class="ow">or</span> <span class="n">ArHandler</span>
+	<span class="k">def</span> <span class="nf">archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+		<span class="n">args</span><span class="o">=</span><span class="p">[</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">ar_command</span><span class="p">,</span>
+			<span class="s1">&#39;-r&#39;</span><span class="p">,</span>
+			<span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">output</span><span class="p">)]</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ar_handler</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GccProcessOutputHandler"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.GccProcessOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">GccProcessOutputHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	A ProcessOutputHandler than can parse the output of GCC tools</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="c1">#def __init__(self, name, **kwargs):</span>
+	<span class="c1">#	ProcessOutputHandler.__init__(self, name, **kwargs)</span>
+	
+	<span class="k">def</span> <span class="nf">_decideLogLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="p">):</span>
+
+		<span class="c1"># stderr seems to include all the warnings, notes and other stuff, so can&#39;t really use it for error detection</span>
+
+		<span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;error[\s]*([A-Z]+\d+)?:&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s1">&#39;: undefined reference to &#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">):</span> 
+			<span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span>
+			
+		<span class="c1"># ignore the contextual lines at the start of errors e.g. &quot;: In function...&quot;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">isstderr</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s1">&#39;: In&#39;</span> <span class="ow">in</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;In file&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s1">&#39;: note:&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">)</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;warning[\s]*([A-Z]+\d+)?:&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">):</span> <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span>
+
+		<span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span> <span class="c1"># default log level</span>
+	
+	<span class="k">def</span> <span class="nf">_parseLocationFromLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+		<span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="n">lineno</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">filename</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;(.*):([0-9]+): .*&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\1&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+			<span class="n">lineno</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;(.*):([0-9]+): .*&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\2&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+		<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span> <span class="k">pass</span>
+		<span class="k">return</span> <span class="n">filename</span><span class="p">,</span> <span class="n">lineno</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">line</span>
+	
+	<span class="k">def</span> <span class="nf">handleEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">returnCode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="c1"># linker failures often have no errors but a really useful message in the first warning, so include that in the error message</span>
+		<span class="k">if</span> <span class="n">returnCode</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">getWarnings</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">getErrors</span><span class="p">():</span>
+			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> failed with return code </span><span class="si">%s</span><span class="s1"> (first warning: </span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">returnCode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getWarnings</span><span class="p">()[</span><span class="mi">0</span><span class="p">]))</span>
+		<span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">handleEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">returnCode</span><span class="o">=</span><span class="n">returnCode</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GCC"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.GCC">[docs]</a><span class="k">class</span> <span class="nc">GCC</span><span class="p">(</span><span class="n">ToolChain</span><span class="p">,</span> <span class="n">UnixCompiler</span><span class="p">,</span> <span class="n">UnixLinker</span><span class="p">,</span> <span class="n">Depends</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	A tool chain based on the GNU Compiler Collection</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
+		<span class="n">ToolChain</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+			<span class="bp">self</span><span class="p">,</span> 
+			<span class="n">UnixCompiler</span><span class="p">(</span><span class="s1">&#39;gcc&#39;</span><span class="p">,</span> <span class="n">GccProcessOutputHandler</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">),</span> 
+			<span class="bp">self</span><span class="p">,</span> 
+			<span class="bp">self</span><span class="p">,</span> 
+			<span class="n">UnixArchiver</span><span class="p">(</span><span class="s1">&#39;ar&#39;</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+			<span class="p">)</span>
+		<span class="n">UnixCompiler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;g++&#39;</span><span class="p">,</span> <span class="n">GccProcessOutputHandler</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+		<span class="n">UnixLinker</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;g++&#39;</span><span class="p">,</span> <span class="n">GccProcessOutputHandler</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+		<span class="n">Depends</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">depends_command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compiler_command</span>
+	<span class="k">def</span> <span class="nf">depends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="n">args</span><span class="o">=</span><span class="p">[</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">depends_command</span><span class="p">,</span> 
+			<span class="s1">&#39;-M&#39;</span><span class="p">,</span> <span class="c1"># output make dependency rules</span>
+			<span class="s1">&#39;-MG&#39;</span><span class="p">,</span> <span class="c1"># allow missing header files</span>
+			<span class="s1">&#39;-c&#39;</span>
+			<span class="p">]</span>
+		<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.include.upToDateCheckIgnoreSystemHeaders&#39;</span><span class="p">]:</span>
+			<span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-MM&#39;</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">includes</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;-I</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">includes</span><span class="p">])</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">flags</span> <span class="ow">or</span> <span class="p">[])</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+		<span class="n">deplist</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="k">class</span> <span class="nc">GccDependsHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
+			<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+				<span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">fatalerrors</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="k">def</span> <span class="nf">handleLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+				<span class="k">if</span> <span class="s1">&#39;: error &#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fatalerrors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+				<span class="k">if</span> <span class="ow">not</span> <span class="n">isstderr</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">):</span>
+					<span class="c1"># sometimes there are multiple items on a single line, space delimited</span>
+					<span class="c1"># if there are spaces in the path itself they are escaped as &quot;\ &quot;</span>
+					<span class="n">deplist</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;space&gt;&#39;</span><span class="p">,</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1"> &#39;</span><span class="p">,</span><span class="s1">&#39;&lt;space&gt;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)])</span>
+			<span class="k">def</span> <span class="nf">handleEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">returnCode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+				<span class="k">if</span> <span class="n">returnCode</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">getErrors</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">fatalerrors</span><span class="p">:</span>
+					<span class="c1"># special-case to give a more useful error message tha just the exit code if a dependency is missing</span>
+					<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Native dependency checking failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fatalerrors</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+				<span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">GccDependsHandler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">handleEnd</span><span class="p">(</span><span class="n">returnCode</span><span class="o">=</span><span class="n">returnCode</span><span class="p">)</span>
+
+		<span class="k">try</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="n">GccDependsHandler</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+		<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+			<span class="c1"># occasionally we see SIGABRT (=6) for no reason (e.g. on ARM), so do a retry</span>
+			<span class="k">if</span> <span class="s1">&#39;return code -6&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span> <span class="k">raise</span>
+			<span class="n">_logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;g++ dependency checking failed, may be transient so will retry: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+			<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+			<span class="k">del</span> <span class="n">deplist</span><span class="p">[:]</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="n">GccDependsHandler</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+
+		<span class="k">return</span> <span class="n">deplist</span></div>
+
+<div class="viewcode-block" id="VisualStudioProcessOutputHandler"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.VisualStudioProcessOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">VisualStudioProcessOutputHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	A ProcessOutputHandler that can parse the output of Visual Studio tools</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">_decideLogLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="p">):</span>
+		<span class="k">if</span> <span class="n">isstderr</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;error[\s]*([A-Z]+\d+)?:&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">):</span> 
+			<span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span>
+			
+			<span class="n">transientRegex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;visualstudio.transientErrorRegex&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+			<span class="k">if</span> <span class="n">transientRegex</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">transientRegex</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span> 
+				<span class="bp">self</span><span class="o">.</span><span class="n">_transientError</span> <span class="o">=</span> <span class="n">line</span>
+				<span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span> <span class="c1"># avoid reporting an error unless the target actually fails</span>
+			
+			<span class="k">if</span> <span class="s1">&#39;fatal error C1903: unable to recover from previous error&#39;</span> <span class="ow">in</span> <span class="n">line</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">getErrors</span><span class="p">():</span>
+				<span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span> <span class="c1"># this is the same error not a new one</span>
+			
+		<span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;warning[\s]*([A-Z]\d+)?:&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">):</span> 
+			<span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span> <span class="c1"># default log level</span>
+			
+			<span class="c1"># heuristic to make context printed after the error/warn message </span>
+			<span class="c1"># available in error messages; might be worth revamping this to </span>
+			<span class="c1"># put entire error into one line			</span>
+			<span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_previousLogLevel&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">]</span> <span class="ow">and</span> <span class="s1">&#39;note: see&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_appendToMessage</span> <span class="o">=</span> <span class="s1">&#39; - caused previous error/warning - </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_previousLogLine</span><span class="p">)</span>
+				<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_previousLogLevel</span>
+			
+		<span class="bp">self</span><span class="o">.</span><span class="n">_previousLogLevel</span> <span class="o">=</span> <span class="n">level</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_previousLogLine</span> <span class="o">=</span> <span class="n">line</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_appendToMessage</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="k">return</span> <span class="n">level</span>
+
+	<span class="k">def</span> <span class="nf">_preprocessLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span> 
+		<span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_appendToMessage&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+			<span class="k">return</span> <span class="n">line</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_appendToMessage</span>
+		<span class="k">return</span> <span class="n">line</span>
+
+	<span class="k">def</span> <span class="nf">_parseLocationFromLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+		<span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="n">lineno</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="n">colno</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="c1"># expecting format</span>
+			<span class="c1">#&lt;location&gt;: &lt;category&gt; &lt;number&gt;: &lt;description&gt;</span>
+			<span class="c1"># where location = &lt;string&gt; or &lt;path&gt;(line) or &lt;path&gt;(line-line) or &lt;path&gt;(line,col) or &lt;path&gt;(line,col-col)</span>
+			<span class="c1"># TODO: add colno support</span>
+			<span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(([a-zA-Z]:)?[^:]+)[(]([0-9]+)[^:]*:(.*)&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+			<span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+				<span class="n">filename</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span>
+				<span class="n">lineno</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+				<span class="n">line</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39; - at &#39;</span><span class="o">+</span><span class="n">line</span><span class="p">[:</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">4</span><span class="p">))]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([^(]+)[(]([0-9]+)[^:]*:(.*)&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+		<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span> <span class="k">pass</span>
+		<span class="k">return</span> <span class="n">filename</span><span class="p">,</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">colno</span><span class="p">,</span> <span class="n">line</span></div>
+
+<span class="k">def</span> <span class="nf">__testVisualStudioOutputHandler</span><span class="p">():</span>
+	<span class="c1"># tricky to do with doctesting due to escaping issues</span>
+	<span class="n">h</span> <span class="o">=</span> <span class="n">VisualStudioProcessOutputHandler</span><span class="p">(</span><span class="s1">&#39;cl.exe&#39;</span><span class="p">)</span>
+	<span class="n">x</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">_parseLocationFromLine</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;c:\foo\bar(123): error C456: descr&#39;</span><span class="p">)</span>
+	<span class="k">assert</span> <span class="n">x</span> <span class="o">==</span> <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;c:\foo\bar&#39;</span><span class="p">,</span> <span class="s1">&#39;123&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;error C456: descr - at c:\foo\bar(123)&#39;</span><span class="p">),</span> <span class="n">x</span>
+
+	<span class="n">x</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">_parseLocationFromLine</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;D:\foo\bar(123,45-67): warning C456: descr&#39;</span><span class="p">)</span>
+	<span class="k">assert</span> <span class="n">x</span> <span class="o">==</span> <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;D:\foo\bar&#39;</span><span class="p">,</span> <span class="s1">&#39;123&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;warning C456: descr - at D:\foo\bar(123,45-67)&#39;</span><span class="p">),</span> <span class="n">x</span>
+
+	<span class="n">x</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">_parseLocationFromLine</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">unc\foo\bar(123,45-67): warning C456: descr&#39;</span><span class="p">)</span>
+	<span class="k">assert</span> <span class="n">x</span> <span class="o">==</span> <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">unc\foo\bar&#39;</span><span class="p">,</span> <span class="s1">&#39;123&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;warning C456: descr - at </span><span class="se">\\</span><span class="s1">unc\foo\bar(123,45-67)&#39;</span><span class="p">),</span> <span class="n">x</span>
+
+	<span class="n">x</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">_parseLocationFromLine</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;c:\program files (x86)\foo\bar(123,45-67): warning C456: descr&#39;</span><span class="p">)</span>
+	<span class="k">assert</span> <span class="n">x</span> <span class="o">==</span> <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;c:\program files (x86)\foo\bar&#39;</span><span class="p">,</span> <span class="s1">&#39;123&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;warning C456: descr - at c:\program files (x86)\foo\bar(123,45-67)&#39;</span><span class="p">),</span> <span class="n">x</span>
+<span class="n">__testVisualStudioOutputHandler</span><span class="p">()</span>
+
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;visualstudio.liboutput&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;visualstudio.pdboutput&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="c1"># errors matching this will not be logged as an ERROR the first time they occur and will result in a retry</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;visualstudio.transientErrorRegex&#39;</span><span class="p">,</span> <span class="s1">&#39;.*(Permission denied|Access denied).*&#39;</span><span class="p">)</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;visualstudio.transientErrorRetrySecs&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;visualstudio.outputHandlerFactory&#39;</span><span class="p">,</span> <span class="n">VisualStudioProcessOutputHandler</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;Allows overriding the output handler used by Visual Studio for compiler output such as errors and warnings. &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="VisualStudio"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.VisualStudio">[docs]</a><span class="k">class</span> <span class="nc">VisualStudio</span><span class="p">(</span><span class="n">Compiler</span><span class="p">,</span> <span class="n">Linker</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">Archiver</span><span class="p">,</span> <span class="n">ToolChain</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	A ToolChain representing using Visual Studio compilers et al</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vsbin</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">vsbin</span> <span class="o">=</span> <span class="n">vsbin</span>
+		<span class="n">ToolChain</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+		<span class="n">Linker</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+		<span class="n">Depends</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+		<span class="n">Compiler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+		<span class="n">Archiver</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="nb">super</span><span class="p">(</span><span class="n">VisualStudio</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		<span class="k">except</span> <span class="n">BuildException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+			<span class="n">options</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;options&#39;</span><span class="p">,{})</span>
+			<span class="n">transientRegex</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;visualstudio.transientErrorRegex&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">transientRegex</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">transientRegex</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))):</span>
+				<span class="k">raise</span> <span class="n">e</span>
+			<span class="c1"># seen occasionally. may be due to POSIX and Win32 API file operations </span>
+			<span class="c1"># remaining out of sync for a short time after a file is written on windows</span>
+			<span class="c1"># nb: it would be nice to find a way to prevent the already-logged error </span>
+			<span class="c1"># from making it look like there&#39;s a build failure in the case where </span>
+			<span class="c1"># this retry succeeds</span>
+			<span class="n">_logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Build step failed, may be transient so will retry: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+			<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;visualstudio.transientErrorRetrySecs&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+			<span class="nb">super</span><span class="p">(</span><span class="n">VisualStudio</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+				
+	<span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="n">args</span><span class="o">=</span><span class="p">[</span>
+			<span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">\cl.exe&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsbin</span><span class="p">,</span>
+			<span class="s1">&#39;-c&#39;</span><span class="p">,</span>
+			<span class="s1">&#39;/Fo&#39;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">output</span><span class="p">)]</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;-I</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_checkDirExists</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">),</span> <span class="s1">&#39;Cannot find include directory ``</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">includes</span> <span class="ow">or</span> <span class="p">[])])</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">flags</span> <span class="ow">or</span> <span class="p">[])</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;visualstudio.outputHandlerFactory&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">VisualStudioProcessOutputHandler</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">environs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;PATH&#39;</span><span class="p">:</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.cxx.path&#39;</span><span class="p">])},</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">shared</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libdirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">\link.exe&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsbin</span><span class="p">]</span>
+		<span class="k">if</span> <span class="n">shared</span><span class="p">:</span> 
+			<span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/DLL&#39;</span><span class="p">)</span>
+			<span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/INCREMENTAL:NO&#39;</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;visualstudio.liboutput&#39;</span><span class="p">]:</span>
+			<span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/OUT:&#39;</span><span class="o">+</span><span class="n">output</span><span class="p">)</span>
+			<span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/IMPLIB:&#39;</span><span class="o">+</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;visualstudio.liboutput&#39;</span><span class="p">])</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/OUT:&#39;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
+		<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;visualstudio.pdboutput&#39;</span><span class="p">]:</span>
+			<span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/PDB:&#39;</span><span class="o">+</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;visualstudio.pdboutput&#39;</span><span class="p">])</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">flags</span><span class="p">)</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;/LIBPATH:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_checkDirExists</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">),</span> <span class="s1">&#39;Cannot find lib directory ``</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">libdirs</span> <span class="ow">or</span> <span class="p">[])])</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.lib&#39;</span> <span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">libs</span> <span class="ow">or</span> <span class="p">[])])</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;visualstudio.outputHandlerFactory&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">VisualStudioProcessOutputHandler</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">environs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;PATH&#39;</span><span class="p">:</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.cxx.path&#39;</span><span class="p">])},</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+		<span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">\lib.exe&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsbin</span><span class="p">,</span> <span class="s1">&#39;/OUT:&#39;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="s1">&#39;/nologo&#39;</span><span class="p">]</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;visualstudio.outputHandlerFactory&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">VisualStudioProcessOutputHandler</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">environs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;PATH&#39;</span><span class="p">:</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.cxx.path&#39;</span><span class="p">])},</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">depends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="c1"># Note that cl.exe /showIncludes is fairly slow</span>
+		<span class="n">args</span><span class="o">=</span><span class="p">[</span>
+			<span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">\cl.exe&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsbin</span><span class="p">,</span>
+			<span class="s1">&#39;/Zs&#39;</span><span class="p">,</span> <span class="s1">&#39;/showIncludes&#39;</span><span class="p">,</span>
+			<span class="s1">&#39;-c&#39;</span><span class="p">]</span>
+		<span class="c1"># native.include.upToDateCheckIgnoreSystemHeaders can&#39;t be implemented as no option equivalent to -MM for cl.exe</span>
+		
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;-I</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_checkDirExists</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">),</span> <span class="s1">&#39;Cannot find include directory ``</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">includes</span> <span class="ow">or</span> <span class="p">[])])</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">flags</span> <span class="ow">or</span> <span class="p">[])</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+		<span class="n">deplist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+		<span class="n">fatalerrors</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="k">class</span> <span class="nc">VSDependsHandler</span><span class="p">(</span><span class="n">VisualStudioProcessOutputHandler</span><span class="p">):</span>
+			<span class="k">def</span> <span class="nf">handleLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+				<span class="n">data</span> <span class="o">=</span> <span class="n">line</span>
+				<span class="k">if</span> <span class="s1">&#39;fatal error&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span> <span class="n">fatalerrors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+				<span class="k">if</span> <span class="s1">&#39;Cannot open include file:&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+					<span class="n">data</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;.*Cannot open include file: &#39;([^&#39;]*)&#39;:.*&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\1&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+					<span class="k">if</span> <span class="n">data</span><span class="p">:</span> <span class="n">deplist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+				<span class="k">elif</span> <span class="s1">&#39;Note: including file:&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+					<span class="n">data</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;.*Note: including file:&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+					<span class="k">if</span> <span class="n">data</span><span class="p">:</span> <span class="n">deplist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">VisualStudioProcessOutputHandler</span><span class="o">.</span><span class="n">handleLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="o">=</span><span class="n">isstderr</span><span class="p">)</span>
+			<span class="k">def</span> <span class="nf">_decideLogLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="p">):</span>
+				<span class="n">l</span> <span class="o">=</span> <span class="n">VisualStudioProcessOutputHandler</span><span class="o">.</span><span class="n">_decideLogLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="p">)</span>
+				<span class="k">if</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span> <span class="n">l</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span> <span class="c1"># don&#39;t care about compiler warnings etc at dep generation time</span>
+				<span class="k">return</span> <span class="n">l</span>
+				
+			<span class="k">def</span> <span class="nf">handleEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">returnCode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+				<span class="k">if</span> <span class="n">returnCode</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">getErrors</span><span class="p">()</span> <span class="ow">and</span> <span class="n">fatalerrors</span><span class="p">:</span>
+					<span class="c1"># special-case to give a more useful error message tha just the exit code if a dependency is missing</span>
+					<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Native dependency checking failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">fatalerrors</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+				<span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">VSDependsHandler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">handleEnd</span><span class="p">(</span><span class="n">returnCode</span><span class="o">=</span><span class="n">returnCode</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="n">VSDependsHandler</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">deplist</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,541 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.targets.copy &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.targets.copy</h1><div class="highlight"><pre>
+<span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: copy.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">stat</span> <span class="k">import</span> <span class="n">S_ISLNK</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span><span class="p">,</span> <span class="n">ExtensionBasedFileEncodingDecider</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="k">import</span> <span class="n">BaseTarget</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteDir</span><span class="p">,</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">normLongPath</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">flatten</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="k">import</span> <span class="n">BuildFileLocation</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+
+<div class="viewcode-block" id="Copy"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.Copy">[docs]</a><span class="k">class</span> <span class="nc">Copy</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Target that copies input file(s) to an output file or directory. </span>
+<span class="sd">	</span>
+<span class="sd">	The parent directory will be created if it doesn&#39;t exist already. </span>
+
+<span class="sd">	The &#39;Copy.symlinks&#39; option can be set to True if symbolic links </span>
+<span class="sd">	in the source should result in the creation of symbolic links </span>
+<span class="sd">	in the destination. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">implicitDependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		@param dest: the output directory (ending with a &quot;/&quot;) or file. Never </span>
+<span class="sd">		specify a dest directory that is also written to by another </span>
+<span class="sd">		target (e.g. do not specify an output directory here). If you need </span>
+<span class="sd">		to write multiple files to a directory, use separate Copy </span>
+<span class="sd">		targets for each, with file (rather than directory) target dest </span>
+<span class="sd">		names. </span>
+<span class="sd">			</span>
+<span class="sd">		@param src: the input, which may be any combination of strings, PathSets and </span>
+<span class="sd">		lists of these. If these PathSets include mapping information, this </span>
+<span class="sd">		will be used to define where (under the dest directory) each </span>
+<span class="sd">		file is copied. </span>
+<span class="sd">		</span>
+<span class="sd">		Note that only src files will be copied, any directory in the </span>
+<span class="sd">		src list will be created but its contents will not be copied </span>
+<span class="sd">		across - the only way to copy a directory is to use a FindPaths</span>
+<span class="sd">		(or FindPaths(DirGeneratedByTarget(&#39;...&#39;))) </span>
+<span class="sd">		for the src, which has the ability to find its contents on disk </span>
+<span class="sd">		(this is necessary to prevent complex race conditions and </span>
+<span class="sd">		build errors arising from implicit directory walking during </span>
+<span class="sd">		the execution phase - if all dir walking happens during </span>
+<span class="sd">		dependency resolution then such errors can be easily detected </span>
+<span class="sd">		before they cause a problem). </span>
+<span class="sd">		</span>
+<span class="sd">		@param mode: unix permissions to set with chmod on the destination files. </span>
+<span class="sd">		If not specified, mode is simply copied from source file. </span>
+<span class="sd">		</span>
+<span class="sd">		@param implicitDependencies: provides a way to add additional implicit </span>
+<span class="sd">		dependencies that will not be part of src but may affect the </span>
+<span class="sd">		copy process (e.g. filtering in); this is intended for </span>
+<span class="sd">		use by subclasses, do not set this explicitly. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="n">mode</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+		<span class="n">src</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="p">[</span><span class="n">src</span><span class="p">,</span> <span class="n">implicitDependencies</span><span class="p">])</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="o">=</span> <span class="n">src</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">addHashableImplicitInputOption</span><span class="p">(</span><span class="s1">&#39;Copy.symlinks&#39;</span><span class="p">)</span>
+			
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Copying </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+		<span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="c1">#  a map of srcAbsolute: destRelative</span>
+
+		<span class="n">symlinks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;Copy.symlinks&#39;</span><span class="p">]</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">symlinks</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span> <span class="n">symlinks</span> <span class="o">=</span> <span class="n">symlinks</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">==</span><span class="s1">&#39;true&#39;</span>
+		<span class="k">assert</span> <span class="n">symlinks</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">],</span> <span class="nb">repr</span><span class="p">(</span><span class="n">symlinks</span><span class="p">)</span>
+
+		<span class="c1"># implicitly ensure parent of target exists, to keep things simple</span>
+		
+		<span class="n">copied</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">isDirPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+			<span class="c1"># it&#39;s a simple file operation.</span>
+			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Copy destination must be a directory (ending with &quot;/&quot;) when multiple sources are specified (not: </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">src</span><span class="p">)</span>
+			<span class="n">src</span><span class="p">,</span> <span class="n">mappedDest</span> <span class="o">=</span> <span class="n">src</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+			<span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">src</span><span class="p">):</span>
+				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Copy source must be files (or PathSets) not directories: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">src</span><span class="p">)</span>
+			<span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_copyFile</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="c1"># we kindof have to ignore mappedDest here, since the target path already fully defines it</span>
+			<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">:</span>
+				<span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+			<span class="n">copied</span> <span class="o">+=</span> <span class="mi">1</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">lastDirCreated</span> <span class="o">=</span> <span class="kc">None</span>
+			
+			<span class="k">for</span> <span class="p">(</span><span class="n">srcAbs</span><span class="p">,</span> <span class="n">destRel</span><span class="p">)</span> <span class="ow">in</span> <span class="n">src</span><span class="p">:</span>
+				<span class="n">srcAbs</span> <span class="o">=</span> <span class="n">normLongPath</span><span class="p">(</span><span class="n">srcAbs</span><span class="p">)</span>
+				<span class="n">dest</span> <span class="o">=</span> <span class="n">normLongPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">+</span><span class="n">destRel</span><span class="p">)</span>
+				<span class="c1"># there should not be any directories here only files from pathsets</span>
+				<span class="k">if</span> <span class="s1">&#39;..&#39;</span> <span class="ow">in</span> <span class="n">destRel</span><span class="p">:</span>
+					<span class="c1"># to avoid people abusing this to copy files outside the dest directory!</span>
+					<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;This target does not permit destination paths to contain &quot;..&quot; relative path expressions&#39;</span><span class="p">)</span>
+				<span class="n">issymlink</span> <span class="o">=</span> <span class="n">symlinks</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">srcAbs</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span>
+
+				<span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">srcAbs</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">issymlink</span><span class="p">:</span> <span class="c1"># allows creating of empty directories. </span>
+					<span class="n">mkdir</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="c1">#self.log.debug(&#39;Processing %s -&gt; %s i.e. %s&#39;, srcAbs, destRel, dest)</span>
+
+					<span class="k">if</span> <span class="n">issymlink</span><span class="p">:</span> <span class="c1"># this may be a directory path, and dirname will fail unless we strip off the /</span>
+						<span class="n">dest</span> <span class="o">=</span> <span class="n">dest</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
+					
+					<span class="k">if</span> <span class="ow">not</span> <span class="n">lastDirCreated</span> <span class="ow">or</span> <span class="n">lastDirCreated</span><span class="o">!=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">dest</span><span class="p">):</span>
+						<span class="n">lastDirCreated</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Creating intermediate dir </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">lastDirCreated</span><span class="p">)</span>
+						<span class="n">mkdir</span><span class="p">(</span><span class="n">lastDirCreated</span><span class="p">)</span>
+					
+					<span class="k">try</span><span class="p">:</span>
+						<span class="k">if</span> <span class="n">issymlink</span><span class="p">:</span>
+							<span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">readlink</span><span class="p">(</span><span class="n">srcAbs</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)),</span> <span class="n">dest</span><span class="p">)</span>	
+						<span class="k">else</span><span class="p">:</span>
+							<span class="bp">self</span><span class="o">.</span><span class="n">_copyFile</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">srcAbs</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+							<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">:</span>
+								<span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+					<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+						<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Error copying from &quot;</span><span class="si">%s</span><span class="s1">&quot; to &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">srcAbs</span><span class="p">,</span> <span class="n">dest</span><span class="p">),</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+						
+					<span class="n">copied</span> <span class="o">+=</span> <span class="mi">1</span>
+				
+		<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Copied </span><span class="si">%d</span><span class="s1"> file(s) to </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">copied</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">_copyFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+		<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">inp</span><span class="p">:</span>
+			<span class="k">with</span> <span class="n">openForWrite</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out</span><span class="p">:</span>
+				<span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+		<span class="n">shutil</span><span class="o">.</span><span class="n">copymode</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+		<span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="c1"># TODO: move this into BaseTarget</span>
+		<span class="n">r</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Copy</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getHashableImplicitInputs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		
+		<span class="c1"># include source representation of deps list, so that changes to the list get reflected</span>
+		<span class="c1"># this way of doing property expansion on the repr is a convenient </span>
+		<span class="c1"># shortcut (we want to expand property values to detect changes in </span>
+		<span class="c1"># versions etc that should trigger a rebuild, but just not do any </span>
+		<span class="c1"># globbing/searches here)</span>
+		<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;src: &#39;</span><span class="o">+</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">))</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;mode: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+		
+		<span class="k">return</span> <span class="n">r</span></div>
+
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;Copy.symlinks&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot; If True, symbolic links in the source are represented as symbolic links </span>
+<span class="sd">(either absolute or relative) in the destination. If False (the default), symbolic links </span>
+<span class="sd">are handled by copying the contents of the linked files. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FilteredCopy"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.FilteredCopy">[docs]</a><span class="k">class</span> <span class="nc">FilteredCopy</span><span class="p">(</span><span class="n">Copy</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Target that copies one or more input text file(s) to an output file or directory, </span>
+<span class="sd">	filtering each line through the specified line mappers. </span>
+<span class="sd">	</span>
+<span class="sd">	The parent directory will be created if it doesn&#39;t exist already. </span>
+<span class="sd">	</span>
+<span class="sd">	Any source files determines to be binary/non-text by </span>
+<span class="sd">	L{ExtensionBasedFileEncodingDecider.BINARY} are copied without any mappers </span>
+<span class="sd">	being invoked. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">*</span><span class="n">mappers</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		@param dest: the output directory (ending with a &quot;/&quot;) or file. Never </span>
+<span class="sd">		specify a dest directory that is also written to by another </span>
+<span class="sd">		target (e.g. do not specify an output directory here). If you need </span>
+<span class="sd">		to write multiple files to the output directory, use separate Copy </span>
+<span class="sd">		targets for each. </span>
+<span class="sd">		</span>
+<span class="sd">		@param src: the input, which may be any combination of strings, PathSets and </span>
+<span class="sd">		lists of these. </span>
+<span class="sd">		</span>
+<span class="sd">		@param mappers: a list of objects subclassing L{FileContentsMapper} </span>
+<span class="sd">		that will be used to transform </span>
+<span class="sd">		the file, line by line. Can be empty in which case this behaves the same </span>
+<span class="sd">		as a normal Copy target. Any items in this list with the value None </span>
+<span class="sd">		are ignored. </span>
+<span class="sd">		</span>
+<span class="sd">		For simple @TOKEN@ replacement see createReplaceDictLineMappers. </span>
+<span class="sd">		In addition to per-line changes, it is also possible to specify </span>
+<span class="sd">		mappers that add header/footer content to the file. </span>
+<span class="sd">			</span>
+<span class="sd">		Note that files are read and written in binary mode, so mappers </span>
+<span class="sd">		will be dealing directly with platform-specific \\n and \\r </span>
+<span class="sd">		characters; python&#39;s os.linesep should be used where a </span>
+<span class="sd">		platform-neutral newline is required. </span>
+<span class="sd">		</span>
+<span class="sd">		@param kwargs: Additional parameter: allowUnusedMappers:</span>
+<span class="sd">		To avoid build files that accumulate unused </span>
+<span class="sd">		cruft or are hard to understand, by default it is an error to include a </span>
+<span class="sd">		mapper in this list that is not used, i.e. that does not in any way </span>
+<span class="sd">		change the output for any file. We recommend using conditionalization </span>
+<span class="sd">		to avoid passing in such mappers e.g. </span>
+<span class="sd">		FilteredCopy(target, src, [StringReplaceLineMapper(os.linesep,&#39;\\n&#39;) if IS_WINDOWS else None]). </span>
+<span class="sd">		If this is not practical, set allowUnusedMappers=True to prevent this </span>
+<span class="sd">		check. </span>
+<span class="sd">		</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mappers</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">getInstance</span><span class="p">()</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">flatten</span><span class="p">(</span><span class="n">mappers</span><span class="p">)]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">allowUnusedMappers</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;allowUnusedMappers&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+		<span class="k">assert</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">,</span> <span class="s1">&#39;unknown keyword arg(s): </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">kwargs</span>
+		<span class="nb">super</span><span class="p">(</span><span class="n">FilteredCopy</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">implicitDependencies</span><span class="o">=</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">getDependencies</span><span class="p">()</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mappers</span><span class="p">])</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">addHashableImplicitInputOption</span><span class="p">(</span><span class="s1">&#39;common.fileEncodingDecider&#39;</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__unusedMappers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mappers</span><span class="p">)</span>
+		<span class="nb">super</span><span class="p">(</span><span class="n">FilteredCopy</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__unusedMappers</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowUnusedMappers</span><span class="p">:</span>
+			<span class="c1"># a useful sanity check, to ensure we&#39;re replacing what we think we&#39;re replacing, and also that we don&#39;t have unused clutter in the build files</span>
+			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Some of the specified mappers did not get used at all during the copy (to avoid confusion, mappers that do not change the output in any way are not permitted): </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">getDescription</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__unusedMappers</span><span class="p">]</span> <span class="p">)))</span>
+			
+<div class="viewcode-block" id="FilteredCopy.getHashableImplicitInputs"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.FilteredCopy.getHashableImplicitInputs">[docs]</a>	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Include the mapper descriptions in the implicit dependencies. &quot;&quot;&quot;</span>
+		<span class="n">r</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">FilteredCopy</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getHashableImplicitInputs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mappers</span><span class="p">:</span> 
+			<span class="n">m</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+			<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">getDescription</span><span class="p">(</span><span class="n">context</span><span class="p">))</span> <span class="c1"># ensures that changes to properties force a rebuild when necessary</span>
+		<span class="k">return</span> <span class="n">r</span></div>
+		
+	<span class="k">def</span> <span class="nf">_copyFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;common.fileEncodingDecider&#39;</span><span class="p">)(</span><span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span> <span class="o">==</span> <span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">BINARY</span><span class="p">:</span>
+			<span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_copyFile</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+	
+		<span class="n">mappers</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mappers</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">startFile</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">]</span>
+		
+		<span class="k">try</span><span class="p">:</span>
+			<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">openFile</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+				<span class="c1"># newline: for compatibility with existing builds, we don&#39;t expand \n to os.linesep (i.e. don&#39;t use Python universal newlines)</span>
+				<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">openFile</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">d</span><span class="p">:</span>
+					<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mappers</span><span class="p">:</span>
+						<span class="n">x</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">getHeader</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+						<span class="k">if</span> <span class="n">x</span><span class="p">:</span> 
+							<span class="bp">self</span><span class="o">.</span><span class="n">__unusedMappers</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+							<span class="n">d</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+					
+					<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+						<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mappers</span><span class="p">:</span>
+							<span class="n">prev</span> <span class="o">=</span> <span class="n">l</span>
+							<span class="n">l</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">mapLine</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+							<span class="k">if</span> <span class="n">prev</span> <span class="o">!=</span> <span class="n">l</span><span class="p">:</span>
+								<span class="bp">self</span><span class="o">.</span><span class="n">__unusedMappers</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+							<span class="k">if</span> <span class="kc">None</span> <span class="o">==</span> <span class="n">l</span><span class="p">:</span>
+								<span class="k">break</span>
+						<span class="k">if</span> <span class="kc">None</span> <span class="o">!=</span> <span class="n">l</span><span class="p">:</span>
+							<span class="n">d</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+					<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mappers</span><span class="p">:</span>
+						<span class="n">x</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">getFooter</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+						<span class="k">if</span> <span class="n">x</span><span class="p">:</span> 
+							<span class="bp">self</span><span class="o">.</span><span class="n">__unusedMappers</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+							<span class="n">d</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+		<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+			<span class="n">exceptionsuffix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+			<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="ne">UnicodeDecodeError</span><span class="p">):</span>
+				<span class="n">exceptionsuffix</span> <span class="o">=</span> <span class="s1">&#39; due to encoding problem; consider setting the &quot;common.fileEncodingDecider&quot; option&#39;</span>
+			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Failed to perform filtered copy of </span><span class="si">{src}{exceptionsuffix}</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">causedBy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+		<span class="n">shutil</span><span class="o">.</span><span class="n">copymode</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+		<span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileContentsMapper"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.FileContentsMapper">[docs]</a><span class="k">class</span> <span class="nc">FileContentsMapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; A base class for mappers that take part in text file transformation for use with FilteredCopy</span>
+<span class="sd">	</span>
+<span class="sd">	Note that files are read and written in binary mode, so mappers </span>
+<span class="sd">	will be dealing directly with platform-specific \\n and \\r </span>
+<span class="sd">	characters; python&#39;s os.linesep should be used where a </span>
+<span class="sd">	platform-netural new line character is required. </span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
+	
+<div class="viewcode-block" id="FileContentsMapper.getInstance"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.FileContentsMapper.getInstance">[docs]</a>	<span class="k">def</span> <span class="nf">getInstance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot; Called when a target begins to use a (potentially shared) line mapper. </span>
+<span class="sd">		Returns the thread-safe (or stateless) FileContentsMapper instance that will be used; </span>
+<span class="sd">		since most instances are inherently stateless, by default just returns self. </span>
+<span class="sd">		</span>
+<span class="sd">		If you need to keep any state that changes after the L{prepare} method </span>
+<span class="sd">		is called (for example based on tracking the current filename or </span>
+<span class="sd">		previously encountered lines), you need to override this and return a new instance </span>
+<span class="sd">		either by calling your constructor or use Python&#39;s copy.deepcopy() method. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span></div>
+<div class="viewcode-block" id="FileContentsMapper.prepare"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.FileContentsMapper.prepare">[docs]</a>	<span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Called once the build process has started and before any other method on this mapper </span>
+<span class="sd">		(other than getInstance) to allow the mapper to initialize its internal </span>
+<span class="sd">		variables using the build context, for example by expanding build properties. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">pass</span></div>
+<div class="viewcode-block" id="FileContentsMapper.startFile"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.FileContentsMapper.startFile">[docs]</a>	<span class="k">def</span> <span class="nf">startFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Called when the mapper starts to process a new file. </span>
+<span class="sd">		</span>
+<span class="sd">		Can be used to prevent the mapper handling certain files. </span>
+<span class="sd">		For stateful mappers (with an implementation of L(getInstance), this </span>
+<span class="sd">		can be used to enable file-specific behaviour during mapping. </span>
+<span class="sd">		</span>
+<span class="sd">		@param context: The context. </span>
+<span class="sd">		@param src: The absolute normalized long-path-safe source file path. </span>
+<span class="sd">		@param dest: The absolute normalized long-path-safe destination file path. </span>
+<span class="sd">		@return: True if this file can be handled by this mapper, or False if </span>
+<span class="sd">		it should be ignored for this file. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="kc">True</span></div>
+<div class="viewcode-block" id="FileContentsMapper.mapLine"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.FileContentsMapper.mapLine">[docs]</a>	<span class="k">def</span> <span class="nf">mapLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot; Called for every line in the file, returning the original line, a changed line, or None if the line should be deleted. </span>
+<span class="sd">		</span>
+<span class="sd">		@param line: The input line as a byte string.</span>
+<span class="sd">		@return: The line to write to output as a byte string, or None if it should be omitted. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Not implemented yet&#39;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="FileContentsMapper.getHeader"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.FileContentsMapper.getHeader">[docs]</a>	<span class="k">def</span> <span class="nf">getHeader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Called at the start of every file. By default returns None but can return </span>
+<span class="sd">		a string that will be written to the target file before anything else. </span>
+<span class="sd">		Use os.linesep for new lines. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="kc">None</span></div>
+<div class="viewcode-block" id="FileContentsMapper.getFooter"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.FileContentsMapper.getFooter">[docs]</a>	<span class="k">def</span> <span class="nf">getFooter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Called at the end of every file. By default returns None but can return </span>
+<span class="sd">		a string that will be written to the target file after everything else. </span>
+<span class="sd">		Use os.linesep for new lines. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="kc">None</span></div>
+<div class="viewcode-block" id="FileContentsMapper.getDescription"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.FileContentsMapper.getDescription">[docs]</a>	<span class="k">def</span> <span class="nf">getDescription</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot; Returns a string description of the transformation, to be used for up-to-date rebuild checking&quot;&quot;&quot;</span>
+		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Not implemented yet&#39;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="FileContentsMapper.getDependencies"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.FileContentsMapper.getDependencies">[docs]</a>	<span class="k">def</span> <span class="nf">getDependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot; Advanced option for specifying paths that are required to be read by this line mapper, </span>
+<span class="sd">		which therefore should be dependencies of the target that uses it. Returns a list of unresolved paths. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="p">[]</span></div></div>
+
+<div class="viewcode-block" id="OmitLines"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.OmitLines">[docs]</a><span class="k">class</span> <span class="nc">OmitLines</span><span class="p">(</span><span class="n">FileContentsMapper</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Omits lines from the input which contain the specified regular </span>
+<span class="sd">	expression. Use re.escape() on the input if a simple substring match is </span>
+<span class="sd">	required. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>	<span class="bp">self</span><span class="o">.</span><span class="n">match</span> <span class="o">=</span> <span class="n">match</span>
+	<span class="k">def</span> <span class="nf">mapLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span> <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="k">else</span> <span class="n">line</span>
+	<span class="k">def</span> <span class="nf">getDescription</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;OmitLines(&quot;</span><span class="si">%s</span><span class="s1">&quot;)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">match</span></div>
+
+<div class="viewcode-block" id="StringReplaceLineMapper"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.StringReplaceLineMapper">[docs]</a><span class="k">class</span> <span class="nc">StringReplaceLineMapper</span><span class="p">(</span><span class="n">FileContentsMapper</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Performs a simple string replacement for a single key/value.</span>
+<span class="sd">	Any ${...} xpybuild properties in the old and new strings will be expanded. </span>
+
+<span class="sd">	Usually will be created from a dictionary of tokens and replacements by L{createReplaceDictLineMappers}</span>
+<span class="sd">	</span>
+<span class="sd">	@param disablePropertyExpansion: set to True to disable expansion of ${...} properties in the </span>
+<span class="sd">	old and new strings.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">disablePropertyExpansion</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">disablePropertyExpansion</span> <span class="o">=</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">disablePropertyExpansion</span>
+	<span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">disablePropertyExpansion</span><span class="p">:</span> 
+			<span class="bp">self</span><span class="o">.</span><span class="n">old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">old</span><span class="p">),</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">mapLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span> <span class="k">return</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">getDescription</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;StringReplaceLineMapper(&quot;</span><span class="si">%s</span><span class="s1">&quot; -&gt; &quot;</span><span class="si">%s</span><span class="s1">&quot;)&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RegexLineMapper"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.RegexLineMapper">[docs]</a><span class="k">class</span> <span class="nc">RegexLineMapper</span><span class="p">(</span><span class="n">FileContentsMapper</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Performs a regex substitution ; any ${...} xpybuild properties in </span>
+<span class="sd">	the replacement string will be expanded, but not in the regex string. </span>
+<span class="sd">	</span>
+<span class="sd">	Note that files are written in binary mode, so rather than hardcoding </span>
+<span class="sd">	the newline character &quot;\\n&quot;, python&#39;s os.linesep should be used where a platform-neutral newline </span>
+<span class="sd">	is required. </span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex</span><span class="p">,</span> <span class="n">repl</span><span class="p">,</span> <span class="n">disablePropertyExpansion</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> 
+		<span class="bp">self</span><span class="o">.</span><span class="n">regex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">repl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">disablePropertyExpansion</span> <span class="o">=</span> <span class="n">regex</span><span class="p">,</span> <span class="n">repl</span><span class="p">,</span> <span class="n">disablePropertyExpansion</span>
+	<span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">disablePropertyExpansion</span><span class="p">:</span> 
+			<span class="bp">self</span><span class="o">.</span><span class="n">repl</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repl</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;!xpybuildslash!&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;!xpybuildslash!&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">mapLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span> <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">repl</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">getDescription</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;RegexLineMapper(&quot;</span><span class="si">%s</span><span class="s1">&quot; -&gt; &quot;</span><span class="si">%s</span><span class="s1">&quot;)&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">repl</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="InsertFileContentsLineMapper"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.InsertFileContentsLineMapper">[docs]</a><span class="k">class</span> <span class="nc">InsertFileContentsLineMapper</span><span class="p">(</span><span class="n">FileContentsMapper</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Replace instances of the specified token with the entire contents of the specified file.</span>
+<span class="sd">	</span>
+<span class="sd">	filepath must be an absolute path, not a build dir relative path. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replacementToken</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span> 
+		<span class="bp">self</span><span class="o">.</span><span class="n">replacementToken</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">replacementToken</span><span class="p">,</span> <span class="n">filepath</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">baseDir</span> <span class="o">=</span> <span class="n">BuildFileLocation</span><span class="p">()</span><span class="o">.</span><span class="n">buildDir</span>
+	<span class="k">def</span> <span class="nf">mapLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span> 
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">replacementToken</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+			<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="n">defaultDir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">baseDir</span><span class="p">)</span> <span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+				<span class="n">contents</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+			<span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">replacementToken</span><span class="p">,</span> <span class="n">contents</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">line</span>
+	<span class="k">def</span> <span class="nf">getDescription</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;InsertFileContentsLineMapper(&quot;</span><span class="si">%s</span><span class="s1">&quot; -&gt; contents of &quot;</span><span class="si">%s</span><span class="s1">&quot;)&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">replacementToken</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">getDependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="createReplaceDictLineMappers"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.createReplaceDictLineMappers">[docs]</a><span class="k">def</span> <span class="nf">createReplaceDictLineMappers</span><span class="p">(</span><span class="n">replaceDict</span><span class="p">,</span> <span class="n">replaceMarker</span><span class="o">=</span><span class="s1">&#39;@&#39;</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Create a list of line mappers based on the contents of the specified replaceDict, where </span>
+<span class="sd">	values containing ${...} properties will be expanded out. </span>
+
+<span class="sd">	@param replaceDict: The dictionary of keys and values</span>
+
+<span class="sd">	@param replaceMarker: the delimiter for keys (default=@), e.g. @KEY@ will be replaced with VALUE</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="p">[</span><span class="n">StringReplaceLineMapper</span><span class="p">(</span><span class="n">replaceMarker</span><span class="o">+</span><span class="n">k</span><span class="o">+</span><span class="n">replaceMarker</span><span class="p">,</span> <span class="n">replaceDict</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">replaceDict</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="AddFileHeader"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.AddFileHeader">[docs]</a><span class="k">class</span> <span class="nc">AddFileHeader</span><span class="p">(</span><span class="n">FileContentsMapper</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Add the specified string as a header at the </span>
+<span class="sd">	start of the file. Note that if a trailing newline is required before </span>
+<span class="sd">	the rest of the file&#39;s contents it should be included as part of the header. </span>
+
+<span class="sd">	Property substitution will be performed on the specified string. </span>
+
+<span class="sd">	Note that files are written in binary mode, so rather than hardcoding </span>
+<span class="sd">	the newline character &quot;\\n&quot;, python&#39;s os.linesep should be used where a platform-neutral newline </span>
+<span class="sd">	is required. </span>
+
+<span class="sd">	@param disablePropertyExpansion: set to True to disable expansion of ${...} properties in the </span>
+<span class="sd">	old and new strings.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">disablePropertyExpansion</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">disablePropertyExpansion</span> <span class="o">=</span> <span class="n">string</span><span class="p">,</span> <span class="n">disablePropertyExpansion</span>
+	<span class="k">def</span> <span class="nf">mapLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span> <span class="k">return</span> <span class="n">line</span>
+	<span class="k">def</span> <span class="nf">getHeader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">disablePropertyExpansion</span> <span class="k">else</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">getDescription</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;AddFileHeader(&quot;</span><span class="si">%s</span><span class="s1">&quot;)&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getHeader</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">n&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AddFileFooter"><a class="viewcode-back" href="../../../generated/xpybuild.targets.copy.html#xpybuild.targets.copy.AddFileFooter">[docs]</a><span class="k">class</span> <span class="nc">AddFileFooter</span><span class="p">(</span><span class="n">FileContentsMapper</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Add the specified string as a footer at the </span>
+<span class="sd">	end of the file. Note that if a trailing newline is required at the end </span>
+<span class="sd">	of the file it should be included as part of the footer. </span>
+<span class="sd">	</span>
+<span class="sd">	Property substitution will be performed on the specified string. </span>
+<span class="sd">	</span>
+<span class="sd">	Note that files are written in binary mode, so rather than hardcoding </span>
+<span class="sd">	the newline character &quot;\\n&quot;, python&#39;s os.linesep should be used where a platform-neutral newline </span>
+<span class="sd">	is required. </span>
+<span class="sd">	</span>
+<span class="sd">	@param disablePropertyExpansion: set to True to disable expansion of ${...} properties in the </span>
+<span class="sd">	old and new strings.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">disablePropertyExpansion</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">disablePropertyExpansion</span> <span class="o">=</span> <span class="n">string</span><span class="p">,</span> <span class="n">disablePropertyExpansion</span>
+	<span class="k">def</span> <span class="nf">mapLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span> <span class="k">return</span> <span class="n">line</span>
+	<span class="k">def</span> <span class="nf">getFooter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">disablePropertyExpansion</span> <span class="k">else</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">getDescription</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;AddFileFooter(&quot;</span><span class="si">%s</span><span class="s1">&quot;)&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getFooter</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">n&#39;</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

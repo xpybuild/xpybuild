@@ -1,0 +1,410 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.utils.outputhandler &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.utils.outputhandler</h1><div class="highlight"><pre>
+<span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2014 - 2018 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: outputhandler.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1"># Authors: Ben Spiller</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">subprocess</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span>
+
+<span class="c1"># we might want a wrapper that stores all content and writes it to a file for artifact publishing, </span>
+<span class="c1"># perhaps only iff an exception occurs and/or its not empty</span>
+
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;processoutput&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProcessOutputHandler"><a class="viewcode-back" href="../../../generated/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">ProcessOutputHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	An extensible class for handling stdout/stderr output lines and return code </span>
+<span class="sd">	from a process, accumulating error and warnings, and converting into </span>
+<span class="sd">	appropriate log statements and a summary exception if it failed. </span>
+<span class="sd">	</span>
+<span class="sd">	It is expected that subclasses would be created to abtract away handling of </span>
+<span class="sd">	output from different particular types of process (e.g. Java compilation, </span>
+<span class="sd">	gmake, msbuild, etc).</span>
+<span class="sd">	</span>
+<span class="sd">	Usage: the handleLine method will be invoked for every line in the stdout </span>
+<span class="sd">	and stderr, then handleEnd will be called once, with the process returnCode </span>
+<span class="sd">	if known. handleEnd should raise a BuildException if the process is </span>
+<span class="sd">	deemed to have failed. Note that this class deals with unicode character </span>
+<span class="sd">	strings; the caller must decode from the original bytes. </span>
+<span class="sd">	</span>
+<span class="sd">	The errors and warnings lists can be inspected after handleEnd has been </span>
+<span class="sd">	called to get further information if desired. </span>
+<span class="sd">	</span>
+<span class="sd">	Subclasses may often wish to do some of the following:</span>
+<span class="sd">		- override the logic for deciding what consistutes an error/warning </span>
+<span class="sd">			(see _decideLogLevel)</span>
+<span class="sd">		- use a regex to get the filename and number from error messages to </span>
+<span class="sd">			support IDE jump-to integration (see _parseLocationFromLine)</span>
+<span class="sd">		- strip timestamp/threadid prefixes from lines (see _preprocessLine) </span>
+<span class="sd">		- support warnings-as-errors behaviour by putting the first warning into </span>
+<span class="sd">			the final error message if the only error is that there are warnings </span>
+<span class="sd">			(by overriding handleEnd)</span>
+<span class="sd">	</span>
+<span class="sd">	This class is not thread-safe, so locking should be provided by the caller </span>
+<span class="sd">	if multiple threads are in use (e.g. for reading stdout+err in parallel). </span>
+<span class="sd">	</span>
+<span class="sd">	&gt;&gt;&gt; h = ProcessOutputHandler(&#39;myhandler&#39;)</span>
+<span class="sd">	&gt;&gt;&gt; h.handleLine(u&#39;error: My error&#39;)</span>
+<span class="sd">	&gt;&gt;&gt; h.handleLine(u&#39;error: My error 2&#39;)</span>
+<span class="sd">	</span>
+<span class="sd">	&gt;&gt;&gt; len(h.getErrors())</span>
+<span class="sd">	2</span>
+
+<span class="sd">	&gt;&gt;&gt; h.handleEnd(5)</span>
+<span class="sd">	Traceback (most recent call last):</span>
+<span class="sd">	...</span>
+<span class="sd">	xpybuild.utils.buildexceptions.BuildException: 2 errors, first is: error: My error</span>
+
+<span class="sd">	&gt;&gt;&gt; h = ProcessOutputHandler(&#39;myhandler&#39;)</span>
+<span class="sd">	&gt;&gt;&gt; h.handleLine(u&#39;some message&#39;)</span>
+<span class="sd">	&gt;&gt;&gt; h.handleLine(u&#39;later message&#39;)</span>
+<span class="sd">	</span>
+<span class="sd">	&gt;&gt;&gt; h.handleEnd(5)</span>
+<span class="sd">	Traceback (most recent call last):</span>
+<span class="sd">	...</span>
+<span class="sd">	xpybuild.utils.buildexceptions.BuildException: myhandler failed with return code 5; no errors reported, last line was: later message</span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
+	
+<div class="viewcode-block" id="ProcessOutputHandler.Options"><a class="viewcode-back" href="../../../generated/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler.Options">[docs]</a>	<span class="k">class</span> <span class="nc">Options</span><span class="p">:</span> <span class="c1"># may rework how we handle docstrings for options in a future release</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		This class may be renamed or removed, please do not use it directly. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		
+		<span class="n">ignoreReturnCode</span> <span class="o">=</span> <span class="s1">&#39;ProcessOutputHandler.ignoreReturnCode&#39;</span>
+		<span class="sd">&quot;&quot;&quot; If True, non-zero return codes </span>
+<span class="sd">		are not treated as errors. </span>
+<span class="sd">	</span>
+<span class="sd">		&gt;&gt;&gt; h = ProcessOutputHandler.create(&#39;myhandler&#39;, options={ProcessOutputHandler.Options.ignoreReturnCode:True})</span>
+<span class="sd">		&gt;&gt;&gt; h.handleLine(u&#39;some message&#39;)</span>
+<span class="sd">		&gt;&gt;&gt; h.handleEnd(5)</span>
+<span class="sd">	</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		
+		<span class="n">regexIgnore</span> <span class="o">=</span> <span class="s1">&#39;ProcessOutputHandler.regexIgnore&#39;</span>
+		<span class="sd">&quot;&quot;&quot; Optional regular expression; any </span>
+<span class="sd">		lines matching this will not be treated as errors, or warnings, or logged. </span>
+<span class="sd">	</span>
+<span class="sd">		&gt;&gt;&gt; h = ProcessOutputHandler.create(&#39;myhandler&#39;, options={ProcessOutputHandler.Options.regexIgnore:&#39;(.*ignorable.*|foobar)&#39;})</span>
+<span class="sd">		&gt;&gt;&gt; h.handleLine(u&#39;error: an ignorable error&#39;)</span>
+<span class="sd">		&gt;&gt;&gt; h.handleLine(u&#39;error: another error&#39;)</span>
+<span class="sd">		&gt;&gt;&gt; h.handleLine(u&#39;warning: an ignorable warning&#39;)</span>
+<span class="sd">		&gt;&gt;&gt; h.handleLine(u&#39;warning: another warning&#39;)</span>
+<span class="sd">		&gt;&gt;&gt; h.handleLine(u&#39;warning: another other warning&#39;)</span>
+<span class="sd">		&gt;&gt;&gt; len(h.getErrors())</span>
+<span class="sd">		1</span>
+<span class="sd">	</span>
+<span class="sd">		&gt;&gt;&gt; len(h.getWarnings())</span>
+<span class="sd">		2</span>
+<span class="sd">	</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+	
+		<span class="n">factory</span> <span class="o">=</span> <span class="s1">&#39;ProcessOutputHandler.factory&#39;</span>
+		<span class="sd">&quot;&quot;&quot; The ProcessOutputHandler class or subclass </span>
+<span class="sd">		that will be instantiated; must have a constructor with the same signature </span>
+<span class="sd">		as the ProcessOutputHandler constructor. This option exists to allow </span>
+<span class="sd">		per-target customizations; it is not recommended to set a global factory </span>
+<span class="sd">		override that applies to all targets, as such a generic output handler would </span>
+<span class="sd">		replace more specific output handlers that are needed for some targets. </span>
+<span class="sd">		See L{ProcessOutputHandler.create}. </span>
+<span class="sd">		&quot;&quot;&quot;</span></div>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">		The constructor for this object. Subclasses that override this should </span>
+<span class="sd">		always pass **kwargs down to the super constructor to allow for new </span>
+<span class="sd">		functionality to be added</span>
+<span class="sd">		</span>
+<span class="sd">		@param name: a short display name for this process or target, used as a </span>
+<span class="sd">		prefix for log lines. </span>
+<span class="sd">		</span>
+<span class="sd">		@param treatStdErrAsErrors: controls where all content on stderr </span>
+<span class="sd">		(rather than stdout) is treated as an error by default. The correct </span>
+<span class="sd">		setting depends on how the process being invoked uses stdout/err. </span>
+<span class="sd">		</span>
+<span class="sd">		@keyword options: a dictionary of resolved option values, in case aspects </span>
+<span class="sd">		of this handler are customizable. Available to implementations as </span>
+<span class="sd">		self.options (if None is passed, self.options will be an empty </span>
+<span class="sd">		dictionary)</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_errors</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_warnings</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_lastLine</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+		
+		<span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">_logger</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;options&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_treatStdErrAsErrors</span> <span class="o">=</span> <span class="n">treatStdErrAsErrors</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_ignoreReturnCode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">ignoreReturnCode</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_regexIgnore</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">regexIgnore</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regexIgnore</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regexIgnore</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_regexIgnore</span><span class="p">)</span>
+		<span class="k">assert</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">,</span> <span class="s1">&#39;Unexpected keyword argument to ProcessOutputHandler: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+	
+<div class="viewcode-block" id="ProcessOutputHandler.create"><a class="viewcode-back" href="../../../generated/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler.create">[docs]</a>	<span class="nd">@staticmethod</span>
+	<span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Create a new ProcessOutputHandler using the specified target options. </span>
+<span class="sd">		</span>
+<span class="sd">		This is preferred over calling the ProcessOutputHandler constructor as </span>
+<span class="sd">		it permits overriding the ProcessOutputHandler subclass using the </span>
+<span class="sd">		L{ProcessOutputHandler.Options.factory} option. </span>
+
+<span class="sd">		&gt;&gt;&gt; type(ProcessOutputHandler.create(&#39;mine&#39;)).__name__</span>
+<span class="sd">		&#39;ProcessOutputHandler&#39;</span>
+<span class="sd">	</span>
+<span class="sd">		&gt;&gt;&gt; def myfactory(*args, **kwargs): print(&#39;called factory %s, kwarg keys: %s&#39;%(args, list(kwargs.keys())))</span>
+<span class="sd">		&gt;&gt;&gt; ProcessOutputHandler.create(&#39;mine&#39;, options={ProcessOutputHandler.Options.factory: myfactory})</span>
+<span class="sd">		called factory (&#39;mine&#39;,), kwarg keys: [&#39;options&#39;]</span>
+<span class="sd">		</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">factory</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+			<span class="bp">cls</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">factory</span><span class="p">]</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="bp">cls</span> <span class="o">=</span> <span class="n">ProcessOutputHandler</span>
+		<span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+	
+<div class="viewcode-block" id="ProcessOutputHandler.handleLine"><a class="viewcode-back" href="../../../generated/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler.handleLine">[docs]</a>	<span class="k">def</span> <span class="nf">handleLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Called once for every line in the stdout and stderr </span>
+<span class="sd">		(stderr after, if not during stdout). </span>
+<span class="sd">		</span>
+<span class="sd">		Line must be a unicode str (not bytes). </span>
+<span class="sd">		</span>
+<span class="sd">		The default implementation uses _decideLogLevel to decide how to </span>
+<span class="sd">		interpret each line, then calls _preprocessLine and _parseLocationFromLine </span>
+<span class="sd">		on the line before stashing errors/warnings, and passing the </span>
+<span class="sd">		pre-processed line to _log for logging at the specified level. </span>
+<span class="sd">		</span>
+<span class="sd">		@param isstderr: if stdout/err are segregated then this can be used as a </span>
+<span class="sd">		hint to indicate the source of the line. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_lastLine</span> <span class="o">=</span> <span class="n">line</span> <span class="c1"># in case it helps us give an error message</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regexIgnore</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regexIgnore</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">):</span> <span class="k">return</span>
+		
+		<span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decideLogLevel</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="p">)</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">level</span><span class="p">:</span> <span class="k">return</span>
+		
+		<span class="k">if</span> <span class="n">level</span> <span class="o">&gt;=</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
+			<span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessLine</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">filename</span><span class="p">,</span> <span class="n">fileline</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parseLocationFromLine</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+			<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+				<span class="n">filename</span><span class="p">,</span> <span class="n">fileline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parseLocationFromLine</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="c1"># old form, for backwards compat</span>
+				<span class="n">col</span> <span class="o">=</span> <span class="kc">None</span>
+			
+			<span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+			<span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_warnings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">fileline</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span></div>
+	
+	<span class="k">def</span> <span class="nf">handleEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">returnCode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_warnings</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> warnings during </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_warnings</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
+			
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">:</span> 
+			<span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+				<span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> errors, first is: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">),</span> <span class="n">msg</span><span class="p">)</span>
+		<span class="k">elif</span> <span class="n">returnCode</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ignoreReturnCode</span><span class="p">:</span>
+			<span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> failed with return code </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">returnCode</span><span class="p">)</span>
+			<span class="c1"># in case it&#39;s relevant, since the return code doesn&#39;t provide much to go on</span>
+			<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_warnings</span><span class="p">:</span> 
+				<span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;; no errors reported, first warning was: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">_warnings</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+			<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">getLastOutputLine</span><span class="p">():</span>
+				<span class="c1"># last-ditch attempt to be useful</span>
+				<span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;; no errors reported, last line was: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">getLastOutputLine</span><span class="p">()</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39; and no output generated&#39;</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">return</span>
+		<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">_decideLogLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Used by the default handleLine implementation to </span>
+<span class="sd">		decide whether the specified (raw, not yet pre-processed) line is a </span>
+<span class="sd">		warning, an error, or else whether it should be logged at INFO/DEBUG </span>
+<span class="sd">		or not at all. Called exactly once per line. </span>
+<span class="sd">		</span>
+<span class="sd">		The default implementation uses &quot;error[\s]*([A-Z]\d+)?:&quot; to check for </span>
+<span class="sd">		errors (similarly for warnings), and logs everything else only at INFO, </span>
+<span class="sd">		and also treats all stderr output as error lines. </span>
+<span class="sd">		</span>
+<span class="sd">		Typically returns logging.ERROR, logging.WARNING, logging.DEBUG/INFO or </span>
+<span class="sd">		None. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		
+		<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s1">&#39;ProcessOutputHandler does not accept bytes - caller must decode bytes to a character str (e.g. l.decode(getStdoutEncoding()))&#39;</span>
+		
+		<span class="k">if</span> <span class="p">(</span><span class="n">isstderr</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_treatStdErrAsErrors</span><span class="p">)</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;error[\s]*([A-Z]+\d+)?:&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">):</span> <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span>
+		<span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;warning[\s]*([A-Z]+\d+)?:&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">):</span> <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span>
+		<span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span> <span class="c1"># default log level</span>
+	
+	<span class="k">def</span> <span class="nf">_parseLocationFromLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Return (filename, linenumber, col, line)</span>
+<span class="sd">		</span>
+<span class="sd">		For backwards compat, returning (filename,location) is also permitted</span>
+<span class="sd">		</span>
+<span class="sd">		The returned line may be identical to the input, or may have the filename stripped off.</span>
+<span class="sd">		</span>
+<span class="sd">		linenumber is a string and may be a simple line number or may be a &quot;lineno,col&quot; string. </span>
+<span class="sd">		</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="n">line</span>
+	
+	<span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fileline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filecol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Writes the specified msg to the logger. </span>
+<span class="sd">		</span>
+<span class="sd">		If filename and fileline are specified, they are passed to the logrecord, </span>
+<span class="sd">		which allows output formatting customizations. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+			<span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ERROR&gt; </span><span class="si">%s</span><span class="s1">&#39;</span>
+		<span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span>
+			<span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> WARN&gt; </span><span class="si">%s</span><span class="s1">&#39;</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&gt; </span><span class="si">%s</span><span class="s1">&#39;</span>
+		<span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">makeRecord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">fileline</span><span class="p">,</span> 
+			<span class="n">pattern</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">msg</span><span class="p">),</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
+		<span class="c1"># overriding python&#39;s filename/line as above is a bit dodgy and doesn&#39;t support columns either, </span>
+		<span class="c1"># so as first choice set some xpybuild-specific attributes onto the LogRecord</span>
+		<span class="k">if</span> <span class="n">filename</span><span class="p">:</span> 
+			<span class="n">r</span><span class="o">.</span><span class="n">xpybuild_filename</span> <span class="o">=</span> <span class="n">filename</span>
+			<span class="k">if</span> <span class="n">fileline</span><span class="p">:</span>
+				<span class="n">r</span><span class="o">.</span><span class="n">xpybuild_line</span> <span class="o">=</span> <span class="n">fileline</span>
+			<span class="k">if</span> <span class="n">filecol</span><span class="p">:</span>
+				<span class="n">r</span><span class="o">.</span><span class="n">xpybuild_col</span> <span class="o">=</span> <span class="n">filecol</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">_preprocessLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">		Performs any necessary transformations on the line before it is </span>
+<span class="sd">		logged or stored. By default it strips() whitespace. </span>
+<span class="sd">		</span>
+<span class="sd">		This can be overridden to add support for stripping </span>
+<span class="sd">		timestamps, thread ids, unwanted indentation, etc. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+	
+	<span class="k">def</span> <span class="nf">getErrors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span>
+	<span class="k">def</span> <span class="nf">getWarnings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_warnings</span>
+	<span class="k">def</span> <span class="nf">getLastOutputLine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessLine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lastLine</span><span class="p">)</span></div>
+	
+<div class="viewcode-block" id="StdoutRedirector"><a class="viewcode-back" href="../../../generated/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.StdoutRedirector">[docs]</a><span class="k">class</span> <span class="nc">StdoutRedirector</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Redirects stdout to a file verbatim and reports errors on stderr &quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">		fd is a binary-mode writable file descriptor &quot;&quot;&quot;</span>
+		<span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">fd</span> <span class="o">=</span> <span class="n">fd</span>
+	
+	<span class="k">def</span> <span class="nf">handleLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+		<span class="k">if</span> <span class="n">isstderr</span><span class="p">:</span>
+			<span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">handleLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="n">line</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">))</span>
+	
+	<span class="k">def</span> <span class="nf">handleEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">returnCode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">handleEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">returnCode</span><span class="p">)</span></div>
+
+<span class="n">defineOption</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">ignoreReturnCode</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">regexIgnore</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="n">ProcessOutputHandler</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

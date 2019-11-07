@@ -1,0 +1,42 @@
+xpybuild.targets.custom
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.targets.custom
+
+.. currentmodule:: xpybuild.targets.custom
+
+
+
+Custom
+======
+
+.. autoclass:: Custom
+  :members:
+
+
+CustomCommand
+=============
+
+.. autoclass:: CustomCommand
+  :members:
+
+
+CustomCommandWithCopy
+=====================
+
+.. autoclass:: CustomCommandWithCopy
+  :members:
+
+
+ResolvePath
+===========
+
+.. autoclass:: ResolvePath
+  :members:
+
+
+
+
+
+
+

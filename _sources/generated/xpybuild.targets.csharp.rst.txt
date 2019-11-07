@@ -1,0 +1,28 @@
+xpybuild.targets.csharp
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.targets.csharp
+
+.. currentmodule:: xpybuild.targets.csharp
+
+
+
+CSCProcessOutputHandler
+=======================
+
+.. autoclass:: CSCProcessOutputHandler
+  :members:
+
+
+CSharp
+======
+
+.. autoclass:: CSharp
+  :members:
+
+
+
+
+
+
+

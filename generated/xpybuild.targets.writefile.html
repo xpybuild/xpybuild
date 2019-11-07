@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.targets.writefile &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.targets.csharp" href="xpybuild.targets.csharp.html" />
+    <link rel="prev" title="xpybuild.targets.archive" href="xpybuild.targets.archive.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.csharp.html" title="xpybuild.targets.csharp"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.archive.html" title="xpybuild.targets.archive"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Module list</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-xpybuild.targets.writefile">
+<span id="xpybuild-targets-writefile"></span><h1>xpybuild.targets.writefile<a class="headerlink" href="#module-xpybuild.targets.writefile" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="touch">
+<h2>Touch<a class="headerlink" href="#touch" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.writefile.Touch">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.writefile.</code><code class="sig-name descname">Touch</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/writefile.html#Touch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.writefile.Touch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
+<p>Target that creates an empty file.</p>
+<p>name: the output filename</p>
+</dd></dl>
+
+</div>
+<div class="section" id="writefile">
+<h2>WriteFile<a class="headerlink" href="#writefile" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.writefile.WriteFile">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.writefile.</code><code class="sig-name descname">WriteFile</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">getContents</em>, <em class="sig-param">dependencies=None</em>, <em class="sig-param">mode=None</em>, <em class="sig-param">executable=False</em>, <em class="sig-param">encoding=None</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/writefile.html#WriteFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.writefile.WriteFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
+<p>Target for writing out a text or binary file with hardcoded contents.</p>
+<p>The file will only be updated if its contents have changed.</p>
+<p>Constructor.</p>
+<p>Example usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WriteFile</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{OUTPUT_DIR}</span><span class="s1">/foo.txt&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">context</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;Foo:&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{FOO}</span><span class="s1">&#39;</span><span class="p">)]))</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – the output filename</p></li>
+<li><p><strong>getContents</strong> – a unicode character string (which will be subject to expansion), 
+or binary bytes, or a function that accepts a context as input 
+followed optionally by any specified ‘args’) and returns 
+the string/bytes that should be written to the file, using n for newlines 
+(not os.linesep - any occurrences of the newline character n in 
+the provided string will be replaced automatically with the 
+OS-specific line separator unless bytes are provided).</p></li>
+</ul>
+</dd>
+</dl>
+<p>The function will be evaluated during the dependency resolution 
+phase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> – unix permissions to set with chmod on the destination files. 
+If not specified, default mode is used. 
+Ignored on Windows platforms.</p></li>
+<li><p><strong>executable</strong> – set to True to add Unix executable permissions (simpler 
+alternative to setting using mode)</p></li>
+<li><p><strong>encoding</strong> – The encoding to use for converting the str to bytes; 
+if not specified the <code class="xref py py-obj docutils literal notranslate"><span class="pre">common.fileEncodingDecider</span></code> option is used.</p></li>
+<li><p><strong>args</strong> – optional tuple containing arguments that should be passed to 
+the getContents function, after the context argument (first arg)</p></li>
+<li><p><strong>kwargs</strong> – optional dictionary containing kwargs that should be passed 
+to the getContents function.</p></li>
+<li><p><strong>dependencies</strong> – any targets which need to be built in order to run this
+target</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="xpybuild.targets.writefile.WriteFile.getHashableImplicitInputs">
+<code class="sig-name descname">getHashableImplicitInputs</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/writefile.html#WriteFile.getHashableImplicitInputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.writefile.WriteFile.getHashableImplicitInputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>The literal content text is considered the dependency of this target</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">xpybuild.targets.writefile</a><ul>
+<li><a class="reference internal" href="#touch">Touch</a></li>
+<li><a class="reference internal" href="#writefile">WriteFile</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="xpybuild.targets.archive.html"
+                        title="previous chapter">xpybuild.targets.archive</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="xpybuild.targets.csharp.html"
+                        title="next chapter">xpybuild.targets.csharp</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/generated/xpybuild.targets.writefile.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.csharp.html" title="xpybuild.targets.csharp"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.archive.html" title="xpybuild.targets.archive"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Module list</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

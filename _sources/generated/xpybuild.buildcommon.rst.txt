@@ -1,0 +1,82 @@
+xpybuild.buildcommon
+~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.buildcommon
+
+.. currentmodule:: xpybuild.buildcommon
+
+
+
+FilenameStringFormatter
+=======================
+
+.. autoclass:: FilenameStringFormatter
+  :members:
+
+
+StringFormatter
+===============
+
+.. autoclass:: StringFormatter
+  :members:
+
+
+
+
+
+
+
+
+.. autosummary::
+    :toctree: generated
+
+
+
+defineAtomicTargetGroup
+=======================
+.. autofunction:: defineAtomicTargetGroup
+
+
+
+enableLegacyXpybuildModuleNames
+===============================
+.. autofunction:: enableLegacyXpybuildModuleNames
+
+
+
+getStdoutEncoding
+=================
+.. autofunction:: getStdoutEncoding
+
+
+
+include
+=======
+.. autofunction:: include
+
+
+
+isWindows
+=========
+.. autofunction:: isWindows
+
+
+
+normpath
+========
+.. autofunction:: normpath
+
+
+
+registerPreBuildCheck
+=====================
+.. autofunction:: registerPreBuildCheck
+
+
+
+requireXpyBuildVersion
+======================
+.. autofunction:: requireXpyBuildVersion
+
+
+

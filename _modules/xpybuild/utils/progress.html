@@ -1,0 +1,389 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.utils.progress &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.utils.progress</h1><div class="highlight"><pre>
+<span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
+<span class="c1">#</span>
+<span class="c1"># logging handler that logs progress messages as a progress bar</span>
+<span class="c1"># </span>
+<span class="c1"># Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: progress.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<span class="c1"># ##teamcity[progressMessage &#39;(%d/%d) %s&#39;]</span>
+
+<span class="kn">import</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Lock</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.utils.consoleformatter</span> <span class="k">import</span> <span class="n">registerConsoleFormatter</span><span class="p">,</span> <span class="n">ConsoleFormatter</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.terminal</span> <span class="k">import</span> <span class="n">getTerminalSize</span>
+
+<div class="viewcode-block" id="ProgressBarConsoleFormatter"><a class="viewcode-back" href="../../../generated/xpybuild.utils.progress.html#xpybuild.utils.progress.ProgressBarConsoleFormatter">[docs]</a><span class="k">class</span> <span class="nc">ProgressBarConsoleFormatter</span><span class="p">(</span><span class="n">ConsoleFormatter</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	An alternative log handler that outputs as a non-coloured progress bar </span>
+<span class="sd">	for systems without cursor movement support (e.g. Windows). </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span>
+	<span class="n">progress</span> <span class="o">=</span> <span class="kc">False</span>
+	<span class="n">width</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">mutex</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+	<span class="n">spinning</span> <span class="o">=</span> <span class="kc">False</span>
+	<span class="n">spinner</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
+	<span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="n">timethreshold</span> <span class="o">=</span> <span class="mi">0</span>
+
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">buildOptions</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="n">ConsoleFormatter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">buildOptions</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		
+		<span class="bp">self</span><span class="o">.</span><span class="n">bufferingDisabled</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># buffering isn&#39;t helpful in progress mode</span>
+		<span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span> <span class="o">=</span> <span class="n">getTerminalSize</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="s2">&quot;Progress: [] (xxx/xxx)  &quot;</span><span class="p">)</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">timethreshold</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;XPYBUILD_PROGRESS_RATE&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+		<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+			<span class="k">pass</span>
+
+	<span class="k">def</span> <span class="nf">getSymbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;OK&quot;</span><span class="p">:</span> <span class="k">return</span> <span class="s2">&quot;=&quot;</span>
+		<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;WARN&quot;</span><span class="p">:</span> <span class="k">return</span> <span class="s2">&quot;#&quot;</span>
+		<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">:</span> <span class="k">return</span> <span class="s2">&quot;!&quot;</span>
+
+	<span class="k">def</span> <span class="nf">occupied</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
+		<span class="k">return</span> <span class="p">(</span><span class="n">current</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span> <span class="o">//</span> <span class="n">total</span>
+
+	<span class="k">def</span> <span class="nf">unoccupied</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="p">(</span><span class="n">current</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span> <span class="o">//</span> <span class="n">total</span>
+
+	<span class="k">def</span> <span class="nf">getNextSpinner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span>
+		<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span>
+		<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span>
+		<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">==</span> <span class="s1">&#39;|&#39;</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinner</span>		
+
+	<span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutex</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARN</span><span class="p">:</span>
+				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;OK&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;WARN&quot;</span>
+			<span class="k">elif</span> <span class="n">record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span>
+			<span class="k">elif</span> <span class="n">record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">* *([0-9]+)/ *([0-9]+) &quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()):</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="kc">True</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">timethreshold</span><span class="p">:</span> <span class="k">return</span>
+				
+					<span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">* *([0-9]+)/ *([0-9]+) &quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">())</span>
+				
+					<span class="n">current</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+					<span class="n">total</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Progress: [&quot;</span><span class="p">)</span>
+					<span class="n">symbol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSymbol</span><span class="p">()</span>
+					<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">occupied</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">total</span><span class="p">)):</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+					<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unoccupied</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">total</span><span class="p">)):</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;] (</span><span class="si">%3d</span><span class="s1">/</span><span class="si">%3d</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">total</span><span class="p">))</span>
+					<span class="k">if</span> <span class="n">current</span> <span class="o">==</span> <span class="n">total</span><span class="p">:</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="kc">False</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">spinning</span> <span class="o">=</span> <span class="kc">False</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+				<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># should not happen</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()))</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+			<span class="k">elif</span> <span class="n">record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">* XPYBUILD&quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()):</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="kc">False</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">spinning</span> <span class="o">=</span> <span class="kc">False</span>
+				<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">l</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+					<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">+</span><span class="mi">23</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)):</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+			<span class="k">elif</span> <span class="n">record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">*&quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()):</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">spinning</span> <span class="o">=</span> <span class="kc">True</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">timethreshold</span><span class="p">:</span> <span class="k">return</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Progress: [&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">getNextSpinner</span><span class="p">()</span><span class="o">+</span><span class="s2">&quot;]&quot;</span><span class="p">)</span>
+					<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot; (xxx/xxx)&quot;</span><span class="p">)):</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+				<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># should not happen</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinning</span><span class="p">:</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+					<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">+</span><span class="mi">23</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">())):</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="VT100ProgressBarConsoleFormatter"><a class="viewcode-back" href="../../../generated/xpybuild.utils.progress.html#xpybuild.utils.progress.VT100ProgressBarConsoleFormatter">[docs]</a><span class="k">class</span> <span class="nc">VT100ProgressBarConsoleFormatter</span><span class="p">(</span><span class="n">ConsoleFormatter</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	An alternative log handler that outputs as a coloured progress bar</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">output</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span>
+	<span class="n">progress</span> <span class="o">=</span> <span class="kc">False</span>
+	<span class="n">width</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">fullwidth</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">mutex</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+	<span class="n">spinning</span> <span class="o">=</span> <span class="kc">False</span>
+	<span class="n">spinner</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
+	<span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="n">timethreshold</span> <span class="o">=</span> <span class="mi">0</span>
+
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">buildOptions</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		
+		<span class="n">ConsoleFormatter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">buildOptions</span><span class="o">=</span><span class="n">buildOptions</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		
+		<span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">bufferingDisabled</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># buffering isn&#39;t helpful in progress mode</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">workers</span> <span class="o">=</span> <span class="n">buildOptions</span><span class="p">[</span><span class="s1">&#39;workers&#39;</span><span class="p">]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">saveCursor</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">clearLine</span><span class="p">()</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Progress B-</span><span class="si">%02d</span><span class="s1">: [</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cursorUp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+		<span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullwidth</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span> <span class="o">=</span> <span class="n">getTerminalSize</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fullwidth</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="s2">&quot;Progress B-00: [] (xxx/xxx)  &quot;</span><span class="p">)</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">timethreshold</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;XPYBUILD_PROGRESS_RATE&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+		<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+			<span class="k">pass</span>
+
+	<span class="k">def</span> <span class="nf">getNoColour</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[0m&#39;</span>
+	<span class="k">def</span> <span class="nf">getColour</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;OK&quot;</span><span class="p">:</span>
+			<span class="k">return</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[1;32m&#39;</span> <span class="c1"># green</span>
+		<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;WARN&quot;</span><span class="p">:</span>
+			<span class="k">return</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[1;33m&#39;</span> <span class="c1"># yellow</span>
+		<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">:</span>
+			<span class="k">return</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[1;31m&#39;</span> <span class="c1"># red</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNoColour</span><span class="p">()</span>
+	<span class="k">def</span> <span class="nf">getSymbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;OK&quot;</span><span class="p">:</span> <span class="k">return</span> <span class="s2">&quot;=&quot;</span>
+		<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;WARN&quot;</span><span class="p">:</span> <span class="k">return</span> <span class="s2">&quot;#&quot;</span>
+		<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">:</span> <span class="k">return</span> <span class="s2">&quot;!&quot;</span>
+
+	<span class="k">def</span> <span class="nf">occupied</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
+		<span class="k">return</span> <span class="p">(</span><span class="n">current</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span> <span class="o">//</span> <span class="n">total</span>
+	<span class="k">def</span> <span class="nf">unoccupied</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="p">(</span><span class="n">current</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span> <span class="o">//</span> <span class="n">total</span>
+
+	<span class="k">def</span> <span class="nf">getNextSpinner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span>
+		<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span>
+		<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span>
+		<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">==</span> <span class="s1">&#39;|&#39;</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinner</span>		
+
+	<span class="k">def</span> <span class="nf">saveCursor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[s&quot;</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">restoreCursor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[u&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[s&quot;</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">cursorDown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">%d</span><span class="s2">B&quot;</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">cursorUp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">%d</span><span class="s2">A&quot;</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">cursorLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">%d</span><span class="s2">D&quot;</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">cursorRight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">%d</span><span class="s2">C&quot;</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">clearLine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[2K&quot;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutex</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARN</span><span class="p">:</span>
+				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;OK&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;WARN&quot;</span>
+			<span class="k">elif</span> <span class="n">record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span>
+			<span class="k">elif</span> <span class="n">record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">* *([0-9]+)/ *([0-9]+) &quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()):</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="kc">True</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">* *([0-9]+)/ *([0-9]+) &quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">())</span>
+					<span class="n">current</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+					<span class="n">total</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+					<span class="k">try</span><span class="p">:</span> 
+						<span class="n">line</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">threadName</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+					<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+						<span class="n">line</span> <span class="o">=</span> <span class="mi">0</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">cursorDown</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">cursorLeft</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullwidth</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">clearLine</span><span class="p">()</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Progress </span><span class="si">%s</span><span class="s2">: [</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">threadName</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getColour</span><span class="p">()))</span>
+					<span class="n">msg</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span>
+					<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">:</span> <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">]</span>
+					<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">:</span> <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="o">+</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;-&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="p">))])</span>
+					<span class="n">cutoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">occupied</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span><span class="p">[:</span><span class="n">cutoff</span><span class="p">])</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getNoColour</span><span class="p">())</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span><span class="p">[</span><span class="n">cutoff</span><span class="p">:])</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getNoColour</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;] (</span><span class="si">%3d</span><span class="s1">/</span><span class="si">%3d</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">total</span><span class="p">))</span>
+					<span class="k">if</span> <span class="n">current</span> <span class="o">==</span> <span class="n">total</span><span class="p">:</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="kc">False</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">spinning</span> <span class="o">=</span> <span class="kc">False</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+				<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># should not happen</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">cursorUp</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+			<span class="k">elif</span> <span class="n">record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">* XPYBUILD&quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()):</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="kc">False</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">spinning</span> <span class="o">=</span> <span class="kc">False</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">cursorDown</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="p">)</span>
+				<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">l</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+					<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">+</span><span class="mi">23</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)):</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+			<span class="k">elif</span> <span class="n">record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">*</span><span class="se">\\</span><span class="s2">*&quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()):</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">spinning</span> <span class="o">=</span> <span class="kc">True</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="k">try</span><span class="p">:</span> 
+						<span class="n">line</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">threadName</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+					<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+						<span class="n">line</span> <span class="o">=</span> <span class="mi">0</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">cursorDown</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">cursorLeft</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullwidth</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">clearLine</span><span class="p">()</span>
+					<span class="n">msg</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span>
+					<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">:</span> <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">]</span>
+					<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">:</span> <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="o">+</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot; &quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="p">))])</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Progress </span><span class="si">%s</span><span class="s2">: [</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">threadName</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">cursorUp</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+				<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinning</span><span class="p">:</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+					<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">+</span><span class="mi">23</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">())):</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+				<span class="k">elif</span> <span class="s1">&#39;done in&#39;</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">():</span>
+					<span class="k">try</span><span class="p">:</span> 
+						<span class="n">line</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">threadName</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+					<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+						<span class="n">line</span> <span class="o">=</span> <span class="mi">0</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">cursorDown</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">cursorLeft</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullwidth</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">clearLine</span><span class="p">()</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Progress </span><span class="si">%s</span><span class="s2">: [&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">threadName</span><span class="p">))</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">cursorUp</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+<span class="k">if</span> <span class="n">IS_WINDOWS</span><span class="p">:</span>
+	<span class="n">registerConsoleFormatter</span><span class="p">(</span><span class="s2">&quot;progress&quot;</span><span class="p">,</span> <span class="n">ProgressBarConsoleFormatter</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+	<span class="n">registerConsoleFormatter</span><span class="p">(</span><span class="s2">&quot;progress&quot;</span><span class="p">,</span> <span class="n">VT100ProgressBarConsoleFormatter</span><span class="p">)</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

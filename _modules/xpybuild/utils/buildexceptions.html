@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.utils.buildexceptions &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.utils.buildexceptions</h1><div class="highlight"><pre>
+<span></span><span class="c1"># exceptions - Holds the main exception(s) used by build targets</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: buildexceptions.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">traceback</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="k">import</span> <span class="n">BuildFileLocation</span>
+
+
+<div class="viewcode-block" id="BuildException"><a class="viewcode-back" href="../../../generated/xpybuild.utils.buildexceptions.html#xpybuild.utils.buildexceptions.BuildException">[docs]</a><span class="k">class</span> <span class="nc">BuildException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; A BuildException represents an error caused by an incorrect build or a runtime build problem. i.e. anything </span>
+<span class="sd">	that isn&#39;t an internal xpybuild error. </span>
+<span class="sd">	</span>
+<span class="sd">	Typically a BuildException will not result in a python stack trace being </span>
+<span class="sd">	printed whereas other exception types will, so only raise one if you&#39;re </span>
+<span class="sd">	sure the message includes all required diagnostic information already. </span>
+<span class="sd">	</span>
+<span class="sd">	&quot;&quot;&quot;</span> 
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">		BuildExceptions thrown during loading of the build config files will include the build file location </span>
+<span class="sd">		(from their call stack) in the message. BuildExceptions thrown during operations on a target </span>
+<span class="sd">		(dep resolution, execution, cleaning) will have information about that target added by xpybuild </span>
+<span class="sd">		when it is logged, so there is usually no reason to explicitly add the target name into the message. </span>
+<span class="sd">		</span>
+<span class="sd">		To avoid losing essential diagnostic information, do not catch arbitrary </span>
+<span class="sd">		non-BuildException classes and wrap in a BuildException. </span>
+<span class="sd">		</span>
+<span class="sd">		The location can optionally be specified explicitly (e.g. for pathsets with delayed evaluation). </span>
+<span class="sd">	</span>
+<span class="sd">		@param message: the error cause (does not need to include the target name)</span>
+<span class="sd">		</span>
+<span class="sd">		@param location: usually None, or else a BuildFileLocation object for the source line that caused the problem. </span>
+<span class="sd">		This is useful if the build file location associated with the exception is </span>
+<span class="sd">		something other than a target, e.g. a PathSet. </span>
+<span class="sd">		</span>
+<span class="sd">		@param causedBy: if True, takes the exception currently on the stack as the caused of this exception, and </span>
+<span class="sd">		adds it to the build exception message. If the cause is not a BuildException, then its stack </span>
+<span class="sd">		trace will be captured if this is True. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">assert</span> <span class="n">message</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__msg</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+		
+		<span class="k">if</span> <span class="n">causedBy</span><span class="p">:</span>
+			<span class="n">causedBy</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+			<span class="n">causedByExc</span> <span class="o">=</span> <span class="n">causedBy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+			
+			<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">causedByExc</span><span class="p">,</span> <span class="n">BuildException</span><span class="p">):</span>
+				<span class="n">causedByMsg</span> <span class="o">=</span> <span class="n">causedByExc</span><span class="o">.</span><span class="n">__msg</span>
+				<span class="k">if</span> <span class="ow">not</span> <span class="n">location</span><span class="p">:</span> <span class="n">location</span> <span class="o">=</span> <span class="n">causedByExc</span><span class="o">.</span><span class="n">__location</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">__causedByTraceback</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># tracebacks not needed for BuildException, by definition</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">causedByMsg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">causedByExc</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">__causedByTraceback</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="o">*</span><span class="n">causedBy</span><span class="p">))</span>
+				
+			<span class="k">if</span> <span class="p">(</span><span class="n">causedByMsg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__msg</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">__msg</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">causedByMsg</span><span class="p">)</span>
+			
+		<span class="k">else</span><span class="p">:</span> 
+			<span class="k">assert</span> <span class="n">causedBy</span><span class="o">==</span><span class="kc">False</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">__causedByTraceback</span> <span class="o">=</span> <span class="kc">None</span>
+
+		<span class="c1"># keep things simple by using None instead of an empty BuildFileLocation object</span>
+		<span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">location</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">location</span><span class="o">.</span><span class="n">buildFile</span><span class="p">)</span> <span class="ow">and</span> <span class="n">BuildFileLocation</span><span class="o">.</span><span class="n">_currentBuildFile</span><span class="p">:</span>
+			<span class="c1"># only do this if we&#39;re parsing build files at the moment, otherwise it&#39;s </span>
+			<span class="c1"># more reliable to keep it blank and let the scheduler use the target&#39;s location</span>
+			<span class="n">location</span> <span class="o">=</span> <span class="n">BuildFileLocation</span><span class="p">(</span><span class="n">raiseOnError</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="n">location</span><span class="o">.</span><span class="n">buildFile</span><span class="p">:</span> <span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__location</span> <span class="o">=</span> <span class="n">location</span>
+		
+		<span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__msg</span><span class="p">)</span>
+	
+<div class="viewcode-block" id="BuildException.getLoggerExtraArgDict"><a class="viewcode-back" href="../../../generated/xpybuild.utils.buildexceptions.html#xpybuild.utils.buildexceptions.BuildException.getLoggerExtraArgDict">[docs]</a>	<span class="k">def</span> <span class="nf">getLoggerExtraArgDict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Returns a dict suitable for passing as extra= in a logger call, to set </span>
+<span class="sd">		filename/lineno location information if available. </span>
+<span class="sd">		</span>
+<span class="sd">		@param target: optionally used to find location if not available in this exception</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="p">:</span>
+			<span class="k">return</span> <span class="p">{</span><span class="s1">&#39;xpybuild_filename&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="o">.</span><span class="n">buildFile</span><span class="p">,</span> <span class="s1">&#39;xpybuild_line&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="o">.</span><span class="n">lineNumber</span> <span class="p">}</span>
+		<span class="k">if</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">buildFile</span><span class="p">:</span>
+			<span class="k">return</span> <span class="p">{</span><span class="s1">&#39;xpybuild_filename&#39;</span><span class="p">:</span><span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">buildFile</span><span class="p">,</span> <span class="s1">&#39;xpybuild_line&#39;</span><span class="p">:</span><span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">lineNumber</span> <span class="p">}</span>
+		<span class="k">return</span> <span class="p">{}</span></div>
+	
+	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot; Return the type of the exception and the message on a single line&quot;&quot;&quot;</span>
+		<span class="c1"># don&#39;t know the target, so this isn&#39;t very useful, therefore discourage use by making it look scary</span>
+		<span class="k">return</span> <span class="s1">&#39;BuildException&lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">toSingleLineString</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> 
+	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot; Return the execption message on a single line &quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">toSingleLineString</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BuildException.toSingleLineString"><a class="viewcode-back" href="../../../generated/xpybuild.utils.buildexceptions.html#xpybuild.utils.buildexceptions.BuildException.toSingleLineString">[docs]</a>	<span class="k">def</span> <span class="nf">toSingleLineString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Return the exception message formatted to be a single line.</span>
+
+<span class="sd">		Includes the name of the failed target if called with a target.</span>
+
+<span class="sd">		@param target: The target causing the exception.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="c1"># should be called with a target if possible</span>
+		<span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__msg</span>
+		
+		<span class="c1"># if we have a valid location, always display that (unless it&#39;s already in a nested exception)</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__location</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="p">)</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span> 
+			<span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> : </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+		
+		<span class="c1"># if we have a target, always include it in the error</span>
+		<span class="k">if</span> <span class="n">target</span><span class="p">:</span>
+			<span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> : </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+			
+		<span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="BuildException.toMultiLineString"><a class="viewcode-back" href="../../../generated/xpybuild.utils.buildexceptions.html#xpybuild.utils.buildexceptions.BuildException.toMultiLineString">[docs]</a>	<span class="k">def</span> <span class="nf">toMultiLineString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">includeStack</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Return the exception message, on multiple lines if necessary, possibly including the stack trace.</span>
+
+<span class="sd">		If possible, includes the build file location associated with the </span>
+<span class="sd">		exception or with the failed target.</span>
+
+<span class="sd">		@param target: The target causing the exception.</span>
+<span class="sd">		@param includeStack: If true, also includes the stack trace of the exception.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="c1"># should be called with a target if possible</span>
+		<span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__msg</span>
+		<span class="k">if</span> <span class="n">target</span><span class="p">:</span>
+			<span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> : </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+		
+		<span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__location</span>
+		<span class="k">if</span> <span class="n">target</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="p">:</span> <span class="n">location</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">location</span>
+		<span class="k">if</span> <span class="n">location</span><span class="p">:</span>
+			<span class="n">result</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">location</span><span class="o">.</span><span class="n">getLineString</span><span class="p">()</span>
+			
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__causedByTraceback</span> <span class="ow">and</span> <span class="n">includeStack</span><span class="p">:</span>
+			<span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Caused by:</span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__causedByTraceback</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

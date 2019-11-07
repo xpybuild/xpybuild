@@ -1,0 +1,29 @@
+xpybuild.utils.stringutils
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.utils.stringutils
+
+.. currentmodule:: xpybuild.utils.stringutils
+
+
+
+
+
+
+.. autosummary::
+    :toctree: generated
+
+
+
+compareVersions
+===============
+.. autofunction:: compareVersions
+
+
+
+formatTimePeriod
+================
+.. autofunction:: formatTimePeriod
+
+
+

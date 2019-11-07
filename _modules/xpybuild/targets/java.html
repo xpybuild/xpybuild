@@ -1,0 +1,432 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.targets.java &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.targets.java</h1><div class="highlight"><pre>
+<span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: java.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">shutil</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="k">import</span> <span class="n">BaseTarget</span><span class="p">,</span> <span class="n">targetNameToUniqueId</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">FilteredPathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteDir</span><span class="p">,</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">normLongPath</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.java</span> <span class="k">import</span> <span class="n">jar</span><span class="p">,</span> <span class="n">javac</span><span class="p">,</span> <span class="n">create_manifest</span><span class="p">,</span> <span class="n">javadoc</span><span class="p">,</span> <span class="n">signjar</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">flatten</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="k">import</span> <span class="n">ProcessOutputHandler</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="c1"># Options specific to this target</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;jar.manifest.classpathAppend&#39;</span><span class="p">,</span> <span class="p">[])</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.logs&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{BUILD_WORK_DIR}</span><span class="s1">/javac_logs&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_isJavaFile</span><span class="p">(</span><span class="n">p</span><span class="p">):</span> <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.java&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SignJars"><a class="viewcode-back" href="../../../generated/xpybuild.targets.java.html#xpybuild.targets.java.SignJars">[docs]</a><span class="k">class</span> <span class="nc">SignJars</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Copy jars into a target directory and sign them with the supplied keystore, optionally also updating their manifests</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">jars</span><span class="p">,</span> <span class="n">keystore</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">storepass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">manifestDefaults</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">		@param output: The output directory in which to put the signed jars</span>
+
+<span class="sd">		@param jars: The list (or PathSet) of input jars to copy and sign</span>
+
+<span class="sd">		@param keystore: The path to the keystore</span>
+
+<span class="sd">		@param alias: The alias for the keystore (optional)</span>
+
+<span class="sd">		@param storepass: The password for the store file (optional)</span>
+
+<span class="sd">		@param manifestDefaults: a dictionary of manifest entries to add to the existing manifest.mf file</span>
+<span class="sd">		of each jar before signing.  Entries in this dictionary will be ignored if the same entry</span>
+<span class="sd">		is found in the original manifest.mf file already.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">jars</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">jars</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">keystore</span> <span class="o">=</span> <span class="n">keystore</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">alias</span> <span class="o">=</span> <span class="n">alias</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">storepass</span> <span class="o">=</span> <span class="n">storepass</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">manifestDefaults</span> <span class="o">=</span> <span class="n">manifestDefaults</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">jars</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">keystore</span><span class="p">])</span>
+
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">keystore</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keystore</span><span class="p">)</span>
+		<span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
+
+		<span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">jars</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+			<span class="k">if</span> <span class="s1">&#39;..&#39;</span> <span class="ow">in</span> <span class="n">dest</span><span class="p">:</span>
+					<span class="c1"># to avoid people abusing this to copy files outside the dest directory!</span>
+					<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;This target does not permit destination paths to contain &quot;..&quot; relative path expressions&#39;</span><span class="p">)</span>
+
+			<span class="k">try</span><span class="p">:</span>
+				<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+					<span class="k">with</span> <span class="n">openForWrite</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">dest</span><span class="p">),</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">d</span><span class="p">:</span>
+						<span class="n">d</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+				<span class="n">shutil</span><span class="o">.</span><span class="n">copystat</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">dest</span><span class="p">))</span>
+				
+				<span class="c1"># When we re-jar with the user specified manifest entries, jar will complain</span>
+				<span class="c1"># about duplicate attributes IF the original MANIFEST.MF already has those entries.</span>
+				<span class="c1"># This is happening for latest version of SL where Application-Name, Permission etc</span>
+				<span class="c1"># were already there.</span>
+				<span class="c1">#</span>
+				<span class="c1"># The block of code below will first extract the original MANIFEST.MF from the source</span>
+				<span class="c1"># jar file, read all manifest entry to a list.  When constructing the new manifest entries,</span>
+				<span class="c1"># make sure the old MANIFEST.MF doesn&#39;t have that entry before putting the new manifest entry</span>
+				<span class="c1"># to the list.  This will avoid the duplicate attribute error.</span>
+				<span class="c1">#  </span>
+			
+				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">manifestDefaults</span><span class="p">:</span>
+					
+					<span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+					
+					<span class="c1"># read each line of MANIFEST.MF of the original jar and put them in lines</span>
+					<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zf</span><span class="p">:</span>
+						<span class="n">lst</span> <span class="o">=</span> <span class="n">zf</span><span class="o">.</span><span class="n">infolist</span><span class="p">()</span>
+						<span class="k">for</span> <span class="n">zi</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+							<span class="n">fn</span> <span class="o">=</span> <span class="n">zi</span><span class="o">.</span><span class="n">filename</span>
+							<span class="k">if</span> <span class="n">fn</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;manifest.mf&#39;</span><span class="p">):</span>
+								<span class="k">try</span><span class="p">:</span>
+									<span class="n">manifest_txt</span> <span class="o">=</span> <span class="n">zf</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">zi</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;strict&#39;</span><span class="p">)</span>
+								<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+									<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Failed reading the manifest file </span><span class="si">%s</span><span class="s1"> with exception:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+
+								<span class="c1"># if we have all manifest text, parse and save each line</span>
+								<span class="k">if</span> <span class="n">manifest_txt</span><span class="p">:</span>
+									<span class="c1"># CR LF | LF | CR  can be there as line feed and hence the code below</span>
+									<span class="n">lines</span> <span class="o">=</span> <span class="n">manifest_txt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+										
+								<span class="c1"># done</span>
+								<span class="k">break</span>
+						
+					
+					<span class="n">original_entries</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>  <span class="c1"># to ensure we don&#39;t overwrite/duplicate these</span>
+					<span class="c1"># populate the manifest_entries with original values from original manifest</span>
+					<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+						<span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">l</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">l</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">):</span> <span class="c1"># ignore continuation lines etc because keys are all we care about</span>
+							<span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+							<span class="n">original_entries</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+					
+					<span class="c1"># build up a list of the new manifest entries (will be merged into any existing manifest by jar)</span>
+					<span class="n">manifest_entries</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+					<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">manifestDefaults</span><span class="p">:</span>
+						<span class="c1"># if entry isn&#39;t there yet, add to the list</span>
+						<span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">original_entries</span><span class="p">:</span>
+							<span class="n">manifest_entries</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">manifestDefaults</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+		
+					<span class="c1"># create the manifest file</span>
+					<span class="c1"># we want to add the manifest entries explicitly specified here but </span>
+					<span class="c1"># NOT the &#39;default&#39; manifest entries we usually add, since these </span>
+					<span class="c1"># are likely to have been set already, and we do not want duplicates</span>
+					<span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workDir</span><span class="p">)</span>
+					<span class="n">manifest</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workDir</span><span class="p">,</span> <span class="s2">&quot;MANIFEST.MF&quot;</span><span class="p">)</span> <span class="c1"># manifest file</span>
+
+					<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+					<span class="n">options</span><span class="p">[</span><span class="s1">&#39;jar.manifest.defaults&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+					<span class="n">create_manifest</span><span class="p">(</span><span class="n">manifest</span><span class="p">,</span> <span class="n">manifest_entries</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+	
+					<span class="c1"># update the EXISTING jar file with the new manifest entries, which will be merged into </span>
+					<span class="c1"># existing manifest by the jar tool</span>
+					<span class="n">jar</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">dest</span><span class="p">),</span> <span class="n">manifest</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+	
+				<span class="n">signjar</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">dest</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">keystore</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alias</span><span class="p">,</span> <span class="n">storepass</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storepass</span><span class="p">,</span> 
+					<span class="n">outputHandler</span><span class="o">=</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;signjars&#39;</span><span class="p">,</span> <span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">))</span>
+			<span class="k">except</span> <span class="n">BuildException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Error processing </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">dest</span><span class="p">),</span> <span class="n">e</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Javac"><a class="viewcode-back" href="../../../generated/xpybuild.targets.java.html#xpybuild.targets.java.Javac">[docs]</a><span class="k">class</span> <span class="nc">Javac</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Compile java source to a directory (without jarring it)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="nb">compile</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">classpath</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">		@param output: output dir for class files</span>
+
+<span class="sd">		@param compile: PathSet (or list)  of things to compile</span>
+
+<span class="sd">		@param classpath: PathSet (or list) of things to be on the classpath; </span>
+
+<span class="sd">		@param options: [DEPRECATED - use .option() instead]</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">compile</span> <span class="o">=</span> <span class="n">FilteredPathSet</span><span class="p">(</span><span class="n">_isJavaFile</span><span class="p">,</span> <span class="n">PathSet</span><span class="p">(</span><span class="nb">compile</span><span class="p">))</span>
+			
+		<span class="bp">self</span><span class="o">.</span><span class="n">classpath</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">classpath</span><span class="p">)</span>
+		
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">classpath</span><span class="p">])</span>
+		<span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="c1"># make sure outputdir exists</span>
+		<span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+		<span class="c1"># create the classpath, sorting within PathSet (for determinism), but retaining original order of </span>
+		<span class="c1"># PathSet elements in the list</span>
+		<span class="n">classpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classpath</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">))</span> 
+
+		<span class="c1"># compile everything</span>
+		<span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;javac.logs&#39;</span><span class="p">))</span>
+		<span class="n">javac</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">,</span> <span class="n">logbasename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;javac.logs&#39;</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">targetNameToUniqueId</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">targetname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">workDir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">workDir</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="c1"># changes in the manifest text should cause a rebuild</span>
+		<span class="c1"># for now, don&#39;t bother factoring global jar.manifest.defaults option </span>
+		<span class="c1"># in here (it&#39;ll almost never change anyway)</span>
+		<span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Javac</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getHashableImplicitInputs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="o">+</span> <span class="nb">sorted</span><span class="p">([</span>
+			<span class="s1">&#39;option: </span><span class="si">%s</span><span class="s1"> = &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> 
+				<span class="k">if</span> <span class="n">v</span> <span class="ow">and</span> <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;javac.&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">&#39;java.home&#39;</span><span class="p">)])</span></div>
+
+<div class="viewcode-block" id="Jar"><a class="viewcode-back" href="../../../generated/xpybuild.targets.java.html#xpybuild.targets.java.Jar">[docs]</a><span class="k">class</span> <span class="nc">Jar</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Create a Jar, first compiling some java, then packing it all up</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="nb">compile</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">classpath</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">package</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">manifest</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jar</span><span class="p">,</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">manifest</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">preserveManifestFormatting</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">		To add additional entries to the manifest&#39;s classpath which are needed at runtime </span>
+<span class="sd">		but not during compilation, use .option(&#39;jar.manifest.classpathAppend&#39;, [...])</span>
+<span class="sd">		</span>
+<span class="sd">		@param jar: path to jar to create</span>
+
+<span class="sd">		@param compile: PathSet (or list)  of things to compile</span>
+
+<span class="sd">		@param classpath: PathSet (or list) of things to be on the classpath; </span>
+<span class="sd">		destination mapping indicates how they will appear in the manifest</span>
+
+<span class="sd">		@param manifest: map of manifest entries (can be empty), OR a string with the filename to use </span>
+<span class="sd">		OR None to disable manifest generation and just produce a normal zip</span>
+
+<span class="sd">		@param options: [DEPRECATED - use .option() instead]</span>
+
+<span class="sd">		@param package: PathSet (or list) of other files to include in the jar; </span>
+<span class="sd">			destination mapping indicates where they will appear in the jar</span>
+<span class="sd">		</span>
+<span class="sd">		@param preserveManifestFormatting: an advanced option that prevents the jar tool from </span>
+<span class="sd">			reformatting the specified manifest file to comply with Java conventions </span>
+<span class="sd">			(also prevents manifest merging if jar already exists)</span>
+
+<span class="sd">		</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">compile</span> <span class="o">=</span> <span class="n">FilteredPathSet</span><span class="p">(</span><span class="n">_isJavaFile</span><span class="p">,</span> <span class="n">PathSet</span><span class="p">(</span><span class="nb">compile</span><span class="p">))</span> <span class="k">if</span> <span class="nb">compile</span> <span class="k">else</span> <span class="kc">None</span>
+			
+		<span class="bp">self</span><span class="o">.</span><span class="n">classpath</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">classpath</span><span class="p">)</span>
+		
+		<span class="bp">self</span><span class="o">.</span><span class="n">package</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">package</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">manifest</span> <span class="o">=</span> <span class="n">manifest</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jar</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">classpath</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="p">,</span> 
+			<span class="n">manifest</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">manifest</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">])</span>
+			
+		<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">options</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">preserveManifestFormatting</span> <span class="o">=</span> <span class="n">preserveManifestFormatting</span>
+
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
+
+		<span class="c1"># make sure temp dir exists</span>
+		<span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workDir</span><span class="p">)</span>
+
+		<span class="n">classes</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workDir</span><span class="p">,</span> <span class="s2">&quot;classes&quot;</span><span class="p">)</span> <span class="c1"># output dir for classes</span>
+		
+		<span class="c1"># create the classpath, sorting within PathSet (for determinism), but retaining original order of </span>
+		<span class="c1"># PathSet elements in the list</span>
+		<span class="n">classpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classpath</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">))</span> 
+
+		<span class="c1"># compile everything</span>
+		<span class="n">mkdir</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span> <span class="c1"># (need this for assembling other files to package later on, even if we don&#39;t do any javac)</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">:</span>
+			<span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;javac.logs&#39;</span><span class="p">))</span>
+			<span class="n">javac</span><span class="p">(</span><span class="n">classes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> <span class="n">logbasename</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;javac.logs&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">targetNameToUniqueId</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">targetname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">workDir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">workDir</span><span class="p">)</span>
+
+		<span class="n">manifest</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workDir</span><span class="p">,</span> <span class="s2">&quot;MANIFEST.MF&quot;</span><span class="p">)</span> <span class="c1"># manifest file</span>
+	
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+			<span class="n">manifest</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseDir</span><span class="p">)</span>
+		<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">manifest</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="k">else</span><span class="p">:</span> <span class="c1"># generate one</span>
+			<span class="c1"># rewrite property values in the manifest</span>
+			<span class="n">manifest_entries</span> <span class="o">=</span> <span class="p">{}</span>
+			<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">:</span>
+				<span class="n">manifest_entries</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+	
+			<span class="c1"># determine classpath for manifest</span>
+			<span class="n">classpath_entries</span> <span class="o">=</span> <span class="p">[]</span>
+			
+			<span class="k">if</span> <span class="s2">&quot;Class-path&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">manifest_entries</span><span class="p">:</span> <span class="c1"># assuming it wasn&#39;t hardcoded, set it here</span>
+				<span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classpath</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+					<span class="c1"># we definitely do want to support use of &quot;..&quot; in destinations here, it can be very useful</span>
+					<span class="n">classpath_entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+				<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;jar.manifest.classpathAppend&#39;</span><span class="p">],</span> <span class="nb">list</span><span class="p">),</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;jar.manifest.classpathAppend&#39;</span><span class="p">]</span> <span class="c1"># must not be a string</span>
+				<span class="n">classpath_entries</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;jar.manifest.classpathAppend&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[])</span>
+				
+				<span class="c1"># need to always use / not \ for these to be valid</span>
+				<span class="n">classpath_entries</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">classpath_entries</span> <span class="k">if</span> <span class="n">p</span><span class="p">]</span>
+				
+				<span class="k">if</span> <span class="n">classpath_entries</span><span class="p">:</span>
+					<span class="n">manifest_entries</span><span class="p">[</span><span class="s2">&quot;Class-path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">classpath_entries</span><span class="p">)</span> <span class="c1"># include the classpath from here</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="n">manifest_entries</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Class-path&#39;</span><span class="p">):</span> <span class="c1"># suppress this element entirely if not needed, otherwise there would be no way to have an empty classpath</span>
+				<span class="n">manifest_entries</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;Class-path&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+			
+			<span class="c1"># create the manifest file</span>
+			<span class="n">create_manifest</span><span class="p">(</span><span class="n">manifest</span><span class="p">,</span> <span class="n">manifest_entries</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+
+		<span class="c1"># copy in the additional things to include</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+			<span class="k">if</span> <span class="s1">&#39;..&#39;</span> <span class="ow">in</span> <span class="n">dest</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;This target does not permit packaged destination paths to contain &quot;..&quot; relative path expressions&#39;</span><span class="p">)</span>
+			<span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">classes</span><span class="p">,</span> <span class="n">dest</span><span class="p">)))</span>
+			<span class="n">destpath</span> <span class="o">=</span> <span class="n">normLongPath</span><span class="p">(</span><span class="n">classes</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">dest</span><span class="p">)</span>
+			<span class="n">srcpath</span> <span class="o">=</span> <span class="n">normLongPath</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+
+			<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">srcpath</span><span class="p">):</span>
+				<span class="n">mkdir</span><span class="p">(</span><span class="n">destpath</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">srcpath</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+					<span class="k">with</span> <span class="n">openForWrite</span><span class="p">(</span><span class="n">destpath</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">d</span><span class="p">:</span>
+						<span class="n">d</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+		<span class="c1"># create the jar</span>
+		<span class="n">jar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">manifest</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> <span class="n">preserveManifestFormatting</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preserveManifestFormatting</span><span class="p">,</span> 
+			<span class="n">outputHandler</span><span class="o">=</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;jar&#39;</span><span class="p">,</span> <span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">))</span>
+
+	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="c1"># changes in the manifest text should cause a rebuild</span>
+		<span class="c1"># for now, don&#39;t bother factoring global jar.manifest.defaults option </span>
+		<span class="c1"># in here (it&#39;ll almost never change anyway)</span>
+		<span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Jar</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getHashableImplicitInputs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span>
+			<span class="s1">&#39;manifest = &#39;</span><span class="o">+</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">)),</span>
+			<span class="s1">&#39;classpath = &#39;</span><span class="o">+</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classpath</span><span class="p">)),</span> <span class="c1"># because classpath destinations affect manifest</span>
+			<span class="p">]</span><span class="o">+</span><span class="p">([</span><span class="s1">&#39;preserveManifestFormatting = true&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserveManifestFormatting</span> <span class="k">else</span> <span class="p">[])</span>\
+			<span class="o">+</span><span class="nb">sorted</span><span class="p">([</span><span class="s1">&#39;option: </span><span class="si">%s</span><span class="s1"> = &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> 
+				<span class="k">if</span> <span class="n">v</span> <span class="ow">and</span> <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;javac.&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;jar.&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">&#39;java.home&#39;</span><span class="p">)])</span></div>
+
+<div class="viewcode-block" id="Javadoc"><a class="viewcode-back" href="../../../generated/xpybuild.targets.java.html#xpybuild.targets.java.Javadoc">[docs]</a><span class="k">class</span> <span class="nc">Javadoc</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Creates javadoc from a set of input files</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destdir</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		@param destdir: directory to create docs in</span>
+
+<span class="sd">		@param source: a set of files to build from</span>
+
+<span class="sd">		@param classpath: a list of jars needed for the classpath</span>
+
+<span class="sd">		@param options: [DEPRECATED - use .option() instead]</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">classpath</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">classpath</span><span class="p">)</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destdir</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">classpath</span><span class="p">])</span>
+		<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">options</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
+		<span class="n">classpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classpath</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">))</span>
+		<span class="n">javadoc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> 
+			<span class="n">outputHandler</span><span class="o">=</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;javadoc&#39;</span><span class="p">,</span> <span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">),</span> <span class="n">workDir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">workDir</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="c1"># changes in the manifest text should cause a rebuild</span>
+		<span class="c1"># for now, don&#39;t bother factoring global jar.manifest.defaults option </span>
+		<span class="c1"># in here (it&#39;ll almost never change anyway)</span>
+		<span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Javadoc</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getHashableImplicitInputs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="o">+</span> \
+			<span class="nb">sorted</span><span class="p">([</span><span class="s1">&#39;option: </span><span class="si">%s</span><span class="s1"> = &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> 
+				<span class="k">if</span> <span class="n">k</span> <span class="ow">and</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;javadoc.&#39;</span><span class="p">)])</span></div>
+				
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

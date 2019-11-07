@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.targets.csharp &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.targets.docker" href="xpybuild.targets.docker.html" />
+    <link rel="prev" title="xpybuild.targets.writefile" href="xpybuild.targets.writefile.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.docker.html" title="xpybuild.targets.docker"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.writefile.html" title="xpybuild.targets.writefile"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Module list</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-xpybuild.targets.csharp">
+<span id="xpybuild-targets-csharp"></span><h1>xpybuild.targets.csharp<a class="headerlink" href="#module-xpybuild.targets.csharp" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="cscprocessoutputhandler">
+<h2>CSCProcessOutputHandler<a class="headerlink" href="#cscprocessoutputhandler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.csharp.CSCProcessOutputHandler">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.csharp.</code><code class="sig-name descname">CSCProcessOutputHandler</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">treatStdErrAsErrors=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/csharp.html#CSCProcessOutputHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.csharp.CSCProcessOutputHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler" title="xpybuild.utils.outputhandler.ProcessOutputHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.outputhandler.ProcessOutputHandler</span></code></a></p>
+<p>A ProcessOutputHandler than can parse the output of the CSC compiler</p>
+<p>The constructor for this object. Subclasses that override this should 
+always pass <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs down to the super constructor to allow for new 
+functionality to be added</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – a short display name for this process or target, used as a 
+prefix for log lines.</p></li>
+<li><p><strong>treatStdErrAsErrors</strong> – controls where all content on stderr 
+(rather than stdout) is treated as an error by default. The correct 
+setting depends on how the process being invoked uses stdout/err.</p></li>
+<li><p><strong>options</strong> – a dictionary of resolved option values, in case aspects 
+of this handler are customizable. Available to implementations as 
+self.options (if None is passed, self.options will be an empty 
+dictionary)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="csharp">
+<h2>CSharp<a class="headerlink" href="#csharp" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.csharp.CSharp">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.csharp.</code><code class="sig-name descname">CSharp</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">compile</em>, <em class="sig-param">main=None</em>, <em class="sig-param">libs=None</em>, <em class="sig-param">flags=None</em>, <em class="sig-param">dependencies=None</em>, <em class="sig-param">resources=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/csharp.html#CSharp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.csharp.CSharp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
+<p>Compile C# files to an executable or dll</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> – the resulting .exe or .dll</p></li>
+<li><p><strong>compile</strong> – the input PathSet, path or list of .cs file(s)</p></li>
+<li><p><strong>main</strong> – The main class to execute if an exe is to be built.
+If this is set then an executable will be created.
+Otherwise this target will build a library.</p></li>
+<li><p><strong>libs</strong> – a list of input libraries (or a PathSet)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">xpybuild.targets.csharp</a><ul>
+<li><a class="reference internal" href="#cscprocessoutputhandler">CSCProcessOutputHandler</a></li>
+<li><a class="reference internal" href="#csharp">CSharp</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="xpybuild.targets.writefile.html"
+                        title="previous chapter">xpybuild.targets.writefile</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="xpybuild.targets.docker.html"
+                        title="next chapter">xpybuild.targets.docker</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/generated/xpybuild.targets.csharp.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.docker.html" title="xpybuild.targets.docker"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.writefile.html" title="xpybuild.targets.writefile"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Module list</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

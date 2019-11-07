@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.utils.functors &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.utils.functors</h1><div class="highlight"><pre>
+<span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
+<span class="c1">#</span>
+<span class="c1"># Late-binding functors for use in property-expansion and modification (internal support classes)</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2014 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: functors.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<div class="viewcode-block" id="Composable"><a class="viewcode-back" href="../../../generated/xpybuild.utils.functors.html#xpybuild.utils.functors.Composable">[docs]</a><span class="k">class</span> <span class="nc">Composable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Base class for objects which are late-bound and can be composed </span>
+<span class="sd">		 together and with strings, with a resolveToString method to </span>
+<span class="sd">		 produce the output string.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Must implement resolveToString&#39;</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Compose this with another object (string or a Composable) &quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="n">Compose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Compose this with another object (string or a Composable) &quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="n">Compose</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; A unique representation of the composable &quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="s2">&quot;unknown_composable()&quot;</span>
+	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; A unique representation of the composable &quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Compose"><a class="viewcode-back" href="../../../generated/xpybuild.utils.functors.html#xpybuild.utils.functors.Compose">[docs]</a><span class="k">class</span> <span class="nc">Compose</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; A functor that composes other functors or strings &quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		@param left: The left object to compose</span>
+<span class="sd">		@param right: The right object to compose</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">left</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">right</span>
+<div class="viewcode-block" id="Compose.resolveToString"><a class="viewcode-back" href="../../../generated/xpybuild.utils.functors.html#xpybuild.utils.functors.Compose.resolveToString">[docs]</a>	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Compose the two objects. Strings as literals, other objects are invoked with context argument.</span>
+
+<span class="sd">		@param context: a BuildContext</span>
+
+<span class="sd">		&gt;&gt;&gt; import xpybuild.buildcontext</span>
+<span class="sd">		&gt;&gt;&gt; Compose(&#39;a&#39;, &#39;b&#39;).resolveToString(None)</span>
+<span class="sd">		&#39;ab&#39;</span>
+<span class="sd">		&gt;&gt;&gt; Compose(Compose(&#39;a&#39;, &#39;b&#39;), &#39;c&#39;).resolveToString(None)</span>
+<span class="sd">		&#39;abc&#39;</span>
+<span class="sd">		&gt;&gt;&gt; Compose(&#39;a&#39;, Compose(&#39;b&#39;, &#39;c&#39;)).resolveToString(None)</span>
+<span class="sd">		&#39;abc&#39;</span>
+<span class="sd">		&gt;&gt;&gt; Compose(Compose(&#39;a&#39;, &#39;b&#39;), Compose(&#39;c&#39;, &#39;d&#39;)).resolveToString(None)</span>
+<span class="sd">		&#39;abcd&#39;</span>
+<span class="sd">		&gt;&gt;&gt; str(&quot;a&quot;+Compose(&#39;b&#39;, &#39;c&#39;))</span>
+<span class="sd">		&#39;a+b+c&#39;</span>
+<span class="sd">		&gt;&gt;&gt; (&quot;a&quot;+Compose(&#39;b&#39;, &#39;c&#39;)).resolveToString(None)</span>
+<span class="sd">		&#39;abc&#39;</span>
+<span class="sd">		&gt;&gt;&gt; str(Compose(&#39;a&#39;, &#39;b&#39;)+&quot;c&quot;)</span>
+<span class="sd">		&#39;a+b+c&#39;</span>
+<span class="sd">		&gt;&gt;&gt; (Compose(&#39;a&#39;, &#39;b&#39;)+&quot;c&quot;).resolveToString(None)</span>
+<span class="sd">		&#39;abc&#39;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		<span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span></div>
+	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;+&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ComposableFn"><a class="viewcode-back" href="../../../generated/xpybuild.utils.functors.html#xpybuild.utils.functors.ComposableFn">[docs]</a><span class="k">class</span> <span class="nc">ComposableFn</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; A functor wrapping an arbitrary function and arguments that can be composed &quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		@param fn: The function to wrap. Must have the format fn(context, *args)</span>
+<span class="sd">		@param args: Arguments to the function</span>
+<span class="sd">		@keyword name: optional display name for the functor</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span> <span class="c1"># use &lt;lambda&gt; if not specified</span>
+		<span class="c1"># any other kwargs are currently ignored</span>
+<div class="viewcode-block" id="ComposableFn.resolveToString"><a class="viewcode-back" href="../../../generated/xpybuild.utils.functors.html#xpybuild.utils.functors.ComposableFn.resolveToString">[docs]</a>	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Execute the function with the context and arguments as arguments,</span>
+
+<span class="sd">		@param context: a BuildContext</span>
+
+<span class="sd">		&gt;&gt;&gt; import xpybuild.buildcontext</span>
+<span class="sd">		&gt;&gt;&gt; ComposableFn(lambda context, a, b: a+b, &#39;a&#39;, &#39;b&#39;).resolveToString(None)</span>
+<span class="sd">		&#39;ab&#39;</span>
+<span class="sd">		&gt;&gt;&gt; str(&quot;a&quot;+ComposableFn(lambda context, x: x, &#39;b&#39;))</span>
+<span class="sd">		&#39;a+&lt;lambda&gt;(b)&#39;</span>
+<span class="sd">		&gt;&gt;&gt; (&quot;a&quot;+ComposableFn(lambda context, x: x, &#39;b&#39;)).resolveToString(None)</span>
+<span class="sd">		&#39;ab&#39;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
+	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s2">&quot;(&quot;</span><span class="o">+</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;)&quot;</span></div>
+
+<div class="viewcode-block" id="ComposableWrapper"><a class="viewcode-back" href="../../../generated/xpybuild.utils.functors.html#xpybuild.utils.functors.ComposableWrapper">[docs]</a><span class="k">class</span> <span class="nc">ComposableWrapper</span><span class="p">:</span>
+	<span class="sd">&quot;&quot;&quot; A functor which wraps a function and can be curried into a ComposableFunction &quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">		@param fn: a function of the form fn(context, *args)</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">=</span><span class="n">name</span>
+	<span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Currys fn with *args into a ComposableFn which can be used in compositions and later evaluated &quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="n">ComposableFn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="makeFunctor"><a class="viewcode-back" href="../../../generated/xpybuild.utils.functors.html#xpybuild.utils.functors.makeFunctor">[docs]</a><span class="k">def</span> <span class="nf">makeFunctor</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Take an arbitrary function and return a functor that can take arbitrary </span>
+<span class="sd">	arguments and that can in turn be curried into</span>
+<span class="sd">	a composable object for use in property contexts.</span>
+
+<span class="sd">	Example::</span>
+
+<span class="sd">		def fn(context, input):</span>
+<span class="sd">			... # do something</span>
+<span class="sd">			return input</span>
+
+<span class="sd">		myfn = makeFunctor(fn)</span>
+
+<span class="sd">		target = &quot;${OUTPUT_DIR}/&quot; + myfn(&quot;${MYVAR}&quot;)</span>
+
+<span class="sd">	This will execute fn(context, &quot;${MYVAR}&quot;) at property expansion time and then</span>
+<span class="sd">	prepend the expanded &quot;${OUTPUT_DIR}/&quot;.</span>
+
+<span class="sd">	@param fn: a function of the form fn(context, *args)</span>
+
+<span class="sd">	&gt;&gt;&gt; import xpybuild.buildcontext</span>
+<span class="sd">	&gt;&gt;&gt; str(makeFunctor(lambda context, x: context.expandPropertyValues(x))(&#39;${INPUT}&#39;))</span>
+<span class="sd">	&#39;&lt;lambda&gt;(${INPUT})&#39;</span>
+<span class="sd">	</span>
+<span class="sd">	&gt;&gt;&gt; str(makeFunctor(lambda context, x: context.expandPropertyValues(x), name=&#39;foobar&#39;)(&#39;${INPUT}&#39;))</span>
+<span class="sd">	&#39;foobar(${INPUT})&#39;</span>
+<span class="sd">	</span>
+<span class="sd">	&gt;&gt;&gt; makeFunctor(lambda context, x: context.expandPropertyValues(x))(&#39;${INPUT}&#39;).resolveToString(xpybuild.buildcontext.BaseContext({&#39;INPUT&#39;:&#39;foo&#39;}))</span>
+<span class="sd">	&#39;foo&#39;</span>
+<span class="sd">	</span>
+<span class="sd">	&gt;&gt;&gt; str(&quot;output/&quot;+makeFunctor(lambda context, x: context.expandPropertyValues(x))(&#39;${INPUT}&#39;))</span>
+<span class="sd">	&#39;output/+&lt;lambda&gt;(${INPUT})&#39;</span>
+<span class="sd">	</span>
+<span class="sd">	&gt;&gt;&gt; (&quot;output/&quot;+makeFunctor(lambda context, x: context.expandPropertyValues(x))(&#39;${INPUT}&#39;)).resolveToString(xpybuild.buildcontext.BaseContext({&#39;INPUT&#39;:&#39;foo&#39;}))</span>
+<span class="sd">	&#39;output/foo&#39;</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="n">ComposableWrapper</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

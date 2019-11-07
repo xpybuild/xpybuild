@@ -1,0 +1,29 @@
+xpybuild.utils.flatten
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.utils.flatten
+
+.. currentmodule:: xpybuild.utils.flatten
+
+
+
+
+
+
+.. autosummary::
+    :toctree: generated
+
+
+
+flatten
+=======
+.. autofunction:: flatten
+
+
+
+getStringList
+=============
+.. autofunction:: getStringList
+
+
+

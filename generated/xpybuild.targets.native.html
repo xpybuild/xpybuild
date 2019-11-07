@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.targets.native &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.targets.java" href="xpybuild.targets.java.html" />
+    <link rel="prev" title="xpybuild.targets.docker" href="xpybuild.targets.docker.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.java.html" title="xpybuild.targets.java"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.docker.html" title="xpybuild.targets.docker"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Module list</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-xpybuild.targets.native">
+<span id="xpybuild-targets-native"></span><h1>xpybuild.targets.native<a class="headerlink" href="#module-xpybuild.targets.native" title="Permalink to this headline">¶</a></h1>
+<p>&#64;undocumented: _AddTrailingDirectorySlashesPathSet</p>
+<div class="section" id="ar">
+<h2>Ar<a class="headerlink" href="#ar" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.native.Ar">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">Ar</code><span class="sig-paren">(</span><em class="sig-param">bin</em>, <em class="sig-param">objects</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/native.html#Ar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.native.Ar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
+<p>Target that compiles .a files from collections of .o files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bin</strong> – the output library</p></li>
+<li><p><strong>objects</strong> – a (list of) input objects</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="c">
+<h2>C<a class="headerlink" href="#c" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.native.C">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">C</code><span class="sig-paren">(</span><em class="sig-param">object</em>, <em class="sig-param">source</em>, <em class="sig-param">includes=None</em>, <em class="sig-param">flags=None</em>, <em class="sig-param">dependencies=None</em>, <em class="sig-param">options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/native.html#C"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.native.C" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#xpybuild.targets.native.Cpp" title="xpybuild.targets.native.Cpp"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.targets.native.Cpp</span></code></a></p>
+<p>Target that compiles a C source file to a .o</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object</strong> – the object file to generate</p></li>
+<li><p><strong>source</strong> – a (list of) source files</p></li>
+<li><p><strong>includes</strong> – a (list of) include directories, as strings or PathSets, 
+each with a trailing slash; the directories in the <code class="xref py py-obj docutils literal notranslate"><span class="pre">native.include</span></code> 
+option are also added.</p></li>
+</ul>
+</dd>
+</dl>
+<p>If this target depends on some include files that are generated by another target, 
+make sure it’s a directory target since all include directories must either 
+exist before the build starts or be targets themselves. 
+If specifying a subdirectory of a generated directory, do this using DirGeneratedByTarget. 
+If you have a composite generated directory made up of several 
+file targets, wrap them in TargetsWithinDir before passing as the includes parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flags</strong> – a list of compiler flags in addition to those in the 
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">native.cxx.flags</span></code>/<code class="xref py py-obj docutils literal notranslate"><span class="pre">native.c.flags</span></code> option.</p></li>
+<li><p><strong>dependencies</strong> – a list of additional dependencies that need to be built 
+before this target. Usually this is not needed.</p></li>
+<li><p><strong>options</strong> – [DEPRECATED - use .option() instead]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="cpp">
+<h2>Cpp<a class="headerlink" href="#cpp" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.native.Cpp">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">Cpp</code><span class="sig-paren">(</span><em class="sig-param">object</em>, <em class="sig-param">source</em>, <em class="sig-param">includes=None</em>, <em class="sig-param">flags=None</em>, <em class="sig-param">dependencies=None</em>, <em class="sig-param">options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/native.html#Cpp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.native.Cpp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
+<p>Target that compiles a C++ source file to a single object file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object</strong> – the object file to generate</p></li>
+<li><p><strong>source</strong> – a (list of) source files</p></li>
+<li><p><strong>includes</strong> – a (list of) include directories, as strings or PathSets, 
+each with a trailing slash; the directories in the <code class="xref py py-obj docutils literal notranslate"><span class="pre">native.include</span></code> 
+option are also added.</p></li>
+</ul>
+</dd>
+</dl>
+<p>If this target depends on some include files that are generated by another target, 
+make sure it’s a directory target since all include directories must either 
+exist before the build starts or be targets themselves. 
+If specifying a subdirectory of a generated directory, do this using DirGeneratedByTarget. 
+If you have a composite generated directory made up of several 
+file targets, wrap them in TargetsWithinDir before passing as the includes parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flags</strong> – a list of compiler flags in addition to those in the 
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">native.cxx.flags</span></code>/<code class="xref py py-obj docutils literal notranslate"><span class="pre">native.c.flags</span></code> option.</p></li>
+<li><p><strong>dependencies</strong> – a list of additional dependencies that need to be built 
+before this target. Usually this is not needed.</p></li>
+<li><p><strong>options</strong> – [DEPRECATED - use .option() instead]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="link">
+<h2>Link<a class="headerlink" href="#link" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.native.Link">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">Link</code><span class="sig-paren">(</span><em class="sig-param">bin</em>, <em class="sig-param">objects</em>, <em class="sig-param">libs=None</em>, <em class="sig-param">libpaths=None</em>, <em class="sig-param">shared=False</em>, <em class="sig-param">options=None</em>, <em class="sig-param">flags=None</em>, <em class="sig-param">dependencies=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/native.html#Link"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.native.Link" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
+<p>Target that links object files to binaries</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bin</strong> – the output binary</p></li>
+<li><p><strong>objects</strong> – a (list of) input object</p></li>
+<li><p><strong>libs</strong> – a (list of) libraries linked against (optional) in platform-neutral format. 
+Can include list properties like ‘${FOO_LIB_NAMES[]}’.</p></li>
+<li><p><strong>libpaths</strong> – a (list of) additional library search directories (optional)</p></li>
+<li><p><strong>shared</strong> – if true compiles to a shared object (.dll or .so) (optional, defaults to false)</p></li>
+<li><p><strong>flags</strong> – a list of additional linker flags</p></li>
+<li><p><strong>options</strong> – [DEPRECATED - use .option() instead]</p></li>
+<li><p><strong>dependencies</strong> – a list of additional dependencies (targets or files)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">xpybuild.targets.native</a><ul>
+<li><a class="reference internal" href="#ar">Ar</a></li>
+<li><a class="reference internal" href="#c">C</a></li>
+<li><a class="reference internal" href="#cpp">Cpp</a></li>
+<li><a class="reference internal" href="#link">Link</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="xpybuild.targets.docker.html"
+                        title="previous chapter">xpybuild.targets.docker</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="xpybuild.targets.java.html"
+                        title="next chapter">xpybuild.targets.java</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/generated/xpybuild.targets.native.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.java.html" title="xpybuild.targets.java"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.docker.html" title="xpybuild.targets.docker"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Module list</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

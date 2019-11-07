@@ -1,0 +1,36 @@
+
+Module list
+===========
+
+.. autosummary::
+	:toctree: ./
+	
+	xpybuild.pathsets
+	xpybuild.targets.symlink
+	xpybuild.targets.archive
+	xpybuild.targets.writefile
+	xpybuild.targets.csharp
+	xpybuild.targets.docker
+	xpybuild.targets.native
+	xpybuild.targets.java
+	xpybuild.targets.download
+	xpybuild.targets.copy
+	xpybuild.targets.custom
+	xpybuild.propertysupport
+	xpybuild.buildcommon
+	xpybuild.buildcontext
+	xpybuild.basetarget
+	xpybuild.utils.functors
+	xpybuild.utils.buildexceptions
+	xpybuild.utils.flatten
+	xpybuild.utils.terminal
+	xpybuild.utils.buildfilelocation
+	xpybuild.utils.compilers
+	xpybuild.utils.progress
+	xpybuild.utils.java
+	xpybuild.utils.process
+	xpybuild.utils.stringutils
+	xpybuild.utils.antglob
+	xpybuild.utils.outputhandler
+	xpybuild.utils.consoleformatter
+	xpybuild.utils.fileutils

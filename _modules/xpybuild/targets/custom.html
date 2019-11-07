@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.targets.custom &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.targets.custom</h1><div class="highlight"><pre>
+<span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2013 - 2018 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: custom.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">subprocess</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="k">import</span> <span class="n">BaseTarget</span><span class="p">,</span> <span class="n">targetNameToUniqueId</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteDir</span><span class="p">,</span> <span class="n">deleteFile</span><span class="p">,</span> <span class="n">normLongPath</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="k">import</span> <span class="n">_wait_with_timeout</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.targets.copy</span> <span class="k">import</span> <span class="n">Copy</span>
+
+<div class="viewcode-block" id="Custom"><a class="viewcode-back" href="../../../generated/xpybuild.targets.custom.html#xpybuild.targets.custom.Custom">[docs]</a><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span> <span class="c1"># deprecated because error handling/logging is poor and it promotes bad practices like not using options (e.g process timeout)</span>
+	<span class="sd">&quot;&quot;&quot; DEPRECATED - use CustomCommand instead, or a dedicated BaseTarget subclass</span>
+
+<span class="sd">	A custom target that builds a single file or directory of content by executing </span>
+<span class="sd">	an arbitrary python functor.  </span>
+
+<span class="sd">	Functor must take:</span>
+<span class="sd">	(target path, [dependency paths], context)</span>
+<span class="sd">	</span>
+<span class="sd">	Tip: don&#39;t forget to ensure the target path&#39;s parent dir exists </span>
+<span class="sd">	using fileutils.mkdir. </span>
+<span class="sd">	</span>
+<span class="sd">	@deprecated: Use CustomCommand instead, or a dedicated BaseTarget subclass</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">fn</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">cleanfn</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">deps</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">cleanfn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		@param target: The target file/directory that will be built</span>
+
+<span class="sd">		@param deps: The list of dependencies of this target (paths, pathsets or lists)</span>
+
+<span class="sd">		@param fn: The functor used to build this target</span>
+
+<span class="sd">		@param cleanfn: The functor used to clean this target (optional, defaults to removing </span>
+<span class="sd">		the target file/dir)</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">deps</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cleanfn</span> <span class="o">=</span> <span class="n">cleanfn</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">deps</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">deps</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">deps</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> <span class="n">context</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleanfn</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleanfn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ResolvePath"><a class="viewcode-back" href="../../../generated/xpybuild.targets.custom.html#xpybuild.targets.custom.ResolvePath">[docs]</a><span class="k">class</span> <span class="nc">ResolvePath</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;DEPRECATED: A wrapper around a string in a command line that indicates it is </span>
+<span class="sd">	a path an should be resolved (expanded, normalized, possibly made relative </span>
+<span class="sd">	to the target dir) when the command is executed.</span>
+<span class="sd">	</span>
+<span class="sd">	If the specified path resolves to more than one item then an exception is </span>
+<span class="sd">	thrown unless the pathsep argument is specified. </span>
+<span class="sd">	</span>
+<span class="sd">	@deprecated: Use a PathSet (possibly with the joinPaths property functor) </span>
+<span class="sd">	instead of this class.  </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		@param path: The path to expand, which is a string. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot; Returns a string including this class name and the path &quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="s1">&#39;ResolvePath&lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span>
+<div class="viewcode-block" id="ResolvePath.resolve"><a class="viewcode-back" href="../../../generated/xpybuild.targets.custom.html#xpybuild.targets.custom.ResolvePath.resolve">[docs]</a>	<span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">baseDir</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Resolves the path using the specified context and baseDir &quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">defaultDir</span><span class="o">=</span><span class="n">baseDir</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CustomCommand"><a class="viewcode-back" href="../../../generated/xpybuild.targets.custom.html#xpybuild.targets.custom.CustomCommand">[docs]</a><span class="k">class</span> <span class="nc">CustomCommand</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	A custom target that builds a single file or directory of content by running a </span>
+<span class="sd">	specified command line process. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="k">class</span> <span class="nc">__CustomCommandSentinel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span> 
+		<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+		<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="n">name</span>
+	
+	<span class="n">TARGET</span> <span class="o">=</span> <span class="n">__CustomCommandSentinel</span><span class="p">(</span><span class="s1">&#39;TARGET&#39;</span><span class="p">)</span>
+	<span class="n">DEPENDENCIES</span> <span class="o">=</span> <span class="n">__CustomCommandSentinel</span><span class="p">(</span><span class="s1">&#39;DEPENDENCIES&#39;</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">redirectStdOutToTarget</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		The command line MUST not reference any generated paths unless they are </span>
+<span class="sd">		explicitly listed in deps. </span>
+<span class="sd">		</span>
+<span class="sd">		Use .option(&quot;process.timeout&quot;) to control the maximum number of seconds the command can </span>
+<span class="sd">		run before being cancelled. </span>
+
+<span class="sd">		@param target: the file or directory to be built. Will be cleaned, and its parent dir created, </span>
+<span class="sd">		before target runs. </span>
+<span class="sd">		</span>
+<span class="sd">		@param dependencies: an optional list of dependencies; it is essential that ALL dependencies required by </span>
+<span class="sd">		this command and generated by the build processare explicitly listed here, in addition to any </span>
+<span class="sd">		files/directories used by this command that might change between builds. </span>
+<span class="sd">		</span>
+<span class="sd">		@param command: a function or a list. </span>
+<span class="sd">		If command is a list, items may be:</span>
+<span class="sd">			- a string (which will be run through expandPropertyValues prior to execution); </span>
+<span class="sd">				must not be used for representing arguments that are paths</span>
+<span class="sd">			- a PathSet (which must resolve to exactly one path - see joinPaths </span>
+<span class="sd">				property functor if multiple paths are required). Any PathSets used in </span>
+<span class="sd">				the arguments should usually be explicitly listed in dependencies too, </span>
+<span class="sd">				especially if they are generated by another part of this build. </span>
+<span class="sd">			- a property functor such as joinPaths (useful for constructing </span>
+<span class="sd">				Java classpaths), basename, etc</span>
+<span class="sd">			- an arbitrary function taking a single context argument</span>
+<span class="sd">			- CustomCommand.TARGET - a special value that is resolved to the </span>
+<span class="sd">			output path of this target</span>
+<span class="sd">			- CustomCommand.DEPENDENCIES - a special value that is resolved to </span>
+<span class="sd">			a list of this target&#39;s dependencies</span>
+<span class="sd">			- [deprecated] a ResolvePath(path) object, indicating a path that should be </span>
+<span class="sd">				resolved and resolved at execution time (this is equivalent </span>
+<span class="sd">				to using a PathSet, which is probably a better approach). </span>
+<span class="sd">			</span>
+<span class="sd">		If command is a function, must have </span>
+<span class="sd">		signature (resolvedTargetDirPath, resolvedDepsList, context), and </span>
+<span class="sd">		return the command line as a list of strings. resolvedDepsList will be an </span>
+<span class="sd">		ordered, flattened list of resolved paths from deps. </span>
+<span class="sd">		</span>
+<span class="sd">		Command lines MUST NOT depend </span>
+<span class="sd">		in any way on the current source or output directory, always use </span>
+<span class="sd">		a PathSet wrapper around such paths. </span>
+<span class="sd">			</span>
+<span class="sd">		@param cwd: the working directory to run it from (almost always this should be </span>
+<span class="sd">		left blank, meaning use output dir)</span>
+<span class="sd">		</span>
+<span class="sd">		@param env: a dictionary of environment overrides, or a function that </span>
+<span class="sd">		returns one given a context. Values in the dictionary will </span>
+<span class="sd">		be expanded using the same rules as for the command (see above). </span>
+<span class="sd">		Consider using `xpybuild.propertysupport.joinPaths` for environment variables </span>
+<span class="sd">		containing a list of paths. </span>
+<span class="sd">		</span>
+<span class="sd">		@param redirectStdOutToTarget: usually, any stdout is treated as logging </span>
+<span class="sd">		and the command is assumed to create the target file itself, but </span>
+<span class="sd">		set this to True for commands where the target file contents are </span>
+<span class="sd">		generated by the stdout of the command being executed. </span>
+<span class="sd">			</span>
+<span class="sd">		@param stdout: usually a unique name is auto-generated for .out for this target, but </span>
+<span class="sd">		use this if required to send output to a specific location. </span>
+<span class="sd">		</span>
+<span class="sd">		@param stderr: usually a unique name is auto-generated for .err for this target, but </span>
+<span class="sd">		use this if required to send output to a specific location. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">)</span>
+		
+		<span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="n">command</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cwd</span> <span class="o">=</span> <span class="n">cwd</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">deps</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">redirectStdOutToTarget</span> <span class="o">=</span> <span class="n">redirectStdOutToTarget</span>
+		<span class="k">if</span> <span class="n">redirectStdOutToTarget</span> <span class="ow">and</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">target</span><span class="p">):</span> <span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Cannot set redirectStdOutToTarget and specify a directory for the target name - please specify a file instead: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">target</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">env</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span>
+		
+		<span class="k">if</span> <span class="n">stdout</span> <span class="ow">and</span> <span class="n">redirectStdOutToTarget</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Cannot set both redirectStdOutToTarget and stdout&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">_resolveItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEPENDENCIES</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">deps</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">TARGET</span><span class="p">:</span> <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span> <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;resolveToString&#39;</span><span class="p">):</span> <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="c1"># supports Composables too</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">BasePathSet</span><span class="p">):</span> 
+			<span class="n">result</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;PathSet for custom command must resolve to exactly one path not </span><span class="si">%d</span><span class="s1"> (or use joinPaths): </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">x</span><span class="p">))</span>
+			<span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ResolvePath</span><span class="p">):</span> <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseDir</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="n">x</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unknown custom command input type </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+		
+	<span class="k">def</span> <span class="nf">_resolveCommand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">):</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">deps</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> <span class="n">context</span><span class="p">)</span>
+		<span class="k">assert</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="c1"># must be a list of strings, not a string</span>
+			
+		<span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolveItem</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">])</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">normLongPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span>
+	
+	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">CustomCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getHashableImplicitInputs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolveCommand</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cwd</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cwd</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cwd</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseDir</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+			<span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+			<span class="n">cwd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cwd</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+			<span class="n">cwd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cwd</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">workDir</span>
+		<span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workDir</span><span class="p">)</span>
+		
+		<span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolveCommand</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		
+		<span class="c1"># this location is a lot easier to find than the target&#39;s workdir</span>
+		<span class="n">logbasename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s1">&#39;BUILD_WORK_DIR&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;/CustomCommandOutput/&#39;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="o">+</span><span class="n">targetNameToUniqueId</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+		
+		
+		<span class="n">stdoutPath</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">redirectStdOutToTarget</span> <span class="k">else</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="ow">or</span> <span class="n">logbasename</span><span class="o">+</span><span class="s1">&#39;.out&#39;</span><span class="p">),</span> <span class="n">defaultDir</span><span class="o">=</span><span class="s1">&#39;$</span><span class="si">{BUILD_WORK_DIR}</span><span class="s1">/CustomCommandOutput/&#39;</span><span class="p">)</span>
+		<span class="n">stderrPath</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="ow">or</span> <span class="n">logbasename</span><span class="o">+</span><span class="s1">&#39;.err&#39;</span><span class="p">,</span> <span class="n">defaultDir</span><span class="o">=</span><span class="s1">&#39;$</span><span class="si">{BUILD_WORK_DIR}</span><span class="s1">/CustomCommandOutput/&#39;</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Building </span><span class="si">%s</span><span class="s1"> by executing command line: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cmd</span><span class="p">]))</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cwd</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Building </span><span class="si">%s</span><span class="s1"> from working directory: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cwd</span><span class="p">)</span> <span class="c1"># only print if overridden</span>
+		<span class="n">env</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="ow">or</span> <span class="p">{}</span>
+		<span class="k">if</span> <span class="n">env</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">env</span><span class="p">):</span>
+				<span class="n">env</span> <span class="o">=</span> <span class="n">env</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="kc">None</span> <span class="k">if</span> <span class="kc">None</span> <span class="o">==</span> <span class="n">env</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolveItem</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">env</span><span class="p">}</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Environment overrides for </span><span class="si">%s</span><span class="s1"> are: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">&quot;</span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">env</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">env</span><span class="p">]))</span>
+		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">env</span><span class="p">:</span> <span class="n">env</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+			<span class="k">if</span> <span class="kc">None</span> <span class="o">==</span> <span class="n">env</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+				<span class="k">del</span> <span class="n">env</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Output from </span><span class="si">%s</span><span class="s1"> will be written to &quot;</span><span class="si">%s</span><span class="s1">&quot; and &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> 
+			<span class="n">stdoutPath</span><span class="p">,</span> 
+			<span class="n">stderrPath</span><span class="p">)</span>
+		
+				
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">IS_WINDOWS</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.exe&#39;</span><span class="p">)):</span>
+			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Cannot run command because the executable does not exist: &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+		
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">success</span><span class="o">=</span><span class="kc">False</span>
+			<span class="n">rc</span> <span class="o">=</span> <span class="kc">None</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="c1"># maybe send output to a file instead</span>
+				<span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">logbasename</span><span class="p">))</span>
+				<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stderrPath</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fe</span><span class="p">:</span> <span class="c1"># can&#39;t use openForWrite with subprocess</span>
+					<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stdoutPath</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fo</span><span class="p">:</span>
+						<span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> 
+							<span class="n">stderr</span><span class="o">=</span><span class="n">fe</span><span class="p">,</span> 
+							<span class="n">stdout</span><span class="o">=</span><span class="n">fo</span><span class="p">,</span>
+							<span class="n">cwd</span><span class="o">=</span><span class="n">cwd</span><span class="p">,</span> 
+							<span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">)</span>
+
+						<span class="n">rc</span> <span class="o">=</span> <span class="n">_wait_with_timeout</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">(</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;process.timeout&#39;</span><span class="p">],</span> <span class="kc">False</span><span class="p">)</span>
+						<span class="n">success</span> <span class="o">=</span> <span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span>
+				
+			<span class="k">finally</span><span class="p">:</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">stderrPath</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span> <span class="n">deleteFile</span><span class="p">(</span><span class="n">stderrPath</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+					<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">redirectStdOutToTarget</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">stdoutPath</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span> <span class="n">deleteFile</span><span class="p">(</span><span class="n">stdoutPath</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+				<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+					<span class="c1"># stupid windows, it passes understanding</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Failed to delete empty .out/.err files (ignoring error as its not critical): </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+					
+				<span class="c1">#if not os.listdir(self.workDir): deleteDir(self.workDir) # don&#39;t leave empty work dirs around</span>
+	
+				<span class="n">mainlog</span> <span class="o">=</span> <span class="s1">&#39;&lt;command generated no output&gt;&#39;</span>
+				
+				<span class="n">logMethod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span>
+				
+				<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">redirectStdOutToTarget</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">stdoutPath</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">stdoutPath</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+					<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">stdoutPath</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">15</span><span class="o">*</span><span class="mi">1024</span><span class="p">:</span>
+						<span class="n">logMethod</span><span class="p">(</span><span class="s1">&#39;Output from </span><span class="si">%s</span><span class="s1"> stdout is: </span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">stdoutPath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="p">))</span>
+					<span class="n">mainlog</span> <span class="o">=</span> <span class="n">stdoutPath</span>
+					<span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">publishArtifact</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> stdout&#39;</span><span class="o">%</span><span class="bp">self</span><span class="p">,</span> <span class="n">stdoutPath</span><span class="p">)</span>
+				<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">stderrPath</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">stderrPath</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+					<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">stderrPath</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">15</span><span class="o">*</span><span class="mi">1024</span><span class="p">:</span>
+						<span class="n">logMethod</span><span class="p">(</span><span class="s1">&#39;Output from </span><span class="si">%s</span><span class="s1"> stderr is: </span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">stderrPath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="p">))</span>
+					<span class="n">mainlog</span> <span class="o">=</span> <span class="n">stderrPath</span> <span class="c1"># take precedence over stdout</span>
+					<span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">publishArtifact</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> stderr&#39;</span><span class="o">%</span><span class="bp">self</span><span class="p">,</span> <span class="n">stderrPath</span><span class="p">)</span>
+			
+			<span class="k">if</span> <span class="n">rc</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">rc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> command failed with error code </span><span class="si">%s</span><span class="s1">; see output at &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">rc</span><span class="p">,</span> <span class="n">mainlog</span><span class="p">),</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+		<span class="k">finally</span><span class="p">:</span>
+			<span class="k">pass</span>
+		
+		<span class="c1"># final sanity check</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span> 
+			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> command failed to create the target files (but returned no error code); see output at &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">mainlog</span><span class="p">),</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+		<span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span> <span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)):</span> 
+			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> created the wrong type of output on the file system (please check that trailing &quot;/&quot; is used if and only if a directory output is intended)&#39;</span><span class="o">%</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span></div>
+		
+<div class="viewcode-block" id="CustomCommandWithCopy"><a class="viewcode-back" href="../../../generated/xpybuild.targets.custom.html#xpybuild.targets.custom.CustomCommandWithCopy">[docs]</a><span class="k">class</span> <span class="nc">CustomCommandWithCopy</span><span class="p">(</span><span class="n">CustomCommand</span><span class="p">,</span> <span class="n">Copy</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	A custom target that builds a directory of content by running a </span>
+<span class="sd">	specified command line process, but unlike the normal CustomCommand </span>
+<span class="sd">	also copies one or more files into the output directory before running the </span>
+<span class="sd">	specified command. </span>
+<span class="sd">	</span>
+<span class="sd">	For advanced cases only - usually it&#39;s best to find a way to explicitly </span>
+<span class="sd">	separate the target input and output and use a normal CustomCommand - but </span>
+<span class="sd">	this target exists for badly written tools that are only able to do </span>
+<span class="sd">	in-place modifications on a directory. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">,</span> <span class="n">copySrc</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">redirectStdOutToTarget</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		@param target: the target</span>
+<span class="sd">		@param command: see CustomCommand for details</span>
+<span class="sd">		@param dependencies: an explicit list of any dependencies (other than copySrc) </span>
+<span class="sd">		that are required by the command, including static resources and </span>
+<span class="sd">		other targets generated by the build. This is ESSENTIAL for </span>
+<span class="sd">		reliable building. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">assert</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">target</span><span class="p">),</span> <span class="s1">&#39;This target can only be used for directories (ending in /)&#39;</span>
+		<span class="n">copySrc</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">copySrc</span><span class="p">)</span>
+		<span class="n">CustomCommand</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">dependencies</span><span class="p">,</span> <span class="n">copySrc</span><span class="p">],</span> <span class="n">cwd</span><span class="o">=</span><span class="n">cwd</span><span class="p">,</span> <span class="n">redirectStdOutToTarget</span><span class="o">=</span><span class="n">redirectStdOutToTarget</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		<span class="c1"># can&#39;t call Copy.__init__ without introducing a duplicate target</span>
+		<span class="c1"># but use the same name used by Copy so we can call run successfully later</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="o">=</span> <span class="n">copySrc</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="kc">None</span>
+	
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="c1"># first do what Copy would have done</span>
+		<span class="n">Copy</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+		
+		<span class="c1"># then custom command</span>
+		<span class="n">CustomCommand</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

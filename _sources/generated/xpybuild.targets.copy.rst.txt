@@ -1,0 +1,89 @@
+xpybuild.targets.copy
+~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.targets.copy
+
+.. currentmodule:: xpybuild.targets.copy
+
+
+
+AddFileFooter
+=============
+
+.. autoclass:: AddFileFooter
+  :members:
+
+
+AddFileHeader
+=============
+
+.. autoclass:: AddFileHeader
+  :members:
+
+
+Copy
+====
+
+.. autoclass:: Copy
+  :members:
+
+
+FileContentsMapper
+==================
+
+.. autoclass:: FileContentsMapper
+  :members:
+
+
+FilteredCopy
+============
+
+.. autoclass:: FilteredCopy
+  :members:
+
+
+InsertFileContentsLineMapper
+============================
+
+.. autoclass:: InsertFileContentsLineMapper
+  :members:
+
+
+OmitLines
+=========
+
+.. autoclass:: OmitLines
+  :members:
+
+
+RegexLineMapper
+===============
+
+.. autoclass:: RegexLineMapper
+  :members:
+
+
+StringReplaceLineMapper
+=======================
+
+.. autoclass:: StringReplaceLineMapper
+  :members:
+
+
+
+
+
+
+
+
+.. autosummary::
+    :toctree: generated
+
+
+
+createReplaceDictLineMappers
+============================
+.. autofunction:: createReplaceDictLineMappers
+
+
+

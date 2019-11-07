@@ -1,0 +1,54 @@
+xpybuild.utils.functors
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.utils.functors
+
+.. currentmodule:: xpybuild.utils.functors
+
+
+
+Composable
+==========
+
+.. autoclass:: Composable
+  :members:
+
+
+ComposableFn
+============
+
+.. autoclass:: ComposableFn
+  :members:
+
+
+ComposableWrapper
+=================
+
+.. autoclass:: ComposableWrapper
+  :members:
+
+
+Compose
+=======
+
+.. autoclass:: Compose
+  :members:
+
+
+
+
+
+
+
+
+.. autosummary::
+    :toctree: generated
+
+
+
+makeFunctor
+===========
+.. autofunction:: makeFunctor
+
+
+

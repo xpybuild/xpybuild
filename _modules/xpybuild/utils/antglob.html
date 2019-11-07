@@ -1,0 +1,702 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.utils.antglob &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.utils.antglob</h1><div class="highlight"><pre>
+<span></span><span class="c1"># antglob - algorithm for globbing ant-style path expressions</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: antglob.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+<span class="kn">import</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">flatten</span>
+
+<span class="n">_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;antglob&#39;</span><span class="p">)</span>
+
+<span class="c1">#def dbg(s, *args): # for manual use with doc tests</span>
+<span class="c1">#	sys.stderr.write((s%args)+&#39;\n&#39;)</span>
+<span class="c1">#	sys.stderr.flush()</span>
+
+<div class="viewcode-block" id="GlobPatternSet"><a class="viewcode-back" href="../../../generated/xpybuild.utils.antglob.html#xpybuild.utils.antglob.GlobPatternSet">[docs]</a><span class="k">class</span> <span class="nc">GlobPatternSet</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Holds a set of one or more ant-style glob patterns, which can be used to </span>
+<span class="sd">	filter a set of paths based on whether each path matches any of the </span>
+<span class="sd">	specified patterns. </span>
+<span class="sd">	</span>
+<span class="sd">	Typically there will be one GlobPatternSet for includes and another for </span>
+<span class="sd">	excludes. </span>
+<span class="sd">	</span>
+<span class="sd">	This object is immutable and thread-safe.</span>
+<span class="sd">	</span>
+<span class="sd">	Glob patterns may contain &#39;*&#39; (indicating zero or more non-slash </span>
+<span class="sd">	characters) or &#39;**&#39; (indicating zero or more characters including slashes). </span>
+<span class="sd">	The &#39;?&#39; character is not supported. </span>
+<span class="sd">	</span>
+<span class="sd">	@undocumented: __init__</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">__patternCache</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># static cache, since there will be lots of these; mostly to save memory, but also a bit of CPU</span>
+	<span class="n">__patternCache_get</span> <span class="o">=</span> <span class="n">__patternCache</span><span class="o">.</span><span class="n">get</span>
+	
+	<span class="c1"># define these so we can use fast &#39;is&#39; comparisons</span>
+	<span class="n">STAR</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+	<span class="n">STARSTAR</span> <span class="o">=</span> <span class="s1">&#39;**&#39;</span>
+	
+<div class="viewcode-block" id="GlobPatternSet.create"><a class="viewcode-back" href="../../../generated/xpybuild.utils.antglob.html#xpybuild.utils.antglob.GlobPatternSet.create">[docs]</a>	<span class="nd">@staticmethod</span>
+	<span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">patterns</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Create a new GlobPatternSet for matching any of the specified patterns. </span>
+<span class="sd">		</span>
+<span class="sd">		Patterns ending with a &#39;/&#39; can only match directories, and patterns without </span>
+<span class="sd">		can only match files. </span>
+
+<span class="sd">		@param patterns: a string, or a list of one or more pattern strings. </span>
+<span class="sd">		Glob patterns may contain &#39;*&#39; (indicating zero or more non-slash </span>
+<span class="sd">		characters) or &#39;**&#39; (indicating zero or more characters including slashes). </span>
+<span class="sd">		Backslashes are not permitted. Empty pattern strings are ignored. </span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">patterns</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span> <span class="n">patterns</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">patterns</span><span class="p">)</span> <span class="c1"># make it hashable</span>
+		<span class="k">if</span> <span class="n">patterns</span> <span class="ow">in</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">__patternCache</span><span class="p">:</span> 
+			<span class="k">return</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">__patternCache</span><span class="p">[</span><span class="n">patterns</span><span class="p">]</span>
+		
+		<span class="n">p</span> <span class="o">=</span> <span class="n">GlobPatternSet</span><span class="p">(</span><span class="n">patterns</span><span class="p">)</span>
+		<span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">__patternCache</span><span class="p">[</span><span class="n">patterns</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
+		<span class="k">return</span> <span class="n">p</span></div>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patterns</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Do not call this constructor - use L{create} instead of constructing directly.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">patterns</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">patterns</span><span class="p">)</span>
+		
+		<span class="c1"># values are [ELEMENTS, ORIGINAL_PATTERNS_INDEX]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">filepatterns</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">dirpatterns</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># with no trailing slash</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">origpatterns</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># original file+dir patterns </span>
+
+		
+		<span class="bp">self</span><span class="o">.</span><span class="n">hasStarStarPrefixPattern</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># set to true if there are any file or dir patterns starting **/		</span>
+		<span class="c1"># some booleans to save calculations later</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">allfiles</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># ** i.e. match all files regardless</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">alldirs</span> <span class="o">=</span> <span class="kc">False</span>
+		
+		<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">:</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="p">:</span> <span class="k">continue</span>
+
+			<span class="k">if</span> <span class="s1">&#39;?&#39;</span> <span class="ow">in</span> <span class="n">p</span><span class="p">:</span>
+				 <span class="c1"># would require some more work (maybe regexes), but a rare case so don&#39;t bother</span>
+				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Invalid pattern (&quot;?&quot; is not supported at present): </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">p</span><span class="p">)</span>
+	
+			<span class="k">if</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">p</span><span class="p">:</span>
+				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Invalid pattern (must use forward slashes not backslashes): </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">p</span><span class="p">)</span>
+	
+			<span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;**/*&#39;</span><span class="p">):</span> <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># normalize since this is pointless</span>
+				
+			<span class="k">if</span> <span class="s1">&#39;**/*/&#39;</span> <span class="ow">in</span> <span class="n">p</span><span class="p">:</span>
+				<span class="c1"># we disallow this because it messes up our ability to decide how many path elements the ** should eat; </span>
+				<span class="c1"># breaks cases like &gt;&gt;&gt; antGlobMatch(&#39;**/*/f/*.e&#39;, &#39;f/PPP/a/b/c/d/e/PPP/f/foo.e&#39;) (ought to be True)</span>
+				<span class="c1"># in theory we could solve that case by counting from the back, but the potential presence of </span>
+				<span class="c1"># **s later in the pattern would make that a very inefficient operation. </span>
+				<span class="c1"># There isn&#39;t really a compelling case for supporting this so disable it to avoid people</span>
+				<span class="c1"># shooting themselves in the foot</span>
+				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Invalid pattern (**/* sequences are not permitted): </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">p</span><span class="p">)</span>
+			
+			<span class="bp">self</span><span class="o">.</span><span class="n">origpatterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+			<span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;**&#39;</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasStarStarPrefixPattern</span> <span class="o">=</span> <span class="kc">True</span>
+			<span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">p</span> <span class="o">==</span> <span class="s1">&#39;**/&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">alldirs</span> <span class="o">=</span> <span class="kc">True</span>
+				<span class="n">elements</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__canonicalizePatternElement</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">p</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)]</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">dirpatterns</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">elements</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">origpatterns</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">p</span> <span class="o">==</span> <span class="s1">&#39;**&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">allfiles</span> <span class="o">=</span> <span class="kc">True</span>
+				<span class="n">elements</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__canonicalizePatternElement</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)]</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">filepatterns</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">elements</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">origpatterns</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+			<span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">:</span>
+				<span class="k">if</span> <span class="s1">&#39;**&#39;</span> <span class="ow">in</span> <span class="n">e</span> <span class="ow">and</span> <span class="n">e</span> <span class="o">!=</span> <span class="s1">&#39;**&#39;</span><span class="p">:</span>
+					<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Invalid pattern (pattern elements containing &quot;**&quot; must not have any other characters): </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">p</span><span class="p">)</span>
+					
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allfiles</span><span class="p">:</span> <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepatterns</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;No point specifying additional file patterns after adding **&#39;</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alldirs</span><span class="p">:</span> <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirpatterns</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;No point specifying additional directory patterns after adding **/&#39;</span>
+		
+		<span class="bp">self</span><span class="o">.</span><span class="n">nofiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepatterns</span> <span class="o">==</span> <span class="p">[]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">nodirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirpatterns</span> <span class="o">==</span> <span class="p">[]</span>
+
+	<span class="nd">@staticmethod</span>
+	<span class="k">def</span> <span class="nf">__canonicalizePatternElement</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+		<span class="c1"># allow faster comparisons with these common strings</span>
+		<span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span> <span class="k">return</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">STAR</span>
+		<span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s1">&#39;**&#39;</span><span class="p">:</span> <span class="k">return</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">STARSTAR</span>
+		<span class="k">return</span> <span class="n">element</span>
+			
+	
+	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		&gt;&gt;&gt; str(GlobPatternSet.create([&#39;**/a&#39;, &#39;*/b/&#39;, &#39;**/c&#39;]))</span>
+<span class="sd">		&quot;[&#39;**/a&#39;, &#39;*/b/&#39;, &#39;**/c&#39;]&quot;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">origpatterns</span><span class="p">)</span>
+		
+	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		&gt;&gt;&gt; repr(GlobPatternSet.create([&#39;**/a&#39;, &#39;*/b/&#39;, &#39;**/c&#39;]))</span>
+<span class="sd">		&quot;GlobPatternSet[&#39;**/a&#39;, &#39;*/b/&#39;, &#39;**/c&#39;]&quot;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="s1">&#39;GlobPatternSet</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="GlobPatternSet.getPathMatches"><a class="viewcode-back" href="../../../generated/xpybuild.utils.antglob.html#xpybuild.utils.antglob.GlobPatternSet.getPathMatches">[docs]</a>	<span class="k">def</span> <span class="nf">getPathMatches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">,</span> <span class="n">filenames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dirnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unusedPatternsTracker</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Check these patterns against one or more basenames (dir names and filenames) </span>
+<span class="sd">		within a single root directory and return the list which match at least </span>
+<span class="sd">		one pattern. </span>
+<span class="sd">		</span>
+<span class="sd">		Using this method is a lot more efficient than checking each file </span>
+<span class="sd">		in a directory independently, especially when there are many files. </span>
+<span class="sd">		</span>
+<span class="sd">		@param rootdir: The parent of the file/dir names to be matched. </span>
+<span class="sd">		Must use forward slashes not backslashes, and must end with a slash. </span>
+<span class="sd">		Can be empty but not None. </span>
+<span class="sd">		</span>
+<span class="sd">		@param filenames: A list of base file names within the rootdir, to be </span>
+<span class="sd">		matched. There must be no empty names in the list, but an empty/None list </span>
+<span class="sd">		can be specified. </span>
+<span class="sd">		No slash characters may be present in the names. </span>
+
+<span class="sd">		@param dirnames: A list of base directory names within the rootdir, to be </span>
+<span class="sd">		matched. There must be no empty names in the list, but an empty/None list </span>
+<span class="sd">		can be specified. </span>
+<span class="sd">		No slash characters may be present in the names, except optionally </span>
+<span class="sd">		as a suffix. </span>
+<span class="sd">		</span>
+<span class="sd">		@param unusedPatternsTracker: Optionally specify an instance of </span>
+<span class="sd">		L{GlobUnusedPatternTracker} which will be notified of the patterns that </span>
+<span class="sd">		are used, allow an error to be produced for any that are not used. </span>
+<span class="sd">		</span>
+<span class="sd">		@return: If either filenames or dirnames is None then the result is a </span>
+<span class="sd">		single list of basenames. If both filenames and dirnames are lists </span>
+<span class="sd">		(even if empty) the result is a tuple (filenames, dirnames). </span>
+<span class="sd">		Directory entries will have a trailing slash only if they did in the input </span>
+<span class="sd">		dirnames list.</span>
+<span class="sd">		</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="c1"># this is an algorithm similar to ant&#39;s globbing... but not totally identical (to keep things simple), it doesn&#39;t support &#39;?&#39; for example</span>
+		<span class="c1"># we also distinguish between file and dir patterns</span>
+		
+		<span class="c1"># we avoid using regexes for efficiency reasons</span>
+		
+		<span class="n">operations</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="k">if</span> <span class="n">unusedPatternsTracker</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">unusedPatternsTrackerIndex</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="k">else</span><span class="p">:</span> <span class="c1"># speed up lookups since this is frequent</span>
+			<span class="n">unusedPatternsTrackerIndex</span> <span class="o">=</span> <span class="n">unusedPatternsTracker</span><span class="o">.</span><span class="n">_used</span>
+
+		<span class="k">if</span> <span class="n">filenames</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">fileresults</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="k">if</span> <span class="n">filenames</span> <span class="o">!=</span> <span class="p">[]:</span>
+				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allfiles</span><span class="p">:</span> <span class="c1"># special-case ** to make it fast</span>
+					<span class="n">fileresults</span> <span class="o">=</span> <span class="n">filenames</span>
+					<span class="k">if</span> <span class="n">unusedPatternsTracker</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">unusedPatternsTrackerIndex</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">filepatterns</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+				<span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">nofiles</span><span class="p">:</span>
+					<span class="n">operations</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">filepatterns</span><span class="p">,</span> <span class="n">filenames</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">fileresults</span><span class="p">))</span>
+			<span class="n">results</span> <span class="o">=</span> <span class="n">fileresults</span>
+			
+		<span class="k">if</span> <span class="n">dirnames</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">dirresults</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="k">if</span> <span class="n">dirnames</span> <span class="o">!=</span> <span class="p">[]:</span>
+				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alldirs</span><span class="p">:</span> <span class="c1"># special-case **/ to make it fast</span>
+					<span class="n">dirresults</span> <span class="o">=</span> <span class="n">dirnames</span>
+					<span class="k">if</span> <span class="n">unusedPatternsTracker</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">unusedPatternsTrackerIndex</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dirpatterns</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+				<span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodirs</span><span class="p">:</span>
+					<span class="n">operations</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">dirpatterns</span><span class="p">,</span> <span class="n">dirnames</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">dirresults</span><span class="p">))</span>
+			<span class="n">results</span> <span class="o">=</span> <span class="n">dirresults</span>
+		
+		<span class="k">if</span> <span class="n">dirnames</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">filenames</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">results</span> <span class="o">=</span> <span class="p">(</span><span class="n">fileresults</span><span class="p">,</span> <span class="n">dirresults</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">operations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="n">results</span>
+
+		<span class="c1"># this is _very_ performance critical code. we do less validation than </span>
+		<span class="c1"># normal to keep it fast - caller needs to pass in clean inputs</span>
+		<span class="k">if</span> <span class="n">rootdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> 
+			<span class="n">rootdir</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">assert</span> <span class="n">rootdir</span><span class="o">==</span><span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="n">rootdir</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;Root directory must end with a slash: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">rootdir</span>
+		
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rootdir</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+			<span class="n">rootdir</span> <span class="o">=</span> <span class="n">rootdir</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">rootdir</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">rootdirlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rootdir</span><span class="p">)</span>
+		<span class="n">STAR</span> <span class="o">=</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">STAR</span> 
+		<span class="n">STARSTAR</span> <span class="o">=</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">STARSTAR</span>
+		
+		<span class="k">for</span> <span class="p">(</span><span class="n">patternlist</span><span class="p">,</span> <span class="n">basenames</span><span class="p">,</span> <span class="n">isdir</span><span class="p">,</span> <span class="n">thisresultlist</span><span class="p">)</span> <span class="ow">in</span> <span class="n">operations</span><span class="p">:</span>
+			<span class="c1">#if not basenames: continue</span>
+			<span class="k">assert</span> <span class="s1">&#39;/&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">basenames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;Slashes are not permitted in the base names passed to this function: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">basenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># sanity check for correct usage</span>
+
+			<span class="c1"># start by finding out which patterns match against basenames in this directory</span>
+			<span class="n">basenamepatterns</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># patterns to match against basenames</span>
+			<span class="k">for</span> <span class="p">(</span><span class="n">patternelements</span><span class="p">,</span> <span class="n">origpatternindex</span><span class="p">)</span> <span class="ow">in</span> <span class="n">patternlist</span><span class="p">:</span>
+				<span class="n">finalpattern</span> <span class="o">=</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">__matchSinglePath</span><span class="p">(</span><span class="n">patternelements</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">,</span> <span class="n">rootdirlen</span><span class="p">)</span>
+				<span class="k">if</span> <span class="n">finalpattern</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">continue</span>
+				<span class="k">if</span> <span class="n">finalpattern</span> <span class="ow">is</span> <span class="n">STARSTAR</span><span class="p">:</span> <span class="n">finalpattern</span> <span class="o">=</span> <span class="n">STAR</span> <span class="c1">#canonicalize further</span>
+				<span class="n">basenamepatterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">finalpattern</span><span class="p">,</span> <span class="n">origpatternindex</span><span class="p">)</span> <span class="p">)</span>
+				<span class="k">if</span> <span class="n">finalpattern</span> <span class="ow">is</span> <span class="n">STAR</span><span class="p">:</span> <span class="k">break</span> <span class="c1"># no point doing any others</span>
+			
+			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">basenamepatterns</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+			<span class="k">if</span> <span class="n">basenamepatterns</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="n">STAR</span><span class="p">:</span>
+				<span class="c1">#special-case this common case</span>
+				<span class="n">thisresultlist</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">basenames</span><span class="p">)</span>
+				<span class="k">if</span> <span class="n">unusedPatternsTracker</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">unusedPatternsTrackerIndex</span><span class="p">[</span><span class="n">basenamepatterns</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+			<span class="k">else</span><span class="p">:</span>
+
+				<span class="k">for</span> <span class="n">basename</span> <span class="ow">in</span> <span class="n">basenames</span><span class="p">:</span>
+					<span class="n">origbasename</span> <span class="o">=</span> <span class="n">basename</span>
+					
+					<span class="k">if</span> <span class="n">isdir</span> <span class="ow">and</span> <span class="p">(</span><span class="n">basename</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span><span class="p">):</span> <span class="n">basename</span> <span class="o">=</span> <span class="n">basename</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># strip off optional dir suffix</span>
+					
+					<span class="k">for</span> <span class="p">(</span><span class="n">basenamepattern</span><span class="p">,</span> <span class="n">origpatternindex</span><span class="p">)</span> <span class="ow">in</span> <span class="n">basenamepatterns</span><span class="p">:</span>
+						<span class="k">if</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">__elementMatch</span><span class="p">(</span><span class="n">basenamepattern</span><span class="p">,</span> <span class="n">basename</span><span class="p">):</span> 
+							<span class="n">thisresultlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">basename</span><span class="p">)</span>
+							<span class="k">if</span> <span class="n">unusedPatternsTracker</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">unusedPatternsTrackerIndex</span><span class="p">[</span><span class="n">origpatternindex</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+							<span class="k">break</span>
+
+		<span class="k">return</span> <span class="n">results</span></div>
+
+	<span class="nd">@staticmethod</span>	
+	<span class="k">def</span> <span class="nf">__elementMatch</span><span class="p">(</span><span class="n">elementPattern</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+		<span class="c1"># NB: do this case sensitively, because that&#39;s what unix will do anyway</span>
+		<span class="k">if</span> <span class="n">elementPattern</span> <span class="ow">is</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">STAR</span> <span class="ow">or</span> <span class="n">elementPattern</span> <span class="ow">is</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">STARSTAR</span><span class="p">:</span>
+			<span class="k">return</span> <span class="kc">True</span>
+
+		<span class="c1"># simple cases, efficient implementation</span>
+		<span class="n">star1</span> <span class="o">=</span> <span class="n">elementPattern</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">star1</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="k">return</span> <span class="n">elementPattern</span><span class="o">==</span><span class="n">element</span>
+
+		<span class="n">star2</span> <span class="o">=</span> <span class="n">elementPattern</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">star1</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">star2</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="c1"># copes with: a* *a and a*b</span>
+			<span class="k">return</span> <span class="n">element</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">elementPattern</span><span class="p">[:</span><span class="n">star1</span><span class="p">])</span> <span class="ow">and</span> <span class="n">element</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">elementPattern</span><span class="p">[</span><span class="n">star1</span><span class="o">+</span><span class="mi">1</span><span class="p">:])</span>
+
+		<span class="c1"># more complex cases will have to be less efficient</span>
+		<span class="n">elementPattern</span> <span class="o">=</span> <span class="n">elementPattern</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;.*&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">,</span> <span class="n">elementPattern</span><span class="p">)),</span> <span class="n">element</span><span class="p">)</span>
+
+	<span class="nd">@staticmethod</span>	
+	<span class="k">def</span> <span class="nf">__matchSinglePath</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">,</span> <span class="n">lenrootdir</span><span class="p">):</span>
+		<span class="c1"># matches all elements of pattern against rootdir/basename where basename </span>
+		<span class="c1"># could be anything. Returns None if no match is possible, or the pattern element </span>
+		<span class="c1"># string that basenames must match or .STAR/STARSTAR if any. </span>
+		
+		<span class="c1">#dbg(&#39;matching: %s, %s, %s&#39;, pattern, rootdir, lenrootdir)</span>
+		
+		<span class="n">lenpattern</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+		<span class="n">STARSTAR</span> <span class="o">=</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">STARSTAR</span>
+		
+		<span class="c1"># nb: pattern is a list of pattern elements; rootdir is rstripped and split by /</span>
+		<span class="n">e</span> <span class="o">=</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">while</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="n">lenpattern</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">lenrootdir</span><span class="p">:</span>
+			<span class="n">patternelement</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+			<span class="c1">#dbg(&#39;loop patternelement: %s, %s, %s, %s&#39;, patternelement, e, rootdir[y], y)</span>
+			<span class="k">if</span> <span class="n">patternelement</span> <span class="ow">is</span> <span class="n">STARSTAR</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="n">lenpattern</span><span class="o">-</span><span class="mi">2</span><span class="p">:</span> <span class="c1"># this is just an optimization for a common case **/pattern</span>
+					<span class="c1"># all that remains is the pattern to match against the basename</span>
+					<span class="k">return</span> <span class="n">pattern</span><span class="p">[</span><span class="n">lenpattern</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="c1"># consume as much as we need to of ** until we get another match</span>
+					<span class="c1"># be completely greedy; in theory we could try to ignore matches that are too early, i.e. don&#39;t leave </span>
+					<span class="c1"># enough remaining elements to possibly match (e.g. antGlobMatch(&#39;**/PPP/f/*.e&#39;, &#39;f/PPP/a/b/c/d/e/PPP/f/foo.e&#39;) )</span>
+					<span class="c1"># but in practice that gets too hard to handle in case there are further **s later in the pattern. </span>
+					<span class="c1"># don&#39;t consume the final pattern element since we&#39;ll need that to match the basename</span>
+					<span class="n">e</span> <span class="o">+=</span> <span class="mi">1</span>
+					<span class="n">patternelement</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+					<span class="c1">#dbg(&#39;INNER loop patternelement: %s, %s, %s, %s&#39;, patternelement, e, rootdir[y], y)</span>
+					<span class="k">while</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">lenrootdir</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">__elementMatch</span><span class="p">(</span><span class="n">patternelement</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">[</span><span class="n">y</span><span class="p">]):</span>
+						<span class="n">y</span> <span class="o">+=</span> <span class="mi">1</span>
+					<span class="c1">#dbg(&#39;INNER loop done: %s, %s, %s&#39;, patternelement, e, y)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="c1">#dbg(&#39;normal patternelement: %s, %s, %s, %s&#39;, patternelement, e, rootdir[y], y)</span>
+				<span class="k">if</span> <span class="ow">not</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">__elementMatch</span><span class="p">(</span><span class="n">patternelement</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">[</span><span class="n">y</span><span class="p">]):</span>
+					<span class="k">return</span> <span class="kc">None</span>
+				<span class="n">e</span> <span class="o">+=</span> <span class="mi">1</span>
+				<span class="n">y</span> <span class="o">+=</span> <span class="mi">1</span>
+
+		<span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">lenrootdir</span><span class="p">:</span>
+			<span class="c1"># we&#39;ve used up all the rootdir</span>
+			
+			<span class="k">while</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="n">lenpattern</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">pattern</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="ow">is</span> <span class="n">STARSTAR</span><span class="p">:</span>
+				<span class="n">e</span> <span class="o">+=</span> <span class="mi">1</span>
+			
+			<span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="n">lenpattern</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span> 
+				<span class="k">return</span> <span class="n">pattern</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+			<span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="n">lenpattern</span><span class="o">-</span><span class="mi">2</span><span class="p">:</span> 
+				<span class="k">if</span> <span class="n">pattern</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="n">STARSTAR</span><span class="p">:</span> 
+					<span class="k">return</span> <span class="n">pattern</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+			<span class="k">return</span> <span class="kc">None</span>
+		
+		<span class="c1"># we have some rootdir left over, only ok if we have a final **</span>
+		<span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="n">lenpattern</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">pattern</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="n">STARSTAR</span><span class="p">:</span> 
+			<span class="k">return</span> <span class="n">STARSTAR</span>
+			
+		<span class="k">return</span> <span class="kc">None</span>
+		
+	<span class="nd">@staticmethod</span>
+	<span class="k">def</span> <span class="nf">__dirCouldMatchIncludePattern</span><span class="p">(</span><span class="n">includePattern</span><span class="p">,</span> <span class="n">isdir</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+		<span class="c1"># nb: we already checked it doesn&#39;t start with ** before calling this function</span>
+		<span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">isdir</span><span class="p">:</span>
+			<span class="n">p</span> <span class="o">=</span> <span class="n">includePattern</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">p</span> <span class="o">=</span> <span class="n">includePattern</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># strip off trailing filename</span>
+			
+		<span class="k">if</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">STARSTAR</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">includePattern</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">):</span> 
+			<span class="c1"># don&#39;t go into a dir structure that&#39;s more deeply nested than the pattern</span>
+			<span class="c1">#log.debug(&#39;   maybe vetoing %s based on counts : %s&#39;, d, p)</span>
+			<span class="k">return</span> <span class="kc">False</span>
+		
+		<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+			<span class="k">if</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">STAR</span> <span class="ow">in</span> <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span> <span class="k">return</span> <span class="kc">True</span> <span class="c1"># any kind of wildcard and we give up trying to match</span>
+			<span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span> 
+				<span class="c1">#log.debug(&#39;   maybe vetoing %s due to not matching %s&#39;, d, includePattern)</span>
+				<span class="k">return</span> <span class="kc">False</span>
+			<span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+		<span class="k">return</span> <span class="kc">True</span>
+	
+<div class="viewcode-block" id="GlobPatternSet.removeUnmatchableDirectories"><a class="viewcode-back" href="../../../generated/xpybuild.utils.antglob.html#xpybuild.utils.antglob.GlobPatternSet.removeUnmatchableDirectories">[docs]</a>	<span class="k">def</span> <span class="nf">removeUnmatchableDirectories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">,</span> <span class="n">dirnames</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Modifies the specifies list of dirnames, removing any which cannot possibly </span>
+<span class="sd">		match this include pattern. This is a useful optimization for os.walk. </span>
+<span class="sd">		</span>
+<span class="sd">		As this function is intended as a quick optimization it may leave in some </span>
+<span class="sd">		dirs that could not match, but will definitely not remove any that could. </span>
+<span class="sd">		</span>
+<span class="sd">		@param rootdir: The parent of the file/dir names to be matched. </span>
+<span class="sd">		Must use forward slashes not backslashes, and must end with a slash. </span>
+<span class="sd">		Can be empty but not None. </span>
+<span class="sd">		@param dirnames: a list of directory basenames contained in rootdir</span>
+<span class="sd">		@return the same dirnames instance passed in (with any modifications made). </span>
+<span class="sd">		</span>
+<span class="sd">		&gt;&gt;&gt; GlobPatternSet.create([&#39;**&#39;]).removeUnmatchableDirectories(&#39;abc/def/&#39;, [&#39;dir1&#39;, &#39;dir2&#39;])</span>
+<span class="sd">		[&#39;dir1&#39;, &#39;dir2&#39;]</span>
+
+<span class="sd">		&gt;&gt;&gt; GlobPatternSet.create([&#39;**/&#39;]).removeUnmatchableDirectories(&#39;abc/def/&#39;, [&#39;dir1&#39;, &#39;dir2&#39;])</span>
+<span class="sd">		[&#39;dir1&#39;, &#39;dir2&#39;]</span>
+
+<span class="sd">		&gt;&gt;&gt; GlobPatternSet.create([&#39;**/foo&#39;]).removeUnmatchableDirectories(&#39;abc/def/&#39;, [&#39;dir1&#39;, &#39;dir2&#39;])</span>
+<span class="sd">		[&#39;dir1&#39;, &#39;dir2&#39;]</span>
+
+<span class="sd">		&gt;&gt;&gt; GlobPatternSet.create([&#39;a/b/c/d/**&#39;]).removeUnmatchableDirectories(&#39;abc/def/&#39;, [&#39;dir1&#39;, &#39;dir2&#39;])</span>
+<span class="sd">		[]</span>
+
+<span class="sd">		&gt;&gt;&gt; GlobPatternSet.create([&#39;abc/def/dir1/d/**&#39;]).removeUnmatchableDirectories(&#39;abc/def/&#39;, [&#39;dir1&#39;, &#39;dir2&#39;])</span>
+<span class="sd">		[&#39;dir1&#39;]</span>
+
+<span class="sd">		&gt;&gt;&gt; GlobPatternSet.create([&#39;abc/def/dir1/d/**/&#39;]).removeUnmatchableDirectories(&#39;abc/def/&#39;, [&#39;dir1&#39;, &#39;dir2&#39;])</span>
+<span class="sd">		[&#39;dir1&#39;]</span>
+<span class="sd">		</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		
+		<span class="c1"># quick optimizations where we do nothing - everything could match a global wildcard</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allfiles</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">alldirs</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasStarStarPrefixPattern</span><span class="p">:</span> <span class="k">return</span> <span class="n">dirnames</span>
+				
+		<span class="k">assert</span> <span class="n">rootdir</span><span class="o">==</span><span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="n">rootdir</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;Root directory must end with a slash: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">rootdir</span>
+
+		<span class="n">dirnames</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirnames</span> <span class="k">if</span> 
+			<span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dirCouldMatchIncludePattern</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">rootdir</span><span class="o">+</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepatterns</span><span class="p">)</span> <span class="ow">or</span>
+			<span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dirCouldMatchIncludePattern</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">rootdir</span><span class="o">+</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirpatterns</span><span class="p">)</span>
+			<span class="p">]</span>
+
+		<span class="k">return</span> <span class="n">dirnames</span></div>
+
+<div class="viewcode-block" id="GlobPatternSet.matches"><a class="viewcode-back" href="../../../generated/xpybuild.utils.antglob.html#xpybuild.utils.antglob.GlobPatternSet.matches">[docs]</a>	<span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Returns True if the specified path matches any of the patterns in this set </span>
+<span class="sd">		or False if not. </span>
+<span class="sd">		</span>
+<span class="sd">		Note that L{getPathMatches} is considerably more efficient than this method </span>
+<span class="sd">		when there are several paths to be matched in the same directory. </span>
+<span class="sd">		</span>
+<span class="sd">		@param path: A path string. Must not be empty, must not contains </span>
+<span class="sd">		backslashes, and must end with a slash if it is a directory. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;/&#39;</span><span class="p">:</span>
+			<span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+			<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPathMatches</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;/&#39;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dirnames</span><span class="o">=</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span> <span class="o">!=</span> <span class="p">[]</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+			<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPathMatches</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;/&#39;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="n">filenames</span><span class="o">=</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span> <span class="o">!=</span> <span class="p">[]</span></div></div>
+
+<div class="viewcode-block" id="GlobUnusedPatternTracker"><a class="viewcode-back" href="../../../generated/xpybuild.utils.antglob.html#xpybuild.utils.antglob.GlobUnusedPatternTracker">[docs]</a><span class="k">class</span> <span class="nc">GlobUnusedPatternTracker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Class for recording which patterns have successfully been used in a match, </span>
+<span class="sd">	in order to provide error messages or warnings listing unused patterns. </span>
+<span class="sd">	</span>
+<span class="sd">	This object should not be shared between threads.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patternSet</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_patterns</span> <span class="o">=</span> <span class="n">patternSet</span><span class="o">.</span><span class="n">origpatterns</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_used</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_patterns</span><span class="p">))]</span>
+	
+<div class="viewcode-block" id="GlobUnusedPatternTracker.getUnusedPatterns"><a class="viewcode-back" href="../../../generated/xpybuild.utils.antglob.html#xpybuild.utils.antglob.GlobUnusedPatternTracker.getUnusedPatterns">[docs]</a>	<span class="k">def</span> <span class="nf">getUnusedPatterns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Returns a list of the patterns that have not been used. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">unused</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_patterns</span><span class="p">)):</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_used</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span> <span class="n">unused</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_patterns</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+		<span class="k">return</span> <span class="n">unused</span></div></div>
+
+		
+<div class="viewcode-block" id="antGlobMatch"><a class="viewcode-back" href="../../../generated/xpybuild.utils.antglob.html#xpybuild.utils.antglob.antGlobMatch">[docs]</a><span class="k">def</span> <span class="nf">antGlobMatch</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Matches a path against an ant-style glob pattern which may contain </span>
+<span class="sd">	&#39;*&#39; or &#39;**&#39;. </span>
+<span class="sd">	</span>
+<span class="sd">	If the path is a directory, it must end with a slash. </span>
+<span class="sd">	Patterns ending with a &#39;/&#39; can only match directories, and patterns without </span>
+<span class="sd">	can only match files. </span>
+<span class="sd">	</span>
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;&#39;, &#39;&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;*&#39;, &#39;a&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;*.b&#39;, &#39;a&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;*.b&#39;, &#39;a.b&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;b.*&#39;, &#39;b&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;b.*&#39;, &#39;b.a&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a*b&#39;, &#39;ab&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a*b&#39;, &#39;&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a*b&#39;, &#39;axxxb&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a*b&#39;, &#39;axxx&#39;)</span>
+<span class="sd">	False</span>
+<span class="sd">	</span>
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a*b&#39;, &#39;xxxb&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a/b.*/c&#39;, &#39;a/b.x/c&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a/b.*/c&#39;, &#39;a/b/c&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**&#39;, &#39;a&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**&#39;, &#39;a/b/c&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/c&#39;, &#39;a/b/c&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/*c&#39;, &#39;c&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/b/c&#39;, &#39;a/b/c&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/d&#39;, &#39;a/b/c&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a/**/b&#39;, &#39;a/b/c&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a/b/**&#39;, &#39;a/b/c/d&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a/b/**/*&#39;, &#39;a/b/c/d&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a/**/b&#39;, &#39;a/b&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a/b/**&#39;, &#39;a/b&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a/b&#39;, &#39;a/b/c/d&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a/**/d/e&#39;, &#39;a/b/c/d/e&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;*x/**/&#39;, &#39;x/a/b/&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;*x/**&#39;, &#39;x/a/b&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;*x/**/&#39;, &#39;x/a/b&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;*x/**&#39;, &#39;x/a/b/&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;*[[*&#39;, &#39;[[&#39;) and antGlobMatch(&#39;*[[*&#39;, &#39;xx[[&#39;) and antGlobMatch(&#39;*ab*&#39;, &#39;abxx&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;*[]*&#39;, &#39;[&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;aa*.b*c*/&#39;, &#39;aa.bc/&#39;) and antGlobMatch(&#39;aa*.b*c*/&#39;, &#39;aaxxx.bxcxx/&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;aa*b*c*&#39;, &#39;xaabc&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;aa*.*c*&#39;, &#39;aaYc&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/*.x&#39;, &#39;a/b.x/c.x&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/*.x&#39;, &#39;a/b.x/c.x/d.x&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/*.x&#39;, &#39;a/c.x/y/d.x&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/*.x&#39;, &#39;a/y/c.x/d.x&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/**/*.x&#39;, &#39;a/y/c.x/d.x&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/*.x/&#39;, &#39;a/y/c.x/d.x/&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;a/b/c/d/e/**&#39;, &#39;a/b/c&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/PPP/**/*.e&#39;, &#39;a/b/c/d/e/f/PPP/g/h/i/foo.e&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/PPP/**/*.e&#39;, &#39;PPP/g/h/i/foo.e&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/PPP/**/*.e&#39;, &#39;a/b/c/d/e/f/PPP/foo.e&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/PPP/**/*.e&#39;, &#39;a/b/PPP/g/h/i/j/k/l/m/n/o/foo.e&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/PPP/**/*.e&#39;, &#39;a/b/c/d/e/f/g/h/i/foo.e&#39;)</span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/PPP/**/**/**/PPP/**/**/*.e&#39;, &#39;f/PPP/x/PPP/foo.e&#39;)</span>
+<span class="sd">	True</span>
+
+<span class="sd">	# this one is debatable (could decide not to match first PPP to allow second to match, but in general hard to reliably detect that condition given any later **s would invalidate any attempt to do it by counting); this behaviour is simpler to describe and more efficient to implement</span>
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;**/PPP/f/*.e&#39;, &#39;f/PPP/a/b/c/d/e/PPP/f/foo.e&#39;) </span>
+<span class="sd">	False</span>
+
+<span class="sd">	&gt;&gt;&gt; antGlobMatch(&#39;*/**/f/*.e&#39;, &#39;f/PPP/a/b/c/d/e/PPP/f/foo.e&#39;) </span>
+<span class="sd">	True</span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span> <span class="k">return</span> <span class="ow">not</span> <span class="n">pattern</span> <span class="c1"># not useful or ideal, but for compatibility with older users keep this behaviour the same</span>
+
+	<span class="k">return</span> <span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

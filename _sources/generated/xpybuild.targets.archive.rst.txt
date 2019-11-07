@@ -1,0 +1,42 @@
+xpybuild.targets.archive
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.targets.archive
+
+.. currentmodule:: xpybuild.targets.archive
+
+
+
+FilteredArchiveContents
+=======================
+
+.. autoclass:: FilteredArchiveContents
+  :members:
+
+
+Tarball
+=======
+
+.. autoclass:: Tarball
+  :members:
+
+
+Unpack
+======
+
+.. autoclass:: Unpack
+  :members:
+
+
+Zip
+===
+
+.. autoclass:: Zip
+  :members:
+
+
+
+
+
+
+

@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.utils.terminal &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.utils.terminal</h1><div class="highlight"><pre>
+<span></span><span class="c1"># terminal functions</span>
+<span class="c1"># </span>
+<span class="c1"># Copyright (c) 2015 - 2017 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: terminal.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+
+<div class="viewcode-block" id="getTerminalSize"><a class="viewcode-back" href="../../../generated/xpybuild.utils.terminal.html#xpybuild.utils.terminal.getTerminalSize">[docs]</a><span class="k">def</span> <span class="nf">getTerminalSize</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot; getTerminalSize()</span>
+<span class="sd">	 - get width and height of console</span>
+<span class="sd">	 - works on linux,os x,windows,cygwin(windows)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="kn">import</span> <span class="nn">platform</span>
+	<span class="n">current_os</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span>
+	<span class="n">tuple_xy</span><span class="o">=</span><span class="kc">None</span>
+	<span class="k">if</span> <span class="n">current_os</span> <span class="o">==</span> <span class="s1">&#39;Windows&#39;</span><span class="p">:</span>
+		<span class="n">tuple_xy</span> <span class="o">=</span> <span class="n">_getTerminalSize_windows</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">tuple_xy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">tuple_xy</span> <span class="o">=</span> <span class="n">_getTerminalSize_tput</span><span class="p">()</span>
+			<span class="c1"># needed for window&#39;s python in cygwin&#39;s xterm!</span>
+	<span class="k">if</span> <span class="n">current_os</span> <span class="o">==</span> <span class="s1">&#39;Linux&#39;</span> <span class="ow">or</span> <span class="n">current_os</span> <span class="o">==</span> <span class="s1">&#39;Darwin&#39;</span> <span class="ow">or</span>  <span class="n">current_os</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;CYGWIN&#39;</span><span class="p">):</span>
+		<span class="n">tuple_xy</span> <span class="o">=</span> <span class="n">_getTerminalSize_linux</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">tuple_xy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+		<span class="n">tuple_xy</span> <span class="o">=</span> <span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>   <span class="c1"># default value</span>
+	<span class="k">return</span> <span class="n">tuple_xy</span></div>
+
+<span class="k">def</span> <span class="nf">_getTerminalSize_windows</span><span class="p">():</span>
+	<span class="n">res</span><span class="o">=</span><span class="kc">None</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="kn">from</span> <span class="nn">ctypes</span> <span class="k">import</span> <span class="n">windll</span><span class="p">,</span> <span class="n">create_string_buffer</span>
+
+		<span class="c1"># stdin handle is -10</span>
+		<span class="c1"># stdout handle is -11</span>
+		<span class="c1"># stderr handle is -12</span>
+
+		<span class="n">h</span> <span class="o">=</span> <span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">GetStdHandle</span><span class="p">(</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
+		<span class="n">csbi</span> <span class="o">=</span> <span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span>
+		<span class="n">res</span> <span class="o">=</span> <span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">GetConsoleScreenBufferInfo</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">csbi</span><span class="p">)</span>
+	<span class="k">except</span><span class="p">:</span>
+		<span class="k">return</span> <span class="kc">None</span>
+	<span class="k">if</span> <span class="n">res</span><span class="p">:</span>
+		<span class="kn">import</span> <span class="nn">struct</span>
+		<span class="p">(</span><span class="n">bufx</span><span class="p">,</span> <span class="n">bufy</span><span class="p">,</span> <span class="n">curx</span><span class="p">,</span> <span class="n">cury</span><span class="p">,</span> <span class="n">wattr</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">bottom</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;hhhhHhhhhhh&quot;</span><span class="p">,</span> <span class="n">csbi</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span>
+		<span class="n">sizex</span> <span class="o">=</span> <span class="n">right</span> <span class="o">-</span> <span class="n">left</span> <span class="o">+</span> <span class="mi">1</span>
+		<span class="n">sizey</span> <span class="o">=</span> <span class="n">bottom</span> <span class="o">-</span> <span class="n">top</span> <span class="o">+</span> <span class="mi">1</span>
+		<span class="k">return</span> <span class="n">sizex</span><span class="p">,</span> <span class="n">sizey</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">return</span> <span class="kc">None</span>
+
+<span class="k">def</span> <span class="nf">_getTerminalSize_tput</span><span class="p">():</span>
+	<span class="c1"># get terminal width</span>
+	<span class="c1"># src: http://stackoverflow.com/questions/263890/how-do-i-find-the-width-height-of-a-terminal-window</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="kn">import</span> <span class="nn">subprocess</span>
+		<span class="n">proc</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s2">&quot;tput&quot;</span><span class="p">,</span> <span class="s2">&quot;cols&quot;</span><span class="p">],</span><span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+		<span class="n">output</span><span class="o">=</span><span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+		<span class="n">cols</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+		<span class="n">proc</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s2">&quot;tput&quot;</span><span class="p">,</span> <span class="s2">&quot;lines&quot;</span><span class="p">],</span><span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+		<span class="n">output</span><span class="o">=</span><span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+		<span class="n">rows</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+		<span class="k">return</span> <span class="p">(</span><span class="n">cols</span><span class="p">,</span><span class="n">rows</span><span class="p">)</span>
+	<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+		<span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">_getTerminalSize_linux</span><span class="p">():</span>
+	<span class="k">def</span> <span class="nf">ioctl_GWINSZ</span><span class="p">(</span><span class="n">fd</span><span class="p">):</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="kn">import</span> <span class="nn">fcntl</span><span class="o">,</span> <span class="nn">termios</span><span class="o">,</span> <span class="nn">struct</span><span class="o">,</span> <span class="nn">os</span>
+			<span class="n">cr</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;hh&#39;</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">ioctl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">termios</span><span class="o">.</span><span class="n">TIOCGWINSZ</span><span class="p">,</span><span class="s1">&#39;1234&#39;</span><span class="p">))</span>
+		<span class="k">except</span><span class="p">:</span>
+			<span class="k">return</span> <span class="kc">None</span>
+		<span class="k">return</span> <span class="n">cr</span>
+	<span class="n">cr</span> <span class="o">=</span> <span class="n">ioctl_GWINSZ</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ioctl_GWINSZ</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ioctl_GWINSZ</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">cr</span><span class="p">:</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">fd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">ctermid</span><span class="p">(),</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDONLY</span><span class="p">)</span>
+			<span class="n">cr</span> <span class="o">=</span> <span class="n">ioctl_GWINSZ</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+			<span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+		<span class="k">except</span><span class="p">:</span>
+			<span class="k">pass</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">cr</span><span class="p">:</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">cr</span> <span class="o">=</span> <span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s1">&#39;LINES&#39;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;COLUMNS&#39;</span><span class="p">])</span>
+		<span class="k">except</span><span class="p">:</span>
+			<span class="k">return</span> <span class="kc">None</span>
+	<span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">cr</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">cr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

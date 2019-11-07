@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.utils.process &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.utils.process</h1><div class="highlight"><pre>
+<span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: process.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1"># Requires: Python 2.6</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">subprocess</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Lock</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="k">import</span> <span class="n">ProcessOutputHandler</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;process&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">__ProcessMonitor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_global_process_list</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_global_process_lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+	
+	<span class="k">def</span> <span class="nf">killall</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_process_lock</span><span class="p">:</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Cleaning up </span><span class="si">%d</span><span class="s1"> remaining child processes: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_global_process_list</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_process_list</span><span class="p">)</span>
+			<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_process_list</span><span class="p">:</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="n">p</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+				<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+					<span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+						<span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Failed to clean up child process </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+			<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_process_list</span><span class="p">:</span>
+				<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Done cleanup up child processes&#39;</span><span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_global_process_list</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+	<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">process</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_process_lock</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_global_process_list</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">process</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">process</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_process_lock</span><span class="p">:</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_global_process_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">process</span><span class="p">)</span>
+			<span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+				<span class="k">pass</span> <span class="c1"># during Ctrl+C this can be called more than once</span>
+
+<span class="c1"># used by threadpool to force cleanup of children during shutdown</span>
+<span class="n">_processCleanupMonitor</span> <span class="o">=</span> <span class="n">__ProcessMonitor</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">_wait_with_timeout</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">displayName</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">read</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	PRIVATE method - do not call</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="c1"># read output from the command, with a timeout</span>
+	<span class="c1"># returns (out, err, timedout) if read else returncode; out/err are byte buffers</span>
+	
+	<span class="n">_processCleanupMonitor</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">process</span><span class="p">)</span>
+	<span class="n">timedOut</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
+	
+	<span class="n">parentThreadName</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+	
+	<span class="k">def</span> <span class="nf">kill_proc</span><span class="p">():</span> <span class="c1"># executed on a background thread</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">parentThreadName</span><span class="o">+</span><span class="s1">&#39;-timer&#39;</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Process timeout handler for </span><span class="si">%s</span><span class="s1"> invoked after </span><span class="si">%s</span><span class="s1"> s; still running=</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">displayName</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span><span class="o">==</span><span class="kc">None</span><span class="p">)</span>
+			<span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="c1"># has terminated, so nothing to do - this happen on loaded machines sometimes</span>
+			
+			<span class="c1"># this will cause us to throw an exception</span>
+			<span class="n">timedOut</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">process</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+				<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Process kill completed successfully for </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">displayName</span><span class="p">)</span>
+			<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+				<span class="c1"># only log if process is still running (Windows Access Denied 5 are seen occasionally in kill()) - should not happen</span>
+				<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+				<span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+					<span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Failed to kill process </span><span class="si">%s</span><span class="s1"> (pid </span><span class="si">%s</span><span class="s1">) after </span><span class="si">%d</span><span class="s1"> second timeout: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">displayName</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Process kill failed but process is now stopped anyway: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+		<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># should never happen but make sure we notice if it does</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Unexpected error in process timeout monitoring thread for </span><span class="si">%s</span><span class="s1">: &#39;</span><span class="o">%</span><span class="n">displayName</span><span class="p">)</span>
+			
+	<span class="n">timer</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="n">kill_proc</span><span class="p">,</span> <span class="p">[])</span>
+	<span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">read</span><span class="p">:</span>
+			<span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">rv</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+	<span class="k">finally</span><span class="p">:</span>
+		<span class="n">timer</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+		<span class="n">_processCleanupMonitor</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">process</span><span class="p">)</span>
+		
+	<span class="k">if</span> <span class="n">timedOut</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+		<span class="k">if</span> <span class="n">read</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">,</span> <span class="kc">True</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Terminating process </span><span class="si">%s</span><span class="s1"> after hitting </span><span class="si">%d</span><span class="s1"> second timout&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">displayName</span><span class="p">,</span> <span class="n">timeout</span><span class="p">))</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">read</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">,</span> <span class="kc">False</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">rv</span>
+
+
+<div class="viewcode-block" id="call"><a class="viewcode-back" href="../../../generated/xpybuild.utils.process.html#xpybuild.utils.process.call">[docs]</a><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputEncoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">displayName</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Call a process with the specified args, logging stderr and stdout to the specified </span>
+<span class="sd">	output handler which will throw an exception if the exit code or output </span>
+<span class="sd">	of the process indicates an error. </span>
+<span class="sd">	</span>
+<span class="sd">	NB: Consider using the CustomCommand target instead of invoking this directly whenever possible.</span>
+<span class="sd">	</span>
+<span class="sd">	@param args: The command and arguments to invoke (a list, the first element of which is the executable). </span>
+<span class="sd">		None items in this list will be ignored. </span>
+
+<span class="sd">	@param outputHandler: a ProcessOutputHandler instance, perhaps constructed using </span>
+<span class="sd">	the L{ProcessOutputHandler.create} method. If not specified, a default is created </span>
+<span class="sd">	based on the supplied options. </span>
+
+<span class="sd">	@param env: Override the environment the process is started in (defaults to the parent environment)</span>
+
+<span class="sd">	@param cwd: Change the working directory the process is started in (defaults to the parent cwd)</span>
+<span class="sd">	</span>
+<span class="sd">	@param outputEncoding: name of the character encoding the process generates. Assumed to be </span>
+<span class="sd">		getStdoutEncoding (e.g. what the terminal is using, or else UTF-8) if not specified. </span>
+
+<span class="sd">	@param timeout: maximum time a process is allowed to run. If an options dictionary is not </span>
+<span class="sd">	present, this should ALWAYS be set to a value e.g. options[&#39;process.timeout&#39;]. </span>
+<span class="sd">	</span>
+<span class="sd">	@param displayName: human-friendly description of the process for use in error messages, including the target name if possible=</span>
+<span class="sd">	</span>
+<span class="sd">	@param options: where possible, always pass in a dictionary of resolved options, which may be used to customize </span>
+<span class="sd">	how this function operates. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{}</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">timeout</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;process.timeout&#39;</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+	
+	<span class="n">processName</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+	<span class="c1">#if not timeout: # too many things don&#39;t set it at present</span>
+	<span class="c1">#	raise Exception(&#39;Invalid argument to %s call - timeout must always be set explicitly&#39;%processName)</span>
+
+	<span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">]</span>
+
+	<span class="n">environs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">env</span><span class="p">:</span>
+		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">env</span><span class="p">:</span>
+			<span class="k">if</span> <span class="kc">None</span> <span class="o">==</span> <span class="n">env</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+				<span class="k">del</span> <span class="n">environs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">environs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">cwd</span><span class="p">:</span> <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+	
+	<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Executing </span><span class="si">%s</span><span class="s1"> process: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">processName</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">s</span> <span class="k">if</span> <span class="s1">&#39; &#39;</span> <span class="ow">in</span> <span class="n">s</span> <span class="k">else</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]))</span>
+	<span class="k">if</span> <span class="n">cwd</span> <span class="o">!=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">():</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> working directory: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">processName</span><span class="p">,</span> <span class="n">cwd</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">env</span><span class="p">:</span> 
+		<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> environment overrides: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">processName</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">env</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">env</span><span class="p">])))</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">cwd</span><span class="p">:</span>
+			<span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">environs</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">cwd</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">environs</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+	<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+		<span class="k">raise</span> <span class="ne">EnvironmentError</span><span class="p">(</span><span class="s1">&#39;Cannot start process &quot;</span><span class="si">%s</span><span class="s1">&quot;: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">))</span>
+
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">outputHandler</span><span class="p">:</span> <span class="c1"># use short processName not longer displayName for per-line prefixes, the extra context isn&#39;t necessary anyway</span>
+		<span class="n">outputHandler</span> <span class="o">=</span> <span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">processName</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+
+	<span class="c1"># give the full arguments as the process display name (unless really long) since it&#39;s impossible to identify the target otherwise</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">displayName</span><span class="p">:</span>
+		<span class="n">displayName</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">displayName</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">200</span><span class="p">:</span> <span class="n">displayName</span><span class="o">=</span><span class="n">displayName</span><span class="p">[:</span><span class="mi">200</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;...]&#39;</span>
+	<span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">timedout</span><span class="p">)</span> <span class="o">=</span> <span class="n">_wait_with_timeout</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">displayName</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+	
+	<span class="n">outputEncoding</span> <span class="o">=</span> <span class="n">outputEncoding</span> <span class="ow">or</span> <span class="n">getStdoutEncoding</span><span class="p">()</span>
+	<span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> outputEncoding assumed to be: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">processName</span><span class="p">,</span> <span class="n">outputEncoding</span><span class="p">)</span>
+	
+	<span class="c1"># convert byte buffers to strings	</span>
+	<span class="c1"># probably best to be tolerant about unexpected chars, given how hard it is to predict what subprocesses will write in </span>
+	<span class="n">out</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">outputEncoding</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">)</span>
+	<span class="n">err</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">outputEncoding</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">)</span>
+	
+	<span class="n">hasfailed</span> <span class="o">=</span> <span class="kc">True</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+			<span class="n">outputHandler</span><span class="o">.</span><span class="n">handleLine</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">err</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+			<span class="n">outputHandler</span><span class="o">.</span><span class="n">handleLine</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+			
+		<span class="k">if</span> <span class="n">timedout</span><span class="p">:</span> <span class="c1"># only throw after we&#39;ve written the stdout/err</span>
+			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Terminating process </span><span class="si">%s</span><span class="s1"> after hitting </span><span class="si">%d</span><span class="s1"> second timout&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">processName</span><span class="p">,</span> <span class="n">timeout</span><span class="p">))</span>
+			
+		<span class="n">outputHandler</span><span class="o">.</span><span class="n">handleEnd</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">returncode</span><span class="p">)</span> <span class="c1"># will throw on error</span>
+		<span class="n">hasfailed</span> <span class="o">=</span> <span class="kc">False</span>
+		<span class="k">return</span> <span class="n">outputHandler</span>
+	<span class="k">finally</span><span class="p">:</span>
+		<span class="c1"># easy-read format</span>
+		<span class="k">if</span> <span class="n">hasfailed</span><span class="p">:</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Arguments of failed process are: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">   &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">s</span> <span class="k">if</span> <span class="s1">&#39; &#39;</span> <span class="ow">in</span> <span class="n">s</span> <span class="k">else</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

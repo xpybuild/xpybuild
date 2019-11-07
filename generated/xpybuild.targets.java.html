@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.targets.java &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.targets.download" href="xpybuild.targets.download.html" />
+    <link rel="prev" title="xpybuild.targets.native" href="xpybuild.targets.native.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.download.html" title="xpybuild.targets.download"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.native.html" title="xpybuild.targets.native"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Module list</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-xpybuild.targets.java">
+<span id="xpybuild-targets-java"></span><h1>xpybuild.targets.java<a class="headerlink" href="#module-xpybuild.targets.java" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="jar">
+<h2>Jar<a class="headerlink" href="#jar" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.java.Jar">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.java.</code><code class="sig-name descname">Jar</code><span class="sig-paren">(</span><em class="sig-param">jar</em>, <em class="sig-param">compile</em>, <em class="sig-param">classpath</em>, <em class="sig-param">manifest</em>, <em class="sig-param">options=None</em>, <em class="sig-param">package=None</em>, <em class="sig-param">preserveManifestFormatting=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/java.html#Jar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.java.Jar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
+<p>Create a Jar, first compiling some java, then packing it all up</p>
+<p>To add additional entries to the manifest’s classpath which are needed at runtime 
+but not during compilation, use .option(‘jar.manifest.classpathAppend’, […])</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jar</strong> – path to jar to create</p></li>
+<li><p><strong>compile</strong> – PathSet (or list)  of things to compile</p></li>
+<li><p><strong>classpath</strong> – PathSet (or list) of things to be on the classpath; 
+destination mapping indicates how they will appear in the manifest</p></li>
+<li><p><strong>manifest</strong> – map of manifest entries (can be empty), OR a string with the filename to use 
+OR None to disable manifest generation and just produce a normal zip</p></li>
+<li><p><strong>options</strong> – [DEPRECATED - use .option() instead]</p></li>
+<li><p><strong>package</strong> – PathSet (or list) of other files to include in the jar; 
+destination mapping indicates where they will appear in the jar</p></li>
+<li><p><strong>preserveManifestFormatting</strong> – an advanced option that prevents the jar tool from 
+reformatting the specified manifest file to comply with Java conventions 
+(also prevents manifest merging if jar already exists)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="javac">
+<h2>Javac<a class="headerlink" href="#javac" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.java.Javac">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.java.</code><code class="sig-name descname">Javac</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">compile</em>, <em class="sig-param">classpath</em>, <em class="sig-param">options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/java.html#Javac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.java.Javac" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
+<p>Compile java source to a directory (without jarring it)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> – output dir for class files</p></li>
+<li><p><strong>compile</strong> – PathSet (or list)  of things to compile</p></li>
+<li><p><strong>classpath</strong> – PathSet (or list) of things to be on the classpath;</p></li>
+<li><p><strong>options</strong> – [DEPRECATED - use .option() instead]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="javadoc">
+<h2>Javadoc<a class="headerlink" href="#javadoc" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.java.Javadoc">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.java.</code><code class="sig-name descname">Javadoc</code><span class="sig-paren">(</span><em class="sig-param">destdir</em>, <em class="sig-param">source</em>, <em class="sig-param">classpath</em>, <em class="sig-param">options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/java.html#Javadoc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.java.Javadoc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
+<p>Creates javadoc from a set of input files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>destdir</strong> – directory to create docs in</p></li>
+<li><p><strong>source</strong> – a set of files to build from</p></li>
+<li><p><strong>classpath</strong> – a list of jars needed for the classpath</p></li>
+<li><p><strong>options</strong> – [DEPRECATED - use .option() instead]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="signjars">
+<h2>SignJars<a class="headerlink" href="#signjars" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.java.SignJars">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.java.</code><code class="sig-name descname">SignJars</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">jars</em>, <em class="sig-param">keystore</em>, <em class="sig-param">alias=None</em>, <em class="sig-param">storepass=None</em>, <em class="sig-param">manifestDefaults=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/java.html#SignJars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.java.SignJars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
+<p>Copy jars into a target directory and sign them with the supplied keystore, optionally also updating their manifests</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> – The output directory in which to put the signed jars</p></li>
+<li><p><strong>jars</strong> – The list (or PathSet) of input jars to copy and sign</p></li>
+<li><p><strong>keystore</strong> – The path to the keystore</p></li>
+<li><p><strong>alias</strong> – The alias for the keystore (optional)</p></li>
+<li><p><strong>storepass</strong> – The password for the store file (optional)</p></li>
+<li><p><strong>manifestDefaults</strong> – a dictionary of manifest entries to add to the existing manifest.mf file
+of each jar before signing.  Entries in this dictionary will be ignored if the same entry
+is found in the original manifest.mf file already.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">xpybuild.targets.java</a><ul>
+<li><a class="reference internal" href="#jar">Jar</a></li>
+<li><a class="reference internal" href="#javac">Javac</a></li>
+<li><a class="reference internal" href="#javadoc">Javadoc</a></li>
+<li><a class="reference internal" href="#signjars">SignJars</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="xpybuild.targets.native.html"
+                        title="previous chapter">xpybuild.targets.native</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="xpybuild.targets.download.html"
+                        title="next chapter">xpybuild.targets.download</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/generated/xpybuild.targets.java.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.download.html" title="xpybuild.targets.download"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.targets.native.html" title="xpybuild.targets.native"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Module list</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

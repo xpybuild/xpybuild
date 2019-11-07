@@ -1,0 +1,33 @@
+xpybuild.basetarget
+~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.basetarget
+
+.. currentmodule:: xpybuild.basetarget
+
+
+
+BaseTarget
+==========
+
+.. autoclass:: BaseTarget
+  :members:
+
+
+
+
+
+
+
+
+.. autosummary::
+    :toctree: generated
+
+
+
+targetNameToUniqueId
+====================
+.. autofunction:: targetNameToUniqueId
+
+
+

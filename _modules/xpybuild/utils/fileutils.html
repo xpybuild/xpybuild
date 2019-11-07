@@ -1,0 +1,570 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.utils.fileutils &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.utils.fileutils</h1><div class="highlight"><pre>
+<span></span><span class="c1"># fileutils - helper methods related to the file system</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2013 - 2019 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: fileutils.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">@undocumented: _getStatCacheSize</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">platform</span><span class="o">,</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">stat</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">io</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">getStringList</span>
+
+<span class="kn">import</span> <span class="nn">subprocess</span><span class="o">,</span> <span class="nn">errno</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;fileutils&#39;</span><span class="p">)</span>
+
+<span class="n">__isWindows</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span><span class="o">==</span><span class="s1">&#39;Windows&#39;</span>
+
+<span class="k">if</span> <span class="n">__isWindows</span><span class="p">:</span> <span class="c1"># Workaround required for windows filesystem semantics having a stupid race condition between writes from POSIX API (which Python uses) and win32 API (e.g. used by Java/C++)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="kn">import</span> <span class="nn">win32file</span>
+		<span class="k">class</span> <span class="nc">_Win32FileWriter</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">RawIOBase</span><span class="p">):</span>
+			<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+				<span class="nb">super</span><span class="p">(</span><span class="n">_Win32FileWriter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+				<span class="k">assert</span> <span class="s1">&#39;w&#39;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">,</span> <span class="s1">&#39;Currently the Win32FileWriter class only supports writing, not reading&#39;</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">dest</span> <span class="o">=</span> <span class="n">dest</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">__textWrapper</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="s1">&#39;b&#39;</span> <span class="ow">in</span> <span class="n">mode</span> <span class="k">else</span> <span class="n">io</span><span class="o">.</span><span class="n">TextIOWrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="n">newline</span><span class="p">)</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">__alreadyclosed</span> <span class="o">=</span> <span class="kc">False</span>
+				
+			<span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">Fd</span> <span class="o">=</span> <span class="n">win32file</span><span class="o">.</span><span class="n">CreateFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">win32file</span><span class="o">.</span><span class="n">GENERIC_WRITE</span><span class="p">,</span> 
+					<span class="n">win32file</span><span class="o">.</span><span class="n">FILE_SHARE_READ</span> <span class="o">|</span> <span class="n">win32file</span><span class="o">.</span><span class="n">FILE_SHARE_WRITE</span>  <span class="o">|</span> <span class="n">win32file</span><span class="o">.</span><span class="n">FILE_SHARE_DELETE</span><span class="p">,</span> 
+					<span class="kc">None</span><span class="p">,</span> <span class="n">win32file</span><span class="o">.</span><span class="n">CREATE_ALWAYS</span><span class="p">,</span> <span class="n">win32file</span><span class="o">.</span><span class="n">FILE_ATTRIBUTE_NORMAL</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__textWrapper</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__textWrapper</span>
+				<span class="k">return</span> <span class="bp">self</span>
+
+			<span class="k">def</span> <span class="nf">writable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="kc">True</span>
+			<span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+				<span class="c1"># writes bytes to the file using the Win32 (not POSIX api)</span>
+			
+				<span class="n">err</span><span class="p">,</span> <span class="n">byteswritten</span> <span class="o">=</span> <span class="n">win32file</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fd</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+				<span class="k">return</span> <span class="n">byteswritten</span>
+
+			<span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__alreadyclosed</span><span class="p">:</span> <span class="k">return</span> <span class="c1"># make this idempotent (not least to avoid infinite loop when the text wrapper tries to close us)</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">__alreadyclosed</span> <span class="o">=</span> <span class="kc">True</span>
+				
+				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__textWrapper</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__textWrapper</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+				<span class="n">win32file</span><span class="o">.</span><span class="n">CloseHandle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fd</span><span class="p">)</span>
+				
+			<span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ex_type</span><span class="p">,</span> <span class="n">ex_val</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+			
+	<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+		<span class="k">raise</span> <span class="c1"># need to know about this</span>
+
+<span class="n">openForWrite</span> <span class="o">=</span> <span class="n">_Win32FileWriter</span> <span class="k">if</span> <span class="n">__isWindows</span> <span class="k">else</span> <span class="nb">open</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Open file for writing and return a corresponding text or binary stream file object. </span>
+
+<span class="sd">This has the same semantics as open/io.open, but should be used instead of open/io.open </span>
+<span class="sd">to avoid file system race conditions on Windows. This class must be used from a </span>
+<span class="sd">`with` clause. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="mkdir"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.mkdir">[docs]</a><span class="k">def</span> <span class="nf">mkdir</span><span class="p">(</span><span class="n">newdir</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Recursively create the specified directory if it doesn&#39;t already exist. </span>
+<span class="sd">	</span>
+<span class="sd">	If it does, exit without error. </span>
+
+<span class="sd">	@param newdir: The path to create.</span>
+<span class="sd">	@return: newdir, to allow fluent use of this method. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">origdir</span> <span class="o">=</span> <span class="n">newdir</span>
+	<span class="n">newdir</span><span class="o">=</span><span class="n">normLongPath</span><span class="p">(</span><span class="n">newdir</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">newdir</span><span class="p">):</span> <span class="c1"># already exists</span>
+		<span class="k">return</span> <span class="n">origdir</span>
+		
+	<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">newdir</span><span class="p">):</span>
+		<span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;A file with the same name as the desired dir, &#39;</span><span class="si">%s</span><span class="s2">&#39;, already exists&quot;</span> <span class="o">%</span> <span class="n">newdir</span><span class="p">)</span>
+	
+	<span class="c1">#when multiple threads/processes are creating directories  </span>
+	<span class="c1">#at the same time, it can be a race</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">newdir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+	<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">newdir</span><span class="p">):</span> <span class="c1"># probably won&#39;t happen now we&#39;ve added exist_ok</span>
+			<span class="k">pass</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Problem creating directory </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">newdir</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+	<span class="k">return</span> <span class="n">origdir</span></div>
+
+<div class="viewcode-block" id="deleteDir"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.deleteDir">[docs]</a><span class="k">def</span> <span class="nf">deleteDir</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Recursively delete the contents of a directory. </span>
+<span class="sd">	</span>
+<span class="sd">	Contains magic hacks so it works even on paths that exceed the Windows MAX_PATH 260 character length. </span>
+
+<span class="sd">	@param path: the path to delete.</span>
+
+<span class="sd">	@param allowRetry: set to False to disable automatic retry of the deletion after a few seconds (in case the error was </span>
+<span class="sd">	transient)</span>
+<span class="sd">	</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="k">def</span> <span class="nf">handleRemoveReadonly</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">exc</span><span class="p">):</span>
+		<span class="c1"># once we&#39;ve got this working reliably, might reduce the level of some of these log statements</span>
+		<span class="n">excvalue</span> <span class="o">=</span> <span class="n">exc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;handleRemoveReadonly: error removing path </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">), will try harder; exists=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">errno</span><span class="o">.</span><span class="n">errorcode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">excvalue</span><span class="o">.</span><span class="n">errno</span><span class="p">,</span> <span class="s2">&quot;EUNKNOWN&quot;</span><span class="p">),</span> <span class="n">func</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)))</span>
+		
+		<span class="k">if</span> <span class="n">func</span> <span class="ow">in</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">rmdir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">):</span>
+			
+			<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span> <span class="c1"># no idea why this happens, but on windows it does</span>
+				<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;handleRemoveReadonly: suppressing spurious remove exception for already-deleted path: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+				<span class="k">return</span>
+
+			<span class="k">if</span> <span class="n">excvalue</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">EACCES</span><span class="p">:</span> <span class="c1"># access denied, make it writable first</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IRWXU</span><span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IRWXG</span><span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IRWXO</span><span class="p">)</span> <span class="c1"># 0777</span>
+					<span class="n">func</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+					<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;handleRemoveReadonly: fixed by chmod: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+					<span class="k">return</span>
+				<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+					<span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;handleRemoveReadonly error while trying to handle EACCES: &#39;</span><span class="p">)</span>
+					<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span> 
+						<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;handleRemoveReadonly gone now&#39;</span><span class="p">)</span> <span class="c1"># surely this never happens? if it does, change the code below</span>
+					<span class="k">raise</span>
+					
+			<span class="k">elif</span> <span class="n">excvalue</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">ENOTEMPTY</span><span class="p">:</span> <span class="c1"># directory not empty, try again</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;handleRemoveReadonly: ENOTEMPTY dir - has contents: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+				<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+					<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;handleRemoveReadonly: ENOTEMPTY dir, could not get contents: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">e</span><span class="p">)</span>
+					
+				<span class="k">if</span> <span class="n">allowRetry</span><span class="p">:</span> <span class="c1"># avoid danger of infinite recursion if things are going really wrong</span>
+					<span class="n">deleteDir</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+					<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;handleRemoveReadonly: fixed by retrying rmtree for ENOTEMPTY: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+					<span class="k">return</span>
+			<span class="k">elif</span> <span class="n">excvalue</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">:</span> <span class="c1"># maybe windows went mad and deleted it anyway</span>
+				<span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;handleRemoveReadonly: ENOTENT error was raised by path that still exists: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">path</span><span class="p">)</span>
+				<span class="k">raise</span> 
+				
+		<span class="c1"># if we didn&#39;t manage to handle this, rethrow</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;handleRemoveReadonly: still failed to remove path </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">); exists=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">errno</span><span class="o">.</span><span class="n">errorcode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">excvalue</span><span class="o">.</span><span class="n">errno</span><span class="p">,</span> <span class="s2">&quot;EUNKNOWN&quot;</span><span class="p">),</span> <span class="n">func</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)))</span>
+		<span class="k">raise</span>
+
+
+	<span class="n">path</span> <span class="o">=</span> <span class="n">normLongPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span> 
+		<span class="k">return</span>
+
+	<span class="k">try</span><span class="p">:</span>	
+		<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">onerror</span><span class="o">=</span><span class="n">handleRemoveReadonly</span><span class="p">)</span>
+		
+	<span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+			<span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Unable to delete dir </span><span class="si">%s</span><span class="s2"> as this is a file not a directory&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">))</span>
+			
+		<span class="k">if</span> <span class="n">allowRetry</span><span class="p">:</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Failed to delete dir </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">), will retry in 10 seconds&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+
+			<span class="c1"># todo: remove these debug comments in time</span>
+			<span class="c1">#handleslog = os.path.normpath(&#39;openhandles_%s.txt&#39;%os.path.basename(path))</span>
+			<span class="c1">#with open(handleslog, &#39;w&#39;) as f:</span>
+			<span class="c1">#	handlecmd = [os.path.normpath(&#39;c:/dev/apama-lib2/win/all/sysinternals/handle.exe&#39;), &#39;-u&#39;, &#39;c:\\dev\\5.2.0.x\\apama-src&#39;, &#39;/accepteula&#39;]</span>
+			<span class="c1">#	#print &#39;running: &#39;, &#39; &#39;.join(handlecmd)</span>
+			<span class="c1">#	subprocess.call(args=handlecmd, stdout=f)</span>
+					
+			<span class="c1"># maybe it was a transient error, so try again a little later</span>
+			<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">10.0</span><span class="p">)</span>
+			
+			<span class="c1"># on windows, try again using a separate process, just in case that </span>
+			<span class="c1"># helps to avoid problems with virus checkers, etc</span>
+			<span class="k">if</span> <span class="n">__isWindows</span><span class="p">:</span>
+				<span class="n">rmdirresult</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;rmdir /s /q &quot;</span><span class="si">%s</span><span class="s1">&quot; 2&gt;1 &gt; /dev/nul&#39;</span><span class="o">%</span><span class="n">path</span><span class="p">)</span>
+				<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Directory deletion retry using rmdir returned code </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">rmdirresult</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+				
+				<span class="c1"># continue to run deleteDir regardless of result, to check it&#39;s </span>
+				<span class="c1"># really gone, and to give better error messages if we still </span>
+				<span class="c1"># can&#39;t delete for any reason</span>
+				
+			<span class="n">deleteDir</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Deleted successfully on retry: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span> 
+				<span class="c1"># maybe logging this is overkill, consider removing in future</span>
+				<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Unable to delete dir </span><span class="si">%s</span><span class="s2"> - original exception is: &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span>
+				<span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Unable to delete dir </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="deleteFile"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.deleteFile">[docs]</a><span class="k">def</span> <span class="nf">deleteFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Delete the specified file, with the option of automatically retrying a few times if the first attempt fails </span>
+<span class="sd">	(to get around Windows weirdness), throwing an exception if the file still exists at the end of retrying. </span>
+<span class="sd">	</span>
+<span class="sd">	Use this instead of os.remove for improved robustness. </span>
+<span class="sd">	</span>
+<span class="sd">	Does nothing if the file doesn&#39;t already exist. </span>
+<span class="sd">	</span>
+<span class="sd">	Contains magic hacks so it works even on paths that exceed the Windows MAX_PATH 260 character length. </span>
+
+<span class="sd">	@param path: The path to delete.</span>
+
+<span class="sd">	@param allowRetry: If true, wait for a bit and retry the removal if it fails (default: true)</span>
+<span class="sd">	</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">path</span> <span class="o">=</span> <span class="n">normLongPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">lexists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span> <span class="k">return</span> <span class="c1"># use lexists in case we&#39;re deleting a symlink</span>
+			
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+		<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">lexists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span> 
+				<span class="k">raise</span>
+		
+	<span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+			<span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Unable to delete file </span><span class="si">%s</span><span class="s2"> as this is a directory not a file&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">))</span>
+		
+		<span class="k">if</span> <span class="n">allowRetry</span><span class="p">:</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Failed to delete file </span><span class="si">%s</span><span class="s2"> on first attempt (</span><span class="si">%s</span><span class="s2">), will retry in 5 seconds&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+			<span class="c1"># maybe it was a transient error, so try again a little later</span>
+			<span class="c1"># on contended windows machines a 5 second sleep isn&#39;t always sufficient to prevent error 32</span>
+			<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">10.0</span><span class="p">)</span>
+			<span class="n">deleteFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Deleted file successfully on retry: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">lexists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span> 
+				<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">e</span><span class="p">):</span>
+					<span class="k">raise</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Unable to delete file </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="parsePropertiesFile"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.parsePropertiesFile">[docs]</a><span class="k">def</span> <span class="nf">parsePropertiesFile</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">excludeLines</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">	Parse the contents of the specified properties file or line list, and return an ordered list </span>
+<span class="sd">	of (key,value,lineno) pairs.</span>
+<span class="sd">	</span>
+<span class="sd">	@param lines: an open file handle or a sequence that can be iterated over to get each line in the file.</span>
+
+<span class="sd">	@param excludeLines: a string of list of strings to search for, any KEY containing these strings will be ignored</span>
+<span class="sd">	</span>
+<span class="sd">	&gt;&gt;&gt; parsePropertiesFile([&#39;a&#39;,&#39;b=c&#39;,&#39; z  =  x&#39;, &#39;a=d #foo&#39;, &#39;#g=h&#39;])</span>
+<span class="sd">	[(&#39;b&#39;, &#39;c&#39;, 2), (&#39;z&#39;, &#39;x&#39;, 3), (&#39;a&#39;, &#39;d&#39;, 4)]</span>
+<span class="sd">	&gt;&gt;&gt; parsePropertiesFile([&#39;a=b&#39;,&#39;c=d#foo&#39;,&#39;XfooX=e&#39;, &#39;f=h&#39;], excludeLines=&#39;foo&#39;)</span>
+<span class="sd">	[(&#39;a&#39;, &#39;b&#39;, 1), (&#39;c&#39;, &#39;d&#39;, 2), (&#39;f&#39;, &#39;h&#39;, 4)]</span>
+<span class="sd">	&gt;&gt;&gt; parsePropertiesFile([&#39;a=b&#39;,&#39;c=d#foo&#39;,&#39;XfooX=e&#39;, &#39;f=h&#39;], excludeLines=[&#39;foo&#39;,&#39;h&#39;])</span>
+<span class="sd">	[(&#39;a&#39;, &#39;b&#39;, 1), (&#39;c&#39;, &#39;d&#39;, 2), (&#39;f&#39;, &#39;h&#39;, 4)]</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">excludeLines</span> <span class="o">=</span> <span class="n">getStringList</span><span class="p">(</span><span class="n">excludeLines</span><span class="p">)</span>
+	<span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+	
+	<span class="n">lineNo</span> <span class="o">=</span> <span class="mi">0</span>
+	
+	<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+		<span class="n">lineNo</span> <span class="o">+=</span> <span class="mi">1</span>
+		
+		<span class="k">if</span> <span class="s1">&#39;#&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+			<span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+		<span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">line</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;//&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="s1">&#39;=&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+			<span class="k">continue</span>
+
+		<span class="n">key</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+		<span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+		<span class="k">if</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">excludeLines</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">key</span><span class="p">]:</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Ignoring property line due to exclusion: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+			<span class="k">continue</span>
+		
+		<span class="c1"># NB: we don&#39;t have a full implementation of .properties escaping yet (e.g. \n but not \\n etc)</span>
+		<span class="c1"># but this is all we need for now</span>
+		<span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span>
+		
+		<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">,</span> <span class="n">lineNo</span><span class="p">))</span>
+	<span class="k">return</span> <span class="n">result</span></div>
+
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">:</span>
+	<span class="k">def</span> <span class="nf">isDirPath</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Returns true if the path is a directory (ends with / or \\).</span>
+<span class="sd">		</span>
+<span class="sd">		&gt;&gt;&gt; isDirPath(None)</span>
+<span class="sd">		False</span>
+
+<span class="sd">		&gt;&gt;&gt; isDirPath(&#39;/&#39;)</span>
+<span class="sd">		True</span>
+
+<span class="sd">		&gt;&gt;&gt; isDirPath(&#39;a/&#39;)</span>
+<span class="sd">		True</span>
+
+<span class="sd">		&gt;&gt;&gt; isDirPath(&#39;a&#39;+os.sep)</span>
+<span class="sd">		True</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">}</span>
+		<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+			<span class="k">return</span> <span class="kc">False</span>
+<span class="k">else</span><span class="p">:</span>
+<div class="viewcode-block" id="isDirPath"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.isDirPath">[docs]</a>	<span class="k">def</span> <span class="nf">isDirPath</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Returns true if the path is a directory (ends with / or \\).</span>
+<span class="sd">		</span>
+<span class="sd">		&gt;&gt;&gt; isDirPath(None)</span>
+<span class="sd">		False</span>
+
+<span class="sd">		&gt;&gt;&gt; isDirPath(&#39;/&#39;)</span>
+<span class="sd">		True</span>
+
+<span class="sd">		&gt;&gt;&gt; isDirPath(&#39;a/&#39;)</span>
+<span class="sd">		True</span>
+
+<span class="sd">		&gt;&gt;&gt; isDirPath(&#39;a&#39;+os.sep)</span>
+<span class="sd">		True</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span>
+		<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+			<span class="k">return</span> <span class="kc">False</span></div>
+
+
+<span class="n">__longPathCache</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># GIL protects integrity of dict, no need for extra locking as it&#39;s only a cache</span>
+<div class="viewcode-block" id="toLongPathSafe"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.toLongPathSafe">[docs]</a><span class="k">def</span> <span class="nf">toLongPathSafe</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Converts the specified path string to a form suitable for passing to API </span>
+<span class="sd">	calls if it exceeds the maximum path length on this OS. </span>
+<span class="sd">	</span>
+<span class="sd">	Currently, this is necessary only on Windows, where a string </span>
+<span class="sd">	starting with \\?\ must be used to get correct behaviour for long paths. </span>
+<span class="sd">	</span>
+<span class="sd">	Unlike L{normLongPath} which also performs the long path conversion, this </span>
+<span class="sd">	function does NOT convert to a canonical form, normalize slashes or </span>
+<span class="sd">	remove &#39;..&#39; elements (unless required for long path support). It is therefore </span>
+<span class="sd">	faster. </span>
+<span class="sd">	</span>
+<span class="sd">	@param path: A path. Must not be a relative path. Can be None/empty. Can </span>
+<span class="sd">	contain &quot;..&quot; sequences, though performance is a lot lower if it does. </span>
+<span class="sd">	</span>
+<span class="sd">	@param force: Normally the long path support is added only if this path </span>
+<span class="sd">	exceeds the maximum length on this OS (e.g. 256 chars) or ends with a </span>
+<span class="sd">	directory slash. Set force to True to add long path support regardless of </span>
+<span class="sd">	length, which allows extra characters to be added on to the end of the </span>
+<span class="sd">	string (e.g. &quot;.log&quot; or a directory filename) safely. </span>
+<span class="sd">	</span>
+<span class="sd">	@return: The passed-in path, possibly with a &quot;\\?\&quot; prefix added and </span>
+<span class="sd">	forward slashes converted to backslashes on Windows. Any trailing slash </span>
+<span class="sd">	is preserved by this function (though will be converted to a backslash). </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">__isWindows</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">path</span><span class="p">):</span> <span class="k">return</span> <span class="n">path</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">force</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">255</span> <span class="ow">or</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">):</span>
+		
+		<span class="k">if</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">__longPathCache</span><span class="p">:</span> <span class="k">return</span> <span class="n">__longPathCache</span><span class="p">[</span><span class="n">path</span><span class="p">]</span>
+		<span class="n">inputpath</span> <span class="o">=</span> <span class="n">path</span>
+		<span class="c1"># &quot;..&quot; is not permitted in \\?\ paths; normpath is expensive so don&#39;t do this unless we have to</span>
+		<span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span> 
+			<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> 
+		<span class="k">else</span><span class="p">:</span>
+			<span class="c1"># path is most likely to contain / so more efficient to conditionalize this </span>
+			<span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span>
+			<span class="k">if</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+			<span class="c1"># consecutive \ separators are not permitted in \\?\ paths</span>
+				<span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span>
+
+		<span class="k">try</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">):</span> 
+				<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">UNC</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span> <span class="c1"># \\?\UNC\server\share Oh My</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">path</span>
+		<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+			<span class="c1"># can throw an exception if path is a bytestring containing non-ascii characters</span>
+			<span class="c1"># to be safe, fallback to original string, just hoping it isn&#39;t both </span>
+			<span class="c1"># international AND long</span>
+			<span class="c1"># could try converting using a default encoding, but slightly error-prone</span>
+			<span class="k">pass</span> 
+		<span class="n">__longPathCache</span><span class="p">[</span><span class="n">inputpath</span><span class="p">]</span>  <span class="o">=</span> <span class="n">path</span>
+	<span class="k">return</span> <span class="n">path</span></div>
+
+<span class="n">__normLongPathCache</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># GIL protects integrity of dict, no need for extra locking as it&#39;s only a cache</span>
+	
+<div class="viewcode-block" id="normLongPath"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.normLongPath">[docs]</a><span class="k">def</span> <span class="nf">normLongPath</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Normalizes and absolutizes a path (os.path.abspath), converts to a canonical </span>
+<span class="sd">	form (e.g. normalizing the case of the drive letter on Windows), and on </span>
+<span class="sd">	windows adds the &quot;\\?\&quot; prefix needed to force correct handling of long </span>
+<span class="sd">	(&gt;256 chars) paths (same as L{toLongPathSafe}). </span>
+<span class="sd">	</span>
+<span class="sd">	@param path: the absolute path to be converted should be a unicode string where possible, as specifying a byte </span>
+<span class="sd">	string will not work if the path contains non-ascii characters. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span> <span class="k">return</span> <span class="n">path</span>
+	
+	<span class="c1"># profiling shows normLongPath is surprisingly costly; caching results reduces dep checking by 2-3x</span>
+	<span class="k">if</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">__normLongPathCache</span><span class="p">:</span> <span class="k">return</span> <span class="n">__normLongPathCache</span><span class="p">[</span><span class="n">path</span><span class="p">]</span>
+	<span class="n">inputpath</span> <span class="o">=</span> <span class="n">path</span>
+	<span class="c1"># currently there is some duplication between this and buildcommon.normpath which we ought to fix at some point</span>
+	
+	<span class="c1"># normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case </span>
+	<span class="c1"># for drive letters (more so than directory names), with different cmd prompts frequently using different </span>
+	<span class="c1"># capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts</span>
+	<span class="n">iswindows</span> <span class="o">=</span> <span class="n">__isWindows</span>
+	<span class="k">if</span> <span class="n">iswindows</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span> <span class="ow">and</span> <span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;:&#39;</span> <span class="ow">and</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="s1">&#39;A&#39;</span> <span class="ow">and</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="s1">&#39;Z&#39;</span><span class="p">:</span> 
+		<span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">+</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+		
+	<span class="k">if</span> <span class="n">iswindows</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">):</span>
+		<span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="c1"># abspath also normalizes slashes</span>
+		<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="n">iswindows</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">):</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">):</span> 
+					<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">UNC</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span> <span class="c1"># \\?\UNC\server\share Oh My</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">path</span>
+			<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+				<span class="c1"># can throw an exception if path is a bytestring containing non-ascii characters</span>
+				<span class="c1"># to be safe, fallback to original string, just hoping it isn&#39;t both </span>
+				<span class="c1"># international AND long</span>
+				<span class="c1"># could try converting using a default encoding, but slightly error-prone</span>
+				<span class="k">pass</span> 
+	<span class="n">__normLongPathCache</span><span class="p">[</span><span class="n">inputpath</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+	<span class="k">return</span> <span class="n">path</span></div>
+	
+<span class="n">__statcache</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">__statcache_get</span> <span class="o">=</span> <span class="n">__statcache</span><span class="o">.</span><span class="n">get</span>
+<div class="viewcode-block" id="cached_stat"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.cached_stat">[docs]</a><span class="k">def</span> <span class="nf">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">errorIfMissing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Cached-once os.stat (DO NOT USE if you expect it to change after startup). </span>
+<span class="sd">	Returns False if missing.  &quot;&quot;&quot;</span>
+	<span class="n">st</span> <span class="o">=</span> <span class="n">__statcache_get</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">st</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">st</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+		<span class="k">except</span> <span class="n">os</span><span class="o">.</span><span class="n">error</span><span class="p">:</span> <span class="c1"># mean file doesn&#39;t exist</span>
+			<span class="n">st</span> <span class="o">=</span> <span class="kc">False</span>
+
+		<span class="n">__statcache</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">st</span>
+	<span class="k">if</span> <span class="n">st</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">errorIfMissing</span><span class="p">:</span>
+		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot find path &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">path</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">st</span></div>
+
+<div class="viewcode-block" id="cached_getmtime"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.cached_getmtime">[docs]</a><span class="k">def</span> <span class="nf">cached_getmtime</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Cached-once os.getmtime (DO NOT USE if you expect it to change after startup) &quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="n">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">errorIfMissing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">st_mtime</span></div>
+<div class="viewcode-block" id="cached_getsize"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.cached_getsize">[docs]</a><span class="k">def</span> <span class="nf">cached_getsize</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Cached-once os.path.getsize (DO NOT USE if you expect it to change after startup) &quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="n">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">errorIfMissing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span></div>
+<div class="viewcode-block" id="cached_exists"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.cached_exists">[docs]</a><span class="k">def</span> <span class="nf">cached_exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Cached-once os.path.exists (DO NOT USE if you expect it to change after startup) &quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="n">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span></div>
+<div class="viewcode-block" id="cached_isfile"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.cached_isfile">[docs]</a><span class="k">def</span> <span class="nf">cached_isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Cached-once os.path.isfile (DO NOT USE if you expect it to change after startup) &quot;&quot;&quot;</span>
+	<span class="n">st</span> <span class="o">=</span> <span class="n">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+	<span class="k">return</span> <span class="p">(</span><span class="n">st</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_ISREG</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">st_mode</span><span class="p">)</span></div>
+<div class="viewcode-block" id="cached_isdir"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.cached_isdir">[docs]</a><span class="k">def</span> <span class="nf">cached_isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Cached-once os.path.isdir (DO NOT USE if you expect it to change after startup) &quot;&quot;&quot;</span>
+	<span class="n">st</span> <span class="o">=</span> <span class="n">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+	<span class="k">return</span> <span class="p">(</span><span class="n">st</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_ISDIR</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">st_mode</span><span class="p">)</span></div>
+
+<span class="c1"># for compatibility with pre-3.0</span>
+<span class="n">getstat</span> <span class="o">=</span> <span class="n">cached_stat</span>
+<span class="n">getmtime</span> <span class="o">=</span> <span class="n">cached_getmtime</span>
+<span class="n">getsize</span> <span class="o">=</span> <span class="n">cached_getsize</span>
+<span class="n">exists</span> <span class="o">=</span> <span class="n">cached_exists</span>
+<span class="n">isfile</span> <span class="o">=</span> <span class="n">cached_isfile</span>
+<span class="n">isdir</span> <span class="o">=</span> <span class="n">cached_isdir</span>
+
+<span class="k">def</span> <span class="nf">_getStatCacheSize</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Internal diagnostic method for getting the number of entries we&#39;ve stat&#39;ed so far. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">__statcache</span><span class="p">)</span>
+
+<div class="viewcode-block" id="resetStatCache"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.resetStatCache">[docs]</a><span class="k">def</span> <span class="nf">resetStatCache</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot; Resets cached stat data &quot;&quot;&quot;</span>
+	<span class="n">__statcache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

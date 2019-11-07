@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.utils.buildfilelocation &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.utils.buildfilelocation</h1><div class="highlight"><pre>
+<span></span><span class="c1"># buildfilelocation - Class for getting and holding info on the filename and </span>
+<span class="c1"># line of a build file elemnet</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: buildfilelocation.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">traceback</span><span class="o">,</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+
+
+<div class="viewcode-block" id="formatFileLocation"><a class="viewcode-back" href="../../../generated/xpybuild.utils.buildfilelocation.html#xpybuild.utils.buildfilelocation.formatFileLocation">[docs]</a><span class="k">def</span> <span class="nf">formatFileLocation</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lineNumber</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> 
+	<span class="sd">&quot;&quot;&quot; Formats a file and a line number for output. </span>
+<span class="sd">	</span>
+<span class="sd">	Uses a format that works in vim and is easy to adapt for other editors. &quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; +</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">lineNumber</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BuildFileLocation"><a class="viewcode-back" href="../../../generated/xpybuild.utils.buildfilelocation.html#xpybuild.utils.buildfilelocation.BuildFileLocation">[docs]</a><span class="k">class</span> <span class="nc">BuildFileLocation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Represents information about a location in the user&#39;s build file.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">buildFile</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">buildDir</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">lineNumber</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="c1">#sourceLine = None</span>
+	
+	<span class="n">_currentBuildFile</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># for internal use only; last item indicates the file currently being parsed</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raiseOnError</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Constructs a new instance by inspecting the stack to find what part </span>
+<span class="sd">		of the build file we&#39;re currently processing. </span>
+<span class="sd">		</span>
+<span class="sd">		This should only be used during the parsing phase, an empty location </span>
+<span class="sd">		will be returned if this is called while building or dependency </span>
+<span class="sd">		checking a target. </span>
+<span class="sd">		</span>
+<span class="sd">		@param raiseOnError: if False, creates a BuildFileLocation with None for </span>
+<span class="sd">		the buildFile/buildDir if we are not currently parsing any included </span>
+<span class="sd">		build files. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="n">BuildFileLocation</span><span class="o">.</span><span class="n">_currentBuildFile</span><span class="p">:</span>
+			<span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getCorrectFrame</span><span class="p">()</span> 
+		<span class="k">else</span><span class="p">:</span>
+			<span class="c1"># do not even try to get location if not doing parsing, since in </span>
+			<span class="c1"># almost all cases the location of the current thread&#39;s target </span>
+			<span class="c1"># is more useful</span>
+			<span class="n">x</span> <span class="o">=</span> <span class="kc">None</span> 
+		
+		<span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">filename</span><span class="p">,</span> <span class="n">lineno</span> <span class="o">=</span> <span class="n">x</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">buildFile</span> <span class="o">=</span> <span class="n">filename</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">buildDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+			<span class="k">if</span> <span class="s1">&#39;doctest&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">buildDir</span> <span class="o">=</span> <span class="s1">&#39;BUILD_DIR&#39;</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">lineNumber</span> <span class="o">=</span> <span class="n">lineno</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">if</span> <span class="s1">&#39;doctest&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> 
+				<span class="bp">self</span><span class="o">.</span><span class="n">buildDir</span> <span class="o">=</span> <span class="s1">&#39;BUILD_DIR&#39;</span>
+			<span class="k">if</span> <span class="n">raiseOnError</span><span class="p">:</span>
+				<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot find the location in source build file&#39;</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buildFile</span><span class="p">:</span> <span class="k">return</span> <span class="n">formatFileLocation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buildFile</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineNumber</span><span class="p">)</span>
+		<span class="k">return</span> <span class="s1">&#39;&lt;unknown build file location&gt;&#39;</span>
+		
+	<span class="k">def</span> <span class="nf">getLineString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="c1">#if self.sourceLine:</span>
+		<span class="c1">#	return &#39;%s: %s&#39; % (self.__str__(), self.sourceLine)</span>
+		<span class="c1">#else:</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+	
+	<span class="k">def</span> <span class="nf">_getCorrectFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">context</span> <span class="o">=</span> <span class="mi">3</span>
+		<span class="n">frame</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+		<span class="c1"># nb: this can be very expensive so we try to do the absolute bare minimum of work here</span>
+		<span class="k">while</span> <span class="n">frame</span><span class="p">:</span>
+			<span class="n">filename</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+			<span class="k">assert</span> <span class="n">filename</span>
+			<span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.pyc&#39;</span><span class="p">):</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.py&#39;</span>
+				
+			<span class="c1"># perform some cross-OS but low cost (no disk access) canonicalization</span>
+			<span class="c1"># of the paths</span>
+			<span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">BuildFileLocation</span><span class="o">.</span><span class="n">_currentBuildFile</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">):</span>
+				<span class="n">lineno</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getlineno</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+				<span class="k">return</span> <span class="n">filename</span><span class="p">,</span> <span class="n">lineno</span>
+				
+			<span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_back</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

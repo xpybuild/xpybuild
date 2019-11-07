@@ -1,0 +1,545 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.utils.java &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.utils.java</h1><div class="highlight"><pre>
+<span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: java.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">locale</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="k">import</span> <span class="n">call</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="k">import</span> <span class="n">ProcessOutputHandler</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">getStringList</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">deleteDir</span><span class="p">,</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteFile</span><span class="p">,</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">normLongPath</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.consoleformatter</span> <span class="k">import</span> <span class="n">publishArtifact</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;utils.java&#39;</span><span class="p">)</span>
+
+<span class="c1"># General java options</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;java.home&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># Options for creating manifests</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;jar.manifest.defaults&#39;</span><span class="p">,</span> <span class="p">{})</span>
+
+<div class="viewcode-block" id="create_manifest"><a class="viewcode-back" href="../../../generated/xpybuild.utils.java.html#xpybuild.utils.java.create_manifest">[docs]</a><span class="k">def</span> <span class="nf">create_manifest</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Create a manifest file in path from the map properties.</span>
+
+<span class="sd">	@param path: The absolute path in which to create a manifest file. If None is specified, </span>
+<span class="sd">	no file is written but a byte string containing the file contents is returned. </span>
+
+<span class="sd">	@param properties: A map of manifest keys to values (unicode character strings). </span>
+<span class="sd">	Must follow java jar file format specification, e.g. headers cannot contain spaces. </span>
+
+<span class="sd">	@param options: The options to use for creating the manifest (prefix: jar.manifest)</span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="c1"># merge in the defaults to the map (properties will already have been expanded</span>
+	<span class="n">fullmap</span> <span class="o">=</span> <span class="p">{}</span>
+	<span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="p">[</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;jar.manifest.defaults&#39;</span><span class="p">],</span> <span class="n">properties</span><span class="p">]:</span>
+		<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+			<span class="n">fullmap</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+	
+
+	<span class="c1"># build up the list of lines</span>
+	<span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">fullmap</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span> <span class="c1"># select a deterministic order</span>
+		<span class="c1"># strip whitespace since it isn&#39;t needed, and could confuse the continuation character logic</span>
+		<span class="n">line</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">fullmap</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+		<span class="k">assert</span> <span class="s1">&#39; &#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="s1">&#39;manifest.mf key &quot;</span><span class="si">%s</span><span class="s1">&quot; does not confirm to jar file specification - cannot contain spaces&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+		<span class="k">assert</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+		
+		<span class="c1"># assume character strings as input; must convert to utf8 before applying continuation char logic</span>
+		<span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+		
+		<span class="c1"># spec says: No line may be longer than 72 bytes (not characters), in its UTF8-encoded form</span>
+		<span class="c1"># If a value would make the initial line longer than this, it should be continued on extra lines (each starting with a single SPACE).</span>
+		<span class="n">maxbytes</span> <span class="o">=</span> <span class="mi">72</span><span class="o">-</span><span class="mi">1</span> <span class="c1"># remove one byte for the newline</span>
+		<span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">maxbytes</span><span class="p">:</span>
+			<span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[:</span><span class="n">maxbytes</span><span class="p">])</span>
+			<span class="n">line</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">line</span><span class="p">[</span><span class="n">maxbytes</span><span class="p">:]</span>
+		<span class="k">assert</span> <span class="n">line</span>
+		<span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+	<span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="c1"># need a trailing newline else Java ignores last line!</span>
+
+	<span class="n">lines</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="c1"># don&#39;t use os.linesep for simplicity, and because spec says only \r\n, \n, \r are valid not \n\r</span>
+
+	<span class="c1"># write out the file</span>
+	<span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+		<span class="k">with</span> <span class="n">openForWrite</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+			<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span> <span class="c1"># this case for unit testing</span>
+		<span class="k">return</span> <span class="n">lines</span></div>
+
+<span class="c1"># Options for javac</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.options&#39;</span><span class="p">,</span> <span class="p">[])</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.source&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="c1"># e.g. 1.6</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.target&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.encoding&#39;</span><span class="p">,</span> <span class="s2">&quot;ASCII&quot;</span><span class="p">)</span> <span class="c1"># best to set this explicitly else its OS dependent</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.debug&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.warningsAsErrors&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="JavacProcessOutputHandler"><a class="viewcode-back" href="../../../generated/xpybuild.utils.java.html#xpybuild.utils.java.JavacProcessOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">JavacProcessOutputHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">targetName</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># unusually, we pass in the targetname here, since there are usually so many different &quot;javac&quot;s</span>
+		<span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;javac&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_chunks</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_contents</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_targetName</span> <span class="o">=</span> <span class="n">targetName</span>
+	
+	<span class="k">def</span> <span class="nf">setJavacLogBasename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span> <span class="o">=</span> <span class="n">path</span>
+		<span class="k">return</span> <span class="bp">self</span>
+	
+	<span class="k">def</span> <span class="nf">handleLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">isstderr</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">isstderr</span><span class="p">:</span> <span class="k">return</span> <span class="c1"># ignore stdout messages, we only care about warnings and errors</span>
+		<span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;Note:&#39;</span><span class="p">):</span> <span class="k">return</span> <span class="c1"># annoying and pointless messages</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_contents</span> <span class="o">+=</span> <span class="n">l</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+		
+		<span class="n">l</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;\d+ (errors|warnings)&#39;</span><span class="p">,</span><span class="n">l</span><span class="p">):</span> <span class="k">return</span>
+		<span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;error: warnings found&#39;</span><span class="p">):</span> <span class="k">return</span>
+		<span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;Picked up _JAVA_OPTIONS&#39;</span><span class="p">):</span> <span class="k">return</span>
+		
+		<span class="c1"># support for ProcessOutputHandler.Options.regexIgnore</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regexIgnore</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regexIgnore</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">l</span><span class="p">):</span> <span class="k">return</span>
+			
+		<span class="c1"># assume everything else is an error or a warning</span>
+			
+		<span class="c1">#if self._current and l.strip() == &#39;^&#39;: # this is the last line of a chunk (jdk 1.6, but doesn&#39;t work with 1.7)</span>
+		<span class="c1">#	self._current.append(l)</span>
+		<span class="c1">#	self._current = None</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current</span> <span class="ow">or</span> <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;.*\.java:\d+: .*&#39;</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span> <span class="ow">or</span> <span class="n">l</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;error:&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">l</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;warning:&#39;</span><span class="p">)):</span> <span class="c1"># this is the first line of a chunk</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="p">]</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_current</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">handleEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">returnCode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span> <span class="c1"># could make this optional, but for now don&#39;t</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contents</span><span class="p">:</span>
+			<span class="k">with</span> <span class="n">openForWrite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span><span class="o">+</span><span class="s1">&#39;.out&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fo</span><span class="p">:</span>
+				<span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_contents</span><span class="p">)</span>
+		
+		<span class="n">errs</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">warns</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">errmsg</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chunks</span><span class="p">:</span>
+			<span class="n">loc</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;(.*\.java:\d+): *(.*)&#39;</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+			<span class="n">msg</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;.*\.java:\d+: *(.*)&#39;</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+			<span class="k">if</span> <span class="n">msg</span> <span class="ow">and</span> <span class="n">loc</span><span class="p">:</span> 
+				<span class="n">msg</span><span class="p">,</span> <span class="n">loc</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># key by message</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">msg</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+				<span class="n">loc</span> <span class="o">=</span> <span class="kc">None</span>
+			<span class="c1"># special-case merging for common multi-line messages to give better diagnostics</span>
+			<span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+			<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+				<span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;symbol&#39;</span><span class="p">):</span>
+					<span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;: &lt;&#39;</span><span class="o">+</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;symbol *: *(.*)&#39;</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;&gt;&#39;</span>
+					<span class="k">del</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+				<span class="k">elif</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">):</span>
+					<span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39; in &lt;&#39;</span><span class="o">+</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;location *: *(.*)&#39;</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;&gt;&#39;</span>
+					<span class="k">del</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+				<span class="k">else</span><span class="p">:</span> 
+					<span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+				
+			<span class="c1"># check returncode since we must never treat stderr output as an error if it returned success, as annotation processes can output all kinds of stuff</span>
+			<span class="n">iswarning</span> <span class="o">=</span> <span class="n">returnCode</span><span class="o">==</span><span class="mi">0</span> <span class="ow">or</span> <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;.*\.java:\d+: warning: .*&#39;</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="s1">&#39;to suppress this warning&#39;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+			<span class="n">addto</span> <span class="o">=</span> <span class="n">warns</span> <span class="k">if</span> <span class="n">iswarning</span> <span class="k">else</span> <span class="n">errs</span>
+			<span class="n">existing</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">addto</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">msg</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="n">existing</span><span class="p">:</span>
+				<span class="n">existing</span> <span class="o">=</span> <span class="p">[]</span>
+				<span class="n">addto</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">existing</span><span class="p">)</span> <span class="p">)</span>
+			<span class="n">existing</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">loc</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="n">msg</span> <span class="k">if</span> <span class="n">loc</span> <span class="k">else</span> <span class="n">msg</span><span class="p">]</span><span class="o">+</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="n">iswarning</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">errmsg</span><span class="p">:</span> <span class="n">errmsg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">+</span><span class="p">(</span><span class="s1">&#39; at </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">loc</span> <span class="k">if</span> <span class="n">loc</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+	
+		<span class="k">if</span> <span class="n">errs</span><span class="p">:</span>
+			<span class="k">with</span> <span class="n">openForWrite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span><span class="o">+</span><span class="s1">&#39;-errors.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fo</span><span class="p">:</span>
+				<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">errs</span><span class="p">:</span>
+					<span class="c1"># x[0] is the common msg type, x[1] is a list of places where it occured, each of which </span>
+					
+					<span class="c1"># in log, summarize the first error of this type (e.g. if a symbol wasn&#39;t found in 20 places just log it once)</span>
+					<span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
+					<span class="n">lineno</span> <span class="o">=</span> <span class="kc">None</span>
+					<span class="k">try</span><span class="p">:</span>
+						<span class="n">filename</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;^(.*):([0-9]+): .*&quot;</span><span class="p">,</span><span class="sa">r</span><span class="s2">&quot;\1&quot;</span><span class="p">,</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+						<span class="n">lineno</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;^(.*):([0-9]+): .*&quot;</span><span class="p">,</span><span class="sa">r</span><span class="s2">&quot;\2&quot;</span><span class="p">,</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+					<span class="k">except</span><span class="p">:</span>
+						<span class="k">pass</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">javac&gt; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> 
+						<span class="n">filename</span><span class="p">,</span><span class="n">lineno</span><span class="p">)</span> 
+					
+					<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;- &#39;</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">file</span><span class="o">=</span><span class="n">fo</span><span class="p">)</span>
+					<span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">fo</span><span class="p">)</span>
+					<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+					<span class="k">for</span> <span class="n">x2</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="c1"># print the detail of later similar ones only at INFO</span>
+						<span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+							<span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="s1">&#39;similar error: </span><span class="se">\n</span><span class="s1">    </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">    &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x2</span><span class="p">)))</span>
+						<span class="n">i</span><span class="o">+=</span><span class="mi">1</span>
+						
+						<span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39; / &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x2</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+						<span class="k">for</span> <span class="n">x3</span> <span class="ow">in</span> <span class="n">x2</span><span class="p">:</span>
+							<span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">x3</span><span class="p">)</span>
+							<span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">fo</span><span class="p">)</span>
+					<span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">fo</span><span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> javac ERRORS in </span><span class="si">%s</span><span class="s1"> - see </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">errs</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_targetName</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span><span class="o">+</span><span class="s1">&#39;-errors.txt&#39;</span><span class="p">),</span> 
+				<span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span><span class="o">+</span><span class="s1">&#39;-errors.txt&#39;</span><span class="p">)</span>
+			<span class="n">publishArtifact</span><span class="p">(</span><span class="s1">&#39;javac </span><span class="si">%s</span><span class="s1"> errors&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">_targetName</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span><span class="o">+</span><span class="s1">&#39;-errors.txt&#39;</span><span class="p">)</span>
+			
+		<span class="k">if</span> <span class="n">warns</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> javac WARNINGS in </span><span class="si">%s</span><span class="s1"> - see </span><span class="si">%s</span><span class="s1">; first is: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">warns</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_targetName</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span><span class="o">+</span><span class="s1">&#39;-warnings.txt&#39;</span><span class="p">,</span> <span class="n">warns</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> 
+				<span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span><span class="o">+</span><span class="s1">&#39;-warnings.txt&#39;</span><span class="p">)</span>
+			<span class="k">with</span> <span class="n">openForWrite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span><span class="o">+</span><span class="s1">&#39;-warnings.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fo</span><span class="p">:</span>
+				<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">warns</span><span class="p">:</span>
+					<span class="k">if</span> <span class="ow">not</span> <span class="n">errmsg</span> <span class="ow">and</span> <span class="p">(</span><span class="n">returnCode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span> 
+						<span class="n">errmsg</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+						<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">warns</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+							<span class="n">errmsg</span> <span class="o">=</span> <span class="s1">&#39;Failed due to </span><span class="si">%d</span><span class="s1"> warnings, first is: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">warns</span><span class="p">),</span> <span class="n">errmsg</span><span class="p">)</span>
+						<span class="c1"># it IS worth publishing warnings if they caused a failure</span>
+						<span class="n">publishArtifact</span><span class="p">(</span><span class="s1">&#39;javac </span><span class="si">%s</span><span class="s1"> warnings&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">_targetName</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span><span class="o">+</span><span class="s1">&#39;-warnings.txt&#39;</span><span class="p">)</span>
+					<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;- &#39;</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">file</span><span class="o">=</span><span class="n">fo</span><span class="p">)</span>
+					<span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">fo</span><span class="p">)</span>
+					<span class="k">for</span> <span class="n">x2</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+						<span class="k">for</span> <span class="n">x3</span> <span class="ow">in</span> <span class="n">x2</span><span class="p">:</span>
+							<span class="nb">print</span><span class="p">(</span><span class="n">x3</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">fo</span><span class="p">)</span>
+			<span class="c1"># might add an option to publish warnings as artifacts, but don&#39;t by default as it happens a lot on some projects</span>
+			<span class="c1">#_publishArtifact(self._logbasename+&#39;-warnings.txt&#39;)</span>
+		
+		<span class="k">if</span> <span class="n">errmsg</span><span class="p">:</span> 
+			<span class="n">msg</span> <span class="o">=</span> <span class="n">errmsg</span>
+			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+				<span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> errors, first is: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">),</span> <span class="n">errmsg</span><span class="p">)</span>
+		<span class="k">elif</span> <span class="n">returnCode</span><span class="p">:</span>
+			<span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;javac failed with return code </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">returnCode</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">assert</span> <span class="ow">not</span> <span class="n">errs</span>
+			<span class="k">return</span>
+		
+		<span class="n">publishArtifact</span><span class="p">(</span><span class="s1">&#39;javac </span><span class="si">%s</span><span class="s1"> output&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">_targetName</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span><span class="o">+</span><span class="s1">&#39;.out&#39;</span><span class="p">)</span>
+		
+		<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="javac"><a class="viewcode-back" href="../../../generated/xpybuild.utils.java.html#xpybuild.utils.java.javac">[docs]</a><span class="k">def</span> <span class="nf">javac</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">logbasename</span><span class="p">,</span> <span class="n">targetname</span><span class="p">,</span> <span class="n">workDir</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Compile some java files to class files.</span>
+
+<span class="sd">	Will raise BuildException if compilation fails.</span>
+
+<span class="sd">	@param output: path to a directory in which to put the class files (will be created)</span>
+
+<span class="sd">	@param inputs: list of paths (.java files) to be compiled</span>
+
+<span class="sd">	@param classpath: classpath to compile with, as a string</span>
+
+<span class="sd">	@param options: options map. javac.options is a list of additional arguments, javac.source is the source version, </span>
+<span class="sd">	javac.target is the target version</span>
+
+<span class="sd">	@param logbasename: absolute, expanded, path to a directory and filename prefix </span>
+<span class="sd">		to use for files such as .err, .out, etc files</span>
+
+<span class="sd">	@param targetname: to log appropriate error messages</span>
+<span class="sd">	</span>
+<span class="sd">	@param workDir: where temporary files are stored.  </span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="k">assert</span> <span class="n">logbasename</span> <span class="ow">and</span> <span class="s1">&#39;$&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">logbasename</span>
+	<span class="n">logbasename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">logbasename</span><span class="p">)</span>
+	<span class="c1"># make the output directory</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output</span><span class="p">):</span> <span class="n">mkdir</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+	<span class="c1"># location of javac</span>
+	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;java.home&#39;</span><span class="p">]:</span>
+		<span class="n">javacpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;java.home&#39;</span><span class="p">],</span> <span class="s2">&quot;bin/javac&quot;</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">javacpath</span> <span class="o">=</span> <span class="s2">&quot;javac&quot;</span> <span class="c1"># just get it from the path</span>
+	<span class="c1"># store the list of files in a temporary file, then build from that.</span>
+	<span class="n">mkdir</span><span class="p">(</span><span class="n">workDir</span><span class="p">)</span>
+	
+	<span class="n">argsfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workDir</span><span class="p">,</span> <span class="s2">&quot;javac_args.txt&quot;</span><span class="p">)</span>
+	
+	<span class="c1"># build up the arguments</span>
+	<span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">]</span>
+	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.source&quot;</span><span class="p">]:</span> <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-source&quot;</span><span class="p">,</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.source&quot;</span><span class="p">]])</span>
+	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.target&quot;</span><span class="p">]:</span> <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-source&quot;</span><span class="p">,</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.target&quot;</span><span class="p">]])</span>
+	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.encoding&quot;</span><span class="p">]:</span> <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-encoding&quot;</span><span class="p">,</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.encoding&quot;</span><span class="p">]])</span>
+	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.debug&quot;</span><span class="p">]:</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-g&#39;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;javac.warningsAsErrors&#39;</span><span class="p">]:</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-Werror&#39;</span><span class="p">)</span>
+	<span class="c1"># TODO: should add -Xlint options here I think</span>
+		
+	<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">getStringList</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;javac.options&#39;</span><span class="p">]))</span>
+	<span class="k">if</span> <span class="n">classpath</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;-cp&#39;</span><span class="p">,</span> <span class="n">classpath</span><span class="p">])</span>
+	<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">inputs</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.java&#39;</span><span class="p">)])</span> <span class="c1"># automatically filter out non-java files</span>
+
+	<span class="k">with</span> <span class="n">openForWrite</span><span class="p">(</span><span class="n">argsfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">locale</span><span class="o">.</span><span class="n">getpreferredencoding</span><span class="p">())</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+		<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+			<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">a</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+	<span class="n">success</span><span class="o">=</span><span class="kc">False</span>
+	<span class="k">try</span><span class="p">:</span>
+
+		<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Executing javac for </span><span class="si">%s</span><span class="s1">, writing output to </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">targetname</span><span class="p">,</span> <span class="n">logbasename</span><span class="o">+</span><span class="s1">&#39;.out&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">javacpath</span><span class="p">]</span><span class="o">+</span><span class="n">args</span><span class="p">]))</span>
+		
+		<span class="c1"># make sure we have no old ones hanging around still</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">deleteFile</span><span class="p">(</span><span class="n">logbasename</span><span class="o">+</span><span class="s1">&#39;-errors.txt&#39;</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+			<span class="n">deleteFile</span><span class="p">(</span><span class="n">logbasename</span><span class="o">+</span><span class="s1">&#39;-warnings.txt&#39;</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+			<span class="n">deleteFile</span><span class="p">(</span><span class="n">logbasename</span><span class="o">+</span><span class="s1">&#39;.out&#39;</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+		<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Cleaning up file failed: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+		
+		<span class="n">outputHandler</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;javac.outputHandlerFactory&#39;</span><span class="p">,</span> <span class="n">JavacProcessOutputHandler</span><span class="p">)(</span><span class="n">targetname</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">outputHandler</span><span class="p">,</span> <span class="s1">&#39;setJavacLogBasename&#39;</span><span class="p">):</span>
+			<span class="n">outputHandler</span><span class="o">.</span><span class="n">setJavacLogBasename</span><span class="p">(</span><span class="n">logbasename</span><span class="p">)</span>
+		<span class="n">call</span><span class="p">([</span><span class="n">javacpath</span><span class="p">,</span> <span class="s2">&quot;@</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">argsfile</span><span class="p">],</span> <span class="n">outputHandler</span><span class="o">=</span><span class="n">outputHandler</span><span class="p">,</span> <span class="n">outputEncoding</span><span class="o">=</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;process.timeout&#39;</span><span class="p">])</span>
+		<span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">output</span><span class="p">)):</span> <span class="c1"># unlikely, but useful failsafe</span>
+			<span class="k">raise</span> <span class="ne">EnvironmentError</span><span class="p">(</span><span class="s1">&#39;javac command failed to create any target files (but returned no error code); see output at &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">logbasename</span><span class="o">+</span><span class="s1">&#39;.out&#39;</span><span class="p">))</span>
+		<span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+	<span class="k">finally</span><span class="p">:</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">success</span> <span class="ow">and</span> <span class="n">classpath</span><span class="p">:</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Classpath for failed javac was: </span><span class="se">\n</span><span class="s1">   </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">   &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">classpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="p">)))</span></div>
+
+
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;jar.options&#39;</span><span class="p">,</span> <span class="p">[])</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.outputHandlerFactory&#39;</span><span class="p">,</span> <span class="n">JavacProcessOutputHandler</span><span class="p">)</span>
+
+<div class="viewcode-block" id="jar"><a class="viewcode-back" href="../../../generated/xpybuild.utils.java.html#xpybuild.utils.java.jar">[docs]</a><span class="k">def</span> <span class="nf">jar</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">manifest</span><span class="p">,</span> <span class="n">sourcedir</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">preserveManifestFormatting</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Create a jar file containing a manifest and some other files</span>
+
+<span class="sd">	@param path: jar file to create. Typically this file does not already exist, but if it does </span>
+<span class="sd">	then the specified files or manifest will be merged into it. </span>
+<span class="sd">	</span>
+<span class="sd">	@param manifest: path to the manifest.mf file (or None to disable manifest entirely)</span>
+
+<span class="sd">	@param sourcedir: the directory to pack everything from (this method may add extra files to this dir)</span>
+
+<span class="sd">	@param options: options map. jar.options is a list of additional arguments</span>
+
+<span class="sd">	@param preserveManifestFormatting: an advanced option that prevents that jar executable from </span>
+<span class="sd">	reformatting the specified manifest file to comply with Java conventions </span>
+<span class="sd">	(also prevents manifest merging if jar already exists)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="c1"># work out if we need to create a parent directory</span>
+	<span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nb">dir</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span> <span class="n">mkdir</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+	<span class="c1"># location of jar</span>
+	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;java.home&#39;</span><span class="p">]:</span>
+		<span class="n">binary</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;java.home&#39;</span><span class="p">],</span> <span class="s2">&quot;bin/jar&quot;</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">binary</span> <span class="o">=</span> <span class="s2">&quot;jar&quot;</span>
+	<span class="c1"># build up arguments</span>
+	<span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">binary</span><span class="p">]</span>
+	<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;jar.options&#39;</span><span class="p">])</span>
+
+	<span class="k">if</span> <span class="n">update</span><span class="p">:</span>
+		<span class="n">mode</span><span class="o">=</span><span class="s1">&#39;-u&#39;</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">mode</span><span class="o">=</span><span class="s1">&#39;-c&#39;</span>
+	
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">manifest</span><span class="p">:</span> 
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">mode</span><span class="o">+</span><span class="s2">&quot;fM&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">])</span>
+	<span class="k">elif</span> <span class="n">preserveManifestFormatting</span><span class="p">:</span>
+		<span class="n">mkdir</span><span class="p">(</span><span class="n">sourcedir</span><span class="o">+</span><span class="s1">&#39;/META-INF&#39;</span><span class="p">)</span>
+		<span class="n">srcf</span> <span class="o">=</span> <span class="n">normLongPath</span><span class="p">(</span><span class="n">sourcedir</span><span class="o">+</span><span class="s1">&#39;/META-INF/manifest.mf&#39;</span><span class="p">)</span>
+
+		<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">manifest</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+			<span class="k">with</span> <span class="n">openForWrite</span><span class="p">(</span><span class="n">srcf</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">d</span><span class="p">:</span>
+				<span class="n">d</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">mode</span><span class="o">+</span><span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">])</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">mode</span><span class="o">+</span><span class="s2">&quot;fm&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">manifest</span><span class="p">])</span>
+
+	<span class="k">if</span> <span class="n">sourcedir</span><span class="p">:</span> 
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="n">sourcedir</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">])</span>
+
+
+	<span class="c1"># actually call jar</span>
+	<span class="n">call</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="n">outputHandler</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;process.timeout&#39;</span><span class="p">])</span></div>
+	
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;jarsigner.options&#39;</span><span class="p">,</span> <span class="p">[])</span>
+
+<div class="viewcode-block" id="signjar"><a class="viewcode-back" href="../../../generated/xpybuild.utils.java.html#xpybuild.utils.java.signjar">[docs]</a><span class="k">def</span> <span class="nf">signjar</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">keystore</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">storepass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Signs an existing jar.</span>
+
+<span class="sd">	@param path: Jar file to sign</span>
+
+<span class="sd">	@param keystore: The keystore with which to sign it</span>
+
+<span class="sd">	@param options: The current set of options to be used</span>
+
+<span class="sd">	@param alias: An alias for the key (optional)</span>
+
+<span class="sd">	@param storepass: The password for the keystore (optional)</span>
+
+<span class="sd">	@param outputHandler: the output handler (optional)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;java.home&#39;</span><span class="p">]:</span>
+		<span class="n">binary</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;java.home&#39;</span><span class="p">],</span> <span class="s2">&quot;bin/jarsigner&quot;</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">binary</span> <span class="o">=</span> <span class="s2">&quot;jarsigner&quot;</span>
+
+	<span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">binary</span><span class="p">]</span>
+	<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;jarsigner.options&#39;</span><span class="p">])</span>
+	<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;-keystore&#39;</span><span class="p">,</span> <span class="n">keystore</span><span class="p">])</span>
+	<span class="k">if</span> <span class="n">storepass</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;-storepass&#39;</span><span class="p">,</span> <span class="n">storepass</span><span class="p">])</span>
+	<span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">alias</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span>
+
+	<span class="n">call</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="n">outputHandler</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;process.timeout&#39;</span><span class="p">])</span></div>
+
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javadoc.options&#39;</span><span class="p">,</span> <span class="p">[])</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javadoc.title&#39;</span><span class="p">,</span> <span class="s2">&quot;Documentation&quot;</span><span class="p">)</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javadoc.access&#39;</span><span class="p">,</span> <span class="s2">&quot;public&quot;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot; By default, Javadoc will parse any source .java files present in the classpath in case they contain comments </span>
+<span class="sd">that should be inherited by the source files being documented. If these files contain errors (such as missing </span>
+<span class="sd">optional dependencies) it will cause Javadoc to fail. This option prevents the classpath from being searched </span>
+<span class="sd">for source files (by setting -sourcepath to a non-existent directoryu), which avoids errors and may also speed </span>
+<span class="sd">up the Javadoc generation. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javadoc.ignoreSourceFilesFromClasspath&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="javadoc"><a class="viewcode-back" href="../../../generated/xpybuild.utils.java.html#xpybuild.utils.java.javadoc">[docs]</a><span class="k">def</span> <span class="nf">javadoc</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">workDir</span><span class="p">,</span> <span class="n">outputHandler</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Create javadoc from sources and a set of options</span>
+
+<span class="sd">	@param path: The directory under which to create the javadoc</span>
+
+<span class="sd">	@param sources: a list of source files</span>
+
+<span class="sd">	@param classpath: a list of jars for the classpath</span>
+
+<span class="sd">	@param options: the current set of options to use</span>
+<span class="sd">	</span>
+<span class="sd">	@param workDir: where temporary files are stored</span>
+<span class="sd">	</span>
+<span class="sd">	@param outputHandler: the output handler (optional)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">deleteDir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+	<span class="n">mkdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+	<span class="c1"># location of javadoc</span>
+	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;java.home&#39;</span><span class="p">]:</span>
+		<span class="n">binary</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;java.home&#39;</span><span class="p">],</span> <span class="s2">&quot;bin/javadoc&quot;</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">binary</span> <span class="o">=</span> <span class="s2">&quot;javadoc&quot;</span>
+
+	<span class="c1"># store the list of files in a temporary file, then build from that.</span>
+	<span class="n">mkdir</span><span class="p">(</span><span class="n">workDir</span><span class="p">)</span>
+	<span class="n">inputlistfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workDir</span><span class="p">,</span> <span class="s2">&quot;javadoc.inputs&quot;</span><span class="p">)</span>
+	<span class="k">with</span> <span class="n">openForWrite</span><span class="p">(</span><span class="n">inputlistfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">locale</span><span class="o">.</span><span class="n">getpreferredencoding</span><span class="p">())</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+		<span class="n">f</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="o">+</span><span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;&quot;&#39;</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">)</span>
+
+	<span class="c1"># build up arguments</span>
+	<span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">binary</span><span class="p">]</span>
+	<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;javadoc.options&#39;</span><span class="p">])</span>
+	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;javadoc.ignoreSourceFilesFromClasspath&#39;</span><span class="p">]:</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;-sourcepath&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">+</span><span class="s1">&#39;/xpybuild_fake_sourcepath&#39;</span><span class="p">])</span>
+	<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+		<span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span>
+		<span class="s2">&quot;-classpath&quot;</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span>
+		<span class="s2">&quot;-windowtitle&quot;</span><span class="p">,</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;javadoc.title&#39;</span><span class="p">],</span>
+		<span class="s2">&quot;-doctitle&quot;</span><span class="p">,</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;javadoc.title&#39;</span><span class="p">],</span>
+		<span class="s2">&quot;-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;javadoc.access&#39;</span><span class="p">],</span>
+		<span class="s2">&quot;@</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">inputlistfile</span>
+	<span class="p">])</span>
+	<span class="c1"># actually call javadoc</span>
+	<span class="n">call</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="n">outputHandler</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;process.timeout&#39;</span><span class="p">])</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

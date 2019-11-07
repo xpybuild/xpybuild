@@ -1,0 +1,511 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.targets.native &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.targets.native</h1><div class="highlight"><pre>
+<span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: native.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">@undocumented: _AddTrailingDirectorySlashesPathSet</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="k">import</span> <span class="n">BaseTarget</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span><span class="p">,</span> <span class="n">Composable</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.functors</span> <span class="k">import</span> <span class="n">makeFunctor</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="k">import</span> <span class="n">call</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="k">import</span> <span class="n">getBuildInitializationContext</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteFile</span><span class="p">,</span> <span class="n">cached_getmtime</span><span class="p">,</span> <span class="n">cached_exists</span><span class="p">,</span> <span class="n">toLongPathSafe</span><span class="p">,</span> <span class="n">cached_stat</span>
+
+<span class="k">class</span> <span class="nc">__CompilersNotSpecified</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot use native targets until a compiler is configured by setting the native.compilers option&#39;</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;&lt;native.compilers option is not configured&gt;&#39;</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.compilers&#39;</span><span class="p">,</span> <span class="n">__CompilersNotSpecified</span><span class="p">())</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.libs&#39;</span><span class="p">,</span> <span class="p">[])</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.libpaths&#39;</span><span class="p">,</span> <span class="p">[])</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.c.flags&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="c1"># defaults to native.cxx.flags if not set</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.flags&#39;</span><span class="p">,</span> <span class="p">[])</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.path&#39;</span><span class="p">,</span> <span class="p">[])</span>
+
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.include&#39;</span><span class="p">,</span> <span class="p">[])</span>
+<span class="sd">&quot;&quot;&quot;List of include dirs to be added (each ending in a slash). </span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.include.upToDateCheckIgnoreRegex&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> 
+<span class="sd">&quot;&quot;&quot;Any include files which this regular expression matches are ignored for dependency checking purposes. </span>
+<span class="sd">This can be used to speed up up-to-date checking by avoiding locations whose contents never change. </span>
+<span class="sd">However be careful not to put any paths that might change into this regular expression, </span>
+<span class="sd">otherwise your targets may not rebuild as expected when their dependencies change.</span>
+<span class="sd">Paths must use forward slashes no backslashes for separating directories. </span>
+<span class="sd"> &quot;&quot;&quot;</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.include.upToDateCheckIgnoreSystemHeaders&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> 
+<span class="sd">&quot;&quot;&quot;Include files located in (or referenced from) system header directories are ignored </span>
+<span class="sd">for dependency checking purposes; only user header files are included. </span>
+<span class="sd">This can be used to speed up up-to-date checking as typically system headers rarely </span>
+<span class="sd">if ever change. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.link.flags&#39;</span><span class="p">,</span> <span class="p">[])</span>
+
+<span class="k">if</span> <span class="n">IS_WINDOWS</span><span class="p">:</span>
+	<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.exenamefn&#39;</span><span class="p">,</span> <span class="n">FilenameStringFormatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.exe&quot;</span><span class="p">))</span>
+	<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.libnamefn&#39;</span><span class="p">,</span> <span class="n">FilenameStringFormatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.dll&quot;</span><span class="p">))</span>
+	<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.staticlibnamefn&#39;</span><span class="p">,</span> <span class="n">FilenameStringFormatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.lib&quot;</span><span class="p">))</span>
+	<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.objnamefn&#39;</span><span class="p">,</span> <span class="n">FilenameStringFormatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.obj&quot;</span><span class="p">))</span>
+<span class="k">else</span><span class="p">:</span>
+	<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.exenamefn&#39;</span><span class="p">,</span> <span class="n">FilenameStringFormatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">))</span>
+	<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.libnamefn&#39;</span><span class="p">,</span> <span class="n">FilenameStringFormatter</span><span class="p">(</span><span class="s2">&quot;lib</span><span class="si">%s</span><span class="s2">.so&quot;</span><span class="p">))</span>
+	<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.staticlibnamefn&#39;</span><span class="p">,</span> <span class="n">FilenameStringFormatter</span><span class="p">(</span><span class="s2">&quot;lib</span><span class="si">%s</span><span class="s2">.a&quot;</span><span class="p">))</span>
+	<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.objnamefn&#39;</span><span class="p">,</span> <span class="n">FilenameStringFormatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.o&quot;</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">_AddTrailingDirectorySlashesPathSet</span><span class="p">(</span><span class="n">BasePathSet</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; NOT for use in builds. </span>
+<span class="sd">	</span>
+<span class="sd">	Adds missing slashes to the source and underlying dependencies </span>
+<span class="sd">	(unless the basename contains a dot, suggesting it&#39;s a file from a TargetsWithinDir). </span>
+<span class="sd">	</span>
+<span class="sd">	For use in builds before 1.15 that incorrectly omitted slashes for include </span>
+<span class="sd">	directories. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_pathSet</span> <span class="o">=</span> <span class="n">pathSet</span>
+	
+	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="s1">&#39;AddTrailingSlashPathSet(</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pathSet</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">resolveWithDestinations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">return</span> <span class="p">[((</span><span class="n">src</span> <span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="k">else</span> <span class="n">src</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span> <span class="n">dest</span><span class="p">)</span> <span class="k">for</span> <span class="n">src</span><span class="p">,</span><span class="n">dest</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pathSet</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">context</span><span class="p">)]</span>
+	<span class="k">def</span> <span class="nf">_resolveUnderlyingDependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="c1"># this is a heuristic - try to avoid adding slashes to TargetsWithinDir(...) .h files</span>
+		<span class="k">return</span> <span class="p">(((</span><span class="n">src</span> <span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;.h&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="k">else</span> <span class="n">src</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span> <span class="n">pathset</span><span class="p">)</span> <span class="k">for</span> <span class="n">src</span><span class="p">,</span><span class="n">pathset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pathSet</span><span class="o">.</span><span class="n">_resolveUnderlyingDependencies</span><span class="p">(</span><span class="n">context</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Cpp"><a class="viewcode-back" href="../../../generated/xpybuild.targets.native.html#xpybuild.targets.native.Cpp">[docs]</a><span class="k">class</span> <span class="nc">Cpp</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Target that compiles a C++ source file to a single object file. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	
+	<span class="n">__rebuild_makedepend_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		@param object: the object file to generate</span>
+<span class="sd">		@param source: a (list of) source files</span>
+<span class="sd">		</span>
+<span class="sd">		@param includes: a (list of) include directories, as strings or PathSets, </span>
+<span class="sd">		each with a trailing slash; the directories in the `native.include` </span>
+<span class="sd">		option are also added.</span>
+<span class="sd">		</span>
+<span class="sd">		If this target depends on some include files that are generated by another target, </span>
+<span class="sd">		make sure it&#39;s a directory target since all include directories must either </span>
+<span class="sd">		exist before the build starts or be targets themselves. </span>
+<span class="sd">		If specifying a subdirectory of a generated directory, do this using DirGeneratedByTarget. </span>
+<span class="sd">		If you have a composite generated directory made up of several </span>
+<span class="sd">		file targets, wrap them in TargetsWithinDir before passing as the includes parameter. </span>
+<span class="sd">		</span>
+<span class="sd">		@param flags: a list of compiler flags in addition to those in the </span>
+<span class="sd">		`native.cxx.flags`/`native.c.flags` option. </span>
+<span class="sd">		</span>
+<span class="sd">		@param dependencies: a list of additional dependencies that need to be built </span>
+<span class="sd">		before this target. Usually this is not needed. </span>
+<span class="sd">		</span>
+<span class="sd">		@param options: [DEPRECATED - use .option() instead]</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+		
+		<span class="c1"># currently we don&#39;t bother adding the native include dirs here as they&#39;re probably always going to be there</span>
+		<span class="c1"># for time being, explicitly cope with missing slashes, though really build authors should avoid this</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">includes</span> <span class="o">=</span> <span class="n">_AddTrailingDirectorySlashesPathSet</span><span class="p">(</span><span class="n">PathSet</span><span class="p">(</span><span class="n">includes</span><span class="p">))</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">([</span><span class="n">flags</span><span class="p">])</span> <span class="ow">or</span> <span class="p">[]</span>
+		
+		<span class="c1"># nb: do not include any individual header files in main target deps even if we&#39;ve already </span>
+		<span class="c1"># got cached makedepends from a previous build, </span>
+		<span class="c1"># because it&#39;s possible they are no longer needed and no longer exist (and we don&#39;t want spurious </span>
+		<span class="c1"># build failures); this also has the advantage that it doesn&#39;t enlarge and slow down the stat cache </span>
+		<span class="c1"># during dep resolution of non-native targets, since it&#39;ll only be populated once we&#39;re into </span>
+		<span class="c1"># the up to date checking phase</span>
+		
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">PathSet</span><span class="p">([</span><span class="n">dependencies</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">includes</span><span class="p">]))</span>
+		
+		<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">options</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">(</span><span class="s1">&#39;native&#39;</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
+
+		<span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+		<span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.compilers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cxxcompiler</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> 
+			<span class="n">flags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_getCompilerFlags</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> 
+			<span class="n">src</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> 
+			<span class="n">includes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_getIncludeDirs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+			<span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">deleteFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_getMakeDependsFile</span><span class="p">(</span><span class="n">context</span><span class="p">))</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">_getMakeDependsFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="c1"># can only be called after target resolution, when workdir is set</span>
+		<span class="k">return</span> <span class="n">toLongPathSafe</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s2">&quot;BUILD_WORK_DIR&quot;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;/targets/makedepend-cache/&#39;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workDir</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.makedepend&#39;</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">_getCompilerFlags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">return</span> <span class="n">flatten</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.flags&#39;</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">])</span>
+	
+	<span class="k">def</span> <span class="nf">_getIncludeDirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">includes</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">+</span><span class="n">flatten</span><span class="p">([</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;native.include&#39;</span><span class="p">)])</span>
+
+	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>	
+		<span class="n">r</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Cpp</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getHashableImplicitInputs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+		<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;compiler flags: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getCompilerFlags</span><span class="p">(</span><span class="n">context</span><span class="p">))</span>
+		
+		<span class="c1"># this will provide a quick way to notice changes such as TP library version number changed etc</span>
+		<span class="c1"># and also is the only way we&#39;ll detect the need to rebuild for includes that are regex&#39;d out</span>
+		<span class="n">includedirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getIncludeDirs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">includedirs</span><span class="p">:</span>
+			<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;include dir: &#39;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+		
+		<span class="c1"># This is called exactly once during up-to-date checking OR run, which </span>
+		<span class="c1"># means we will have generated all target dependencies </span>
+		<span class="c1"># (e.g. include files, source files etc) by this point</span>
+		
+		<span class="c1"># Since non-target include files won&#39;t be known until this point, we need </span>
+		<span class="c1"># to perform up-to-date-ness checking for them here (rather than in </span>
+		<span class="c1"># targetwrapper as normally happens for dependencies). </span>
+		
+		<span class="n">startt</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">targetmtime</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">st_mtime</span> <span class="c1"># must NOT use getstat cache, don&#39;t want to pollute it with non-existence</span>
+		<span class="k">except</span> <span class="n">os</span><span class="o">.</span><span class="n">error</span><span class="p">:</span> <span class="c1"># file doesn&#39;t exist</span>
+			<span class="n">targetmtime</span> <span class="o">=</span> <span class="mi">0</span>
+
+		<span class="n">makedependsfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getMakeDependsFile</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">targetmtime</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">makedependsfile</span><span class="p">):</span>  <span class="c1"># no value in using stat cache for this, not used elsewhere</span>
+			<span class="n">targetmtime</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># treat the same as if target itself didn&#39;t exist</span>
+		
+		<span class="n">newestFile</span><span class="p">,</span> <span class="n">newestTime</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span> <span class="c1"># keep track of the newest source or include file</span>
+		
+		<span class="k">if</span> <span class="n">IS_WINDOWS</span><span class="p">:</span> <span class="c1"># normalizes case for this OS but not slashes (handy for regex matching)</span>
+			<span class="k">def</span> <span class="nf">xpybuild_normcase</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+				<span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">def</span> <span class="nf">xpybuild_normcase</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+				<span class="k">return</span> <span class="n">path</span>
+		
+		<span class="c1"># changes in these options must cause us to re-execute makedepends</span>
+		<span class="n">ignoreregex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.include.upToDateCheckIgnoreRegex&#39;</span><span class="p">]</span>
+		<span class="k">if</span> <span class="n">ignoreregex</span><span class="p">:</span> 
+			<span class="n">ignoreregex</span> <span class="o">=</span> <span class="n">xpybuild_normcase</span><span class="p">(</span><span class="n">ignoreregex</span><span class="p">)</span>
+			<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;option native.include.upToDateCheckIgnoreRegex=</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">ignoreregex</span><span class="p">)</span>
+		<span class="n">makedependsoptions</span> <span class="o">=</span> <span class="s2">&quot;upToDateCheckIgnoreRegex=&#39;</span><span class="si">%s</span><span class="s2">&#39;, upToDateCheckIgnoreSystemHeaders=</span><span class="si">%s</span><span class="s2">, flags=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span>
+			<span class="n">ignoreregex</span><span class="p">,</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.include.upToDateCheckIgnoreSystemHeaders&#39;</span><span class="p">],</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_getCompilerFlags</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> 
+			<span class="p">)</span>
+
+		<span class="c1"># first, figure out if we need to (re-)run makedepends or can use the cached info from the last build</span>
+		<span class="n">runmakedepends</span> <span class="o">=</span> <span class="kc">False</span>
+		
+		<span class="k">if</span> <span class="n">targetmtime</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+			<span class="n">runmakedepends</span> <span class="o">=</span> <span class="kc">True</span>
+		
+		<span class="n">alreadychecked</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span> <span class="c1"># paths that we&#39;ve already checked the date of</span>
+		<span class="n">sourcepaths</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+			<span class="n">mtime</span> <span class="o">=</span> <span class="n">cached_getmtime</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+			<span class="n">alreadychecked</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+			<span class="n">sourcepaths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+			<span class="k">if</span> <span class="n">mtime</span> <span class="o">&gt;</span> <span class="n">newestTime</span><span class="p">:</span> <span class="n">newestFile</span><span class="p">,</span> <span class="n">newestTime</span> <span class="o">=</span> <span class="n">path</span><span class="p">,</span> <span class="n">mtime</span>
+		<span class="k">if</span> <span class="n">newestTime</span> <span class="o">&gt;</span> <span class="n">targetmtime</span><span class="p">:</span> <span class="n">runmakedepends</span> <span class="o">=</span> <span class="kc">True</span>
+		
+		<span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">runmakedepends</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">makedependsfile</span><span class="p">):</span> <span class="c1"># (no point using stat cache for this file)</span>
+			<span class="c1"># read file from last time; if any of the transitive dependencies </span>
+			<span class="c1"># have changed, we should run makedepends again to update them</span>
+			<span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">makedependsfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+				<span class="n">flags</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+				<span class="k">if</span> <span class="n">flags</span> <span class="o">!=</span> <span class="n">makedependsoptions</span><span class="p">:</span>
+					<span class="n">runmakedepends</span> <span class="o">=</span> <span class="kc">True</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+						<span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+						<span class="n">pathstat</span> <span class="o">=</span> <span class="n">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">errorIfMissing</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+						<span class="k">if</span> <span class="n">pathstat</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+							<span class="c1"># file doesn&#39;t exist - must rebuild</span>
+							<span class="n">runmakedepends</span> <span class="o">=</span> <span class="kc">True</span>
+							<span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">critical</span> <span class="k">if</span> <span class="n">Cpp</span><span class="o">.</span><span class="n">__rebuild_makedepend_count</span> <span class="o">&lt;=</span> <span class="mi">5</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">)(</span>
+								<span class="s1">&#39;Recalculating C/C++ dependencies of </span><span class="si">%s</span><span class="s1"> as dependency no longer exists: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">newestFile</span><span class="p">)</span>
+
+							<span class="k">break</span>
+						<span class="n">mtime</span> <span class="o">=</span> <span class="n">pathstat</span><span class="o">.</span><span class="n">st_mtime</span>
+						<span class="n">alreadychecked</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+						<span class="k">if</span> <span class="n">mtime</span> <span class="o">&gt;</span> <span class="n">newestTime</span><span class="p">:</span> <span class="n">newestFile</span><span class="p">,</span> <span class="n">newestTime</span> <span class="o">=</span> <span class="n">path</span><span class="p">,</span> <span class="n">mtime</span>
+						
+			<span class="k">if</span> <span class="n">newestTime</span> <span class="o">&gt;</span> <span class="n">targetmtime</span><span class="p">:</span> <span class="n">runmakedepends</span> <span class="o">=</span> <span class="kc">True</span>
+		
+		<span class="c1"># (re-)run makedepends</span>
+		<span class="k">if</span> <span class="n">runmakedepends</span><span class="p">:</span>
+			<span class="c1"># only bother to log if we&#39;re recalculating</span>
+			<span class="k">if</span> <span class="n">targetmtime</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> 
+				<span class="n">Cpp</span><span class="o">.</span><span class="n">__rebuild_makedepend_count</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># log the first few at crit</span>
+				<span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">critical</span> <span class="k">if</span> <span class="n">Cpp</span><span class="o">.</span><span class="n">__rebuild_makedepend_count</span> <span class="o">&lt;=</span> <span class="mi">5</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">)(</span>
+					<span class="s1">&#39;Recalculating C/C++ dependencies of </span><span class="si">%s</span><span class="s1">; most recently modified dependent file is </span><span class="si">%s</span><span class="s1"> at </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">newestFile</span><span class="p">,</span> 
+						<span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">newestTime</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%a</span><span class="s1"> %Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">))</span>
+
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">makedependsoutput</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.compilers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dependencies</span><span class="o">.</span><span class="n">depends</span><span class="p">(</span>
+					<span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> 
+					<span class="n">src</span><span class="o">=</span><span class="n">sourcepaths</span><span class="p">,</span> 
+					<span class="n">options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">,</span> 
+					<span class="n">flags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_getCompilerFlags</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> 
+					<span class="n">includes</span><span class="o">=</span><span class="n">includedirs</span><span class="p">,</span>
+					<span class="p">)</span>
+			<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Dependency resolution failed for </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">sourcepaths</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+			
+			<span class="c1"># normalize case to avoid problems on windows, and strip out sources since we already checked them above</span>
+			<span class="n">makedependsoutput</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">makedependsoutput</span> <span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sourcepaths</span><span class="p">]</span>
+			<span class="n">makedependsoutput</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+			<span class="k">if</span> <span class="n">ignoreregex</span><span class="p">:</span>
+				<span class="n">ignoreregex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">ignoreregex</span><span class="p">)</span>
+				<span class="c1"># match against version of path with forward slashes because making a regex with backslashes is a pain and not cross-platform</span>
+				<span class="n">makedependsoutput</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">makedependsoutput</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">ignoreregex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">))]</span>
+
+			<span class="c1"># find the newest time from these files; if this is same as previous makedepends, won&#39;t do anything</span>
+			<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">makedependsoutput</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">alreadychecked</span><span class="p">:</span> <span class="k">continue</span>
+				<span class="n">mtime</span> <span class="o">=</span> <span class="n">cached_getmtime</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+				<span class="k">if</span> <span class="n">mtime</span> <span class="o">&gt;</span> <span class="n">newestTime</span><span class="p">:</span> <span class="n">newestFile</span><span class="p">,</span> <span class="n">newestTime</span> <span class="o">=</span> <span class="n">path</span><span class="p">,</span> <span class="n">mtime</span>
+			
+			<span class="c1"># write out new makedepends file for next time</span>
+			<span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">makedependsfile</span><span class="p">))</span>
+			<span class="k">assert</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">makedependsoptions</span><span class="p">,</span> <span class="n">makedependsoptions</span> <span class="c1"># sanity check</span>
+			<span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">makedependsfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+				<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">makedependsoptions</span><span class="p">)</span>
+				<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+				<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">makedependsoutput</span><span class="p">:</span>
+					<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">path</span><span class="p">)</span>
+
+		<span class="c1"># endif runmakedepends</span>
+		
+		<span class="c1"># include the newest timestamp as an implicit input, so that we&#39;ll rebuild if any include files have changed</span>
+		<span class="c1"># no need to log this, as targetwrapper already logs differences in implicit inputs</span>
+		<span class="k">if</span> <span class="n">newestFile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">newestDateTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">newestTime</span><span class="p">)</span>
+			<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;newest dependency was modified at </span><span class="si">%s</span><span class="s1">.</span><span class="si">%03d</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span>
+				<span class="n">newestDateTime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%a</span><span class="s1"> %Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">),</span> 
+				<span class="n">newestDateTime</span><span class="o">.</span><span class="n">microsecond</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span> 
+				<span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">newestFile</span><span class="p">)))</span>
+
+		<span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">startt</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span> <span class="c1"># this should usually be pretty quick, so if it takes a while it may indicate a real build file mistake</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;C/C++ dependency generation took a long time: </span><span class="si">%0.1f</span><span class="s1"> s to evaluate </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">startt</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+		
+		<span class="k">return</span> <span class="n">r</span></div>
+		
+<div class="viewcode-block" id="C"><a class="viewcode-back" href="../../../generated/xpybuild.targets.native.html#xpybuild.targets.native.C">[docs]</a><span class="k">class</span> <span class="nc">C</span><span class="p">(</span><span class="n">Cpp</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Target that compiles a C source file to a .o</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	
+	<span class="c1"># identical to Cpp except for actual run method</span>
+	
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
+		<span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+		<span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.compilers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">ccompiler</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+				<span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> 
+				<span class="n">flags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_getCompilerFlags</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> 
+				<span class="n">src</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">),</span>
+				<span class="n">includes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_getIncludeDirs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+				<span class="p">)</span>
+		
+	<span class="k">def</span> <span class="nf">_getCompilerFlags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">return</span> <span class="n">flatten</span><span class="p">(</span>
+			<span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.c.flags&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.cxx.flags&#39;</span><span class="p">])</span>
+			<span class="o">+</span><span class="p">[</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">])</span></div>
+
+		
+<div class="viewcode-block" id="Link"><a class="viewcode-back" href="../../../generated/xpybuild.targets.native.html#xpybuild.targets.native.Link">[docs]</a><span class="k">class</span> <span class="nc">Link</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Target that links object files to binaries</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bin</span><span class="p">,</span> <span class="n">objects</span><span class="p">,</span> <span class="n">libs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shared</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		@param bin: the output binary</span>
+
+<span class="sd">		@param objects: a (list of) input object</span>
+
+<span class="sd">		@param libs: a (list of) libraries linked against (optional) in platform-neutral format. </span>
+<span class="sd">		Can include list properties like &#39;${FOO_LIB_NAMES[]}&#39;. </span>
+
+<span class="sd">		@param libpaths: a (list of) additional library search directories (optional)</span>
+
+<span class="sd">		@param shared: if true compiles to a shared object (.dll or .so) (optional, defaults to false)</span>
+
+<span class="sd">		@param flags: a list of additional linker flags</span>
+
+<span class="sd">		@param options: [DEPRECATED - use .option() instead]</span>
+
+<span class="sd">		@param dependencies: a list of additional dependencies (targets or files)</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">objects</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">libs</span> <span class="o">=</span> <span class="n">libs</span> <span class="ow">or</span> <span class="p">[]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">libpaths</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">libpaths</span> <span class="ow">or</span> <span class="p">[])</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="n">flags</span> <span class="ow">or</span> <span class="p">[]</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bin</span><span class="p">,</span> <span class="n">PathSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">,</span> <span class="p">(</span><span class="n">dependencies</span> <span class="ow">or</span> <span class="p">[])))</span>
+		<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">options</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+		
+		<span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">(</span><span class="s1">&#39;native&#39;</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
+
+		<span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+		<span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.compilers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">linker</span><span class="o">.</span><span class="n">link</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+				<span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> 
+				<span class="n">flags</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.link.flags&#39;</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">,</span> 
+				<span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shared</span><span class="p">,</span>
+				<span class="n">src</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">),</span>
+				<span class="n">libs</span><span class="o">=</span><span class="n">flatten</span><span class="p">([(</span><span class="n">y</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">libs</span><span class="o">+</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.libs&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="p">]),</span>
+				<span class="n">libdirs</span><span class="o">=</span><span class="n">flatten</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">libpaths</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.libpaths&#39;</span><span class="p">]]))</span>
+
+	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">r</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Link</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getHashableImplicitInputs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		
+		<span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
+		<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;libs: &#39;</span><span class="o">+</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">libs</span><span class="o">+</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.libs&#39;</span><span class="p">])))</span>
+		<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;libpaths: &#39;</span><span class="o">+</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">libpaths</span><span class="p">)))</span>
+		<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;native.libpaths: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.libpaths&#39;</span><span class="p">])</span>
+		<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;shared: </span><span class="si">%s</span><span class="s1">, flags=</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shared</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">))</span>
+		
+		<span class="k">return</span> <span class="n">r</span></div>
+		
+<div class="viewcode-block" id="Ar"><a class="viewcode-back" href="../../../generated/xpybuild.targets.native.html#xpybuild.targets.native.Ar">[docs]</a><span class="k">class</span> <span class="nc">Ar</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Target that compiles .a files from collections of .o files</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bin</span><span class="p">,</span> <span class="n">objects</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		@param bin: the output library</span>
+
+<span class="sd">		@param objects: a (list of) input objects</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">objects</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">(</span><span class="s1">&#39;native&#39;</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
+
+		<span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+		<span class="n">options</span><span class="p">[</span><span class="s1">&#39;native.compilers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">archiver</span><span class="o">.</span><span class="n">archive</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+				<span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+				<span class="n">src</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">))</span>
+
+	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">r</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Ar</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getHashableImplicitInputs</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		
+		<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;objects: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">)</span>
+		
+		<span class="k">return</span> <span class="n">r</span></div>
+		
+<span class="n">exename</span> <span class="o">=</span> <span class="n">makeFunctor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span><span class="n">c</span><span class="o">.</span><span class="n">getGlobalOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.exenamefn&#39;</span><span class="p">)(</span><span class="n">c</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;exename&#39;</span><span class="p">)</span>
+<span class="n">objectname</span> <span class="o">=</span> <span class="n">makeFunctor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span><span class="n">c</span><span class="o">.</span><span class="n">getGlobalOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.objnamefn&#39;</span><span class="p">)(</span><span class="n">c</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;objectname&#39;</span><span class="p">)</span>
+<span class="n">libname</span> <span class="o">=</span> <span class="n">makeFunctor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span><span class="n">c</span><span class="o">.</span><span class="n">getGlobalOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.libnamefn&#39;</span><span class="p">)(</span><span class="n">c</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;libname&#39;</span><span class="p">)</span>
+<span class="n">staticlibname</span> <span class="o">=</span> <span class="n">makeFunctor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span><span class="n">c</span><span class="o">.</span><span class="n">getGlobalOption</span><span class="p">(</span><span class="s1">&#39;native.cxx.staticlibnamefn&#39;</span><span class="p">)(</span><span class="n">c</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;staticlibname&#39;</span><span class="p">)</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

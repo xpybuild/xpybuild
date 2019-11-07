@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.utils.java &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.utils.process" href="xpybuild.utils.process.html" />
+    <link rel="prev" title="xpybuild.utils.progress" href="xpybuild.utils.progress.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.utils.process.html" title="xpybuild.utils.process"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.utils.progress.html" title="xpybuild.utils.progress"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Module list</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-xpybuild.utils.java">
+<span id="xpybuild-utils-java"></span><h1>xpybuild.utils.java<a class="headerlink" href="#module-xpybuild.utils.java" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="javacprocessoutputhandler">
+<h2>JavacProcessOutputHandler<a class="headerlink" href="#javacprocessoutputhandler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.utils.java.JavacProcessOutputHandler">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">JavacProcessOutputHandler</code><span class="sig-paren">(</span><em class="sig-param">targetName</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#JavacProcessOutputHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.JavacProcessOutputHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler" title="xpybuild.utils.outputhandler.ProcessOutputHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.outputhandler.ProcessOutputHandler</span></code></a></p>
+</dd></dl>
+
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="section" id="create-manifest">
+<h2>create_manifest<a class="headerlink" href="#create-manifest" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.utils.java.create_manifest">
+<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">create_manifest</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">properties</em>, <em class="sig-param">options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#create_manifest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.create_manifest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a manifest file in path from the map properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – The absolute path in which to create a manifest file. If None is specified, 
+no file is written but a byte string containing the file contents is returned.</p></li>
+<li><p><strong>properties</strong> – A map of manifest keys to values (unicode character strings). 
+Must follow java jar file format specification, e.g. headers cannot contain spaces.</p></li>
+<li><p><strong>options</strong> – The options to use for creating the manifest (prefix: jar.manifest)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="jar">
+<h2>jar<a class="headerlink" href="#jar" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.utils.java.jar">
+<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">jar</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">manifest</em>, <em class="sig-param">sourcedir</em>, <em class="sig-param">options</em>, <em class="sig-param">preserveManifestFormatting=False</em>, <em class="sig-param">update=False</em>, <em class="sig-param">outputHandler=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#jar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.jar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a jar file containing a manifest and some other files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – jar file to create. Typically this file does not already exist, but if it does 
+then the specified files or manifest will be merged into it.</p></li>
+<li><p><strong>manifest</strong> – path to the manifest.mf file (or None to disable manifest entirely)</p></li>
+<li><p><strong>sourcedir</strong> – the directory to pack everything from (this method may add extra files to this dir)</p></li>
+<li><p><strong>options</strong> – options map. jar.options is a list of additional arguments</p></li>
+<li><p><strong>preserveManifestFormatting</strong> – an advanced option that prevents that jar executable from 
+reformatting the specified manifest file to comply with Java conventions 
+(also prevents manifest merging if jar already exists)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="javac">
+<h2>javac<a class="headerlink" href="#javac" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.utils.java.javac">
+<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">javac</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">inputs</em>, <em class="sig-param">classpath</em>, <em class="sig-param">options</em>, <em class="sig-param">logbasename</em>, <em class="sig-param">targetname</em>, <em class="sig-param">workDir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#javac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.javac" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compile some java files to class files.</p>
+<p>Will raise BuildException if compilation fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> – path to a directory in which to put the class files (will be created)</p></li>
+<li><p><strong>inputs</strong> – list of paths (.java files) to be compiled</p></li>
+<li><p><strong>classpath</strong> – classpath to compile with, as a string</p></li>
+<li><p><strong>options</strong> – options map. javac.options is a list of additional arguments, javac.source is the source version, 
+javac.target is the target version</p></li>
+<li><p><strong>logbasename</strong> – absolute, expanded, path to a directory and filename prefix 
+to use for files such as .err, .out, etc files</p></li>
+<li><p><strong>targetname</strong> – to log appropriate error messages</p></li>
+<li><p><strong>workDir</strong> – where temporary files are stored.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="javadoc">
+<h2>javadoc<a class="headerlink" href="#javadoc" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.utils.java.javadoc">
+<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">javadoc</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">sources</em>, <em class="sig-param">classpath</em>, <em class="sig-param">options</em>, <em class="sig-param">workDir</em>, <em class="sig-param">outputHandler</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#javadoc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.javadoc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create javadoc from sources and a set of options</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – The directory under which to create the javadoc</p></li>
+<li><p><strong>sources</strong> – a list of source files</p></li>
+<li><p><strong>classpath</strong> – a list of jars for the classpath</p></li>
+<li><p><strong>options</strong> – the current set of options to use</p></li>
+<li><p><strong>workDir</strong> – where temporary files are stored</p></li>
+<li><p><strong>outputHandler</strong> – the output handler (optional)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="signjar">
+<h2>signjar<a class="headerlink" href="#signjar" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.utils.java.signjar">
+<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">signjar</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">keystore</em>, <em class="sig-param">options</em>, <em class="sig-param">alias=None</em>, <em class="sig-param">storepass=None</em>, <em class="sig-param">outputHandler=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#signjar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.signjar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signs an existing jar.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – Jar file to sign</p></li>
+<li><p><strong>keystore</strong> – The keystore with which to sign it</p></li>
+<li><p><strong>options</strong> – The current set of options to be used</p></li>
+<li><p><strong>alias</strong> – An alias for the key (optional)</p></li>
+<li><p><strong>storepass</strong> – The password for the keystore (optional)</p></li>
+<li><p><strong>outputHandler</strong> – the output handler (optional)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">xpybuild.utils.java</a><ul>
+<li><a class="reference internal" href="#javacprocessoutputhandler">JavacProcessOutputHandler</a></li>
+<li><a class="reference internal" href="#create-manifest">create_manifest</a></li>
+<li><a class="reference internal" href="#jar">jar</a></li>
+<li><a class="reference internal" href="#javac">javac</a></li>
+<li><a class="reference internal" href="#javadoc">javadoc</a></li>
+<li><a class="reference internal" href="#signjar">signjar</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="xpybuild.utils.progress.html"
+                        title="previous chapter">xpybuild.utils.progress</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="xpybuild.utils.process.html"
+                        title="next chapter">xpybuild.utils.process</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/generated/xpybuild.utils.java.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.utils.process.html" title="xpybuild.utils.process"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.utils.progress.html" title="xpybuild.utils.progress"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Module list</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

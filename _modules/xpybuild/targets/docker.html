@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.targets.docker &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for xpybuild.targets.docker</h1><div class="highlight"><pre>
+<span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2013 - 2018 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1">#</span>
+<span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#   you may not use this file except in compliance with the License.</span>
+<span class="c1">#   You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#       http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#   Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#   See the License for the specific language governing permissions and</span>
+<span class="c1">#   limitations under the License.</span>
+<span class="c1">#</span>
+<span class="c1"># $Id: touch.py 301527 2017-02-06 15:31:43Z matj $</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">inspect</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="k">import</span> <span class="n">BaseTarget</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">normLongPath</span><span class="p">,</span> <span class="n">mkdir</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="k">import</span> <span class="n">call</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="k">import</span> <span class="n">ProcessOutputHandler</span>
+
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;docker.path&#39;</span><span class="p">,</span> <span class="s1">&#39;docker&#39;</span><span class="p">)</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;docker.host&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;docker.buildoptions&#39;</span><span class="p">,</span> <span class="p">[])</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;docker.outputHandlerFactory&#39;</span><span class="p">,</span> <span class="n">ProcessOutputHandler</span><span class="p">)</span> 
+
+<div class="viewcode-block" id="DockerBase"><a class="viewcode-back" href="../../../generated/xpybuild.targets.docker.html#xpybuild.targets.docker.DockerBase">[docs]</a><span class="k">class</span> <span class="nc">DockerBase</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Target that runs commands in docker, using stamp files for up-to-dateness</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagename</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">depimage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dockerfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">buildArgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dockerArgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		imagename: the name/tag of the image to build</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">imagename</span> <span class="o">=</span> <span class="n">imagename</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">depimage</span> <span class="o">=</span> <span class="n">depimage</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">dockerfile</span> <span class="o">=</span> <span class="n">dockerfile</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">buildArgs</span> <span class="o">=</span> <span class="n">buildArgs</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">dockerArgs</span> <span class="o">=</span> <span class="n">dockerArgs</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">stampfile</span> <span class="o">=</span> <span class="s1">&#39;$</span><span class="si">{BUILD_WORK_DIR}</span><span class="s1">/targets/docker/.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[</span><span class="se">\\</span><span class="s1">/]&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">imagename</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">depstampfile</span> <span class="o">=</span> <span class="s1">&#39;$</span><span class="si">{BUILD_WORK_DIR}</span><span class="s1">/targets/docker/.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[</span><span class="se">\\</span><span class="s1">/]&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">depimage</span><span class="p">)</span> <span class="k">if</span> <span class="n">depimage</span> <span class="k">else</span> <span class="kc">None</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stampfile</span><span class="p">,</span> <span class="n">inputs</span> <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">depstampfile</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">depstampfile</span> <span class="k">else</span> <span class="p">[]))</span>
+
+	<span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">BaseTarget</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+		<span class="n">args</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.path&#39;</span><span class="p">)</span> <span class="p">]</span>
+		<span class="n">environs</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;DOCKER_HOST&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.host&#39;</span><span class="p">)</span> <span class="p">}</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.host&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;rmi&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imagename</span><span class="p">)])</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">call</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.outputHandlerFactory&#39;</span><span class="p">)(</span><span class="s1">&#39;docker-rmi&#39;</span><span class="p">,</span> <span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;process.timeout&#39;</span><span class="p">),</span> <span class="n">env</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+		<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+			<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;DockerBase&#39;</span><span class="p">)</span>
+			<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Exception cleaning Docker target: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">args</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.path&#39;</span><span class="p">)</span> <span class="p">]</span>
+		<span class="n">environs</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;DOCKER_HOST&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.host&#39;</span><span class="p">)</span> <span class="p">}</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.host&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="DockerBuild"><a class="viewcode-back" href="../../../generated/xpybuild.targets.docker.html#xpybuild.targets.docker.DockerBuild">[docs]</a><span class="k">class</span> <span class="nc">DockerBuild</span><span class="p">(</span><span class="n">DockerBase</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagename</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">depimage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dockerfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">buildArgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dockerArgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="n">DockerBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagename</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">depimage</span><span class="p">,</span> <span class="n">dockerfile</span><span class="p">,</span> <span class="n">buildArgs</span><span class="p">,</span> <span class="n">dockerArgs</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">args</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.path&#39;</span><span class="p">)</span> <span class="p">]</span>
+		<span class="n">environs</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;DOCKER_HOST&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.host&#39;</span><span class="p">)</span> <span class="p">}</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.host&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+
+		<span class="n">dargs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+		<span class="n">dargs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+				<span class="s1">&#39;build&#39;</span><span class="p">,</span> <span class="s1">&#39;--rm=true&#39;</span><span class="p">,</span> <span class="s1">&#39;-t&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imagename</span><span class="p">),</span>
+			<span class="p">])</span>
+		<span class="n">dargs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.buildoptions&#39;</span><span class="p">))</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dockerArgs</span><span class="p">:</span> <span class="n">dargs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dockerArgs</span><span class="p">)</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buildArgs</span><span class="p">:</span> <span class="n">dargs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;--build-arg=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buildArgs</span><span class="p">])</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dockerfile</span><span class="p">:</span> <span class="n">dargs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dockerfile</span><span class="p">)])</span>
+		<span class="n">inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span> <span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s2">&quot;Must specify a single input for Docker.BUILD&quot;</span><span class="p">,</span> <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+		<span class="n">dargs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+		<span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+		<span class="n">call</span><span class="p">(</span><span class="n">dargs</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.outputHandlerFactory&#39;</span><span class="p">)(</span><span class="s1">&#39;docker-build&#39;</span><span class="p">,</span> <span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;process.timeout&#39;</span><span class="p">),</span> <span class="n">env</span><span class="o">=</span><span class="n">environs</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">cwd</span><span class="p">)</span>
+	
+		<span class="c1"># update the stamp file</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">updateStampFile</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DockerPushTag"><a class="viewcode-back" href="../../../generated/xpybuild.targets.docker.html#xpybuild.targets.docker.DockerPushTag">[docs]</a><span class="k">class</span> <span class="nc">DockerPushTag</span><span class="p">(</span><span class="n">DockerBase</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagename</span><span class="p">,</span> <span class="n">fromimage</span><span class="p">):</span>
+		<span class="n">DockerBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagename</span><span class="p">,</span> <span class="p">[],</span> <span class="n">depimage</span><span class="o">=</span><span class="n">fromimage</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="n">args</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.path&#39;</span><span class="p">)</span> <span class="p">]</span>
+		<span class="n">environs</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;DOCKER_HOST&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.host&#39;</span><span class="p">)</span> <span class="p">}</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.host&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+
+		<span class="n">inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s2">&quot;Must not specify inputs for Docker.PUSHTAG&quot;</span><span class="p">,</span> <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+		<span class="n">dargs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+		<span class="n">dargs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+				<span class="s1">&#39;tag&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">depimage</span><span class="p">),</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imagename</span><span class="p">),</span>
+			<span class="p">])</span>
+		<span class="n">call</span><span class="p">(</span><span class="n">dargs</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.outputHandlerFactory&#39;</span><span class="p">)(</span><span class="s1">&#39;docker-tag&#39;</span><span class="p">,</span> <span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;process.timeout&#39;</span><span class="p">),</span> <span class="n">env</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+		<span class="n">dargs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+		<span class="n">dargs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+				<span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imagename</span><span class="p">),</span>
+			<span class="p">])</span>
+		<span class="n">call</span><span class="p">(</span><span class="n">dargs</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.outputHandlerFactory&#39;</span><span class="p">)(</span><span class="s1">&#39;docker-push&#39;</span><span class="p">,</span> <span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;process.timeout&#39;</span><span class="p">),</span> <span class="n">env</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
+		
+		<span class="c1"># update the stamp file</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">updateStampFile</span><span class="p">()</span></div>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

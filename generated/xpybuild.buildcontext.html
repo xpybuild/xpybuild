@@ -1,0 +1,557 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>xpybuild.buildcontext &#8212; xpybuild 3.0.dev2 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.basetarget" href="xpybuild.basetarget.html" />
+    <link rel="prev" title="xpybuild.buildcommon" href="xpybuild.buildcommon.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.basetarget.html" title="xpybuild.basetarget"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.buildcommon.html" title="xpybuild.buildcommon"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Module list</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-xpybuild.buildcontext">
+<span id="xpybuild-buildcontext"></span><h1>xpybuild.buildcontext<a class="headerlink" href="#module-xpybuild.buildcontext" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="basecontext">
+<h2>BaseContext<a class="headerlink" href="#basecontext" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.buildcontext.BaseContext">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcontext.</code><code class="sig-name descname">BaseContext</code><span class="sig-paren">(</span><em class="sig-param">initialProperties=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Common functionality needed during initialization and build phases.</p>
+<p>Initializes a BaseContext object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>initialProperties</strong> – a dictionary of initial property values; 
+used by doc tests.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="xpybuild.buildcontext.BaseContext.publishArtifact">
+<code class="sig-name descname">publishArtifact</code><span class="sig-paren">(</span><em class="sig-param">displayName</em>, <em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.publishArtifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.publishArtifact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Publishes the specified local path as an artifact, 
+if supported by the configured output format.</p>
+<p>For example this can be used to publish log and error output if a target 
+fails.</p>
+<p>Equivalent to calling <code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.consoleformatter.publishArtifact</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BaseContext.getPropertyValue">
+<code class="sig-name descname">getPropertyValue</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.getPropertyValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.getPropertyValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of the specified property or raise a BuildException if it doesn’t exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – the property name (without ${…}) to retrieve. Must be a string.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>For Boolean properties this will be a python Boolean, for everything else it will be a string.</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;BUILD_MODE&#39;</span><span class="p">:</span><span class="s1">&#39;release&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s1">&#39;BUILD_MODE&#39;</span><span class="p">)</span>
+<span class="go">&#39;release&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">})</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">})</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s1">&#39;UNDEFINED_PROPERTY&#39;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">xpybuild.utils.buildexceptions.BuildException</span>: <span class="n">Property &quot;UNDEFINED_PROPERTY&quot; is not defined</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">xpybuild.utils.buildexceptions.BuildException</span>: <span class="n">Property &quot;None&quot; is not defined</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">xpybuild.utils.buildexceptions.BuildException</span>: <span class="n">Property &quot;&quot; is not defined</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BaseContext.expandPropertyValues">
+<code class="sig-name descname">expandPropertyValues</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">expandList=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.expandPropertyValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.expandPropertyValues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expand all ${PROP_NAME} properties in the specified string.</p>
+<p>Use a double dollar to escape if needed, e.g. “$${foo}” will end up as 
+“${foo}” unescaped. This assumes expandPropertyValues is not called 
+more than once on the same string (it is not idempotent).</p>
+<p>Boolean values are expanded to “true” or “false”</p>
+<p>Returns the expanded string, or raises BuildException if expansion fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> – The string with unexpanded properties in ${…} to expand.
+May alternatively be a Composable object which will be later 
+evaluated using its resolveToString method, or a function that accepts 
+a single argument containing the context.</p></li>
+<li><p><strong>expandList</strong> – return a list not a string and expand exactly one ${VAR[]} to multiple list items.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="go">&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;BUILD_MODE&#39;</span><span class="p">:</span><span class="s1">&#39;release&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39; $</span><span class="si">{BUILD_MODE}</span><span class="s1"> x $</span><span class="si">{BUILD_MODE}</span><span class="s1"> &#39;</span><span class="p">)</span>
+<span class="go">&#39; release x release &#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;BUILD_MODE&#39;</span><span class="p">:</span><span class="s1">&#39;release&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39; $</span><span class="si">{BUILD_MODE}</span><span class="s1"> x $</span><span class="si">{BUILD_MODE}</span><span class="s1"> &#39;</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39; release x release &#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;DIR&#39;</span><span class="p">:</span><span class="s1">&#39;dir&#39;</span><span class="p">,</span> <span class="s1">&#39;NAMES[]&#39;</span><span class="p">:</span><span class="s1">&#39;a, b, c&#39;</span><span class="p">,</span> <span class="s1">&#39;SUFFIX&#39;</span><span class="p">:</span><span class="s1">&#39;.jar&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{DIR}</span><span class="s1">/${NAMES[]}$</span><span class="si">{SUFFIX}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;dir/a.jar&#39;, &#39;dir/b.jar&#39;, &#39;dir/c.jar&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;DIR&#39;</span><span class="p">:</span><span class="s1">&#39;dir&#39;</span><span class="p">,</span> <span class="s1">&#39;NAMES[]&#39;</span><span class="p">:</span><span class="s1">&#39;a, ${NAMES2[]}&#39;</span><span class="p">,</span> <span class="s1">&#39;NAMES2[]&#39;</span><span class="p">:</span><span class="s1">&#39;b, c&#39;</span><span class="p">,</span> <span class="s1">&#39;SUFFIX&#39;</span><span class="p">:</span><span class="s1">&#39;.jar&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{DIR}</span><span class="s1">/${NAMES[]}$</span><span class="si">{SUFFIX}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;dir/a.jar&#39;, &#39;dir/b.jar&#39;, &#39;dir/c.jar&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;NAMES[]&#39;</span><span class="p">:</span><span class="s1">&#39;a, b, c&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;$${${NAMES[]}}&#39;</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;${a}&#39;, &#39;${b}&#39;, &#39;${c}&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{A}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">Compose</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{A}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{B}</span><span class="s1">&#39;</span><span class="p">))</span>
+<span class="go">&#39;ab&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;a&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;x$</span><span class="si">{A}</span><span class="s1">x$$</span><span class="si">{A}</span><span class="s1">x$</span><span class="si">{A}</span><span class="s1">x$$$</span><span class="si">{A}</span><span class="s1">x&#39;</span><span class="p">)</span>
+<span class="go">&#39;xax${A}xax$${A}x&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="s1">&#39;c&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">Compose</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{A}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{B}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;$</span><span class="si">{C}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="go">&#39;abc&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{UNDEFINED_PROPERTY}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">xpybuild.utils.buildexceptions.BuildException</span>: <span class="n">Property &quot;UNDEFINED_PROPERTY&quot; is not defined</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;${A&#39;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">xpybuild.utils.buildexceptions.BuildException</span>: <span class="n">Incorrectly formatted property string &quot;${A&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A[]&#39;</span><span class="p">:</span><span class="s1">&#39;a, b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;${A[]}${A[]}&#39;</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">xpybuild.utils.buildexceptions.BuildException</span>: <span class="n">Cannot expand as a list a string containing multiple list variables</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BaseContext.expandListPropertyValue">
+<code class="sig-name descname">expandListPropertyValue</code><span class="sig-paren">(</span><em class="sig-param">propertyName</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.expandListPropertyValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.expandListPropertyValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list represented by the specified property or raise a 
+BuildException if it doesn’t exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>propertyName</strong> – the property name (without ${…}) to retrieve. Must be a string 
+and end with “[]”.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BaseContext.getProperties">
+<code class="sig-name descname">getProperties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.getProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.getProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new copy of the properties dictionary (values may be of any type). Do not use this method unless 
+really necessary (e.g. for keyword substitution) - in almost all cases it is better to simply specify the 
+required properties explicitly to getPropertyValue or expandPropertyValues.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getProperties</span><span class="p">()</span>
+<span class="go">{&#39;A&#39;: &#39;b&#39;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BaseContext.mergeOptions">
+<code class="sig-name descname">mergeOptions</code><span class="sig-paren">(</span><em class="sig-param">target=None</em>, <em class="sig-param">options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.mergeOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.mergeOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>[DEPRECATED]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Deprecated</dt>
+<dd class="field-odd"><p>Use the target’s self.options to get the resolved dictionary of options instead of this method, or <code class="xref py py-obj docutils literal notranslate"><span class="pre">getGlobalOptions</span></code> 
+for PathSets and functors where there is no target available.</p>
+</dd>
+</dl>
+<p>Merges together the default options, the globally overridden options and any set on the target.</p>
+<p>This is usually called from within a target run() method. Any options provided on the target 
+will take priority, followed by anything overridden globally, finally anything left is taken
+from the option defaults.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – the target from which to take option values overriding the global defaults.</p></li>
+<li><p><strong>options</strong> – options to override directly - this is retained for backwards compatibility only and should not be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a map of the merged options and their correct values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BaseContext.getGlobalOption">
+<code class="sig-name descname">getGlobalOption</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.getGlobalOption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.getGlobalOption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of the specified global option for this build.</p>
+<p>This can be useful for PathSets and functors, however in any situation 
+where there is a target, use <code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseTarget.options</span></code> instead, so that per-target 
+option overrides are respected.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BaseContext.getFullPath">
+<code class="sig-name descname">getFullPath</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">defaultDir</em>, <em class="sig-param">expandList=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.getFullPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.getFullPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expands any properties in the specified path, then removes trailing path separators, normalizes it for this 
+platform and then makes it an absolute path if necessary, using the specified default directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – a string representing a relative or absolute path. May be a string or a Composable</p></li>
+<li><p><strong>defaultDir</strong> – the default parent directory to use if this is a 
+relative path; it is invalid to pass None for this parameter. 
+It is permitted to pass a BuildFileLocation for the defaultDir instead 
+of a string, in which case an exception will be thrown if it is an 
+empty location object and the path is relative; 
+this is primarily used for objects like PathSets that capture location 
+when they are instantiated.</p></li>
+<li><p><strong>expandList</strong> – passed to expandPropertyValues, returns a list of 
+paths instead of a single path.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;DEF&#39;</span><span class="p">:</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;EL&#39;</span><span class="p">:</span><span class="s1">&#39;element&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="s1">&#39;path/$</span><span class="si">{EL}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{DEF}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&#39;output/path/element&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;DEF&#39;</span><span class="p">:</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;EL&#39;</span><span class="p">:</span><span class="s1">&#39;element&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="s1">&#39;/path/$</span><span class="si">{EL}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{DEF}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&#39;/path/element&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;DEF&#39;</span><span class="p">:</span><span class="s1">&#39;output/&#39;</span><span class="p">,</span> <span class="s1">&#39;EL&#39;</span><span class="p">:</span><span class="s1">&#39;element&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="s1">&#39;path/$</span><span class="si">{EL}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{DEF}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&#39;output/path/element&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;DEF&#39;</span><span class="p">:</span><span class="s1">&#39;output/&#39;</span><span class="p">,</span> <span class="s1">&#39;EL&#39;</span><span class="p">:</span><span class="s1">&#39;element&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="s1">&#39;path/../path/$</span><span class="si">{EL}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{DEF}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&#39;output/path/element&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="buildcontext">
+<h2>BuildContext<a class="headerlink" href="#buildcontext" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.buildcontext.BuildContext">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcontext.</code><code class="sig-name descname">BuildContext</code><span class="sig-paren">(</span><em class="sig-param">initializationContext</em>, <em class="sig-param">targetPaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#xpybuild.buildcontext.BaseContext" title="xpybuild.buildcontext.BaseContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.buildcontext.BaseContext</span></code></a></p>
+<p>Provides context used only during the build phase of the build (after initialization is complete), 
+i.e. the ability to expand variables (but not to change their value).</p>
+<p>&#64;undocumented: _getTopLevelOutputDirs, _resolveTargetGroups</p>
+<p>Create a BuildContext from a <a class="reference internal" href="#xpybuild.buildcontext.BuildInitializationContext" title="xpybuild.buildcontext.BuildInitializationContext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BuildInitializationContext</span></code></a>.</p>
+<p>Should not be used directly, will be passed into each target’s run method.</p>
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildContext.isPathWithinOutputDir">
+<code class="sig-name descname">isPathWithinOutputDir</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildContext.isPathWithinOutputDir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildContext.isPathWithinOutputDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if the specified path is a descendent of any of 
+this build’s output directories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – A normalized absolute path (must use correct slashes for the platform).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True or False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildContext.getTargetsWithTag">
+<code class="sig-name descname">getTargetsWithTag</code><span class="sig-paren">(</span><em class="sig-param">tag</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildContext.getTargetsWithTag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildContext.getTargetsWithTag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of target objects with the specified tag name 
+(throws BuildException if not defined).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="buildinitializationcontext">
+<h2>BuildInitializationContext<a class="headerlink" href="#buildinitializationcontext" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.buildcontext.BuildInitializationContext">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcontext.</code><code class="sig-name descname">BuildInitializationContext</code><span class="sig-paren">(</span><em class="sig-param">propertyOverrides</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#xpybuild.buildcontext.BaseContext" title="xpybuild.buildcontext.BaseContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.buildcontext.BaseContext</span></code></a></p>
+<p>Provides context used only during the initialization phase of the build, including the ability to change property 
+values that will later become immutable. Once initialization is complete, this object should be considered 
+immutable.</p>
+<p>This is the class returned by <a class="reference internal" href="#xpybuild.buildcontext.getBuildInitializationContext" title="xpybuild.buildcontext.getBuildInitializationContext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getBuildInitializationContext</span></code></a></p>
+<p>Creates a new BuildInitializationContext object.</p>
+<p>Should only be called from within xpybuild, not from build files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>propertyOverrides</strong> – property override values specified by the user on the command line; all values must be 
+of type string.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext">
+<em class="property">static </em><code class="sig-name descname">getBuildInitializationContext</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.getBuildInitializationContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the singleton <a class="reference internal" href="#xpybuild.buildcontext.BuildInitializationContext" title="xpybuild.buildcontext.BuildInitializationContext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BuildInitializationContext</span></code></a> instance during parsing of build files, 
+which is occasionally necessary for looking up properties etc.</p>
+<p>It is an error to call this method after parsing of build files has completed, 
+since a <a class="reference internal" href="#xpybuild.buildcontext.BuildContext" title="xpybuild.buildcontext.BuildContext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BuildContext</span></code></a> is used for that phase of the build instead.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.initializeFromBuildFile">
+<code class="sig-name descname">initializeFromBuildFile</code><span class="sig-paren">(</span><em class="sig-param">buildFile</em>, <em class="sig-param">isRealBuild=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.initializeFromBuildFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.initializeFromBuildFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the specified build file, which is the initialization phase during which properties are defined and 
+the build file target definitions will register themselves with this object.</p>
+<p>Should only be called from within xpybuild, not from build files. To include another build file 
+instead use <code class="xref py py-obj docutils literal notranslate"><span class="pre">buildcommon.include</span></code></p>
+<p>There should be very little (if any) accessing of the file system during this phase - all 
+per-target file system operations (e.g. dependency checking, globbing, etc) happens 
+later, to ensure the targets can be enumerated as fast as possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>buildFile</strong> – The path to the build file to load.</p></li>
+<li><p><strong>isRealBuild</strong> – True if this is going to be a real build, not just listing available targets etc</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.defineProperty">
+<code class="sig-name descname">defineProperty</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">default</em>, <em class="sig-param">coerceToValidValue=None</em>, <em class="sig-param">debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.defineProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.defineProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a user-settable property, specifying a default value and 
+an optional method to validate values specified by the user. 
+Return the value assigned to the property.</p>
+<p>Build files should probably not use this directly, but instead call <code class="xref py py-obj docutils literal notranslate"><span class="pre">propertysupport.defineStringProperty</span></code>
+et al. Will raise an exception if called after the build files have been parsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – must be UPPER_CASE</p></li>
+<li><p><strong>default</strong> – No substitution is performed on this value (see propertysupport.py if you need that).
+If set to None, the property must be set on the command line each time</p></li>
+<li><p><strong>coerceToValidValue</strong> – None, or a function to validate and/or convert the input string to a value of the right 
+type</p></li>
+<li><p><strong>debug</strong> – if True log at DEBUG else log at INFO</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.registerOutputDir">
+<code class="sig-name descname">registerOutputDir</code><span class="sig-paren">(</span><em class="sig-param">outputDir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.registerOutputDir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.registerOutputDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers that the specified directory should be created before the 
+build starts.</p>
+<p>Build files should use <code class="xref py py-obj docutils literal notranslate"><span class="pre">propertysupport.defineOutputDirProperty</span></code> 
+instead of calling this function directly.
+Will raise an exception if called after the build files have been parsed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.registerTarget">
+<code class="sig-name descname">registerTarget</code><span class="sig-paren">(</span><em class="sig-param">target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.registerTarget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.registerTarget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers the target with the context.</p>
+<p>Called internally from <code class="xref py py-obj docutils literal notranslate"><span class="pre">basetarget.BaseTarget</span></code> and does not need to be called directly.
+Will raise an exception if called after the build files have been parsed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.registerTags">
+<code class="sig-name descname">registerTags</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">taglist</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.registerTags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.registerTags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers tags and their matching targets with the context.</p>
+<p>Called internally from <code class="xref py py-obj docutils literal notranslate"><span class="pre">basetarget.BaseTarget.tags</span></code> and does not need to be called directly.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.removeFromTags">
+<code class="sig-name descname">removeFromTags</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">taglist</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.removeFromTags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.removeFromTags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a target from a set of tags</p>
+<p>Called internally from <code class="xref py py-obj docutils literal notranslate"><span class="pre">basetarget.BaseTarget.disableInFullBuild</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.isRealBuild">
+<code class="sig-name descname">isRealBuild</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.isRealBuild"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.isRealBuild" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if a real build is going to take place, or False if 
+the build files are just being parsed in order to list available 
+targets/properties.</p>
+<p>This exists for the very special case of preventing expensive 
+initialization-phase operations if they’re not really going to be 
+needed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.registerPreBuildCheck">
+<code class="sig-name descname">registerPreBuildCheck</code><span class="sig-paren">(</span><em class="sig-param">fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.registerPreBuildCheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.registerPreBuildCheck" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a functor to be called before builds.
+Functor should take a context and raise if the check fails</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.getPreBuildCallbacks">
+<code class="sig-name descname">getPreBuildCallbacks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.getPreBuildCallbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.getPreBuildCallbacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of pre-build callback functors</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.getTargetsWithTag">
+<code class="sig-name descname">getTargetsWithTag</code><span class="sig-paren">(</span><em class="sig-param">tag</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.getTargetsWithTag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.getTargetsWithTag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of target objects with the specified tag name 
+(throws BuildException if not defined).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.tags">
+<code class="sig-name descname">tags</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the map of tag names to lists of target objects</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.targets">
+<code class="sig-name descname">targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.targets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a map of targetName:target</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.getOutputDirs">
+<code class="sig-name descname">getOutputDirs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.getOutputDirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.getOutputDirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of registered output dirs. 
+Note that some of these might be nested inside other output dirs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.setGlobalOption">
+<code class="sig-name descname">setGlobalOption</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.setGlobalOption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.setGlobalOption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a global value for an option</p>
+<p>Called internally from <code class="xref py py-obj docutils literal notranslate"><span class="pre">propertysupport.setGlobalOption</span></code> and does not 
+need to be called directly</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.buildcontext.BuildInitializationContext.defineAtomicTargetGroup">
+<code class="sig-name descname">defineAtomicTargetGroup</code><span class="sig-paren">(</span><em class="sig-param">targets</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.defineAtomicTargetGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.defineAtomicTargetGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>The given targets must all be built before anything which depends on any of those targets</p>
+</dd></dl>
+
+</dd></dl>
+
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="section" id="getbuildinitializationcontext">
+<h2>getBuildInitializationContext<a class="headerlink" href="#getbuildinitializationcontext" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.buildcontext.getBuildInitializationContext">
+<code class="sig-prename descclassname">xpybuild.buildcontext.</code><code class="sig-name descname">getBuildInitializationContext</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xpybuild.buildcontext.getBuildInitializationContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the singleton <a class="reference internal" href="#xpybuild.buildcontext.BuildInitializationContext" title="xpybuild.buildcontext.BuildInitializationContext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BuildInitializationContext</span></code></a> instance during parsing of build files, 
+which is occasionally necessary for looking up properties etc.</p>
+<p>It is an error to call this method after parsing of build files has completed, 
+since a <a class="reference internal" href="#xpybuild.buildcontext.BuildContext" title="xpybuild.buildcontext.BuildContext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BuildContext</span></code></a> is used for that phase of the build instead.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">xpybuild.buildcontext</a><ul>
+<li><a class="reference internal" href="#basecontext">BaseContext</a></li>
+<li><a class="reference internal" href="#buildcontext">BuildContext</a></li>
+<li><a class="reference internal" href="#buildinitializationcontext">BuildInitializationContext</a></li>
+<li><a class="reference internal" href="#getbuildinitializationcontext">getBuildInitializationContext</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="xpybuild.buildcommon.html"
+                        title="previous chapter">xpybuild.buildcommon</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="xpybuild.basetarget.html"
+                        title="next chapter">xpybuild.basetarget</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/generated/xpybuild.buildcontext.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.basetarget.html" title="xpybuild.basetarget"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="xpybuild.buildcommon.html" title="xpybuild.buildcommon"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Module list</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>
