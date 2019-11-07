@@ -55,6 +55,9 @@ if you're using them:
   `xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext()`.
 - ``propertysupport.getProperty`` is deprecated in favour of 
   `xpybuild.propertysupport.getPropertyValue`. 
+- `xpybuild.utils.fileutils` methods ``getstat``, ``getmtime``, ``getsize``, 
+   ``exists``, ``isfile``, ``isdir`` have been renamed to ``cached_XXX`` 
+   to better indicate the semantics. The old names are deprecated. 
 
 See also the module re-organization listed under breaking changes; all xpybuild 
 modules and classes should now be accessed via their new names, typically 

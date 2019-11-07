@@ -28,7 +28,7 @@ from threading import Lock
 
 from xpybuild.basetarget import BaseTarget
 from xpybuild.utils.buildexceptions import BuildException
-from xpybuild.utils.fileutils import deleteFile, mkdir, openForWrite, getmtime, exists, isfile, isdir, toLongPathSafe, getstat, isDirPath
+from xpybuild.utils.fileutils import deleteFile, mkdir, openForWrite, cached_getmtime, toLongPathSafe, cached_stat, isDirPath
 
 import logging
 log = logging.getLogger('scheduler.targetwrapper')
@@ -248,7 +248,7 @@ class TargetWrapper(object):
 				# if DEP_SKIP_EXISTENCE_CHECK, don't bother stat-ing the file if we know it's present (e.g. for FindPaths, where we just got it from disk)
 				continue
 			
-			dstat = getstat(dpath)
+			dstat = cached_stat(dpath)
 			
 			if dstat is False: 
 				return dpath, 'Missing dependency'
@@ -394,7 +394,7 @@ class TargetWrapper(object):
 								
 			def isNewer(path):
 				# assumes already long path safe
-				pathmodtime = getmtime(path)
+				pathmodtime = cached_getmtime(path)
 				if pathmodtime <= stampmodtime: return False
 
 				logNewerFile(path, pathmodtime)

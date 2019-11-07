@@ -22,7 +22,7 @@ import os, re, logging, time, traceback
 from xpybuild.buildcommon import *
 from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.process import call
-from xpybuild.utils.fileutils import isdir
+from xpybuild.utils.fileutils import cached_isdir
 from xpybuild.utils.outputhandler import ProcessOutputHandler
 from xpybuild.propertysupport import defineOption
 
@@ -65,7 +65,7 @@ class Process(object):
 
 _logger = logging.getLogger('compilers')
 def _checkDirExists(dirpath, message):
-	if not isdir(dirpath):
+	if not cached_isdir(dirpath):
 		_logger.debug(message, dirpath) # legitimate but useful for debugging
 	return dirpath
 

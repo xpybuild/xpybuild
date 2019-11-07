@@ -439,7 +439,7 @@ def normLongPath(path):
 	
 __statcache = {}
 __statcache_get = __statcache.get
-def getstat(path, errorIfMissing=False):
+def cached_stat(path, errorIfMissing=False):
 	""" Cached-once os.stat (DO NOT USE if you expect it to change after startup). 
 	Returns False if missing.  """
 	st = __statcache_get(path, None)
@@ -454,23 +454,31 @@ def getstat(path, errorIfMissing=False):
 		raise Exception('Cannot find path "%s"'%path)
 	return st
 
-def getmtime(path):
+def cached_getmtime(path):
 	""" Cached-once os.getmtime (DO NOT USE if you expect it to change after startup) """
-	return getstat(path, errorIfMissing=True).st_mtime
-def getsize(path):
+	return cached_stat(path, errorIfMissing=True).st_mtime
+def cached_getsize(path):
 	""" Cached-once os.path.getsize (DO NOT USE if you expect it to change after startup) """
-	return getstat(path, errorIfMissing=True).st_size
-def exists(path):
+	return cached_stat(path, errorIfMissing=True).st_size
+def cached_exists(path):
 	""" Cached-once os.path.exists (DO NOT USE if you expect it to change after startup) """
-	return getstat(path) is not False
-def isfile(path):
+	return cached_stat(path) is not False
+def cached_isfile(path):
 	""" Cached-once os.path.isfile (DO NOT USE if you expect it to change after startup) """
-	st = getstat(path)
+	st = cached_stat(path)
 	return (st is not False) and stat.S_ISREG(st.st_mode)
-def isdir(path):
+def cached_isdir(path):
 	""" Cached-once os.path.isdir (DO NOT USE if you expect it to change after startup) """
-	st = getstat(path)
+	st = cached_stat(path)
 	return (st is not False) and stat.S_ISDIR(st.st_mode)
+
+# for compatibility with pre-3.0
+getstat = cached_stat
+getmtime = cached_getmtime
+getsize = cached_getsize
+exists = cached_exists
+isfile = cached_isfile
+isdir = cached_isdir
 
 def _getStatCacheSize():
 	"""

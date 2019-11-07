@@ -33,7 +33,7 @@ from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.internal.targetwrapper import TargetWrapper
 from xpybuild.internal.threadpool import ThreadPool, Utilisation
 from xpybuild.internal.outputbuffering import outputBufferingManager
-from xpybuild.utils.fileutils import deleteFile, exists, isfile, isdir, resetStatCache, getstat, toLongPathSafe, _getStatCacheSize, mkdir, isDirPath
+from xpybuild.utils.fileutils import deleteFile, cached_exists, resetStatCache, toLongPathSafe, _getStatCacheSize, mkdir, isDirPath
 from xpybuild.utils.stringutils import formatTimePeriod
 
 from threading import Lock
@@ -310,11 +310,11 @@ class BuildScheduler(object):
 
 		if targetwrapper is None:
 			assert False # I'm not sure how we can get here, think it should actually be impossible
-			if not exists(tname):
+			if not cached_exists(tname):
 				errors.append("Unknown target %s" % tname)
 			else:
 				log.debug('Scheduler cannot find target in build file or on disk: %s', targetwrapper) # is this a problem? maybe assert False here?
-		elif self.options['ignore-deps'] and exists(targetwrapper.path): 
+		elif self.options['ignore-deps'] and cached_exists(targetwrapper.path): 
 			# in this mode, any target that already exists should be treated as 
 			# a leaf with no deps which means it won't be built under any 
 			# circumstances (even if a target it depends on is rebuilt), 

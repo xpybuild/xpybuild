@@ -32,7 +32,7 @@ from xpybuild.utils.process import call
 from xpybuild.pathsets import PathSet, BasePathSet
 from xpybuild.buildcontext import getBuildInitializationContext
 from xpybuild.utils.buildexceptions import BuildException
-from xpybuild.utils.fileutils import openForWrite, mkdir, deleteFile, getmtime, exists, toLongPathSafe, getstat
+from xpybuild.utils.fileutils import openForWrite, mkdir, deleteFile, cached_getmtime, cached_exists, toLongPathSafe, cached_stat
 
 class __CompilersNotSpecified(object):
 	def __getattr__(self, attr):
@@ -228,7 +228,7 @@ class Cpp(BaseTarget):
 		alreadychecked = set() # paths that we've already checked the date of
 		sourcepaths = []
 		for path, _ in self.source.resolveWithDestinations(context):
-			mtime = getmtime(path)
+			mtime = cached_getmtime(path)
 			alreadychecked.add(path)
 			sourcepaths.append(path)
 			if mtime > newestTime: newestFile, newestTime = path, mtime
@@ -244,7 +244,7 @@ class Cpp(BaseTarget):
 				else:
 					for path in f:
 						path = path.strip()
-						pathstat = getstat(path, errorIfMissing=False)
+						pathstat = cached_stat(path, errorIfMissing=False)
 						if pathstat is False:
 							# file doesn't exist - must rebuild
 							runmakedepends = True
@@ -289,7 +289,7 @@ class Cpp(BaseTarget):
 			# find the newest time from these files; if this is same as previous makedepends, won't do anything
 			for path in makedependsoutput:
 				if path in alreadychecked: continue
-				mtime = getmtime(path)
+				mtime = cached_getmtime(path)
 				if mtime > newestTime: newestFile, newestTime = path, mtime
 			
 			# write out new makedepends file for next time
