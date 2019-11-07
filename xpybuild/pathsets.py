@@ -357,7 +357,7 @@ class DirBasedPathSet(BasePathSet):
 			if '*' in c: 
 				raise BuildException('Cannot specify "*" patterns here (consider using FindPaths instead): "%s"'%c, location=self.__location)
 			if os.path.isabs(c):
-				raise BuildException('Cannot specify absolute paths here, must be relative (consider using basename): "%s"'%c, location=self.__location)
+				raise BuildException(f'Cannot specify absolute path "{c}" in a DirBasedPathSet, as all paths must be relative to the base directory {self.__dir}; (hint: consider using the xpybuild.propertysupport.basename(), and check for unintentional leading slashes)', location=self.__location)
 
 			isdir = isDirPath(c)
 
