@@ -6,6 +6,12 @@ from propertysupport import *
 from buildcommon import *
 from pathsets import *
 
+# not used below, but make sure they're imported as they're the ones most likely to trigger unhelpful 0xYYYYY addresses in implicit input files
+import targets.native
+import targets.custom
+import targets.java
+import targets.copy
+
 defineOutputDirProperty('OUTPUT_DIR', None)
 
 import basetarget 
@@ -57,6 +63,15 @@ class MyTarget(basetarget.BaseTarget):
 		except Exception as e:
 			self.log.critical('Got exception as expected from trying to read self.options during constructor: %s'%e)
 		
+		# include every option, just to show we can
+		self.addHashableImplicitInputOption(lambda optionKey: optionKey!='testoption.default')
+		self.addHashableImplicitInputOption('testoption.default')
+		
+		self.addHashableImplicitInput(lambda context: f'addHashableImplicitInput called with {context.__class__.__name__}')
+		self.addHashableImplicitInput(lambda context: None)
+		self.addHashableImplicitInput('addHashableImplicitInput str ${MY_PROP}')
+		#self.addHashableImplicitInput(['addHashableImplicitInput list', 'item2'])
+		
 	def run(self, context):
 		name = os.path.basename(self.path)
 		
@@ -80,7 +95,7 @@ class MyTarget(basetarget.BaseTarget):
 			
 	def getHashableImplicitInputs(self, context):
 		assert self.options
-		return [str(self.options)]
+		return super().getHashableImplicitInputs(context)
 		
 	def clean(self, context): 
 		pass

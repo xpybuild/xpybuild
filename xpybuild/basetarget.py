@@ -217,35 +217,56 @@ class BaseTarget(Composable):
 				fileutils.deleteFile(self.path)
 
 	def addHashableImplicitInputOption(self, optionKey):
-		""" Adds a target-specific string giving information about an 
-		implicit input of this target, to the list that will be returned
-		getHashableImplicitInputs to help detect when the target should be rebuilt. 
+		""" Adds the resolved value of the specified option(s) as implicit inputs of this target, 
+		to help detect when the target should be rebuilt. 
 		
-		Call this for each option that this target is affected by. 
+		Call this from the target's constructor, for each option that this target is affected by, 
+		or with a callable that dynamically selects from the defined options, e.g. based on a prefix. 
 		
 		See L{getHashableImplicitInputs} for more information.
 		
-		@param optionKey: the name of an option. 
+		@param optionKey: the name of an option (as a string), 
+		  or a callable that accepts an optionKey and dynamically decides which options to include, 
+		  returning True if it should be included. For example::
+		  
+		    self.addHashableImplicitInputOption(lambda optionKey: optionKey.startswith('java.'))
 		
 		"""
-		self.addHashableImplicitInput(lambda context: 'option %s=%s'%(optionKey, repr(self.options[optionKey])))
-		
+		self.addHashableImplicitInput(lambda context: self.__getMatchingOptions(context, optionKey))
+
+	def __getMatchingOptions(self, context, optionKey):
+		if callable(optionKey):
+			keys = [k for k in self.options if optionKey(k)]
+		else:
+			keys = [optionKey]
+		result = []
+		for k in sorted(keys):
+			x = self.options[k]
+			if x.__repr__.__qualname__ == 'function.__repr__': 
+				value = x.__qualname__ # avoid 0x references for top-level functions (nb: doesn't affect lambas/nested functions)
+			else:
+				value = repr(x)
+			#assert '0x' not in value
+			result.append(f'option {k}={value}')
+		return result
+
+	
 	def addHashableImplicitInput(self, item):
-		""" Adds a target-specific string giving information about an 
-		implicit input of this target to the list that will be returned by
-		getHashableImplicitInputs to help detect when the target should be rebuilt. 
-		
-		This can include options, property values (e.g. changes in build number,
+		""" Adds a target-specific string (or list of strings) giving information about an 
+		implicit input of this target to the list that will be used in detecting 
+		when the target should be rebuilt as a result of changes in options, 
+		property values (e.g. changes in build number,
 		release/debug mode) and glob results (e.g. addition or removal of a
 		file should trigger a rebuild). 
 		
-		See L{getHashableImplicitInputs} for more information.
-		
-		@param item: a string (which may contain substitution variables), 
-		or a function that accepts a context parameter and returns a string. 
-		The item will converted to a string using L{buildcontext.BuildContext.expandPropertyValues}. 
-		For example, 'myparameter="foobar"'. 
-		
+		Call this from the target's constructor. 
+
+		@param item: either:
+		  - a string, which may contain substitution variables, e.g. ``myparameter="${someprop}"``, 
+		    and will converted to a string using `buildcontext.BuildContext.expandPropertyValues`, or
+		  - a callable to be invoked during up-to-dateness checking, that accepts a 
+		    context parameter and returns a string or list of strings; 
+		    any ``None`` items in the list are ignored. 
 		"""
 		assert isinstance(item, str) or callable(item)
 		self.__hashableImplicitInputs.append(item)
@@ -273,7 +294,22 @@ class BaseTarget(Composable):
 		cases call L{addHashableImplicitInput} or L{addHashableImplicitInputOption}. 
 		"""
 		if self.__hashableImplicitInputs:
-			return list([context.expandPropertyValues(x) for x in self.__hashableImplicitInputs])
+			result = []
+			for x in self.__hashableImplicitInputs:
+				if x is None: continue
+				if callable(x) and not hasattr(x, 'resolveToString'): # if we aren't delegating to expandPropertyValues to resolve this
+					x = x(context)
+					if x is None: 
+						continue
+					elif isinstance(x, str):
+						result.append(x)
+					else: # assume it's a list or other iterable
+						for y in x:
+							if y is not None:
+								result.append(y)
+				else:
+					result.append(context.expandPropertyValues(x))
+			return result
 		return []
 	
 	def getTags(self): 

@@ -43,6 +43,8 @@ Breaking changes
    - The ``formatTimePeriod`` method was removed from ``timeutils`` and moved to 
      `xpybuild.utils.stringutils.formatTimePeriod`. 
    - The ``lowerCurrentProcessPriority()`` function was removed. 
+   - ``buildcommon.getStdoutEncoding`` was removed, replaced by 
+     `xpybuild.utils.process.defaultProcessOutputEncodingDecider` and the associated option. 
 
 Deprecation
 -----------
@@ -105,6 +107,12 @@ Enhancements
    to what ``io.open`` supports, and ``openForWrite`` should be used
    instead of io.open/open to avoid possible file system races on
    Windows.
+-  `BaseTarget.addHashableImplicitInput`: added ability to pass a callable 
+   that returns a list of items, so there's no longer anything that only 
+   ``getHashableImplicitInputs()`` can do. 
+-  `BaseTarget.addHashableImplicitInputOption`: added ability to pass a 
+   lamba that dynamically selects which of the defined options to include, 
+   for example based on prefix matching. 
 -  Added ``utils.stringutils.compareVersions`` method for comparing
    dotted version strings.
 
