@@ -1,6 +1,6 @@
 # xpyBuild - eXtensible Python-based Build System
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -30,6 +30,81 @@ from xpybuild.utils.antglob import antGlobMatch
 from xpybuild.utils.flatten import flatten
 from xpybuild.utils.buildfilelocation import BuildFileLocation
 from xpybuild.utils.buildexceptions import BuildException
+
+class Tarball(BaseTarget):
+	""" Target that creates a .tar archive from a set of input files.
+	"""
+
+	def __init__(self, archive, inputs):
+		"""
+		archive: the archive to be created
+
+		inputs: the files (usually pathsets) to be included in the archive.
+
+		"""
+		self.inputs = PathSet(inputs)
+		BaseTarget.__init__(self, archive, self.inputs)
+
+	def run(self, context):
+		mkdir(os.path.dirname(self.path))
+		with tarfile.open(normLongPath(self.path), 'w:gz') as output:
+			for (f, o) in self.inputs.resolveWithDestinations(context):
+				output.add(normLongPath(f).rstrip('/\\'), o)
+
+	def getHashableImplicitInputs(self, context):
+		r = super(Tarball, self).getHashableImplicitInputs(context)
+		
+		# include source representation of deps list, so that changes to the list get reflected
+		# this way of doing property expansion on the repr is a convenient 
+		# shortcut (we want to expand property values to detect changes in 
+		# versions etc that should trigger a rebuild, but just not do any 
+		# globbing/searches here)
+		r.append('src: '+context.expandPropertyValues(('%s'%self.inputs)))
+		
+		return r
+
+class Zip(BaseTarget):
+	""" Target that creates a zip archive from a set of input files.
+	"""
+
+	def __init__(self, archive, inputs):
+		"""
+		archive: the archive to be created
+
+		inputs: the files (usually pathsets) to be included in the archive.
+
+		"""
+		self.inputs = PathSet(inputs)
+		BaseTarget.__init__(self, archive, self.inputs)
+
+	def run(self, context):
+		mkdir(os.path.dirname(self.path))
+		alreadyDone = set()
+		with zipfile.ZipFile(normLongPath(self.path), 'w') as output:
+			for (f, o) in self.inputs.resolveWithDestinations(context):
+				# if we don't check for duplicate entries we'll end up creating an invalid zip
+				if o in alreadyDone:
+					dupsrc = ['"%s"'%src for (src, dest) in self.inputs.resolveWithDestinations(context) if dest == o]
+					raise BuildException('Duplicate zip entry "%s" from: %s'%(o, ', '.join(dupsrc)))
+				alreadyDone.add(o)
+				# can't compress directory entries! (it messes up Java)
+				output.write(normLongPath(f).rstrip('/\\'), o, zipfile.ZIP_STORED if isDirPath(f) else zipfile.ZIP_DEFLATED) 
+
+	def getHashableImplicitInputs(self, context):
+		r = super(Zip, self).getHashableImplicitInputs(context)
+		
+		# include source representation of deps list, so that changes to the list get reflected
+		# this way of doing property expansion on the repr is a convenient 
+		# shortcut (we want to expand property values to detect changes in 
+		# versions etc that should trigger a rebuild, but just not do any 
+		# globbing/searches here)
+		r.append('src: '+context.expandPropertyValues(('%s'%self.inputs)))
+		
+		return r
+
+
+################################################################################
+# For unpacking
 
 def _getnames(file):
 	if isinstance(file, zipfile.ZipFile):
@@ -189,7 +264,7 @@ class Unpack(BaseTarget):
 
 
 class FilteredArchiveContents(object): 
-	""" Represents an archive to be passed to the Unpack target, with 
+	"""Object representing an archive to be passed to the Unpack target, with 
 	support for filtering which files are included/excluded, and per-item 
 	destination mapping. 
 	

@@ -42,3 +42,8 @@ assert buildexceptions.BuildException == xpybuild.utils.buildexceptions.BuildExc
 
 import targets.touch
 assert targets.touch.Touch # aliased to writefile
+
+import targets.unpack, targets.zip, targets.tar # all moved to archive
+assert targets.unpack.Unpack
+assert targets.zip.Zip
+assert targets.tar.Tarball

@@ -36,7 +36,8 @@ Breaking changes
      except for ``make_functor`` which has moved to `xpybuild.utils.functors.makeFunctor`. 
    - ``buildexceptions`` module was moved to `xpybuild.utils.buildexceptions`. 
    - ``Touch`` target was moved from ``targets.touch`` to `xpybuild.targets.writefile.Touch`. 
-
+   - ``Unpack``, ``Zip`` and ``Tarball`` targets were moved to the `xpybuild.targets.archive` 
+     module. 
 
 Deprecation
 -----------

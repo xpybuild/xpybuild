@@ -423,6 +423,13 @@ def enableLegacyXpybuildModuleNames():
 	xpybuild.targets.touch = sys.modules["xpybuild.targets.writefile"]
 	exec(f'sys.modules["targets.touch"] = sys.modules["xpybuild.targets.writefile"]')
 
+	xpybuild.targets.unpack = sys.modules["xpybuild.targets.archive"]
+	exec(f'sys.modules["targets.unpack"] = sys.modules["xpybuild.targets.archive"]')
+	xpybuild.targets.zip = sys.modules["xpybuild.targets.archive"]
+	exec(f'sys.modules["targets.zip"] = sys.modules["xpybuild.targets.archive"]')
+	xpybuild.targets.tar = sys.modules["xpybuild.targets.archive"]
+	exec(f'sys.modules["targets.tar"] = sys.modules["xpybuild.targets.archive"]')
+
 ################################################################################
 # Options
 
