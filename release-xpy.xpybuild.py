@@ -28,6 +28,7 @@ from xpybuild.targets.archive import Zip
 from xpybuild.targets.copy import Copy
 from xpybuild.targets.writefile import WriteFile
 from xpybuild.targets.custom import CustomCommand
+from xpybuild.utils.outputhandler import ProcessOutputHandler
 
 requireXpyBuildVersion('3.0')
 
@@ -52,7 +53,8 @@ CustomCommand('${OUTPUT_DIR}/docs/',
 		'CHANGELOG.rst',
 	],
 	stderr='${OUTPUT_DIR}/doc_warnings.txt',
-	).tags('docs')
+	).tags('docs').option( # ProcessOutputHandler converts stderr lines from sphinx into target ERRORs
+		'CustomCommand.outputHandlerFactory', ProcessOutputHandler)
 
 Zip('${OUTPUT_DIR}/xpybuild_${VERSION}_docs.zip', [
 		FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/docs/')+'html/'),
