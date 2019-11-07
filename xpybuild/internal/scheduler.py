@@ -34,7 +34,7 @@ from xpybuild.internal.targetwrapper import TargetWrapper
 from xpybuild.internal.threadpool import ThreadPool, Utilisation
 from xpybuild.internal.outputbuffering import outputBufferingManager
 from xpybuild.utils.fileutils import deleteFile, exists, isfile, isdir, resetStatCache, getstat, toLongPathSafe, _getStatCacheSize, mkdir, isDirPath
-from xpybuild.utils.timeutils import formatTimePeriod
+from xpybuild.utils.stringutils import formatTimePeriod
 
 from threading import Lock
 

@@ -109,3 +109,15 @@ def compareVersions(v1: str, v2: str) -> int:
 			if v1[i] > v2[i]: return 1
 			if v1[i] < v2[i]: return -1
 	return 0
+
+
+def formatTimePeriod(secs):
+	"""
+	Format a time period to a short display string. 	
+	"""
+	if secs >= 120:
+		return '%0.1f minutes'%(secs/60.0)
+	elif secs >= 10:
+		return '%d seconds'%(secs)
+	else:
+		return '%0.1f seconds'%(secs)

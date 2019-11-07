@@ -40,6 +40,8 @@ Breaking changes
      module. 
    - The console formatter modules ``teamcity``, ``visualstudio`` and ``make`` 
      have been deleted and their contents moved into `xpybuild.utils.consoleformatter`. 
+   - The ``formatTimePeriod`` method was removed from ``timeutils`` and moved to 
+     `xpybuild.utils.stringutils.formatTimePeriod`. 
 
 Deprecation
 -----------

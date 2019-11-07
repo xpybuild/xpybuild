@@ -41,7 +41,7 @@ from xpybuild.propertysupport import defineOption, parsePropertiesFile
 from xpybuild.internal.stacktrace import listen_for_stack_signal
 from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.consoleformatter import _registeredConsoleFormatters, publishArtifact
-from xpybuild.utils.timeutils import formatTimePeriod
+from xpybuild.utils.stringutils import formatTimePeriod
 
 import xpybuild.utils.progress # needed to create the entry in _handlers
 
