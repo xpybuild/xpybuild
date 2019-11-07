@@ -43,9 +43,6 @@ from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.consoleformatter import _registeredConsoleFormatters, publishArtifact
 from xpybuild.utils.timeutils import formatTimePeriod
 
-import xpybuild.utils.teamcity # to get handler registered
-import xpybuild.utils.visualstudio # needed to create the entry in _handlers
-import xpybuild.utils.make # needed to create the entry in _handlers
 import xpybuild.utils.progress # needed to create the entry in _handlers
 
 import xpybuild.utils.platformutils 

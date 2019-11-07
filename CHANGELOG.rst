@@ -38,6 +38,8 @@ Breaking changes
    - ``Touch`` target was moved from ``targets.touch`` to `xpybuild.targets.writefile.Touch`. 
    - ``Unpack``, ``Zip`` and ``Tarball`` targets were moved to the `xpybuild.targets.archive` 
      module. 
+   - The console formatter modules ``teamcity``, ``visualstudio`` and ``make`` 
+     have been deleted and their contents moved into `xpybuild.utils.consoleformatter`. 
 
 Deprecation
 -----------
