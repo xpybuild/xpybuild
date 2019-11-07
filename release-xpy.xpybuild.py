@@ -47,7 +47,10 @@ CustomCommand('${OUTPUT_DIR}/docs/',
 		PathSet('./docs/'), # source dir
 		'${OUTPUT_DIR}/docs/', # output dir
 	], 
-	dependencies=FindPaths('docs/', excludes=['generated/**']),
+	dependencies=[
+		FindPaths('docs/', excludes=['generated/**']),
+		'CHANGELOG.rst',
+	],
 	stderr='${OUTPUT_DIR}/doc_warnings.txt',
 	).tags('docs')
 

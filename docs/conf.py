@@ -63,6 +63,8 @@ autodoc_default_options = {
 # (using a template) for each module referred to in the autosummary table of modules.rst
 autosummary_generate = True
 
+nitpicky = True # so we get warnings about broken links
+
 def autodoc_skip_member(app, what, name, obj, skip, options):
 	# todo: implement private skipping
 	if obj.__doc__ and '.. private: ' in obj.__doc__: return True
