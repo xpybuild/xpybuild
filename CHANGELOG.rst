@@ -42,6 +42,7 @@ Breaking changes
      have been deleted and their contents moved into `xpybuild.utils.consoleformatter`. 
    - The ``formatTimePeriod`` method was removed from ``timeutils`` and moved to 
      `xpybuild.utils.stringutils.formatTimePeriod`. 
+   - The ``lowerCurrentProcessPriority()`` function was removed. 
 
 Deprecation
 -----------

@@ -45,7 +45,6 @@ from xpybuild.utils.stringutils import formatTimePeriod
 
 import xpybuild.utils.progress # needed to create the entry in _handlers
 
-import xpybuild.utils.platformutils 
 from xpybuild.internal.outputbuffering import OutputBufferingStreamWrapper, outputBufferingManager
 
 log = logging.getLogger('xpybuild')
@@ -464,12 +463,23 @@ def main(args):
 			log.info('Default encoding for subprocesses assumed to be: %s (stdout=%s, preferred=%s)', 
 				getStdoutEncoding(), stdout.encoding, locale.getpreferredencoding())
 			
+			def lowerCurrentProcessPriority():
+				if xpybuild.buildcommon.IS_WINDOWS:
+					import win32process, win32api,win32con
+					win32process.SetPriorityClass(win32api.GetCurrentProcess(), win32process.BELOW_NORMAL_PRIORITY_CLASS)
+				else:
+					# on unix, people may run nice before executing the process, so 
+					# only change the priority unilaterally if it's currently at its 
+					# default value
+					if os.nice(0) == 0:
+						os.nice(1) # change to 1 below the current level
+
 			try:
 				# if possible, set priority of builds to below normal by default, 
 				# to avoid starving machines (e.g. on windows) of resources 
 				# that should be used for interactive processes
 				if os.getenv('XPYBUILD_DISABLE_PRIORITY_CHANGE','') != 'true':
-					xpybuild.utils.platformutils.lowerCurrentProcessPriority()
+					lowerCurrentProcessPriority()
 					log.info('Successfully changed process priority to below normal')
 			except Exception as e:
 				log.warning('Failed to lower current process priority: %s'%e)
