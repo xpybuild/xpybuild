@@ -21,7 +21,7 @@ import os, os.path, subprocess
 
 from xpybuild.buildcommon import *
 from xpybuild.basetarget import BaseTarget, targetNameToUniqueId
-from xpybuild.utils.fileutils import mkdir, deleteDir, deleteFile
+from xpybuild.utils.fileutils import mkdir, deleteDir, deleteFile, normLongPath
 from xpybuild.utils.process import _wait_with_timeout
 from xpybuild.pathsets import PathSet, BasePathSet
 from xpybuild.utils.buildexceptions import BuildException
@@ -197,7 +197,7 @@ class CustomCommand(BaseTarget):
 		assert not isinstance(self.command, str) # must be a list of strings, not a string
 			
 		self.command = flatten([self._resolveItem(x, context) for x in self.command])
-		self.command[0] = os.path.normpath(self.command[0])
+		self.command[0] = normLongPath(self.command[0])
 		return self.command
 	
 	def getHashableImplicitInputs(self, context):
