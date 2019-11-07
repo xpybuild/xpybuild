@@ -285,7 +285,7 @@ class BaseContext(object):
 					if key not in BuildInitializationContext._definedOptions: raise BuildException("Unknown option %s" % key)
 					fulloptions[key] = self._recursiveExpandProperties(source[key])
 				except BuildException as e:
-					raise BuildException('Failed to resolve option "%s"'%key, location=target.location if target else None, causedBy=True)
+					raise BuildException('Failed to resolve option "%s"'%key, location=target.location if target else None, causedBy=True) from None
 		return fulloptions
 				
 
