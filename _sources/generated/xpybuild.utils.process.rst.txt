@@ -21,3 +21,9 @@ call
 
 
 
+defaultProcessOutputEncodingDecider
+===================================
+.. autofunction:: defaultProcessOutputEncodingDecider
+
+
+

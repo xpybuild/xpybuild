@@ -256,35 +256,56 @@
 				<span class="n">fileutils</span><span class="o">.</span><span class="n">deleteFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseTarget.addHashableImplicitInputOption"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.addHashableImplicitInputOption">[docs]</a>	<span class="k">def</span> <span class="nf">addHashableImplicitInputOption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optionKey</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Adds a target-specific string giving information about an </span>
-<span class="sd">		implicit input of this target, to the list that will be returned</span>
-<span class="sd">		getHashableImplicitInputs to help detect when the target should be rebuilt. </span>
+		<span class="sd">&quot;&quot;&quot; Adds the resolved value of the specified option(s) as implicit inputs of this target, </span>
+<span class="sd">		to help detect when the target should be rebuilt. </span>
 <span class="sd">		</span>
-<span class="sd">		Call this for each option that this target is affected by. </span>
+<span class="sd">		Call this from the target&#39;s constructor, for each option that this target is affected by, </span>
+<span class="sd">		or with a callable that dynamically selects from the defined options, e.g. based on a prefix. </span>
 <span class="sd">		</span>
 <span class="sd">		See L{getHashableImplicitInputs} for more information.</span>
 <span class="sd">		</span>
-<span class="sd">		@param optionKey: the name of an option. </span>
+<span class="sd">		@param optionKey: the name of an option (as a string), </span>
+<span class="sd">		  or a callable that accepts an optionKey and dynamically decides which options to include, </span>
+<span class="sd">		  returning True if it should be included. For example::</span>
+<span class="sd">		  </span>
+<span class="sd">		    self.addHashableImplicitInputOption(lambda optionKey: optionKey.startswith(&#39;java.&#39;))</span>
 <span class="sd">		</span>
 <span class="sd">		&quot;&quot;&quot;</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">addHashableImplicitInput</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">:</span> <span class="s1">&#39;option </span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">optionKey</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">optionKey</span><span class="p">])))</span></div>
-		
+		<span class="bp">self</span><span class="o">.</span><span class="n">addHashableImplicitInput</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__getMatchingOptions</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">optionKey</span><span class="p">))</span></div>
+
+	<span class="k">def</span> <span class="nf">__getMatchingOptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">optionKey</span><span class="p">):</span>
+		<span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">optionKey</span><span class="p">):</span>
+			<span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="k">if</span> <span class="n">optionKey</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">optionKey</span><span class="p">]</span>
+		<span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+			<span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+			<span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="fm">__repr__</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="o">==</span> <span class="s1">&#39;function.__repr__&#39;</span><span class="p">:</span> 
+				<span class="n">value</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="c1"># avoid 0x references for top-level functions (nb: doesn&#39;t affect lambas/nested functions)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">value</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+			<span class="c1">#assert &#39;0x&#39; not in value</span>
+			<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;option </span><span class="si">{k}</span><span class="s1">=</span><span class="si">{value}</span><span class="s1">&#39;</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">result</span>
+
+	
 <div class="viewcode-block" id="BaseTarget.addHashableImplicitInput"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.addHashableImplicitInput">[docs]</a>	<span class="k">def</span> <span class="nf">addHashableImplicitInput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Adds a target-specific string giving information about an </span>
-<span class="sd">		implicit input of this target to the list that will be returned by</span>
-<span class="sd">		getHashableImplicitInputs to help detect when the target should be rebuilt. </span>
-<span class="sd">		</span>
-<span class="sd">		This can include options, property values (e.g. changes in build number,</span>
+		<span class="sd">&quot;&quot;&quot; Adds a target-specific string (or list of strings) giving information about an </span>
+<span class="sd">		implicit input of this target to the list that will be used in detecting </span>
+<span class="sd">		when the target should be rebuilt as a result of changes in options, </span>
+<span class="sd">		property values (e.g. changes in build number,</span>
 <span class="sd">		release/debug mode) and glob results (e.g. addition or removal of a</span>
 <span class="sd">		file should trigger a rebuild). </span>
 <span class="sd">		</span>
-<span class="sd">		See L{getHashableImplicitInputs} for more information.</span>
-<span class="sd">		</span>
-<span class="sd">		@param item: a string (which may contain substitution variables), </span>
-<span class="sd">		or a function that accepts a context parameter and returns a string. </span>
-<span class="sd">		The item will converted to a string using L{buildcontext.BuildContext.expandPropertyValues}. </span>
-<span class="sd">		For example, &#39;myparameter=&quot;foobar&quot;&#39;. </span>
-<span class="sd">		</span>
+<span class="sd">		Call this from the target&#39;s constructor. </span>
+
+<span class="sd">		@param item: either:</span>
+<span class="sd">		  - a string, which may contain substitution variables, e.g. ``myparameter=&quot;${someprop}&quot;``, </span>
+<span class="sd">		    and will converted to a string using `buildcontext.BuildContext.expandPropertyValues`, or</span>
+<span class="sd">		  - a callable to be invoked during up-to-dateness checking, that accepts a </span>
+<span class="sd">		    context parameter and returns a string or list of strings; </span>
+<span class="sd">		    any ``None`` items in the list are ignored. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">callable</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__hashableImplicitInputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
@@ -312,7 +333,22 @@
 <span class="sd">		cases call L{addHashableImplicitInput} or L{addHashableImplicitInputOption}. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hashableImplicitInputs</span><span class="p">:</span>
-			<span class="k">return</span> <span class="nb">list</span><span class="p">([</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hashableImplicitInputs</span><span class="p">])</span>
+			<span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hashableImplicitInputs</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">continue</span>
+				<span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;resolveToString&#39;</span><span class="p">):</span> <span class="c1"># if we aren&#39;t delegating to expandPropertyValues to resolve this</span>
+					<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+					<span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> 
+						<span class="k">continue</span>
+					<span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+						<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+					<span class="k">else</span><span class="p">:</span> <span class="c1"># assume it&#39;s a list or other iterable</span>
+						<span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+							<span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+								<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+			<span class="k">return</span> <span class="n">result</span>
 		<span class="k">return</span> <span class="p">[]</span></div>
 	
 <div class="viewcode-block" id="BaseTarget.getTags"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.getTags">[docs]</a>	<span class="k">def</span> <span class="nf">getTags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 

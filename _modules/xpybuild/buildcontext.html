@@ -543,10 +543,13 @@
 		<span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">__buildInitializationContext</span> <span class="o">=</span> <span class="s1">&#39;build phase&#39;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_initializationCompleted</span> <span class="o">=</span> <span class="kc">True</span>
 		
-		<span class="c1"># Definitions for common options used by multiple targets</span>
+		<span class="c1"># Definitions for common options used by multiple targets; only define first time round</span>
 		<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">ExtensionBasedFileEncodingDecider</span>
+		<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="k">import</span> <span class="n">defaultProcessOutputEncodingDecider</span>
 		<span class="k">if</span> <span class="s1">&#39;common.fileEncodingDecider&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definedOptions</span><span class="p">:</span>
 			<span class="bp">self</span><span class="o">.</span><span class="n">_defineOption</span><span class="p">(</span><span class="s1">&#39;common.fileEncodingDecider&#39;</span><span class="p">,</span> <span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">getDefaultFileEncodingDecider</span><span class="p">())</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_defineOption</span><span class="p">(</span><span class="s1">&#39;common.processOutputEncodingDecider&#39;</span><span class="p">,</span> <span class="n">defaultProcessOutputEncodingDecider</span><span class="p">)</span>
+
 		
 		<span class="c1"># all the valid ones will have been popped already</span>
 		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_propertyOverrides</span><span class="p">:</span>

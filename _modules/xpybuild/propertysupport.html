@@ -379,7 +379,20 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">__stringified</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;ExtensionBasedFileEncodingDecider(</span><span class="si">{self.extToEncodingDict}</span><span class="s1">; default=</span><span class="si">{self.defaultEncoding}</span><span class="s1">)&#39;</span>
 		
 	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stringified</span>
+
 	<span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">decide</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ExtensionBasedFileEncodingDecider.decide"><a class="viewcode-back" href="../../generated/xpybuild.propertysupport.html#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.decide">[docs]</a>	<span class="k">def</span> <span class="nf">decide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Decides what encoding to use for a given path. </span>
+<span class="sd">		</span>
+<span class="sd">		Can be overridden by subclasses.</span>
+<span class="sd">		</span>
+<span class="sd">		@param context: The `BuildContext`</span>
+<span class="sd">		@param path: The full expanded path of the file to be decided. </span>
+<span class="sd">		@returns: The encoding name to return. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
 		<span class="p">(</span><span class="n">cachecontext</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cache</span> <span class="c1"># single field access - probably sufficiently thread-safe given how the GIL works</span>
 		
 		<span class="k">if</span> <span class="n">cachecontext</span> <span class="o">!=</span> <span class="n">context</span><span class="p">:</span>
@@ -402,7 +415,7 @@
 		
 		<span class="n">fallbackDecider</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getGlobalOption</span><span class="p">(</span><span class="s1">&#39;common.fileEncodingDecider&#39;</span><span class="p">)</span>
 		<span class="k">if</span> <span class="n">fallbackDecider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span> <span class="k">return</span> <span class="n">fallbackDecider</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">)</span>
-		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;File encoding decider cannot handle path </span><span class="se">\&#39;</span><span class="si">{path}</span><span class="se">\&#39;</span><span class="s1">: </span><span class="si">{self}</span><span class="s1">&#39;</span><span class="p">)</span>
+		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;File encoding decider cannot handle path </span><span class="se">\&#39;</span><span class="si">{path}</span><span class="se">\&#39;</span><span class="s1">: </span><span class="si">{self}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 	
 <div class="viewcode-block" id="ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider"><a class="viewcode-back" href="../../generated/xpybuild.propertysupport.html#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider">[docs]</a>	<span class="nd">@staticmethod</span>
 	<span class="k">def</span> <span class="nf">getDefaultFileEncodingDecider</span><span class="p">():</span>

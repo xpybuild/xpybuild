@@ -116,14 +116,20 @@ needed (shouldn’t be).</p>
 <dl class="method">
 <dt id="xpybuild.basetarget.BaseTarget.addHashableImplicitInputOption">
 <code class="sig-name descname">addHashableImplicitInputOption</code><span class="sig-paren">(</span><em class="sig-param">optionKey</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/basetarget.html#BaseTarget.addHashableImplicitInputOption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.basetarget.BaseTarget.addHashableImplicitInputOption" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds a target-specific string giving information about an 
-implicit input of this target, to the list that will be returned
-getHashableImplicitInputs to help detect when the target should be rebuilt.</p>
-<p>Call this for each option that this target is affected by.</p>
+<dd><p>Adds the resolved value of the specified option(s) as implicit inputs of this target, 
+to help detect when the target should be rebuilt.</p>
+<p>Call this from the target’s constructor, for each option that this target is affected by, 
+or with a callable that dynamically selects from the defined options, e.g. based on a prefix.</p>
 <p>See <a class="reference internal" href="#xpybuild.basetarget.BaseTarget.getHashableImplicitInputs" title="xpybuild.basetarget.BaseTarget.getHashableImplicitInputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getHashableImplicitInputs</span></code></a> for more information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>optionKey</strong> – the name of an option.</p>
+<dd class="field-odd"><p><strong>optionKey</strong> – <dl class="simple">
+<dt>the name of an option (as a string), </dt><dd><p>or a callable that accepts an optionKey and dynamically decides which options to include, 
+returning True if it should be included. For example:</p>
+</dd>
+</dl>
+<p>self.addHashableImplicitInputOption(lambda optionKey: optionKey.startswith(‘java.’))</p>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -131,19 +137,26 @@ getHashableImplicitInputs to help detect when the target should be rebuilt.</p>
 <dl class="method">
 <dt id="xpybuild.basetarget.BaseTarget.addHashableImplicitInput">
 <code class="sig-name descname">addHashableImplicitInput</code><span class="sig-paren">(</span><em class="sig-param">item</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/basetarget.html#BaseTarget.addHashableImplicitInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.basetarget.BaseTarget.addHashableImplicitInput" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds a target-specific string giving information about an 
-implicit input of this target to the list that will be returned by
-getHashableImplicitInputs to help detect when the target should be rebuilt.</p>
-<p>This can include options, property values (e.g. changes in build number,
+<dd><p>Adds a target-specific string (or list of strings) giving information about an 
+implicit input of this target to the list that will be used in detecting 
+when the target should be rebuilt as a result of changes in options, 
+property values (e.g. changes in build number,
 release/debug mode) and glob results (e.g. addition or removal of a
 file should trigger a rebuild).</p>
-<p>See <a class="reference internal" href="#xpybuild.basetarget.BaseTarget.getHashableImplicitInputs" title="xpybuild.basetarget.BaseTarget.getHashableImplicitInputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getHashableImplicitInputs</span></code></a> for more information.</p>
+<p>Call this from the target’s constructor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>item</strong> – a string (which may contain substitution variables), 
-or a function that accepts a context parameter and returns a string. 
-The item will converted to a string using <code class="xref py py-obj docutils literal notranslate"><span class="pre">buildcontext.BuildContext.expandPropertyValues</span></code>. 
-For example, ‘myparameter=”foobar”’.</p>
+<dd class="field-odd"><p><strong>item</strong> – <p>either:
+- a string, which may contain substitution variables, e.g. <code class="docutils literal notranslate"><span class="pre">myparameter=&quot;${someprop}&quot;</span></code>,</p>
+<blockquote>
+<div><p>and will converted to a string using <code class="xref py py-obj docutils literal notranslate"><span class="pre">buildcontext.BuildContext.expandPropertyValues</span></code>, or</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>a callable to be invoked during up-to-dateness checking, that accepts a 
+context parameter and returns a string or list of strings; 
+any <code class="docutils literal notranslate"><span class="pre">None</span></code> items in the list are ignored.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>

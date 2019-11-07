@@ -78,6 +78,24 @@ should not be opened in text mode.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.decide">
+<code class="sig-name descname">decide</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">path</em>, <em class="sig-param">**forfutureuse</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/xpybuild/propertysupport.html#ExtensionBasedFileEncodingDecider.decide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.decide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decides what encoding to use for a given path.</p>
+<p>Can be overridden by subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> – The <code class="xref py py-obj docutils literal notranslate"><span class="pre">BuildContext</span></code></p></li>
+<li><p><strong>path</strong> – The full expanded path of the file to be decided.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The encoding name to return.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider">
 <em class="property">static </em><code class="sig-name descname">getDefaultFileEncodingDecider</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates the file encoding decider that is used by default if per-target 

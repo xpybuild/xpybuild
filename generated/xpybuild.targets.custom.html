@@ -86,8 +86,19 @@ the target file/dir)</p></li>
 specified command line process.</p>
 <p>The command line MUST not reference any generated paths unless they are 
 explicitly listed in deps.</p>
-<p>Use .option(“process.timeout”) to control the maximum number of seconds the command can 
-run before being cancelled.</p>
+<p>Supported target options include:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.option(&quot;process.timeout&quot;)</span></code> to control the maximum number of seconds the command can 
+run before being cancelled.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.option(&quot;common.processOutputEncodingDecider&quot;)</span></code> to determine the encoding 
+used for reading stdout/err (see <a class="reference internal" href="xpybuild.utils.process.html#xpybuild.utils.process.defaultProcessOutputEncodingDecider" title="xpybuild.utils.process.defaultProcessOutputEncodingDecider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.process.defaultProcessOutputEncodingDecider</span></code></a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.option(&quot;CustomCommand.outputHandlerFactory&quot;)</span></code> to replace the default behaviour 
+for detecting errors (which is just based on zero/non-zero exit code) and logging stdout/err with 
+a custom <a class="reference internal" href="xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler" title="xpybuild.utils.outputhandler.ProcessOutputHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.outputhandler.ProcessOutputHandler</span></code></a>. The additional 
+options described on <code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessOutputHandler</span></code> can also be used with this target.</p></li>
+</ul>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

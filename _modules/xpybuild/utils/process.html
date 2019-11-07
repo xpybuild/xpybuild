@@ -39,7 +39,7 @@
   <h1>Source code for xpybuild.utils.process</h1><div class="highlight"><pre>
 <span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
 <span class="c1">#</span>
-<span class="c1"># Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1"># Copyright (c) 2013 - 2019 Software AG, Darmstadt, Germany and/or its licensors</span>
 <span class="c1">#</span>
 <span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
 <span class="c1">#   you may not use this file except in compliance with the License.</span>
@@ -64,6 +64,7 @@
 <span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="k">import</span> <span class="n">ProcessOutputHandler</span>
 <span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;process&#39;</span><span class="p">)</span>
@@ -153,6 +154,23 @@
 		<span class="k">else</span><span class="p">:</span>
 			<span class="k">return</span> <span class="n">rv</span>
 
+<span class="kn">from</span> <span class="nn">xpybuild.internal</span> <span class="k">import</span> <span class="n">DEFAULT_PROCESS_ENCODING</span> <span class="k">as</span> <span class="n">__DEFAULT_PROCESS_ENCODING</span>
+<div class="viewcode-block" id="defaultProcessOutputEncodingDecider"><a class="viewcode-back" href="../../../generated/xpybuild.utils.process.html#xpybuild.utils.process.defaultProcessOutputEncodingDecider">[docs]</a><span class="k">def</span> <span class="nf">defaultProcessOutputEncodingDecider</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">executable</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Function providing the default implementation of the ``common.processOutputEncodingDecider``</span>
+<span class="sd">	option, which determines what encoding to use for parsing output from subprocesses. </span>
+<span class="sd">	</span>
+<span class="sd">	The default implementation ignores the executable argument and returns the same </span>
+<span class="sd">	encoding used by the xpybuild process itself (typically the sys.stdout or system default locale).</span>
+<span class="sd">	</span>
+<span class="sd">	A custom function can be provided for this option, using the same signature. </span>
+<span class="sd">	</span>
+<span class="sd">	@param context: The current `BuildContext`, which can be used to expand properties. </span>
+<span class="sd">	For some targets this may not be set (i.e. None). </span>
+<span class="sd">	@param executable: The full absolute path of the executable producing the output. </span>
+<span class="sd">	@param forfutureuse: Pass through any additional keyword arguments using ``**forfutureuse``. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="n">__DEFAULT_PROCESS_ENCODING</span> <span class="c1"># stdout encoding will be None unless in a terminal</span></div>
 
 <div class="viewcode-block" id="call"><a class="viewcode-back" href="../../../generated/xpybuild.utils.process.html#xpybuild.utils.process.call">[docs]</a><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputEncoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">displayName</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
@@ -173,8 +191,8 @@
 
 <span class="sd">	@param cwd: Change the working directory the process is started in (defaults to the parent cwd)</span>
 <span class="sd">	</span>
-<span class="sd">	@param outputEncoding: name of the character encoding the process generates. Assumed to be </span>
-<span class="sd">		getStdoutEncoding (e.g. what the terminal is using, or else UTF-8) if not specified. </span>
+<span class="sd">	@param outputEncoding: name of the character encoding the process generates. If specified, </span>
+<span class="sd">		this overrides the ``common.processOutputEncodingDecider`` option value (see `defaultProcessOutputEncodingDecider`). </span>
 
 <span class="sd">	@param timeout: maximum time a process is allowed to run. If an options dictionary is not </span>
 <span class="sd">	present, this should ALWAYS be set to a value e.g. options[&#39;process.timeout&#39;]. </span>
@@ -224,7 +242,9 @@
 		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">displayName</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">200</span><span class="p">:</span> <span class="n">displayName</span><span class="o">=</span><span class="n">displayName</span><span class="p">[:</span><span class="mi">200</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;...]&#39;</span>
 	<span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">timedout</span><span class="p">)</span> <span class="o">=</span> <span class="n">_wait_with_timeout</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">displayName</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 	
-	<span class="n">outputEncoding</span> <span class="o">=</span> <span class="n">outputEncoding</span> <span class="ow">or</span> <span class="n">getStdoutEncoding</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">outputEncoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="n">decider</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;common.processOutputEncodingDecider&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">defaultProcessOutputEncodingDecider</span>
+		<span class="n">outputEncoding</span> <span class="o">=</span> <span class="n">decider</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 	<span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> outputEncoding assumed to be: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">processName</span><span class="p">,</span> <span class="n">outputEncoding</span><span class="p">)</span>
 	
 	<span class="c1"># convert byte buffers to strings	</span>

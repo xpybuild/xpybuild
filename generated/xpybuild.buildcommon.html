@@ -98,18 +98,6 @@ value of an option.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="getstdoutencoding">
-<h2>getStdoutEncoding<a class="headerlink" href="#getstdoutencoding" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="xpybuild.buildcommon.getStdoutEncoding">
-<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">getStdoutEncoding</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/xpybuild/buildcommon.html#getStdoutEncoding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.getStdoutEncoding" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the most likely encoding used by subprocesses, based on 
-whether the build is running in a console, etc 
-which is typically what should be used for converting byte strings from 
-subprocesses to python unicode.</p>
-</dd></dl>
-
-</div>
 <div class="section" id="include">
 <h2>include<a class="headerlink" href="#include" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -184,7 +172,6 @@ fn should be a functor that takes a context and raises a BuildException if the c
 <li><a class="reference internal" href="#stringformatter">StringFormatter</a></li>
 <li><a class="reference internal" href="#defineatomictargetgroup">defineAtomicTargetGroup</a></li>
 <li><a class="reference internal" href="#enablelegacyxpybuildmodulenames">enableLegacyXpybuildModuleNames</a></li>
-<li><a class="reference internal" href="#getstdoutencoding">getStdoutEncoding</a></li>
 <li><a class="reference internal" href="#include">include</a></li>
 <li><a class="reference internal" href="#iswindows">isWindows</a></li>
 <li><a class="reference internal" href="#normpath">normpath</a></li>

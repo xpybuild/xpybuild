@@ -73,13 +73,36 @@ the <code class="xref py py-obj docutils literal notranslate"><span class="pre">
 based on the supplied options.</p></li>
 <li><p><strong>env</strong> – Override the environment the process is started in (defaults to the parent environment)</p></li>
 <li><p><strong>cwd</strong> – Change the working directory the process is started in (defaults to the parent cwd)</p></li>
-<li><p><strong>outputEncoding</strong> – name of the character encoding the process generates. Assumed to be 
-getStdoutEncoding (e.g. what the terminal is using, or else UTF-8) if not specified.</p></li>
+<li><p><strong>outputEncoding</strong> – name of the character encoding the process generates. If specified, 
+this overrides the <code class="docutils literal notranslate"><span class="pre">common.processOutputEncodingDecider</span></code> option value (see <a class="reference internal" href="#xpybuild.utils.process.defaultProcessOutputEncodingDecider" title="xpybuild.utils.process.defaultProcessOutputEncodingDecider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">defaultProcessOutputEncodingDecider</span></code></a>).</p></li>
 <li><p><strong>timeout</strong> – maximum time a process is allowed to run. If an options dictionary is not 
 present, this should ALWAYS be set to a value e.g. options[‘process.timeout’].</p></li>
 <li><p><strong>displayName</strong> – human-friendly description of the process for use in error messages, including the target name if possible=</p></li>
 <li><p><strong>options</strong> – where possible, always pass in a dictionary of resolved options, which may be used to customize 
 how this function operates.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="defaultprocessoutputencodingdecider">
+<h2>defaultProcessOutputEncodingDecider<a class="headerlink" href="#defaultprocessoutputencodingdecider" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.utils.process.defaultProcessOutputEncodingDecider">
+<code class="sig-prename descclassname">xpybuild.utils.process.</code><code class="sig-name descname">defaultProcessOutputEncodingDecider</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">executable</em>, <em class="sig-param">**forfutureuse</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/process.html#defaultProcessOutputEncodingDecider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.process.defaultProcessOutputEncodingDecider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function providing the default implementation of the <code class="docutils literal notranslate"><span class="pre">common.processOutputEncodingDecider</span></code>
+option, which determines what encoding to use for parsing output from subprocesses.</p>
+<p>The default implementation ignores the executable argument and returns the same 
+encoding used by the xpybuild process itself (typically the sys.stdout or system default locale).</p>
+<p>A custom function can be provided for this option, using the same signature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> – The current <code class="xref py py-obj docutils literal notranslate"><span class="pre">BuildContext</span></code>, which can be used to expand properties. 
+For some targets this may not be set (i.e. None).</p></li>
+<li><p><strong>executable</strong> – The full absolute path of the executable producing the output.</p></li>
+<li><p><strong>forfutureuse</strong> – Pass through any additional keyword arguments using <code class="docutils literal notranslate"><span class="pre">**forfutureuse</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -98,6 +121,7 @@ how this function operates.</p></li>
   <ul>
 <li><a class="reference internal" href="#">xpybuild.utils.process</a><ul>
 <li><a class="reference internal" href="#call">call</a></li>
+<li><a class="reference internal" href="#defaultprocessoutputencodingdecider">defaultProcessOutputEncodingDecider</a></li>
 </ul>
 </li>
 </ul>
