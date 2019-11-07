@@ -1,6 +1,6 @@
 # xpyBuild - eXtensible Python-based Build System
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import threading
 from xpybuild.buildcommon import *
 from xpybuild.utils.outputhandler import ProcessOutputHandler
 from xpybuild.utils.buildexceptions import BuildException
+from xpybuild.propertysupport import defineOption
 
 import logging
 log = logging.getLogger('process')
@@ -114,6 +115,23 @@ def _wait_with_timeout(process, displayName, timeout, read):
 		else:
 			return rv
 
+from xpybuild.internal import DEFAULT_PROCESS_ENCODING as __DEFAULT_PROCESS_ENCODING
+def defaultProcessOutputEncodingDecider(context, executable, **forfutureuse):
+	"""
+	Function providing the default implementation of the ``common.processOutputEncodingDecider``
+	option, which determines what encoding to use for parsing output from subprocesses. 
+	
+	The default implementation ignores the executable argument and returns the same 
+	encoding used by the xpybuild process itself (typically the sys.stdout or system default locale).
+	
+	A custom function can be provided for this option, using the same signature. 
+	
+	@param context: The current `BuildContext`, which can be used to expand properties. 
+	For some targets this may not be set (i.e. None). 
+	@param executable: The full absolute path of the executable producing the output. 
+	@param forfutureuse: Pass through any additional keyword arguments using ``**forfutureuse``. 
+	"""
+	return __DEFAULT_PROCESS_ENCODING # stdout encoding will be None unless in a terminal
 
 def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, timeout=None, displayName=None, options=None):
 	"""
@@ -134,8 +152,8 @@ def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, time
 
 	@param cwd: Change the working directory the process is started in (defaults to the parent cwd)
 	
-	@param outputEncoding: name of the character encoding the process generates. Assumed to be 
-		getStdoutEncoding (e.g. what the terminal is using, or else UTF-8) if not specified. 
+	@param outputEncoding: name of the character encoding the process generates. If specified, 
+		this overrides the ``common.processOutputEncodingDecider`` option value (see `defaultProcessOutputEncodingDecider`). 
 
 	@param timeout: maximum time a process is allowed to run. If an options dictionary is not 
 	present, this should ALWAYS be set to a value e.g. options['process.timeout']. 
@@ -185,7 +203,9 @@ def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, time
 		if len(displayName)>200: displayName=displayName[:200]+'...]'
 	(out, err, timedout) = _wait_with_timeout(process, displayName, timeout, True)
 	
-	outputEncoding = outputEncoding or getStdoutEncoding()
+	if outputEncoding is None:
+		decider = options.get('common.processOutputEncodingDecider', None) or defaultProcessOutputEncodingDecider
+		outputEncoding = decider(context=None, executable=args[0])
 	log.debug('%s outputEncoding assumed to be: %s', processName, outputEncoding)
 	
 	# convert byte buffers to strings	

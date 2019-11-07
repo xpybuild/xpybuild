@@ -252,7 +252,7 @@ class ProcessOutputHandler(object):
 		None. 
 		"""
 		
-		assert isinstance(line, str), 'ProcessOutputHandler does not accept bytes - caller must decode bytes to a character str (e.g. l.decode(getStdoutEncoding()))'
+		assert isinstance(line, str), 'ProcessOutputHandler does not accept bytes - caller must decode bytes to a character str (e.g. l.decode(defaultProcessOutputEncodingDecider(...)))'
 		
 		if (isstderr and self._treatStdErrAsErrors) or re.search(r'error[\s]*([A-Z]+\d+)?:', line, flags=re.IGNORECASE): return logging.ERROR
 		if re.search('warning[\s]*([A-Z]+\d+)?:', line, flags=re.IGNORECASE): return logging.WARNING

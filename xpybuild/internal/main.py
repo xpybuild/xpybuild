@@ -34,7 +34,8 @@ if os.getenv('XPYBUILD_IMPORTS'):
 	for i in os.getenv('XPYBUILD_IMPORTS').split(','):
 		importlib.import_module(i)
 
-from xpybuild.buildcommon import XPYBUILD_VERSION, getStdoutEncoding
+from xpybuild.internal import DEFAULT_PROCESS_ENCODING
+from xpybuild.buildcommon import XPYBUILD_VERSION
 from xpybuild.buildcontext import *
 from xpybuild.utils.fileutils import mkdir, deleteDir
 from xpybuild.propertysupport import defineOption, parsePropertiesFile
@@ -461,7 +462,7 @@ def main(args):
 				log.info('Failed to get host/user: %s', e)
 
 			log.info('Default encoding for subprocesses assumed to be: %s (stdout=%s, preferred=%s)', 
-				getStdoutEncoding(), stdout.encoding, locale.getpreferredencoding())
+				DEFAULT_PROCESS_ENCODING, stdout.encoding, locale.getpreferredencoding())
 			
 			def lowerCurrentProcessPriority():
 				if xpybuild.buildcommon.IS_WINDOWS:

@@ -26,6 +26,7 @@ from xpybuild.utils.process import _wait_with_timeout
 from xpybuild.pathsets import PathSet, BasePathSet
 from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.targets.copy import Copy
+from xpybuild.propertysupport import defineOption
 
 class Custom(BaseTarget): # deprecated because error handling/logging is poor and it promotes bad practices like not using options (e.g process timeout)
 	""" DEPRECATED - use CustomCommand instead, or a dedicated BaseTarget subclass
@@ -87,6 +88,7 @@ class ResolvePath(object):
 		""" Resolves the path using the specified context and baseDir """
 		return context.getFullPath(self.path, defaultDir=baseDir)
 
+defineOption('CustomCommand.outputHandlerFactory', None) 
 
 class CustomCommand(BaseTarget):
 	"""
@@ -106,8 +108,16 @@ class CustomCommand(BaseTarget):
 		The command line MUST not reference any generated paths unless they are 
 		explicitly listed in deps. 
 		
-		Use .option("process.timeout") to control the maximum number of seconds the command can 
-		run before being cancelled. 
+		Supported target options include:
+		
+		  - ``.option("process.timeout")`` to control the maximum number of seconds the command can 
+		    run before being cancelled. 
+		  - ``.option("common.processOutputEncodingDecider")`` to determine the encoding 
+		    used for reading stdout/err (see `xpybuild.utils.process.defaultProcessOutputEncodingDecider`). 
+		  - ``.option("CustomCommand.outputHandlerFactory")`` to replace the default behaviour 
+		    for detecting errors (which is just based on zero/non-zero exit code) and logging stdout/err with 
+		    a custom `xpybuild.utils.outputhandler.ProcessOutputHandler`. The additional 
+		    options described on `ProcessOutputHandler` can also be used with this target. 
 
 		@param target: the file or directory to be built. Will be cleaned, and its parent dir created, 
 		before target runs. 
@@ -244,7 +254,12 @@ class CustomCommand(BaseTarget):
 				
 		if not os.path.exists(cmd[0]) and not (IS_WINDOWS and os.path.exists(cmd[0]+'.exe')):
 			raise BuildException('Cannot run command because the executable does not exist: "%s"'%(cmd[0]), location=self.location)
-		
+
+		encoding = self.options['common.processOutputEncodingDecider'](context, cmd[0])
+		handler = self.options['CustomCommand.outputHandlerFactory']
+		if handler:
+			handler = handler(str(self), options=self.options)
+
 		try:
 			success=False
 			rc = None
@@ -276,18 +291,26 @@ class CustomCommand(BaseTarget):
 				
 				logMethod = self.log.info if success else self.log.error
 				
-				if not self.redirectStdOutToTarget and os.path.isfile(stdoutPath) and os.path.getsize(stdoutPath) > 0:
-					if os.path.getsize(stdoutPath) < 15*1024:
-						logMethod('Output from %s stdout is: \n%s', self.name, open(stdoutPath, 'r').read().replace('\n', '\n\t'))
+				if (handler or not self.redirectStdOutToTarget) and os.path.isfile(stdoutPath) and os.path.getsize(stdoutPath) > 0:
+					if handler:
+						with open(stdoutPath, 'r', encoding=encoding, errors='replace') as f:
+							for l in f: handler.handleLine(l, isstderr=False)
+					elif os.path.getsize(stdoutPath) < 15*1024:
+						logMethod('Output from %s stdout is: \n%s', self.name, open(stdoutPath, 'r', encoding=encoding, errors='replace').read().replace('\n', '\n\t'))
 					mainlog = stdoutPath
 					if not success: context.publishArtifact('%s stdout'%self, stdoutPath)
 				if os.path.isfile(stderrPath) and os.path.getsize(stderrPath) > 0:
-					if os.path.getsize(stderrPath) < 15*1024:
-						logMethod('Output from %s stderr is: \n%s', self.name, open(stderrPath, 'r').read().replace('\n', '\n\t'))
+					if handler:
+						with open(stderrPath, 'r', encoding=encoding, errors='replace') as f:
+							for l in f: handler.handleLine(l, isstderr=True)
+					elif os.path.getsize(stderrPath) < 15*1024:
+						logMethod('Output from %s stderr is: \n%s', self.name, open(stderrPath, 'r', encoding=encoding, errors='replace').read().replace('\n', '\n\t'))
 					mainlog = stderrPath # take precedence over stdout
 					if not success: context.publishArtifact('%s stderr'%self, stderrPath)
 			
-			if rc != None and rc != 0:
+			if handler:
+				handler.handleEnd(returnCode=rc)
+			elif rc != None and rc != 0 and not handler:
 				raise BuildException('%s command failed with error code %s; see output at "%s"'%(os.path.basename(cmd[0]), rc, mainlog), location=self.location)
 		finally:
 			pass

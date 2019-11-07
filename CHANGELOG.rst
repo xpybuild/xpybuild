@@ -113,6 +113,9 @@ Enhancements
 -  `BaseTarget.addHashableImplicitInputOption`: added ability to pass a 
    lamba that dynamically selects which of the defined options to include, 
    for example based on prefix matching. 
+-  `xpybuild.targets.custom.CustomCommand`: now supports customized handling 
+   of process output and return code using the new 
+   ``CustomCommand.outputHandlerFactory`` option. 
 -  Added ``utils.stringutils.compareVersions`` method for comparing
    dotted version strings.
 

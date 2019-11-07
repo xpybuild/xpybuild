@@ -504,10 +504,13 @@ class BuildInitializationContext(BaseContext):
 		BuildInitializationContext.__buildInitializationContext = 'build phase'
 		self._initializationCompleted = True
 		
-		# Definitions for common options used by multiple targets
+		# Definitions for common options used by multiple targets; only define first time round
 		from xpybuild.propertysupport import ExtensionBasedFileEncodingDecider
+		from xpybuild.utils.process import defaultProcessOutputEncodingDecider
 		if 'common.fileEncodingDecider' not in self._definedOptions:
 			self._defineOption('common.fileEncodingDecider', ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider())
+			self._defineOption('common.processOutputEncodingDecider', defaultProcessOutputEncodingDecider)
+
 		
 		# all the valid ones will have been popped already
 		if self._propertyOverrides:

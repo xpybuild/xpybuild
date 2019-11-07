@@ -108,20 +108,6 @@ else:
 		"""
 		return False
 
-_stdoutEncoding = None
-try:
-	_stdoutEncoding = sys.stdout.encoding or locale.getpreferredencoding() # stdout encoding will be None unless in a terminal
-except:
-	pass # probably in epydoc
-
-def getStdoutEncoding() -> str: 
-	""" Returns the most likely encoding used by subprocesses, based on 
-	whether the build is running in a console, etc 
-	which is typically what should be used for converting byte strings from 
-	subprocesses to python unicode.
-	"""
-	return _stdoutEncoding
-
 def defineAtomicTargetGroup(*targets):
 	""" The given targets must all be built before anything which depends on any of those targets.
 	

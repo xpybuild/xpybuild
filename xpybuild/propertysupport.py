@@ -340,7 +340,20 @@ class ExtensionBasedFileEncodingDecider:
 		self.__stringified = f'ExtensionBasedFileEncodingDecider({self.extToEncodingDict}; default={self.defaultEncoding})'
 		
 	def __repr__(self): return self.__stringified
+
 	def __call__(self, context, path, **forfutureuse):
+		return self.decide(context, path, **forfutureuse)
+
+	def decide(self, context, path, **forfutureuse) -> str:
+		"""
+		Decides what encoding to use for a given path. 
+		
+		Can be overridden by subclasses.
+		
+		@param context: The `BuildContext`
+		@param path: The full expanded path of the file to be decided. 
+		@returns: The encoding name to return. 
+		"""
 		(cachecontext, cache) = self.__cache # single field access - probably sufficiently thread-safe given how the GIL works
 		
 		if cachecontext != context:
