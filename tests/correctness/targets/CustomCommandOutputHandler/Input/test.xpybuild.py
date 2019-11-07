@@ -36,7 +36,9 @@ def encodingDecoder(context, exename, **extra):
 	logging.getLogger('xpybuild').critical('Test processOutputEncodingDecider called with exename='+exename)
 	return 'ascii'
 
-CustomCommand('${OUTPUT_DIR}/output.txt', [os.getenv('ComSpec', 'cmd.exe'), '/c', 'echo Hello world'] if IS_WINDOWS else ['echo Hello world'], 
+CustomCommand('${OUTPUT_DIR}/output.txt', [
+		os.getenv('ComSpec', 'cmd.exe'), '/c', 'echo Hello world'] if IS_WINDOWS else [
+		'/usr/bin/env', 'echo', 'Hello world'], 
 	dependencies=[],
 	redirectStdOutToTarget=True,
 	).option('CustomCommand.outputHandlerFactory', MyHandler).option('common.processOutputEncodingDecider', encodingDecoder)

@@ -8,7 +8,7 @@ class PySysTest(XpybuildBaseTest):
 		msg = self.xpybuild(args=[], expectedExitStatus='==4')
 
 	def validate(self):
-		self.assertGrep(file='xpybuild.log', expr='Test processOutputEncodingDecider called with exename=.*(cmd|echo)')
+		self.assertGrep(file='xpybuild.log', expr='Test processOutputEncodingDecider called with exename=.*(cmd|env)')
 		self.assertGrep(file='xpybuild.log', expr='MyHandler.handleEnd was called')
 		self.assertGrep(file='xpybuild.log', expr='ERROR .*output.txt ERROR> Hello world')
 		self.assertGrep(file='xpybuild.log', expr='Target FAILED: .*Simulated error from handleEnd: Hello world')
