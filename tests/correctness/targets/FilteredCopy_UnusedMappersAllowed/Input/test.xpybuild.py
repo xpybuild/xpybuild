@@ -1,4 +1,4 @@
-from xpybuild.propertysupport import enableLegacyXpybuildModuleNames
+from xpybuild.buildcommon import enableLegacyXpybuildModuleNames
 enableLegacyXpybuildModuleNames()
 
 from propertysupport import *

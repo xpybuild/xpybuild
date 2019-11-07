@@ -1,4 +1,4 @@
-from xpybuild.propertysupport import enableLegacyXpybuildModuleNames
+from xpybuild.buildcommon import enableLegacyXpybuildModuleNames
 enableLegacyXpybuildModuleNames() # having this turned on is useful - importing extra modules may give extra errors
 
 import os, logging

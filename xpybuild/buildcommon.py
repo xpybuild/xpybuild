@@ -171,7 +171,47 @@ class FilenameStringFormatter(object):
 		assert not kwargs
 		assert len(args)==1
 		return os.path.join(os.path.dirname(args[0]), self.fmt % os.path.basename(args[0]))
+
+import pkgutil
+
+def enableLegacyXpybuildModuleNames():
+	"""
+	Adds aliases for pre-3.0 module names e.g. `buildcommon` instead of `xpybuild.buildcommon`, etc. 
 	
+	The old names are deprecated, so this should be used only as a temporary measure. 
+	"""
+	# must manually import every single module from 'utils' and 'targets'; 
+	# although just importing 'utils' appears to work, 
+	# we end up with duplicate packages for the modules underneath it 
+	# (and so may attempt to import and hence define the same option twice)
+	import xpybuild.utils
+	import xpybuild.targets
+	__log = logging.getLogger('xpybuild.buildcommon')
+	for parentpackage in [xpybuild, xpybuild.utils, xpybuild.targets]:
+		for _, modulename, ispkg in pkgutil.iter_modules(
+				path=parentpackage.__path__, prefix=(parentpackage.__name__[len('xpybuild.'):]+'.').lstrip('.')):
+			__log.debug('enableLegacyXpybuildModuleNames: Importing legacy package name %s', modulename)
+			if modulename!='buildcommon': # first make sure the original one has been imported
+				exec(f'import xpybuild.{modulename}', {})
+			# then define an alias
+			exec(f'sys.modules["{modulename}"] = sys.modules["xpybuild.{modulename}"]')
+	assert 'utils.fileutils' in sys.modules, sys.modules # sanity check that it worked
+	assert 'targets.copy' in sys.modules, sys.modules # sanity check that it worked
+
+	# aliases for modules we folded into other modules in v3.0, or moved
+	exec(f'sys.modules["propertyfunctors"] = sys.modules["xpybuild.propertysupport"]')
+	exec(f'sys.modules["buildexceptions"] = sys.modules["xpybuild.utils.buildexceptions"]')
+
+	xpybuild.targets.touch = sys.modules["xpybuild.targets.writefile"]
+	exec(f'sys.modules["targets.touch"] = sys.modules["xpybuild.targets.writefile"]')
+
+	xpybuild.targets.unpack = sys.modules["xpybuild.targets.archive"]
+	exec(f'sys.modules["targets.unpack"] = sys.modules["xpybuild.targets.archive"]')
+	xpybuild.targets.zip = sys.modules["xpybuild.targets.archive"]
+	exec(f'sys.modules["targets.zip"] = sys.modules["xpybuild.targets.archive"]')
+	xpybuild.targets.tar = sys.modules["xpybuild.targets.archive"]
+	exec(f'sys.modules["targets.tar"] = sys.modules["xpybuild.targets.archive"]')
+
 import xpybuild.utils.fileutils
 from xpybuild.utils.flatten import flatten
 
