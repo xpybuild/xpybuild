@@ -24,36 +24,40 @@ from xpybuild.propertysupport import *
 from xpybuild.buildcommon import *
 from xpybuild.pathsets import *
 
-from xpybuild.targets.zip import Zip
+from xpybuild.targets.archive import Zip
 from xpybuild.targets.copy import Copy
 from xpybuild.targets.writefile import WriteFile
 from xpybuild.targets.custom import CustomCommand
 
 requireXpyBuildVersion('3.0')
 
-# Need the caller to provide the path to epydoc
-#definePathProperty('EPYDOC_ROOT', None, mustExist=True) # parent of the /lib directory; used for local builds but not Travis
-defineOutputDirProperty('OUTPUT_DIR', 'release-output')
+try:
+	import sphinx
+except ImportError:
+	raise Exception('Cannot build the xpybuild release as sphinx documentation library is not installed into this Python installation: %s (see .travis.yml for details of how to install)'%sys.executable)
+
+defineOutputDirProperty('OUTPUT_DIR', '_build_output')
 with open('xpybuild/XPYBUILD_VERSION') as f: defineStringProperty('VERSION', f.read().strip())
 
-Copy('${OUTPUT_DIR}/doc/', 'README.rst')
-
-"""CustomCommand('${OUTPUT_DIR}/doc/api/', 
+CustomCommand('${OUTPUT_DIR}/docs/', 
 	command=[ 
-		sys.executable, 
-		'-m', 'epydoc.cli', 
-		'-o', CustomCommand.TARGET, 
-		'--no-private', 
-		'-v', 
-		'--name', 'xpybuild v${VERSION}', 
-		'--fail-on-docstring-warning',
-		CustomCommand.DEPENDENCIES 
+		sys.executable,
+		'-m', 'sphinx',
+		'-M', 'html',
+		PathSet('./docs/'), # source dir
+		'${OUTPUT_DIR}/docs/', # output dir
 	], 
-	dependencies=FindPaths('./', includes='**/*.py', excludes=['**/root.xpybuild.py', 'tests/**', 'internal/**', 'xpybuild.py']),
-	env={'PYTHONPATH' : PathSet('${EPYDOC_ROOT}/lib')}
-	)
-"""
-# Zip all the distributables into a release zip file, but not documentation.
+	dependencies=FindPaths('docs/', excludes=['generated/**']),
+	stderr='${OUTPUT_DIR}/doc_warnings.txt',
+	).tags('docs')
+
+Zip('${OUTPUT_DIR}/xpybuild_${VERSION}_docs.zip', [
+		FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/docs/')+'html/'),
+		'LICENSE.txt',
+		'README.rst',
+])
+
+# Zip all the distributables into a release zip files
 Zip('${OUTPUT_DIR}/xpybuild_${VERSION}.zip', [
 		AddDestPrefix('xpybuild/',[
 			FindPaths('./xpybuild/', includes=['**/*.py']),
@@ -63,6 +67,6 @@ Zip('${OUTPUT_DIR}/xpybuild_${VERSION}.zip', [
 			'CHANGELOG.rst',
 		]),
 		'xpybuild.py',
-		])
+])
 
 

@@ -4,6 +4,10 @@ pysys-junit-report/
 pysys-testsummary*.xml
 performance_output/
 
+# xpybuild release output
+_build_output/
+docs/generated/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -80,7 +80,7 @@ deploy:
     api_key: $GITHUB_API_KEY
     file_glob: true
     file: 
-      - release-output/*.zip
+      - _build_output/*.zip
     skip_cleanup: true
     overwrite: true
     on: 
@@ -98,10 +98,10 @@ deploy:
   - provider: pages
     github-token: $GITHUB_API_KEY
     target-branch: gh-pages
-    local-dir: release-output/doc
+    local-dir: _build_output/docs/html
     skip_cleanup: true
     keep-history: true
-    project-name: "XPyBuild $XPYBUILD_VERSION"
+    project-name: "xpybuild $XPYBUILD_VERSION"
     
     on: 
        branch: release
