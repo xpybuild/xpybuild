@@ -18,7 +18,7 @@ Breaking changes
    which will require changes to build files in some cases:
 
    - All xpybuild modules have been moved to a new ``xpybuild.`` module
-     for namespacing purposes. The `enableLegacyXpybuildModuleNames()`
+     for namespacing purposes. The `buildcommon.enableLegacyXpybuildModuleNames()`
      function can be called (after importing xpybuild.buildcommon)
      to allow unqualified access to the names if you have a large
      project, though this is a temporary measure and willbe removed
