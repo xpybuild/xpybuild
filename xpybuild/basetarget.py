@@ -217,7 +217,7 @@ class BaseTarget(Composable):
 		# don't think there's any value in caching this result
 		return self.__dependencies._resolveUnderlyingDependencies(context)
 
-	def run(self, context):
+	def run(self, context: xpybuild.buildcontext.BuildContext):
 		"""Called by xpybuild to request to target to run its build (all targets must implement this). 
 		
 		This method is only called when up-to-date checking shows that the target must be built. 
@@ -226,7 +226,7 @@ class BaseTarget(Composable):
 		"""
 		raise Exception('run() is not implemented yet for this target')
 
-	def clean(self, context):
+	def clean(self, context: xpybuild.buildcontext.BuildContext):
 		"""Called by xpybuild when the target should be deleted (can be overridden if needed). 
 		
 		The default implementation will simply delete the target, and any target 
@@ -394,7 +394,7 @@ class BaseTarget(Composable):
 		self.__optionsTargetOverridesUnresolved[key] = value
 		return self
 	
-	def openFile(self, context, path: str, mode='r', **kwargs):
+	def openFile(self, context: xpybuild.buildcontext.BuildContext, path: str, mode='r', **kwargs):
 		"""Target classes can call this from their `run` implementation to open a specified file, using an encoding 
 		specified by the ``common.fileEncodingDecider`` option (unless explicitly provided by ``encoding=``). 
 		
