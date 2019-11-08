@@ -295,7 +295,7 @@ def enableEnvironmentPropertyOverrides(prefix):
 	@param prefix: The prefix added to the start of a build property name to form 
 	the name of the environment variable; the prefix is stripped from the 
 	env var name before it is compared with properties defined by the build. This is mandatory (cannot be 
-	empty) and should be set to a build-specific string (e.g. "XYZ_") in 
+	empty) and should be set to a build-specific string (e.g. ``XYZ_``) in 
 	order to ensure that there is no chance of build properties being 
 	accidentally overridden. (e.g. many users have JAVA_HOME in their env 
 	but also in their build, however it may be important for them to 

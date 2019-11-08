@@ -164,29 +164,30 @@ class GlobPatternSet(object):
 		in a directory independently, especially when there are many files. 
 		
 		@param rootdir: The parent of the file/dir names to be matched. 
-		Must use forward slashes not backslashes, and must end with a slash. 
-		Can be empty but not None. 
+			Must use forward slashes not backslashes, and must end with a slash. 
+			Can be empty but not None. 
 		
 		@param filenames: A list of base file names within the rootdir, to be 
-		matched. There must be no empty names in the list, but an empty/None list 
-		can be specified. 
-		No slash characters may be present in the names. 
+			matched. There must be no empty names in the list, but an empty/None list 
+			can be specified. 
+			No slash characters may be present in the names. 
 
 		@param dirnames: A list of base directory names within the rootdir, to be 
-		matched. There must be no empty names in the list, but an empty/None list 
-		can be specified. 
-		No slash characters may be present in the names, except optionally 
-		as a suffix. 
+			matched. There must be no empty names in the list, but an empty/None list 
+			can be specified. 
+			
+			No slash characters may be present in the names, except optionally 
+			as a suffix. 
 		
 		@param unusedPatternsTracker: Optionally specify an instance of 
-		L{GlobUnusedPatternTracker} which will be notified of the patterns that 
-		are used, allow an error to be produced for any that are not used. 
+			`GlobUnusedPatternTracker` which will be notified of the patterns that 
+			are used, allow an error to be produced for any that are not used. 
 		
-		@return: If either filenames or dirnames is None then the result is a 
-		single list of basenames. If both filenames and dirnames are lists 
-		(even if empty) the result is a tuple (filenames, dirnames). 
-		Directory entries will have a trailing slash only if they did in the input 
-		dirnames list.
+		@returns: If either filenames or dirnames is None then the result is a 
+			single list of basenames. If both filenames and dirnames are lists 
+			(even if empty) the result is a tuple (filenames, dirnames). 
+			Directory entries will have a trailing slash only if they did in the input 
+			dirnames list.
 		
 		"""
 		# this is an algorithm similar to ant's globbing... but not totally identical (to keep things simple), it doesn't support '?' for example
@@ -381,10 +382,12 @@ class GlobPatternSet(object):
 		dirs that could not match, but will definitely not remove any that could. 
 		
 		@param rootdir: The parent of the file/dir names to be matched. 
-		Must use forward slashes not backslashes, and must end with a slash. 
-		Can be empty but not None. 
+			Must use forward slashes not backslashes, and must end with a slash. 
+			Can be empty but not None. 
+		
 		@param dirnames: a list of directory basenames contained in rootdir
-		@return the same dirnames instance passed in (with any modifications made). 
+		
+		@returns: the same dirnames instance passed in (with any modifications made). 
 		
 		>>> GlobPatternSet.create(['**']).removeUnmatchableDirectories('abc/def/', ['dir1', 'dir2'])
 		['dir1', 'dir2']
@@ -460,10 +463,10 @@ class GlobUnusedPatternTracker(object):
 def antGlobMatch(pattern, path):
 	"""
 	Matches a path against an ant-style glob pattern which may contain 
-	'*' or '**'. 
+	``*`` or ``**``. 
 	
 	If the path is a directory, it must end with a slash. 
-	Patterns ending with a '/' can only match directories, and patterns without 
+	Patterns ending with a ``/`` can only match directories, and patterns without 
 	can only match files. 
 	
 	>>> antGlobMatch('', '')
@@ -610,8 +613,7 @@ def antGlobMatch(pattern, path):
 	>>> antGlobMatch('**/PPP/**/**/**/PPP/**/**/*.e', 'f/PPP/x/PPP/foo.e')
 	True
 
-	# this one is debatable (could decide not to match first PPP to allow second to match, but in general hard to reliably detect that condition given any later **s would invalidate any attempt to do it by counting); this behaviour is simpler to describe and more efficient to implement
-	>>> antGlobMatch('**/PPP/f/*.e', 'f/PPP/a/b/c/d/e/PPP/f/foo.e') 
+	>>> antGlobMatch('**/PPP/f/*.e', 'f/PPP/a/b/c/d/e/PPP/f/foo.e') # this one is debatable (could decide not to match first PPP to allow second to match, but in general hard to reliably detect that condition given any later **s would invalidate any attempt to do it by counting); this behaviour is simpler to describe and more efficient to implement
 	False
 
 	>>> antGlobMatch('*/**/f/*.e', 'f/PPP/a/b/c/d/e/PPP/f/foo.e') 

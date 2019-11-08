@@ -36,7 +36,7 @@ defineOption('csharp.options', [])
 
 class CSCProcessOutputHandler(ProcessOutputHandler):
 	"""
-	A ProcessOutputHandler than can parse the output of the CSC compiler
+	A ProcessOutputHandler that can parse the output of the CSC compiler.
 	"""
 
 	def _parseLocationFromLine(self, line):

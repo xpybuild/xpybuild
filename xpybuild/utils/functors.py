@@ -21,7 +21,7 @@
 
 class Composable(object):
 	""" Base class for objects which are late-bound and can be composed 
-		 together and with strings, with a resolveToString method to 
+		 together and with strings, with a `resolveToString` method to 
 		 produce the output string.
 	"""
 	def resolveToString(self, context):
@@ -78,10 +78,10 @@ class Compose(Composable):
 		return str(self.left)+"+"+str(self.right)
 
 class ComposableFn(Composable):
-	""" A functor wrapping an arbitrary function and arguments that can be composed """
+	""" A functor wrapping an arbitrary function and arguments that can be composed. """
 	def __init__(self, fn, *args, **kwargs):
 		"""
-		@param fn: The function to wrap. Must have the format fn(context, *args)
+		@param fn: The function to wrap. Must have the format ``fn(context, *args)``.
 		@param args: Arguments to the function
 		@keyword name: optional display name for the functor
 		"""
@@ -107,10 +107,10 @@ class ComposableFn(Composable):
 		return self.name+"("+",".join(map(str, self.args))+")"
 
 class ComposableWrapper:
-	""" A functor which wraps a function and can be curried into a ComposableFunction """
+	""" A functor which wraps a function and can be curried into a ComposableFunction. """
 	def __init__(self, fn, name=None):
 		""" 
-		@param fn: a function of the form fn(context, *args)
+		@param fn: a function of the form ``fn(context, *args)``
 		"""
 		self.fn = fn
 		self.name=name
@@ -133,10 +133,10 @@ def makeFunctor(fn, name=None):
 
 		target = "${OUTPUT_DIR}/" + myfn("${MYVAR}")
 
-	This will execute fn(context, "${MYVAR}") at property expansion time and then
-	prepend the expanded "${OUTPUT_DIR}/".
+	This will execute ``fn(context, "${MYVAR}")`` at property expansion time and then
+	prepend the expanded ``${OUTPUT_DIR}/``.
 
-	@param fn: a function of the form fn(context, *args)
+	@param fn: a function of the form ``fn(context, *args)``.
 
 	>>> import xpybuild.buildcontext
 	>>> str(makeFunctor(lambda context, x: context.expandPropertyValues(x))('${INPUT}'))

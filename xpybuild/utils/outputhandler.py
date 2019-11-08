@@ -29,11 +29,11 @@ _logger = logging.getLogger('processoutput')
 
 class ProcessOutputHandler(object):
 	"""
-	An extensible class for handling stdout/stderr output lines and return code 
+	An extensible class for handling the stdout/stderr output lines and return code 
 	from a process, accumulating error and warnings, and converting into 
 	appropriate log statements and a summary exception if it failed. 
 	
-	It is expected that subclasses would be created to abtract away handling of 
+	Subclasses should be created to abtract away handling of 
 	output from different particular types of process (e.g. Java compilation, 
 	gmake, msbuild, etc).
 	
@@ -47,6 +47,7 @@ class ProcessOutputHandler(object):
 	called to get further information if desired. 
 	
 	Subclasses may often wish to do some of the following:
+	
 		- override the logic for deciding what consistutes an error/warning 
 			(see _decideLogLevel)
 		- use a regex to get the filename and number from error messages to 
@@ -57,7 +58,7 @@ class ProcessOutputHandler(object):
 			(by overriding handleEnd)
 	
 	This class is not thread-safe, so locking should be provided by the caller 
-	if multiple threads are in use (e.g. for reading stdout+err in parallel). 
+	if multiple threads are in use (e.g. for reading stdout and stderr in parallel). 
 	
 	>>> h = ProcessOutputHandler('myhandler')
 	>>> h.handleLine(u'error: My error')
@@ -127,22 +128,20 @@ class ProcessOutputHandler(object):
 	
 	def __init__(self, name, treatStdErrAsErrors=True, **kwargs):
 		"""
-
-		The constructor for this object. Subclasses that override this should 
-		always pass **kwargs down to the super constructor to allow for new 
-		functionality to be added
+		Subclasses must pass any ``**kwargs`` down to the super() constructor 
+		to allow for new functionality to be added in future. 
 		
 		@param name: a short display name for this process or target, used as a 
-		prefix for log lines. 
+			prefix for log lines. 
 		
-		@param treatStdErrAsErrors: controls where all content on stderr 
-		(rather than stdout) is treated as an error by default. The correct 
-		setting depends on how the process being invoked uses stdout/err. 
+		@param treatStdErrAsErrors: controls whether all content on stderr 
+			(rather than stdout) is treated as an error by default. The correct 
+			setting depends on how the process being invoked uses stdout/err. 
 		
-		@keyword options: a dictionary of resolved option values, in case aspects 
-		of this handler are customizable. Available to implementations as 
-		self.options (if None is passed, self.options will be an empty 
-		dictionary)
+		@param options: a dictionary of resolved option values, in case aspects 
+			of this handler are customizable. Available to implementations as 
+			`self.options` (if None is passed, ``self.options`` will be an empty 
+			dictionary)
 		"""
 		self._name = name
 		self._errors = []

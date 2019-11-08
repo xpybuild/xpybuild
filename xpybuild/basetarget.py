@@ -33,24 +33,60 @@ from xpybuild.utils.fileutils import openForWrite, normLongPath, mkdir
 import logging
 
 class BaseTarget(Composable):
-	""" The base class for all targets. All targets are uniquely identified by 
-	a single name which is a file or a directory (ending with '/'). 
+	""" The base class for all targets. 
 	
-	Has public read-only attributes: 
-	 - name: the unresolved canonical name for the target (containing unsubstituted properties etc).
-	 - path: the resolved name with variables expanded etc. Can only be used once target is running or checking up-to-dateness but not during initialization phase.
-	 - options: a dict of the resolved options for this target. Can only be used once target is running or checking up-to-dateness but not during initialization phase. See also L{getOption()}.
-	 - workDir (a unique dedicated directory where this target can write 
-	temporary/working files).
+	.. rubric:: Configuring targets in your build files
 	
-	The methods that may be overridden by subclasses are:
-	 - L{run}
-	 - L{clean}
-	 - L{getHashableImplicitInputs}
+	The following methods can be used to configure any target instance you add to a build file:
 	
+	.. autosummary ::
+		option
+		tags
+		clearTags
+		disableInFullBuild
+		priority
+
+	.. rubric:: Implementing a new target class
+	
+	If you are subclassing ``BaseTarget`` to create a new target class, you must implement `run`. Occasionally you 
+	may also wish to override `clean`. The following methods are available for use by target subclasses, 
+	either at construction time (``__init__``) or at build time (during `run` or `clean`):
+
+	.. autosummary ::
+		addHashableImplicitInputOption
+		addHashableImplicitInput
+		getOption
+		openFile
+	
+	This class provides several read-only attributes for use by subclasses.
+
+	:ivar str name: The canonical name for the target (containing unsubstituted properties).
+	
+	:ivar str path: The resolved name with all properties variables expanded. This field is set only once the target is 
+		running or checking up-to-dateness but not during initialization phase when targets are initially constructed.
+	
+	:ivar dict options: A ``dict`` of the resolved options for this target. Can only be used once target is running or 
+		checking up-to-dateness but not during the initialization phase. See also `getOption()`.
+	
+	:ivar str workDir: A unique dedicated directory where this target can write temporary/working files.
+
+	.. rubric:: Arguments for the BaseTest __init__ constructor
+
+	@param name: This target instance's unique name, which is the file or 
+		directory path which is created as a result of running this target. 
+		The target name may contain ``${...}`` properties (e.g. 
+		``${OUTPUT_DIR}/myoutputfile``), and must use only forward slashes ``/``. 
+		If the target builds a directory it must end with a forward slash. 
+	
+	@param dependencies: The dependencies, which may need to be 
+		flattened/expanded by the build system; may be any combination of 
+		strings, `xpybuild.pathsets`` and lists, and may also contain 
+		unexpanded variables.
+		
+	.. rubric:: BaseTest methods
 	"""
 
-	# to allow targets to be used in sets, override hash to ensure its deterministic
+	# to allow targets to be used in sets, override hash to ensure it's deterministic;
 	# no need to override eq/ne, they use object identity which is already correct
 	def __hash__(self): 
 		"""
@@ -60,16 +96,6 @@ class BaseTarget(Composable):
 
 	
 	def __init__(self, name, dependencies):
-		""" Normal constructor, should only be called from sub-classes since this is a stub.
-
-		@param name: a unique name for this target (may contain unexpanded ${...}
-		variables). Should correspond to the file or directory which is created
-		as a result of running this target.
-		@param dependencies: a list of dependencies, which may need to be 
-		flattened/expanded by the build system; may be any combination of 
-		strings, PathSets and lists and may also contain unexpanded variables.
-		"""
-		
 		self.__getAttrImpl = {
 			'path': lambda: self.__returnOrRaiseIfNone(self.__path, 'Target path has not yet been resolved by this phase of the build process: %s'%self),
 			'name': lambda: self.__name,
@@ -141,7 +167,9 @@ class BaseTarget(Composable):
 		return self.__stringvalue
 
 	def resolveToString(self, context):
-		""" Resolves this target's path and returns as a string. 
+		"""
+		.. private: There is usually no need for this to be called other than by the framework. 		
+		Resolves this target's path and returns as a string. 
 		
 		It is acceptable to call this while the build files are still being 
 		parsed (before the dependency checking phase), but an error will result 
@@ -158,7 +186,7 @@ class BaseTarget(Composable):
 		return self.__path
 
 	def _resolveTargetPath(self, context):
-		""" Internal method for resolving path from name, performing any 
+		""".. private: Internal method for resolving path from name, performing any 
 		required expansion etc. 
 		
 		Do not override this method.
@@ -177,7 +205,7 @@ class BaseTarget(Composable):
 			self.__optionsResolved = context._mergeListOfOptionDicts([context._globalOptions, self.__optionsTargetOverridesUnresolved], target=self)
 
 	def _resolveUnderlyingDependencies(self, context, rawdeps=False):
-		""" Internal method for resolving dependencies needed by this target, 
+		""".. private: Internal method for resolving dependencies needed by this target, 
 		e.g. doing path expansion, globbing, etc. 
 		
 		Do not override this method. This method should be invoked only once, 
@@ -190,19 +218,18 @@ class BaseTarget(Composable):
 		return self.__dependencies._resolveUnderlyingDependencies(context)
 
 	def run(self, context):
-		""" Build this target. 
+		"""Called by xpybuild to request to target to run its build (all targets must implement this). 
 		
-		Called after a failed up-to-date check to build this target. 
+		This method is only called when up-to-date checking shows that the target must be built. 
 		It's possible that execution will show that the target did not really 
-		need to execute, in which case False should be returned (so that dependent tasks do not 
-		necessarily get rebuilt).  
+		need to execute, in which case False should be returned.  
 		"""
 		raise Exception('run() is not implemented yet for this target')
 
 	def clean(self, context):
-		""" Clean this target. 
+		"""Called by xpybuild when the target should be deleted (can be overridden if needed). 
 		
-		Default implementation will simply delete the target, and any target 
+		The default implementation will simply delete the target, and any target 
 		workdir, but can be overridden to delete additional temporary files if 
 		needed (shouldn't be).
 		"""
@@ -217,19 +244,22 @@ class BaseTarget(Composable):
 				fileutils.deleteFile(self.path)
 
 	def addHashableImplicitInputOption(self, optionKey):
-		""" Adds the resolved value of the specified option(s) as implicit inputs of this target, 
-		to help detect when the target should be rebuilt. 
+		"""Target classes can call this from their ``__init__()`` to add the resolved value of the specified option(s) as 
+		'implicit inputs' of this target. 
+		
+		This list will be written to disk after the target builds successfully, and compared with its recorded value 
+		when subsequently checking the up-to-date-ness of the target.
+		This allows xpybuild to detect when the target should be rebuilt as a result of a change in options or property 
+		values (e.g. build number, release/debug mode etc), even if no dependencies have changed. 
 		
 		Call this from the target's constructor, for each option that this target is affected by, 
 		or with a callable that dynamically selects from the defined options, e.g. based on a prefix. 
 		
-		See L{getHashableImplicitInputs} for more information.
-		
 		@param optionKey: the name of an option (as a string), 
-		  or a callable that accepts an optionKey and dynamically decides which options to include, 
-		  returning True if it should be included. For example::
+			or a callable that accepts an optionKey and dynamically decides which options to include, 
+			returning True if it should be included. For example::
 		  
-		    self.addHashableImplicitInputOption(lambda optionKey: optionKey.startswith('java.'))
+				self.addHashableImplicitInputOption(lambda optionKey: optionKey.startswith(('java.', 'javac.')))
 		
 		"""
 		self.addHashableImplicitInput(lambda context: self.__getMatchingOptions(context, optionKey))
@@ -250,48 +280,40 @@ class BaseTarget(Composable):
 			result.append(f'option {k}={value}')
 		return result
 
-	
 	def addHashableImplicitInput(self, item):
-		""" Adds a target-specific string (or list of strings) giving information about an 
-		implicit input of this target to the list that will be used in detecting 
-		when the target should be rebuilt as a result of changes in options, 
-		property values (e.g. changes in build number,
-		release/debug mode) and glob results (e.g. addition or removal of a
-		file should trigger a rebuild). 
+		"""Target classes can call this from their ``__init__()`` to add the specified string line(s) as 
+		'implicit inputs' of this target. 
+		
+		This list will be written to disk after the target builds successfully, and compared with its recorded value 
+		when subsequently checking the up-to-date-ness of the target.
+		This allows xpybuild to detect when the target should be rebuilt as a result of a change in options or property 
+		values (e.g. build number, release/debug mode etc), even if no dependencies have changed. 
 		
 		Call this from the target's constructor. 
 
-		@param item: either:
-		  - a string, which may contain substitution variables, e.g. ``myparameter="${someprop}"``, 
-		    and will converted to a string using `buildcontext.BuildContext.expandPropertyValues`, or
-		  - a callable to be invoked during up-to-dateness checking, that accepts a 
-		    context parameter and returns a string or list of strings; 
-		    any ``None`` items in the list are ignored. 
+		@param item: The item to be added to the implicit inputs. 
+		
+			This can be either:
+		
+				- a string, which may contain substitution variables, e.g. ``myparameter="${someprop}"``, 
+				  and will converted to a string using `buildcontext.BuildContext.expandPropertyValues`, or
+				- a callable to be invoked during up-to-dateness checking, that accepts a 
+				  context parameter and returns a string or list of strings; 
+				  any ``None`` items in the list are ignored. 
 		"""
 		assert isinstance(item, str) or callable(item)
 		self.__hashableImplicitInputs.append(item)
 	
 	def getHashableImplicitInputs(self, context):
-		""" Return a target-specific token (a list of strings) representing the 
-		implicit inputs of this target that cannot be detected using normal 
-		timestamp up-to-date checking.
-												
-		This can include options, property values (e.g. changes in build number,
-		release/debug mode) and glob results (e.g. addition or removal of a
-		file should trigger a rebuild). 
+		"""(deprecated) Target classes can implement this to add the string line(s) as 'implicit inputs' of this target. 
 		
-		This list will be written to disk (possibly hashed) after the target 
-		builds successfully, and compared with its recorded value when 
-		subsequently checking the up-to-date-ness of the target.
-		
+		@deprecated: The `addHashableImplicitInput` or `addHashableImplicitInputOption` methods should be called 
+		instead of overriding this method. 
+
 		The default implementation returns nothing, unless 
-		L{addHashableImplicitInput} or L{addHashableImplicitInputOption} 
-		have been called, so only the globbed and 
-		resolved paths of any pathsets in the dependency list will be used. 
+		`addHashableImplicitInput` or `addHashableImplicitInputOption`
+		have been called, so only the resolved paths of the file/directory dependencies will be used. 
 		
-		Some targets should override this to append additional information, 
-		such as relevant property or option values. Alternatively, for simple 
-		cases call L{addHashableImplicitInput} or L{addHashableImplicitInputOption}. 
 		"""
 		if self.__hashableImplicitInputs:
 			result = []
@@ -313,12 +335,20 @@ class BaseTarget(Composable):
 		return []
 	
 	def getTags(self): 
-		""" Return the list of tags associated with this target """
+		""" .. private: Not exposed publically as there is no public use case for this. 
+		
+		@returns: The list of tags associated with this target. """
 		return self.__tags
 
 	def disableInFullBuild(self):
-		""" Stops this target from building in 'all' mode, therefore it must be called 
-		explicitly or via a tag.
+		"""Called by build file authors to configure this target to not build in ``all`` mode, so that it will only 
+		be built if the target name or tag is specified on the command line (or if pulled in by a dependency).
+		
+		This is useful for targets that perform operations such as configuring developer IDEs which would not be 
+		needed in the main build, or for expensive parts of the build that are often not needed such as generation 
+		of installers. 
+		
+		See also `tag`. 
 		"""
 		self.__tags = list(set(self.__tags) - {'all'})
 		init = getBuildInitializationContext()
@@ -326,7 +356,10 @@ class BaseTarget(Composable):
 		return self
 	
 	def clearTags(self):
-		""" Removes any tags other than "all" from this target """
+		"""Called by build file authors to removes all tags other than ``all`` from this target.
+		
+		See `tag`. 
+		"""
 		init = getBuildInitializationContext()
 		init.removeFromTags(self, self.__tags)
 		self.__tags = ['all'] if 'all' in self.__tags else []
@@ -334,9 +367,10 @@ class BaseTarget(Composable):
 		return self
 
 	def getOption(self, key, errorIfNone=True, errorIfEmptyString=True):
-		"""
-		Gets the resolved value of a specified option for this target, with optional 
-		checking to give a friendly error message if the value is an empty string or None. 
+		""" Target classes can call this during `run` or `clean` to get the resolved value of a specified option for 
+		this target, with optional checking to give a friendly error message if the value is an empty string or None. 
+		
+		This is a high-levetl alternative to reading directly from `self.options`. 
 		"""
 		if key not in self.options: raise Exception('Target tried to access an option key that does not exist: %s'%key)
 		v = self.options[key]
@@ -344,21 +378,25 @@ class BaseTarget(Composable):
 			raise BuildException('This target requires a value to be specified for option "%s" (see basetarget.option or setGlobalOption)'%key)
 		return v
 
-	def option(self, key, value):
-		"""
-		Set an option on this target, overriding any default value provided by setGlobalOption. 
-		If the value contains any property values these will be expanded before the option value is 
-		passed to the target. 
+	def option(self, key: str, value):
+		"""Called by build file authors to configure this target instance with an override for an option value. 
 		
-		Use self.options or L{getOption} to get resolved option values. 
+		This allows target-specific overriding of options. If no override is provided, the value set in 
+		`propertysupport.setGlobalOption` for the whole build is used, or if that was not set then the default 
+		when the option was defined. 
+		
+		Use `self.options` or `getOption` to get resolved option values when implementing a target class. 
+		
+		@param key: The name of a previously-defined option.
+		@param value: The value. If the value is a string and contains any property values these will be expanded 
+		before the option value is passed to the target. 
 		"""
 		self.__optionsTargetOverridesUnresolved[key] = value
 		return self
 	
-	def openFile(self, context, path, mode='r', **kwargs):
-		"""
-		Opens the specified file, using an encoding specified by the target option's 
-		`common.fileEncodingDecider` (unless explicitly provided by encoding=). 
+	def openFile(self, context, path: str, mode='r', **kwargs):
+		"""Target classes can call this from their `run` implementation to open a specified file, using an encoding 
+		specified by the ``common.fileEncodingDecider`` option (unless explicitly provided by ``encoding=``). 
 		
 		@param context: The context that was passed to run().
 		@param path: The full absolute path to be opened. 
@@ -368,14 +406,11 @@ class BaseTarget(Composable):
 		if 'b' not in mode and not kwargs.get('encoding'): kwargs['encoding'] = self.getOption('common.fileEncodingDecider')(context, path)
 		return (openForWrite if 'w' in mode else io.open)(path, mode, **kwargs)
 	
-	def tags(self, *tags):
-		"""
-		Append one or more 'tag' strings that will be associated with this target.
+	def tags(self, *tags: str):
+		"""Called by build file authors to append one or more tags to this target to make groups of related targets 
+		easier to build (or just to provide a shorter alias for the target on the command line).
 
-		These tags can be supplied on the command line to build associated groups of targets, 
-		or just provide a shorter, well-known, name.
-
-		@param tags: the tag, tags or list of tags to add to the target.
+		@param tags: The tag, tags or list of tags to add to the target.
 		
 		>>> BaseTarget('a',[]).tags('abc').getTags()
 		<using test initialization context> <using test initialization context> ['abc', 'all']
@@ -391,13 +426,14 @@ class BaseTarget(Composable):
 		if init: init.registerTags(self, taglist) # init will be None during doctests
 		return self
 
-	def priority(self, priority):
-		"""
-		Set the priority of this target to encourage it (and its deps) to be 
-		built earlier in the process. The default priority is 0.0
+	def priority(self, priority: float):
+		"""Called by build file authors to configure the priority of this target to encourage it (and its dependencies) 
+		to be built earlier in the process. 
+		
+		The default priority is 0.0
 
 		@param priority: a float representing the priority. Higher numbers will be built
-		first where possible. Cannot be negative. 
+			first where possible. Cannot be negative. 
 		"""
 		if priority < 0.0:
 			raise BuildException('Target priority cannot be set to a lower number than 0.0')
@@ -405,7 +441,10 @@ class BaseTarget(Composable):
 		return self
 
 	def updateStampFile(self):
-		""" Assumes self.path is a stamp file that just needs creating / timestamp updating and does so """
+		"""
+		.. private: Not useful enough to be in the public API. 
+		
+		Assumes self.path is a stamp file that just needs creating / timestamp updating and does so """
 		path = normLongPath(self.path)
 		mkdir(os.path.dirname(path))
 		with openForWrite(path, 'wb') as f:
@@ -413,11 +452,12 @@ class BaseTarget(Composable):
 
 	
 	def getPriority(self):
-		""" Return the current priority of this target """
+		""" .. private: Not exposed publically as there is no public use case for this. 
+		"""
 		return self.__priority
 
 def targetNameToUniqueId(name):
-	""" Munge a target name (unexpanded path) into an identifier that is 
+	"""Munge a target name (unexpanded path) into an identifier that is 
 	not an absolute path, and (unless very long) does not contain any directory 
 	elements. This id is suitable for temporary filenames and directories etc
 	

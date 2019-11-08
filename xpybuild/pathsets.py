@@ -371,37 +371,38 @@ class DirBasedPathSet(BasePathSet):
 		
 
 class FindPaths(BasePathSet):
-	""" A lazily-evaluated PathSet that uses * and ** (ant-style) globbing 
+	""" A lazily-evaluated PathSet that uses ``*`` and ``**`` (ant-style) globbing 
 	to dynamically discover files (and optionally directories) under a common 
 	parent directory. 
 	
-	As FindPaths performs a dynamic search of the file system the dependency 
+	As FindPaths performs a dynamic search of the file system during the dependency 
 	checking phase of each build it is considerably slower than other PathSets, 
-	so should only be used for specifying the contents of a directory, or for 
-	filenames where it is not possible to statistically specify the filenames in the build 
-	script (e.g. using L{DirBasedPathSet}). 
+	so should only be used for specifying the contents of a directory with lots of entries 
+	or a file or directory where it is not possible to statically specify the filenames in the build 
+	script - for which cases always use `PathSet` or `DirBasedPathSet` instead. 
 	
-	Is always case-sensitive, will give an error if the dir does not exist 
+	FindPaths matching is always case-sensitive, will give an error if the dir does not exist 
 	or any of the includes fail to match anything. Sorts its output to ensure 
 	determinism. 
 	
-	Includes/excludes are specified using * and ** wildcards (similar to ant), 
-	where * represents any path element and ** represents zero or more path 
+	Includes/excludes are specified using ``*`` and ``**`` wildcards (similar to ant), 
+	where ``*`` represents any path element and ``**`` represents zero or more path 
 	elements. Path elements may not begin with a slash, or contain any 
 	backslash characters. They match paths underneath the base dir.
 	
 	Each include/exclude applies either to files OR directories, depending on 
-	whether it ends with a '/'. File include/excludes (e.g. 'foo/**') are the 
-	most common (and the file '**' pattern is the default include if none is 
+	whether it ends with a ``/``. File include/excludes (e.g. ``foo/**``) are the 
+	most common (and the file ``**`` pattern is the default include if none is 
 	specified). But if used for a target such as a Copy, note that empty 
 	directories will NOT be returned by file patterns, so if you wish to 
-	copy all empty directories as well as all files, use 
-	FindPaths(..., includes=['**', '**/']). 
+	copy all empty directories as well as all files, use:: 
+
+		FindPaths(..., includes=['**', '**/']). 
 
 	Destination paths (where needed) are generated from the path underneath the
 	base dir.
 
-	FindPaths will return file or directory symlinks (with '/' suffix if directory), 
+	FindPaths will return file or directory symlinks (with ``/`` suffix if directory), 
 	but will not recurse into directory symlinks. 
 	
 	@param dir: May be a simple string, or a DirGeneratedByTarget to glob under a 
