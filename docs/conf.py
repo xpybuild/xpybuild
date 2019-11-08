@@ -20,7 +20,6 @@ sys.path.append(XPYBUILD_ROOT_DIR)
 
 # -- Project information -----------------------------------------------------
 
-project = 'xpybuild'
 copyright = '2019, Ben Spiller and Matthew Johnson'
 author = 'Ben Spiller and Matthew Johnson'
 
@@ -28,6 +27,7 @@ author = 'Ben Spiller and Matthew Johnson'
 with open(XPYBUILD_ROOT_DIR+'/xpybuild/XPYBUILD_VERSION') as versionfile:
 	release = versionfile.read().strip()
 
+project = f'xpybuild v{release}'
 
 # -- General configuration ---------------------------------------------------
 
@@ -120,7 +120,6 @@ html_theme_options = {
     'sticky_navigation': True,
     #'navigation_depth': 4,
     'includehidden': False,
-    'github_url':'github.com',
     #'titles_only': False
 }
 
