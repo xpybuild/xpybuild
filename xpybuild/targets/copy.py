@@ -17,6 +17,26 @@
 # $Id: copy.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+
+"""
+Contains the :obj:`xpybuild.targets.copy.Copy` target for binary file and directory copies, and 
+the :obj:`xpybuild.targets.copy.FilteredCopy` target for copying text file(s) while filtering their contents 
+through a set of mappers. 
+
+`FilteredCopy` uses one or more instances of :obj:`xpybuild.targets.copy.FileContentsMapper` to map from 
+source to destination file contents. Several pre-defined mappers are provided:
+
+.. autosummary::
+	StringReplaceLineMapper
+	createReplaceDictLineMappers
+	RegexLineMapper
+	OmitLines
+	InsertFileContentsLineMapper
+	AddFileHeader
+	AddFileFooter
+
+"""
+
 import os, inspect, os.path, re, shutil
 from stat import S_ISLNK
 
