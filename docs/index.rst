@@ -11,3 +11,4 @@ Welcome to xpybuild
    :caption: Contents:
    
    generated/modules.rst
+   changelog.rst

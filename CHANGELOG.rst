@@ -58,14 +58,15 @@ if you're using them:
 - ``propertysupport.getProperty`` is deprecated in favour of 
   `xpybuild.propertysupport.getPropertyValue`. 
 - `xpybuild.utils.fileutils` methods ``getstat``, ``getmtime``, ``getsize``, 
-   ``exists``, ``isfile``, ``isdir`` have been renamed to ``cached_XXX`` 
-   to better indicate the semantics. The old names are deprecated. 
+  ``exists``, ``isfile``, ``isdir`` have been renamed to ``cached_XXX`` 
+  to better indicate the semantics. The old names are deprecated. 
 
 See also the module re-organization listed under breaking changes; all xpybuild 
 modules and classes should now be accessed via their new names, typically 
 starting ``xpybuild.` (e.g. ``xpybuild.targets.copy`` etc).
 
-The following have also been deprecated:  
+The following have also been deprecated: 
+ 
 - The ``isWindows()`` function is deprecated in favour of the `xpybuild.buildcommon.IS_WINDOWS` 
   constant (which is faster).
 - ``BuildContext.mergeOptions()`` is deprecated in favour of
