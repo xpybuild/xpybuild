@@ -56,7 +56,7 @@ script:
   - |
     if [[ -n $XPYBUILD_DOC_AND_DEPLOY ]]; then (
        set -e
-       $PY -m pip install sphinx==2.2.0 sphinx-epytext==0.0.4
+       $PY -m pip install sphinx==2.2.0 sphinx-epytext==0.0.4 sphinx_rtd_theme=0.4.3
        $PY ./xpybuild.py --buildfile release-xpy.xpybuild.py
     )
     fi

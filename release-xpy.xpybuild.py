@@ -47,14 +47,21 @@ CustomCommand('${OUTPUT_DIR}/docs/',
 		'-M', 'html',
 		PathSet('./docs/'), # source dir
 		'${OUTPUT_DIR}/docs/', # output dir
+		'-j', 'auto',
 	], 
 	dependencies=[
 		FindPaths('docs/', excludes=['generated/**']),
 		'CHANGELOG.rst',
 	],
 	stderr='${OUTPUT_DIR}/doc_warnings.txt',
-	).tags('docs').option( # ProcessOutputHandler converts stderr lines from sphinx into target ERRORs
-		'CustomCommand.outputHandlerFactory', ProcessOutputHandler)
+	).tags('docs'
+	).option( 
+		# ProcessOutputHandler converts stderr lines from sphinx into target ERRORs
+		'CustomCommand.outputHandlerFactory', ProcessOutputHandler
+	).option(
+		# workaround for https://github.com/readthedocs/sphinx_rtd_theme/issues/739
+		'ProcessOutputHandler.regexIgnore', '.*(RemovedInSphinx30Warning| [{][{] super[(][)] [}][}]).*'
+	)
 
 Zip('${OUTPUT_DIR}/xpybuild_${VERSION}_docs.zip', [
 		FindPaths(DirGeneratedByTarget('${OUTPUT_DIR}/docs/')+'html/'),

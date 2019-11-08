@@ -63,7 +63,7 @@ autodoc_default_options = {
 # (using a template) for each module referred to in the autosummary table of modules.rst
 autosummary_generate = True
 
-nitpicky = True # so we get warnings about broken links
+#nitpicky = True # so we get warnings about broken links
 
 def autodoc_skip_member(app, what, name, obj, skip, options):
 	# todo: implement private skipping
@@ -107,7 +107,23 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'classic'
+html_theme = 'sphinx_rtd_theme' # read-the-docs theme looks better than the default "classic" one
+
+html_theme_options = {
+    'display_version': True,
+    #'prev_next_buttons_location': 'bottom',
+    #'style_external_links': False,
+    #'vcs_pageview_mode': '',
+    #'style_nav_header_background': 'white',
+    # Toc options
+    'collapse_navigation': True,
+    'sticky_navigation': True,
+    #'navigation_depth': 4,
+    'includehidden': False,
+    'github_url':'github.com',
+    #'titles_only': False
+}
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -127,7 +143,7 @@ def generateRstFiles():
 			if (py.endswith('.py') and py not in {'__init__.py', 'common.py'}))
 		utils = '\n\t'.join(f'xpybuild.utils.{py[:-3]}' for py in os.listdir(XPYBUILD_ROOT_DIR+'/xpybuild/utils') 
 			if (py.endswith('.py') and py not in {'__init__.py'}))
-		f.write(f"""
+		f.write(f"""	
 Module list
 ===========
 
