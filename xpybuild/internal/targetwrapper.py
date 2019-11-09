@@ -418,7 +418,6 @@ class TargetWrapper(object):
 					if pathset._newestFile[0] > stampmodtime:
 						logNewerFile(pathset._newestFile[1], pathset._newestFile[0])
 						return False
-					return True
 				else: # this branch will be tested only on Linux, just as the shortcut will be tested only on Windows
 					if isNewer(abslongpath): return False
 
