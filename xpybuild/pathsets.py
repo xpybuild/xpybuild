@@ -545,6 +545,7 @@ class FindPaths(BasePathSet):
 					with os.scandir(longdir) as it:
 						dirs = []
 						files = []
+						filetimes = {}
 						symlinks = None # set to keep track of symlinks, to avoid recursing into them
 						for entry in it:
 							if entry.is_dir():
@@ -556,13 +557,9 @@ class FindPaths(BasePathSet):
 										symlinks.add(entry.name)
 							else:
 								files.append(entry.name)
-								# for simplicity and because it doesn't cost anything we do this before processing include/exclude
 								if _shortcutUptodateCheck:
-									thisTimestamp = entry.stat().st_mtime
-									# main thing is to compare the timestamp, but if there's a tie then pick the lexical latest filename, 
-									# which is better than being file-system-non-deterministic
-									if thisTimestamp > newestTimestamp or (thisTimestamp == newestTimestamp and newestFile is not None and root+entry.name > newestFile):
-										newestTimestamp, newestFile = thisTimestamp, root+entry.name
+									filetimes[entry.name] = entry.stat().st_mtime
+						entry = None
 					
 						# optimization: if this doesn't require walking down the dir tree, don't do any!
 						# (this optimization applies to includes like prefix/** but not if there is a bare '**' 
@@ -581,6 +578,7 @@ class FindPaths(BasePathSet):
 						for dir in dirs:
 							if symlinks is not None and dir in symlinks: continue # don't recursive into symlinks (messes up copying)
 							pathsToWalk.append(longdir+os.sep+dir)
+						dir = None
 						
 						# now find which files and empty dirs match
 						matchedemptydirs = dirs
@@ -597,6 +595,14 @@ class FindPaths(BasePathSet):
 							
 						for p in files:
 							matches.append(root+p)
+						if _shortcutUptodateCheck:
+							for p in files:
+								thisTimestamp = filetimes[p]
+								# main thing is to compare the timestamp, but if there's a tie then pick the lexical latest filename, 
+								# which is better than being file-system-non-deterministic
+								if thisTimestamp > newestTimestamp or (thisTimestamp == newestTimestamp and newestFile is not None and root+p > newestFile):
+									newestTimestamp, newestFile = thisTimestamp, root+p
+							
 						for p in matchedemptydirs:
 							matches.append(root+p+'/')					
 				
