@@ -601,7 +601,7 @@ class FindPaths(BasePathSet):
 								# main thing is to compare the timestamp, but if there's a tie then pick the lexical latest filename, 
 								# which is better than being file-system-non-deterministic
 								if thisTimestamp > newestTimestamp or (thisTimestamp == newestTimestamp and newestFile is not None and root+p > newestFile):
-									newestTimestamp, newestFile = thisTimestamp, root+p
+									newestTimestamp, newestFile = thisTimestamp, str(self.__dir)+root+p
 							
 						for p in matchedemptydirs:
 							matches.append(root+p+'/')					
