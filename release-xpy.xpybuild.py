@@ -51,6 +51,8 @@ CustomCommand('${OUTPUT_DIR}/docs/',
 	], 
 	dependencies=[
 		FindPaths('docs/', excludes=['generated/**']),
+		FindPaths('./xpybuild/', includes=['**/*.py']),
+		'xpybuild/XPYBUILD_VERSION',
 		'CHANGELOG.rst',
 	],
 	stderr='${OUTPUT_DIR}/doc_warnings.txt',
