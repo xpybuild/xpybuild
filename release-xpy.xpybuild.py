@@ -50,7 +50,7 @@ CustomCommand('${OUTPUT_DIR}/docs/',
 		'-j', 'auto',
 	], 
 	dependencies=[
-		FindPaths('docs/', excludes=['generated/**']),
+		FindPaths('docs/', excludes=['autodocgen/**']),
 		FindPaths('./xpybuild/', includes=['**/*.py']),
 		'xpybuild/XPYBUILD_VERSION',
 		'CHANGELOG.rst',

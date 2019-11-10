@@ -6,7 +6,7 @@ performance_output/
 
 # xpybuild release output
 _build_output/
-docs/generated/
+docs/autodocgen/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
