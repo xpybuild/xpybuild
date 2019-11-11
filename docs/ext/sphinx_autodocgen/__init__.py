@@ -34,7 +34,7 @@ autosummary_member_types = ['module'] # type for which we'll generate an autosum
 
 
 class AutoDocGen:
-	class Config:
+	class Config: 
 		"""Configuration options for this extension. 
 		
 		These must be added to a dictionary ``autodocgen_config = {...}`` in your ``conf.py`` file. 
@@ -89,7 +89,7 @@ class AutoDocGen:
 		self.app.setup_extension('sphinx.ext.autosummary')
 
 		self.app.add_config_value('autodocgen_config', default={}, rebuild='env')
-		
+
 		# must generate and update the generated rst files quite early in the process (before builder stage)
 		self.app.connect('config-inited', lambda app, config: self.generate())
 
@@ -260,21 +260,13 @@ class AutoDocGen:
 			if mtype not in membersByType: continue
 			
 			# TODO: call autodoc_skip_member; actually copy logic from filter_members, e.g. if doc'd
-			logger.info('for %s got: %s',mname,
-			self.app.emit('autodoc_skip_member', 
-				'xxx_'+mtype, # what
-				mname, # name
-				m, # obj
-				False, # whether to skip by default
-				{}, # options
-			))
-			
+			defaultskip = False
 			# TODO: maybe make the above subject to this too
-			if any(self.app.emit('autodoc_skip_member', 
+			if any(self.app.emit('autodoc-skip-member', 
 				mtype, # what
 				mname, # name
 				m, # obj
-				False, # whether to skip by default
+				defaultskip, # whether to skip by default
 				{}, # options TODO: poplate this
 			)):
 				continue
