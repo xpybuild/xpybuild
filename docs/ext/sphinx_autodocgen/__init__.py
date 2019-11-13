@@ -22,6 +22,9 @@ import re
 from sphinx.util import logging
 from sphinx.util import rst
 
+import sphinx.ext.autosummary
+from sphinx.pycode import ModuleAnalyzer, PycodeError
+
 logger = logging.getLogger(__name__)
 
 # TODO: convert these to config options; maybe add one for groups of items
@@ -232,17 +235,64 @@ class AutoDocGen:
 				submodule = importlib.import_module(submodulename.lstrip('.'))
 				if not self.visitModule(submodule): continue
 				if 'module' in membersByType: membersByType['module'].append( (submodulename, submodule))
-						
+				
 		moduleall = set(getattr(mod, '__all__', []))
+
+		# It'd be possible to iterate over mod.__dict__.items() but there are some subtlies around how to decide 
+		# what to document (including the __all__ handling in get_object_members and the fact that we have to use the 
+		# Sphinx ModuleAnalyzer if we want to get docstrings for attributes which filter_members does), 
+		# .... which we can avoid reimplementing by just using the existing code. 
+		# This was implemented against Sphinx 2.2.0
+
+		# unfortunately the FakeDirective from autosummary is a bit too fake to actually work, so make it slightly less so
+		class FakeBuildEnvironment(object): 
+			def __init__(self, app): self.app, self.config = app, app.config	
+		directive = sphinx.ext.autosummary.FakeDirective()
+		directive.env = FakeBuildEnvironment(self.app)
 		
+		documenterclass = sphinx.ext.autosummary.get_documenter(app=self.app, obj=module, parent=None)
+		documenter = documenterclass(directive, modulename)
+		
+		if not documenter.parse_name() or not documenter.import_object():
+			assert False, 'documenter failed to import module %s'%module
+		
+		documenter.analyzer = ModuleAnalyzer.for_module(modulename)
+		documenter.analyzer.find_attr_docs()
+
+		# find out which members are documentable; use __dict__.items() to retain the ordering info, but delegate to 
+		# autodoc get_object_members for its __all__ handling logic
+		permittedmembers = set(memberinfo[0] for memberinfo in documenter.get_object_members(want_all=True)[1])
+		members = [(mname,m) for mname, m in mod.__dict__.items() if mname in permittedmembers]
+
 		# TODO: ordering c.f. autodoc_member_order
-		for mname, m in mod.__dict__.items():
-			if moduleall and mname not in moduleall: 
+		for (mname, m, isattr) in documenter.filter_members(members, want_all=True):
+			if not self.app.config['autodoc_default_options'].get('imported-members',False) and getattr(m, '__module__', modulename) != modulename: 
+				# need to immediately rule out the majority of items which aren't really defined in this module; 
+				# data attributes don't have module set on them so don't do the check for those
+				continue
+
+			if inspect.isclass(m):
+				if isinstance(m, BaseException):
+					mtype = 'exception'
+				else:
+					mtype = 'class'
+			elif inspect.ismodule(m):
+				continue # submodules are handled above, so anything here will be an imported module that we don't want
+			elif inspect.isfunction(m):
+				mtype = 'function'
+			elif isattr:
+				mtype = 'data' # this is a guess
+			else:
+				logger.debug(f'Ignoring unknown member type: {mname} {repr(m)}')
+				continue
+		#for mname, m in mod.__dict__.items():
+			"""if moduleall and mname not in moduleall: 
 				# best practice is to define __all__, and if someone has done that then great
 				logger.info(f'{self} Skipping member which is not in __all__ for this module: {modulename}.{mname}')
 				continue
-			elif getattr(m, '__module__', None) != modulename: 
-				# need to immediately rule out the majority of items which aren't really defined in this module
+			elif getattr(m, '__module__', modulename) != modulename: 
+				# need to immediately rule out the majority of items which aren't really defined in this module; 
+				# data attributes don't have module set on them
 				continue
 			
 			if inspect.isclass(m):
@@ -251,8 +301,7 @@ class AutoDocGen:
 				else:
 					mtype = 'class'
 			elif inspect.ismodule(m):
-				assert False, m
-				continue # handled above
+				continue # submodules are handled above, so anything here will be an imported module that we don't want
 			elif inspect.isfunction(m):
 				mtype = 'function'
 			else:
@@ -270,7 +319,7 @@ class AutoDocGen:
 				{}, # options TODO: poplate this
 			)):
 				continue
-			
+			"""
 			# TODO: if we want to support source file ordering, could implement that here for configured member types
 			membersByType[mtype].append((mname,m))
 
