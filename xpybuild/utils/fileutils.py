@@ -343,7 +343,7 @@ def toLongPathSafe(path, force=False):
 	calls if it exceeds the maximum path length on this OS. 
 	
 	Currently, this is necessary only on Windows, where a string 
-	starting with \\?\ must be used to get correct behaviour for long paths. 
+	starting with ``\\\\?\\`` must be used to get correct behaviour for long paths. 
 	
 	Unlike L{normLongPath} which also performs the long path conversion, this 
 	function does NOT convert to a canonical form, normalize slashes or 
@@ -359,7 +359,7 @@ def toLongPathSafe(path, force=False):
 	length, which allows extra characters to be added on to the end of the 
 	string (e.g. ".log" or a directory filename) safely. 
 	
-	@return: The passed-in path, possibly with a "\\?\" prefix added and 
+	@return: The passed-in path, possibly with a ``\\\\?\\`` prefix added and 
 	forward slashes converted to backslashes on Windows. Any trailing slash 
 	is preserved by this function (though will be converted to a backslash). 
 	"""
@@ -378,33 +378,48 @@ def toLongPathSafe(path, force=False):
 			# consecutive \ separators are not permitted in \\?\ paths
 				path = path.replace('\\\\','\\')
 
-		try:
-			if path.startswith('\\\\'): 
-				path = '\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
-			else:
-				path = '\\\\?\\'+path
-		except Exception:
-			# can throw an exception if path is a bytestring containing non-ascii characters
-			# to be safe, fallback to original string, just hoping it isn't both 
-			# international AND long
-			# could try converting using a default encoding, but slightly error-prone
-			pass 
+		if path.startswith('\\\\'): 
+			path = '\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
+		else:
+			path = '\\\\?\\'+path
 		__longPathCache[inputpath]  = path
 	return path
 
 __normLongPathCache = {} # GIL protects integrity of dict, no need for extra locking as it's only a cache
+
+def normPath(path):
+	"""
+	Normalizes and absolutizes a path (os.path.abspath), converts to a canonical 
+	form (e.g. normalizing the case of the drive letter on Windows), but unlike `normLongPath` does not 
+	add the ``\\\\?\\`` prefix needed to permit long paths. 
+	
+	@param path: the absolute path to be converted should be a unicode string where possible, as specifying a byte 
+	string will not work if the path contains non-ascii characters. 
+	"""
+	if path is None: return None
+
+	# NB: abspath also normalizes slashes
+	path = os.path.abspath(path)+(os.path.sep if isDirPath(path) else '')
+	
+	# normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case 
+	# for drive letters (more so than directory names), with different cmd prompts frequently using different 
+	# capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts
+	if __isWindows and len(path)>2 and path[1] == ':' and path[0] >= 'A' and path[0] <= 'Z': 
+		path = path[0].lower()+path[1:]
+	return path
+
 	
 def normLongPath(path):
 	"""
 	Normalizes and absolutizes a path (os.path.abspath), converts to a canonical 
 	form (e.g. normalizing the case of the drive letter on Windows), and on 
-	windows adds the "\\?\" prefix needed to force correct handling of long 
+	windows adds the ``\\\\?\\`` prefix needed to force correct handling of long 
 	(>256 chars) paths (same as L{toLongPathSafe}). 
 	
 	@param path: the absolute path to be converted should be a unicode string where possible, as specifying a byte 
 	string will not work if the path contains non-ascii characters. 
 	"""
-	if not path: return path
+	if path is None: return path
 	
 	# profiling shows normLongPath is surprisingly costly; caching results reduces dep checking by 2-3x
 	if path in __normLongPathCache: return __normLongPathCache[path]
@@ -415,27 +430,16 @@ def normLongPath(path):
 	# for drive letters (more so than directory names), with different cmd prompts frequently using different 
 	# capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts
 	iswindows = __isWindows
-	if iswindows and len(path)>2 and path[1] == ':' and path[0] >= 'A' and path[0] <= 'Z': 
-		path = path[0].lower()+path[1:]
-		
+	path = normPath(path)
+	
 	if iswindows and path.startswith('\\\\?\\'):
 		path = path.replace('/', '\\')
 	else:
-		# abspath also normalizes slashes
-		path = os.path.abspath(path)+(os.path.sep if isDirPath(path) else '')
-		
 		if iswindows and not path.startswith('\\\\?\\'):
-			try:
-				if path.startswith('\\\\'): 
-					path = '\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
-				else:
-					path = '\\\\?\\'+path
-			except Exception:
-				# can throw an exception if path is a bytestring containing non-ascii characters
-				# to be safe, fallback to original string, just hoping it isn't both 
-				# international AND long
-				# could try converting using a default encoding, but slightly error-prone
-				pass 
+			if path.startswith('\\\\'): 
+				path = '\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
+			else:
+				path = '\\\\?\\'+path
 	__normLongPathCache[inputpath] = path
 	return path
 	

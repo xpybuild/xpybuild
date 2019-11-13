@@ -52,7 +52,7 @@ The following deprecated items are likely to be removed soon, so action is requi
 if you're using them:
 
 - ``buildcommon.normpath`` is deprecated and should not be used - switch to 
-  `xpybuild.utils.fileutils.normLongPath` instead. 
+  `xpybuild.utils.fileutils.normLongPath` or `xpybuild.utils.fileutils.normPath` instead. 
 - ``getBuildInitializationContext()`` is deprecated and replaced by 
   `xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext()`.
 - ``propertysupport.getProperty`` is deprecated in favour of 

@@ -72,29 +72,6 @@ def include(file):
 	
 	return namespace
 
-
-def normpath(path):
-	"""
-	.. private: This is deprecated in favour of fileutils.normLongPath and hidden from documentation to avoid polluting the docs. 
-
-	Normalizes the specified file or dir path to remove ".." sequences and 
-	differences in the capitalization of Windows drive letters. 
-	
-	Does not add Windows long-path safety or absolutization. 
-	
-	Leaves in place any  trailing platform-appropriate character to indicate 
-	directory if appropriate.
-	"""
-	path = os.path.normpath(path)+(os.path.sep if isDirPath(path) else '')
-	
-	# normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case 
-	# for drive letters (more so than directory names), with different cmd prompts frequently using different 
-	# capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts
-	if len(path)>2 and IS_WINDOWS and path[1] == ':': 
-		path = path[0].lower()+path[1:]
-			
-	return path
-
 IS_WINDOWS: bool = platform.system()=='Windows'
 """ A boolean that specifies whether this is Windows or some other operating system. """
 # (we won't want constants for every possible OS here, but since there is so much conditionalization between 
@@ -209,4 +186,10 @@ import xpybuild.utils.fileutils
 from xpybuild.utils.flatten import flatten
 
 isDirPath = xpybuild.utils.fileutils.isDirPath
-"""Returns true if the path is a directory (ends with a slash, / or \\\\). """
+"""Returns true if the path is a directory (ends with a slash, ``/`` or ``\\\\``). """
+
+normpath = xpybuild.utils.fileutils.normPath
+"""
+.. private:: This is deprecated in favour of fileutils.normPath and hidden from documentation to avoid polluting the docs. 
+
+"""
