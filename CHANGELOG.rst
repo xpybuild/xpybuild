@@ -91,7 +91,7 @@ Fixes
 Enhancements
 ------------
 
--  `FilteredCopy`, `WriteFile`: Added option ``common.fileEncodingDecider``
+-  `xpybuild.targets.copy.FilteredCopy`, `xpybuild.targets.writefile.WriteFile`: Added option ``common.fileEncodingDecider``
    which is used by FilteredCopy and WriteFile to decide what encoding
    to use for reading/writing text files. The default is an
    ExtensionBasedFileEncodingDecider instance which specifies UTF-8 for
@@ -101,10 +101,10 @@ Enhancements
    ASCII range are present. Alternative encodings such as utf-8 can be
    specified for a given file extension, globally or on a per-target
    basis.
--  WriteFile: added ``encoding=`` option to WriteFile
+-  `xpybuild.targets.writefile.WriteFile`: added ``encoding=`` option to WriteFile
    (``common.fileEncodingDecider`` option is used if not specified).
--  WriteFile: added support for writing binary bytes.
--  BaseTarget: Added ``BaseTarget.openFile`` which should be used for
+-  `xpybuild.targets.writefile.WriteFile`: added support for writing binary bytes.
+-  `xpybuild.basetarget.BaseTarget`: Added ``BaseTarget.openFile`` which should be used for
    opening files (especially text files) from targets. It automatically
    picks the correct encoding to use for text files using the
    ``common.fileEncodingDecider`` option. This uses the ``openForWrite``
@@ -113,11 +113,11 @@ Enhancements
    to what ``io.open`` supports, and ``openForWrite`` should be used
    instead of io.open/open to avoid possible file system races on
    Windows.
--  `BaseTarget.addHashableImplicitInput`: added ability to pass a callable 
+-  `basetarget.BaseTarget.addImplicitInput`: added ability to pass a callable 
    that returns a list of items, so there's no longer anything that only 
    ``getHashableImplicitInputs()`` can do. 
--  `BaseTarget.addHashableImplicitInputOption`: added ability to pass a 
-   lamba that dynamically selects which of the defined options to include, 
+-  `BaseTarget.addImplicitInputOption`: added ability to pass a 
+   lambda that dynamically selects which of the defined options to include, 
    for example based on prefix matching. 
 -  `xpybuild.targets.custom.CustomCommand`: now supports customized handling 
    of process output and return code using the new 
