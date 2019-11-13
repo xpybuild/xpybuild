@@ -76,13 +76,13 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
 	# todo: implement private skipping
 	if skip: 
 		logger.info(f'conf.py: ALREADY Skipping member: {name}')
-		return True
+		return None
 
 	if obj.__doc__ and '.. private: ' in obj.__doc__: 
 		logger.info(f'conf.py: skipping private member: {obj}')
 		return True
 		
-	return skip
+	return None
 
 def process_docstring_fixEpydocIndentation(app, what, name, obj, options, lines):
 	# unlike epydoc, sphinx requires indentation for multi-line values; auto-add it
