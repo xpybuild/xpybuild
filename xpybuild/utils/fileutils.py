@@ -399,7 +399,10 @@ def normPath(path):
 	if path is None: return None
 
 	# NB: abspath also normalizes slashes
-	path = os.path.abspath(path)+(os.path.sep if isDirPath(path) else '')
+	hadslash = isDirPath(path)
+	path = os.path.abspath(path)
+	# annoyingly we have to do this check since abspath strips off slashes in most cases but not always (e.g. not if given a \\?\ path)
+	if hadslash and not path.endswith(os.path.sep): path += os.path.sep
 	
 	# normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case 
 	# for drive letters (more so than directory names), with different cmd prompts frequently using different 
@@ -407,7 +410,6 @@ def normPath(path):
 	if __isWindows and len(path)>2 and path[1] == ':' and path[0] >= 'A' and path[0] <= 'Z': 
 		path = path[0].lower()+path[1:]
 	return path
-
 	
 def normLongPath(path):
 	"""
@@ -425,16 +427,20 @@ def normLongPath(path):
 	if path in __normLongPathCache: return __normLongPathCache[path]
 	inputpath = path
 	# currently there is some duplication between this and buildcommon.normpath which we ought to fix at some point
-	
+
 	# normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case 
 	# for drive letters (more so than directory names), with different cmd prompts frequently using different 
 	# capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts
 	iswindows = __isWindows
-	path = normPath(path)
-	
+	if iswindows and len(path)>2 and path[1] == ':' and path[0] >= 'A' and path[0] <= 'Z': 
+		path = path[0].lower()+path[1:]
+		
 	if iswindows and path.startswith('\\\\?\\'):
 		path = path.replace('/', '\\')
 	else:
+		# abspath also normalizes slashes
+		path = os.path.abspath(path)+(os.path.sep if isDirPath(path) else '')
+
 		if iswindows and not path.startswith('\\\\?\\'):
 			if path.startswith('\\\\'): 
 				path = '\\\\?\\UNC\\'+path.lstrip('\\') # \\?\UNC\server\share Oh My
