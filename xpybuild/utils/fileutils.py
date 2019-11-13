@@ -18,7 +18,9 @@
 #
 
 """
-@undocumented: _getStatCacheSize
+Functions for manipulating files and paths including `xpybuild.utils.fileutils.openForWrite`, 
+`xpybuild.utils.fileutils.mkdir`, `xpybuild.utils.fileutils.toLongPathSafe` and `xpybuild.utils.fileutils.parsePropertiesFile`.
+
 """
 
 import shutil, os, os.path, time, platform, threading
@@ -75,7 +77,7 @@ if __isWindows: # Workaround required for windows filesystem semantics having a 
 
 openForWrite = _Win32FileWriter if __isWindows else open
 """
-Open file for writing and return a corresponding text or binary stream file object. 
+Open a file for writing and return a corresponding text or binary stream file object. 
 
 This has the same semantics as open/io.open, but should be used instead of open/io.open 
 to avoid file system race conditions on Windows. This class must be used from a 
@@ -474,11 +476,17 @@ def cached_isdir(path):
 
 # for compatibility with pre-3.0
 getstat = cached_stat
+""" .. private:: Use cached_ function instead. """
 getmtime = cached_getmtime
+""" .. private:: Use cached_ function instead. """
 getsize = cached_getsize
+""" .. private:: Use cached_ function instead. """
 exists = cached_exists
+""" .. private:: Use cached_ function instead. """
 isfile = cached_isfile
+""" .. private:: Use cached_ function instead. """
 isdir = cached_isdir
+""" .. private:: Use cached_ function instead. """
 
 def _getStatCacheSize():
 	"""
@@ -487,5 +495,9 @@ def _getStatCacheSize():
 	return len(__statcache)
 
 def resetStatCache():
-	""" Resets cached stat data """
+	""" Resets cached stat data.
+	
+	.. private:: For internal use only. 
+
+	 """
 	__statcache.clear()

@@ -20,6 +20,70 @@
 # $Id: propertysupport.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Contains functions and classes for use in build files when you need to define and use properties and options. 
+
+.. rubric:: Build properties
+
+Properties are named, immutable values that are defined in build files (or read from a ``.properties file``), and can be used 
+throughout the build using ``${PROP_NAME}`` syntax. To avoid typos and mistakes, every property must be explicitly 
+defined in exactly one ``.py`` build file or ``.properties`` file. There are several permitted types for property values, 
+and the type is indicated where they are defined:
+
+.. autosummary::
+	defineStringProperty
+	definePathProperty
+	defineOutputDirProperty
+	defineEnumerationProperty
+	defineBooleanProperty
+	definePropertiesFromFile
+
+Properties can be overridden on the command line using ``PROPNAME=value`` or if using an environment variable 
+if the `enableEnvironmentPropertyOverrides` function is called. 
+
+Usually property values should not be resolved until the build phase beings, using methods such as 
+`xpybuild.buildcontext.BaseContext.getPropertyValue`. However in some cases it is necessary to evaluate a property 
+during the initialization phase while reading the build files which can be achieved using `getPropertyValue` or 
+`expandListProperty`. 
+
+To see a list of the property names and values for the current build and machine, run::
+
+	xpybuild.py --properties
+
+.. rubric:: Target options
+
+Options provide a way to customize the behaviour of targets either globally throughout the build or for specific 
+targets. For example, the location of the JDK used for compiling Java program is specified by an option (``java.home``), 
+which also other other Java-related targets such as Javadoc generation. 
+
+Often an option will be set to the value of a property, so that the property setting, reuse and overriding mechanisms 
+can be used. 
+
+Information about the defined option names and their value type and default is available in the documentation for the 
+associated targets. To specify the default value for an option globally for all targetsin your build, call 
+`setGlobalOption()` from one of the build files. To override an option for an individual target ion your build file, call 
+the `xpybuild.basetarget.BaseTarget.option()` function. Target authors should use `xpybuild.basetarget.BaseTarget.getOption()` or 
+``BaseTarget.options`` to get the fully-resolved values for that target (whether from the global default or a per-target overrride). 
+
+To see a list of the option names and global values for all (currently imported) targets in the current build, run::
+
+	xpybuild.py --options
+
+.. rubric:: Late-binding property functions (functors)
+
+The concept of functors is useful when you need to pass a value to a target that should be determined dynamically 
+during the build phase of the build (once all properties have been defined) rather than statically when the build 
+files are read. For example, taking a path property value and extracting the directory name from it. The following 
+functors are provided in-the-box:
+
+.. autosummary::
+	dirname
+	basename
+	sub
+	joinPaths
+
+"""
+
 import os
 import re
 import logging
@@ -55,7 +119,7 @@ def defineStringProperty(name, default):
 	if init: init.defineProperty(name, default, lambda v: BuildInitializationContext.getBuildInitializationContext().expandPropertyValues(v))
 
 def definePathProperty(name, default, mustExist=False):
-	""" Define a property that corresponds to a path.
+	""" Define a string property that will be converted to an absolute path.
 
 	Path is normalized and any trailing slashes are removed. An error is raised 
 	if the path does not exist when the property is defined if mustExist=True. 
@@ -97,9 +161,10 @@ def definePathProperty(name, default, mustExist=False):
 
 
 def defineOutputDirProperty(name, default):
-	""" Define a property that corresponds to a path that this build uses 
-	as a destination for output files. Equivalent to calling definePathProperty 
-	then registerOutputDirProperties.
+	""" Define a string property that will also be registered as an output directory (indicating that it will 
+	always be deleted during a clean).  
+	
+	Equivalent to calling `definePathProperty` then `registerOutputDirProperties`.
 	"""
 	definePathProperty(name, default)
 	registerOutputDirProperties(name)
@@ -169,7 +234,7 @@ def defineBooleanProperty(name, default=False):
 
 def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, conditions=None):
 	"""
-	Defines a set of properties from a .properties file
+	Defines a set of string properties from a .properties file
 	
 	@param propertiesFile: The file to include properties from (can include ${...} variables)
 
@@ -412,7 +477,7 @@ def defineOption(name, default):
 	
 	This method is typically used only when implementing a new kind of target. 
 	
-	Options are not available for ${...} expansion (like properties), but 
+	Options are not available for ``${...}`` expansion (like properties), but 
 	rather as used for (optionally inheritably) settings that affect the 
 	behaviour of one or more targets. They are accessed using self.options 
 	in any target instance. 

@@ -17,6 +17,10 @@
 # $Id: compilers.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Support classes for the C/C++ native compiler chain, used by the `xpybuild.targets.native` module. 
+"""
+
 import os, re, logging, time, traceback
 
 from xpybuild.buildcommon import *

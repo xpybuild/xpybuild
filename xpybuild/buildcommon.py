@@ -20,6 +20,11 @@
 # $Id: buildcommon.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Contains standard functionality for use in build files such as `xpybuild.buildcommon.include`, useful constants such as `xpybuild.buildcommon.IS_WINDOWS` and 
+functionality for adding prefixes/suffixes to paths such as `xpybuild.buildcommon.FilenameStringFormatter`. 
+"""
+
 import traceback, os, sys, locale, inspect, io
 import re
 import platform
@@ -41,7 +46,7 @@ XPYBUILD_VERSION: str = __getXpybuildVersion()
 
 def include(file):
 	""" Parse and register the targets and properties in in the specified 
-	xpybuild.py file. 
+	``XXX.xpybuild.py`` file. 
 	
 	Targets should only be defined in files included using this method, 
 	not using python import statements. 
@@ -70,7 +75,7 @@ def include(file):
 
 def normpath(path):
 	"""
-	.. private:: This is deprecated in favour of fileutils.normLongPath and hidden from documentation to avoid polluting the docs. 
+	.. private: This is deprecated in favour of fileutils.normLongPath and hidden from documentation to avoid polluting the docs. 
 
 	Normalizes the specified file or dir path to remove ".." sequences and 
 	differences in the capitalization of Windows drive letters. 

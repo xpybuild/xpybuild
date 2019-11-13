@@ -18,6 +18,12 @@
 # Requires: Python 2.6
 #
 
+"""
+Support functions for invoking processes from targets. 
+
+Build file authors should use `xpybuild.targets.custom.CustomCommand` instead of this module. 
+"""
+
 import subprocess, os, time
 from threading import Lock
 import threading

@@ -20,8 +20,8 @@
 # $Id: buildcommon.py 301527 2017-02-06 15:31:43Z matj $
 #
 
-""" Contains utility functions for manipulating strings, such as 
-:obj:`compareVersions`. 
+""" Utility functions for manipulating strings, such as 
+`xpybuild.utils.stringutils.compareVersions`. 
 
 """
 

@@ -17,6 +17,10 @@
 # $Id: terminal.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Utility functions for getting information about the stdout terminal, which may be useful when implementing 
+console formatters. 
+"""
 
 def getTerminalSize():
 	""" getTerminalSize()

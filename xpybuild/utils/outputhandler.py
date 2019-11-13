@@ -1,6 +1,6 @@
 # xpyBuild - eXtensible Python-based Build System
 #
-# Copyright (c) 2014 - 2018 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2014 - 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,6 +17,12 @@
 # $Id: outputhandler.py 301527 2017-02-06 15:31:43Z matj $
 # Authors: Ben Spiller
 #
+
+"""
+Contains `xpybuild.utils.outputhandler.ProcessOutputHandler` which targets use to parse the output from subprocesses 
+and decide whether warnings, errors or fatal build failures should be raised as a result. 
+
+"""
 
 import subprocess, os, re, logging
 from xpybuild.utils.buildexceptions import BuildException

@@ -17,6 +17,10 @@
 # $Id: csharp.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Contains `xpybuild.targets.csharp.CSharp` for  compiling C# files to an executable or library. 
+"""
+
 import os, inspect
 
 from xpybuild.buildcommon import *
@@ -53,7 +57,7 @@ defineOption('csharp.outputHandlerFactory', CSCProcessOutputHandler)
 def _isDotNetFile(p): return p.lower().endswith('.cs')
 
 class CSharp(BaseTarget):
-	""" Compile C# files to an executable or dll
+	""" Compile C# files to produce an executable or library file. 
 	"""
 	compile = None
 	main = None

@@ -19,6 +19,22 @@
 #
 # $Id: buildcontext.py 301527 2017-02-06 15:31:43Z matj $
 #
+
+"""
+Contains the `xpybuild.buildcontext.BuildContext` class which targets use to resolve property values and paths during the build process, 
+and the `xpybuild.buildcontext.BuildInitializationContext` which is can be used for accessing this information while the build files are 
+being parsed. 
+
+The most useful methods are:
+
+.. autosummary::
+	BaseContext.getFullPath
+	BaseContext.getPropertyValue
+	BaseContext.expandListPropertyValue
+	BaseContext.expandPropertyValues
+	BaseContext.publishArtifact
+"""
+
 import sys, os, getopt, time, traceback, types
 import threading
 
@@ -29,6 +45,7 @@ log = logging.getLogger('xpybuild')
 
 class BaseContext(object):
 	""" Common functionality needed during initialization and build phases. 
+	
 	"""
 	
 	def __init__(self, initialProperties=None):
@@ -54,7 +71,7 @@ class BaseContext(object):
 	def getPropertyValue(self, name):
 		""" Get the value of the specified property or raise a BuildException if it doesn't exist.
 
-		@param name: the property name (without ${...}) to retrieve. Must be a string.
+		@param name: the property name (without ``${...}``) to retrieve. Must be a string.
 		
 		@return: For Boolean properties this will be a python Boolean, for everything else it will be a string. 
 		
@@ -106,10 +123,10 @@ class BaseContext(object):
 		return result
 	
 	def expandPropertyValues(self, string, expandList=False):
-		""" Expand all ${PROP_NAME} properties in the specified string. 
+		""" Expand all ``${PROP_NAME}`` properties in the specified string. 
 
-		Use a double dollar to escape if needed, e.g. "$${foo}" will end up as 
-		"${foo}" unescaped. This assumes expandPropertyValues is not called 
+		Use a double dollar to escape if needed, e.g. ``$${foo}`` will end up as 
+		``${foo}`` unescaped. This assumes expandPropertyValues is not called 
 		more than once on the same string (it is not idempotent). 
 		
 		Boolean values are expanded to "true" or "false"
@@ -211,7 +228,7 @@ class BaseContext(object):
 		""" Get the list represented by the specified property or raise a 
 		BuildException if it doesn't exist.
 
-		@param propertyName: the property name (without ${...}) to retrieve. Must be a string 
+		@param propertyName: the property name (without ``${...}``) to retrieve. Must be a string 
 		and end with "[]".
 		"""
 		assert not propertyName.startswith('$'), propertyName
@@ -221,9 +238,11 @@ class BaseContext(object):
 	
 	def getProperties(self):
 		"""
-		Return a new copy of the properties dictionary (values may be of any type). Do not use this method unless 
+		Return a new copy of the properties dictionary (values may be of any type). 
+		
+		Do not use this method unless 
 		really necessary (e.g. for keyword substitution) - in almost all cases it is better to simply specify the 
-		required properties explicitly to getPropertyValue or expandPropertyValues. 
+		required properties explicitly to `getPropertyValue` or `expandPropertyValues`. 
 		
 		>>> BaseContext({'A':'b'}).getProperties()
 		{'A': 'b'}
@@ -233,6 +252,7 @@ class BaseContext(object):
 	def _recursiveExpandProperties(self, obj, expandList=False):
 		"""
 		Recurses over obj, replacing any strings it finds.
+		
 		>>> BaseContext({'test':'foo'})._recursiveExpandProperties('${test}')
 		'foo'
 		>>> BaseContext({'test':'foo'})._recursiveExpandProperties(['${test}', '${test}'])
@@ -290,10 +310,9 @@ class BaseContext(object):
 				
 
 	def mergeOptions(self, target=None, options=None): 
-		""" [DEPRECATED] 
-		
-		@deprecated: Use the target's self.options to get the resolved dictionary of options instead of this method, or L{getGlobalOptions} 
-			for PathSets and functors where there is no target available. 
+		"""		
+		@deprecated: Instead, use the target's `xpybuild.basetarget.BaseTarget.options` to get the resolved dictionary of options instead of this method, or 
+			`getGlobalOption` for PathSets and functors where there is no target available. 
 		
 		Merges together the default options, the globally overridden options and any set on the target.
 
@@ -318,7 +337,7 @@ class BaseContext(object):
 		"""Get the value of the specified global option for this build. 
 		
 		This can be useful for PathSets and functors, however in any situation 
-		where there is a target, use L{BaseTarget.options} instead, so that per-target 
+		where there is a target, use `xpybuild.basetarget.BaseTarget.options` instead, so that per-target 
 		option overrides are respected. """
 		return self._globalOptions[key]
 
@@ -391,11 +410,15 @@ class BaseContext(object):
 			
 class BuildInitializationContext(BaseContext):
 	"""
-	Provides context used only during the initialization phase of the build, including the ability to change property 
-	values that will later become immutable. Once initialization is complete, this object should be considered 
-	immutable. 
+	Provides context used only during the initialization phase of the build. 
+	
+	Once initialization is complete, this object can no longer be used. 
+	
+	Wherever possible, delay resolution of properties to the build phase instead of performing operations with 
+	this class, which results in cleaner build scripts and avoids the problem of trying to use a property before 
+	it has been defined. 
 
-	This is the class returned by L{getBuildInitializationContext}
+	If you do need an instance of this class, use `BuildInitializationContext.getBuildInitializationContext`. 
 	"""
 	
 	""" Manages the process of loading a build file, and contains the static 
@@ -437,7 +460,11 @@ class BuildInitializationContext(BaseContext):
 	def getBuildInitializationContext():
 		"""Returns the singleton `BuildInitializationContext` instance during parsing of build files, 
 		which is occasionally necessary for looking up properties etc. 
-		
+
+		Wherever possible, delay resolution of properties to the build phase instead of performing operations with 
+		this class, which results in cleaner build scripts and avoids the problem of trying to use a property before 
+		it has been defined. 
+
 		It is an error to call this method after parsing of build files has completed, 
 		since a `BuildContext` is used for that phase of the build instead. 
 		"""
@@ -449,7 +476,10 @@ class BuildInitializationContext(BaseContext):
 		return BuildInitializationContext.__buildInitializationContext
 
 	def initializeFromBuildFile(self, buildFile, isRealBuild=True):
-		""" Load the specified build file, which is the initialization phase during which properties are defined and 
+		"""
+		.. private:: For internal use only. 
+
+		Load the specified build file, which is the initialization phase during which properties are defined and 
 		the build file target definitions will register themselves with this object. 
 
 		Should only be called from within xpybuild, not from build files. To include another build file 
@@ -541,7 +571,10 @@ class BuildInitializationContext(BaseContext):
 
 	
 	def defineProperty(self, name, default, coerceToValidValue=None, debug=False):
-		""" Defines a user-settable property, specifying a default value and 
+		"""
+		.. private:: For internal use only. 
+
+		Defines a user-settable property, specifying a default value and 
 		an optional method to validate values specified by the user. 
 		Return the value assigned to the property. 
 
@@ -592,7 +625,10 @@ class BuildInitializationContext(BaseContext):
 		return value
 	
 	def registerOutputDir(self, outputDir):
-		""" Registers that the specified directory should be created before the 
+		"""
+		.. private:: For internal use only. 
+		
+		Registers that the specified directory should be created before the 
 		build starts.
 						 
 		Build files should use L{propertysupport.defineOutputDirProperty} 
@@ -604,7 +640,10 @@ class BuildInitializationContext(BaseContext):
 		self._outputDirs.add(outputDir)
 	
 	def registerTarget(self, target):
-		""" Registers the target with the context.
+		"""
+		.. private:: For internal use only. 
+
+		Registers the target with the context.
 
 		Called internally from L{basetarget.BaseTarget} and does not need to be called directly.
 		Will raise an exception if called after the build files have been parsed.
@@ -619,7 +658,10 @@ class BuildInitializationContext(BaseContext):
 		self.registerTags(target, target.getTags())
 
 	def registerTags(self, target, taglist):
-		""" Registers tags and their matching targets with the context.
+		"""
+		.. private:: For internal use only. 
+
+		Registers tags and their matching targets with the context.
 
 		Called internally from L{basetarget.BaseTarget.tags} and does not need to be called directly.
 		"""
@@ -629,7 +671,10 @@ class BuildInitializationContext(BaseContext):
 			targetsForTag.append(target)
 
 	def removeFromTags(self, target, taglist):
-		""" Removes a target from a set of tags
+		"""
+		.. private:: For internal use only. 
+
+		Removes a target from a set of tags
 
 		Called internally from L{basetarget.BaseTarget.disableInFullBuild}
 		"""
@@ -639,7 +684,7 @@ class BuildInitializationContext(BaseContext):
 			# must do comparison based on name and not value of target, since we have no implemented equality
 			self._tags[tname] = [x for x in tlist if x.name != target.name]
 
-	def isRealBuild(self):
+	def isRealBuild(self) -> bool:
 		""" Returns True if a real build is going to take place, or False if 
 		the build files are just being parsed in order to list available 
 		targets/properties. 
@@ -651,12 +696,19 @@ class BuildInitializationContext(BaseContext):
 		return self.__isRealBuild
 
 	def registerPreBuildCheck(self, fn):
-		""" Register a functor to be called before builds.
-			 Functor should take a context and raise if the check fails """
+		"""
+		.. private:: For internal use only. 
+
+		Register a functor to be called before builds.
+		
+		Functor should take a context and raise if the check fails """
 		self._preBuildCallbacks.append(fn)
 
 	def getPreBuildCallbacks(self):
-		""" Return the list of pre-build callback functors """
+		"""
+		.. private:: For internal use only. 
+
+		Return the list of pre-build callback functors """
 		return self._preBuildCallbacks
 
 	def getTargetsWithTag(self, tag):
@@ -683,12 +735,16 @@ class BuildInitializationContext(BaseContext):
 	# methods used by the scheduler
 	def getOutputDirs(self):
 		""" Return the list of registered output dirs. 
+		
 		Note that some of these might be nested inside other output dirs. 
 		"""
 		return self._outputDirs
 
 	def _defineOption(self, name, default):
-		""" Register an available option and specify its default value.
+		""" 
+		.. private:: For internal use only. 
+		
+		Register an available option and specify its default value.
 
 		Called internally from L{propertysupport.defineOption} and does not 
 		need to be called directly
@@ -698,7 +754,10 @@ class BuildInitializationContext(BaseContext):
 
 		BuildInitializationContext._definedOptions[name] = default
 	def setGlobalOption(self, key, value):
-		""" Set a global value for an option
+		"""
+		.. private:: For internal use only. 
+
+		 Set a global value for an option
 
 		Called internally from L{propertysupport.setGlobalOption} and does not 
 		need to be called directly
@@ -712,7 +771,10 @@ class BuildInitializationContext(BaseContext):
 		self._globalOptions[key] = value
 
 	def defineAtomicTargetGroup(self, targets):
-		""" The given targets must all be built before anything which depends on any of those targets """
+		"""
+		.. private:: For internal use only. 
+
+		The given targets must all be built before anything which depends on any of those targets """
 		targets = set(targets)
 		self._targetGroups.append(targets)
 
@@ -721,7 +783,6 @@ class BuildContext(BaseContext):
 	Provides context used only during the build phase of the build (after initialization is complete), 
 	i.e. the ability to expand variables (but not to change their value). 
 	
-	@undocumented: _getTopLevelOutputDirs, _resolveTargetGroups
 	"""
 	def __init__(self, initializationContext, targetPaths=None):
 		""" Create a BuildContext from a L{BuildInitializationContext}. 
@@ -756,12 +817,11 @@ class BuildContext(BaseContext):
 			if len(outputDirs) > 1 else re.escape(outputDirs[0]+os.sep), 
 			flags=re.IGNORECASE if IS_WINDOWS else 0)
 
-	def isPathWithinOutputDir(self, path):
-		""" Returns true if the specified path is a descendent of any of 
+	def isPathWithinOutputDir(self, path) -> bool:
+		""" Returns True if the specified path is a descendent of any of 
 		this build's output directories. 
 
 		@param path: A normalized absolute path (must use correct slashes for the platform). 
-		@return: True or False
 		"""
 		return self.__topLevelOutputDirsRegex.match(path) is not None
 	
@@ -780,8 +840,9 @@ class BuildContext(BaseContext):
 		self.init._targetGroups = targetGroups
 	
 	def getTargetsWithTag(self, tag):
-		""" Returns the list of target objects with the specified tag name 
-		(throws BuildException if not defined). 
+		""" Returns the list of target objects with the specified tag name. 
+		
+		Throws BuildException if not defined. 
 		"""
 		return self.init.getTargetsWithTag(tag)
 

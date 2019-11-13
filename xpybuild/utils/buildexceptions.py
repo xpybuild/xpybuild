@@ -17,6 +17,10 @@
 # $Id: buildexceptions.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+The `xpybuild.utils.buildexceptions.BuildException` class used for (non-internal) problems encountered while building. 
+"""
+
 import traceback, os, sys
 
 from xpybuild.utils.buildfilelocation import BuildFileLocation

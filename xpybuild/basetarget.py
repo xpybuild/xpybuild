@@ -1,4 +1,4 @@
-0# xpyBuild - eXtensible Python-based Build System
+# xpyBuild - eXtensible Python-based Build System
 #
 # Contains the base classes for creating various kinds of target. 
 #
@@ -18,6 +18,13 @@
 #
 # $Id: basetarget.py 301527 2017-02-06 15:31:43Z matj $
 #
+
+"""
+Contains `xpybuild.basetarget.BaseTarget` which contains 
+methods such as `basetarget.BaseTarget.option`, `basetarget.BaseTarget.tags` for configuring the target instances 
+in your build files, and is also the base class for defining new targets. 
+
+"""
 
 import os, inspect, shutil, re
 

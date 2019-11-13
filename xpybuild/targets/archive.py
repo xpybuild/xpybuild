@@ -17,6 +17,12 @@
 # $Id: unpack.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Targets relating to creating and unpacking archives. 
+
+
+"""
+
 import os, inspect, os.path
 import time
 import zipfile

@@ -17,6 +17,10 @@
 # $Id: writefile.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Contains targets for writing a single file containing dynamically generated contents. 
+"""
+
 import os, re, stat
 
 from xpybuild.buildcommon import *
@@ -24,50 +28,49 @@ from xpybuild.basetarget import BaseTarget
 from xpybuild.utils.fileutils import mkdir, openForWrite, normLongPath
 
 class WriteFile(BaseTarget):
-	""" Target for writing out a text or binary file with hardcoded contents. 
+	""" Target for writing out a text or binary file with the specifiwed dynamically generated (or hardcoded) contents. 
 	
 	The file will only be updated if its contents have changed. 
 	"""
 	
 	def __init__(self, name, getContents, dependencies=None, mode=None, executable=False, encoding=None, args=None, kwargs=None):
 		"""
-		Constructor. 
-		
 		Example usage:: 
 		
 			WriteFile('${OUTPUT_DIR}/foo.txt', lambda context: '\\n'.join(['Foo:', context.expandPropertyValues('${FOO}')]))
 		
 		@param name: the output filename
 		
-		@param getContents: a unicode character string (which will be subject to expansion), 
-		or binary bytes, or a function that accepts a context as input 
-		followed optionally by any specified 'args') and returns 
-		the string/bytes that should be written to the file, using \\n for newlines 
-		(not os.linesep - any occurrences of the newline character \\n in 
-		the provided string will be replaced automatically with the 
-		OS-specific line separator unless bytes are provided).
-		
-		The function will be evaluated during the dependency resolution 
-		phase. 
+		@param getContents: 
+			a unicode character string (which will be subject to expansion), 
+			or binary bytes, or a function that accepts a context as input 
+			followed optionally by any specified 'args') and returns 
+			the string/bytes that should be written to the file, using ``\\n`` for newlines 
+			(not ``os.linesep`` - any occurrences of the newline character ``\\n`` in 
+			the provided string will be replaced automatically with the 
+			OS-specific line separator unless bytes are provided).
+			
+			The function will be evaluated during the dependency resolution 
+			phase (before the build phase commences). 
 			
 		@param mode: unix permissions to set with chmod on the destination files. 
-		If not specified, default mode is used. 
-		Ignored on Windows platforms. 
+			If not specified, default mode is used. 
+			Ignored on Windows platforms. 
 		
 		@param executable: set to True to add Unix executable permissions (simpler 
-		alternative to setting using mode)
+			alternative to setting using mode)
 		
 		@param encoding: The encoding to use for converting the str to bytes; 
-		if not specified the `common.fileEncodingDecider` option is used. 
+			if not specified the ``common.fileEncodingDecider`` option is used. 
 
 		@param args: optional tuple containing arguments that should be passed to 
-		the getContents function, after the context argument (first arg)
+			the getContents function, after the context argument (first arg).
 		
 		@param kwargs: optional dictionary containing kwargs that should be passed 
-		to the getContents function. 
+			to the getContents function. 
 		
 		@param dependencies: any targets which need to be built in order to run this
-		target
+			target.
 		"""
 		BaseTarget.__init__(self, name, dependencies or [])
 		self.getContents = getContents
@@ -80,7 +83,7 @@ class WriteFile(BaseTarget):
 		self.addHashableImplicitInputOption('common.fileEncodingDecider')
 	
 	def getHashableImplicitInputs(self, context):
-		""" The literal content text is considered the dependency of this target """
+		# The literal content text is considered the dependency of this target
 		stringifiedcontents = self._getContents(context)
 		if isinstance(stringifiedcontents, bytes): stringifiedcontents = repr(stringifiedcontents)
 		return super(WriteFile, self).getHashableImplicitInputs(context) + stringifiedcontents.split('\n') + ['mode: %s, executable: %s'%(self.__mode, self.__executable)]
@@ -116,7 +119,7 @@ class Touch(BaseTarget):
 	
 	def __init__(self, path):
 		"""
-		name: the output filename
+		@param path: the output filename. 
 		"""
 		BaseTarget.__init__(self, path, [])
 	

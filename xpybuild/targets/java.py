@@ -1,6 +1,6 @@
 # xpyBuild - eXtensible Python-based Build System
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,6 +17,12 @@
 # $Id: java.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Contains targets for building and documenting Java applications. 
+
+The main target in this module is `xpybuild.targets.java.Jar`.
+
+"""
 import os, inspect, os.path, shutil
 
 from xpybuild.buildcommon import *

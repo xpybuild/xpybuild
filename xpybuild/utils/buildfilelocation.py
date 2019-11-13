@@ -18,6 +18,10 @@
 # $Id: buildfilelocation.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Support for identifying the location of the ``XXX.xpybuild.py`` file currently being parsed. 
+"""
+
 import traceback, inspect, os, sys
 
 

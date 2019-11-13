@@ -19,6 +19,10 @@
 # $Id: functors.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Contains `xpybuild.utils.functors.Composable` and associated classes for creating late-binding functions/functors. 
+"""
+
 class Composable(object):
 	""" Base class for objects which are late-bound and can be composed 
 		 together and with strings, with a `resolveToString` method to 

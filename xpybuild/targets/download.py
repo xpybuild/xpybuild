@@ -5,6 +5,10 @@
 #
 # $Id: ftp.py 318763 2017-10-20 09:56:15Z matj $
 
+"""
+Contains `xpybuild.targets.download.Download` for downloading a file from an FTP or HTTP server. 
+"""
+
 import os, urllib.request, urllib.parse, urllib.error
 
 from xpybuild.basetarget import *
@@ -13,7 +17,7 @@ from xpybuild.utils.buildexceptions import *
 from xpybuild.utils.fileutils import mkdir
 
 class Download(BaseTarget):
-	""" A target for downloading from FTP or HTTP
+	""" Target for downloading from FTP or HTTP.
 	"""
 	def __init__(self, output, uri, timeout=60*10):
 		"""

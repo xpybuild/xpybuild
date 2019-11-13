@@ -19,6 +19,10 @@
 # $Id: progress.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Console formatter classes that write a progress bar to stdout as xpybuild runs. 
+"""
+
 # ##teamcity[progressMessage '(%d/%d) %s']
 
 import logging, re, os, time, traceback

@@ -17,6 +17,10 @@
 # $Id: flatten.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Utility functions for normalizing and flattening deeply nested lists. 
+"""
+
 import types
 import typing
 

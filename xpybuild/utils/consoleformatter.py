@@ -19,6 +19,11 @@
 # $Id: ConsoleFormatters.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Pluggable classes for customizing the format that xpybuild uses when writing log messages to stdout (for example, 
+for Teamcity, make, Visual Studio, etc). 
+"""
+
 import logging, os, time
 import re
 

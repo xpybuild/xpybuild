@@ -17,6 +17,10 @@
 # $Id: touch.py 301527 2017-02-06 15:31:43Z matj $
 #
 
+"""
+Contains targets for building docker images and pushing tags. 
+"""
+
 import os, inspect
 
 from xpybuild.buildcommon import *
@@ -68,6 +72,9 @@ class DockerBase(BaseTarget):
 
 class DockerBuild(DockerBase):
 	def __init__(self, imagename, inputs, depimage=None, dockerfile=None, buildArgs=None, dockerArgs=None):
+		"""
+		Build a docker image.
+		"""
 		DockerBase.__init__(self, imagename, inputs, depimage, dockerfile, buildArgs, dockerArgs)
 
 	def run(self, context):
@@ -93,6 +100,9 @@ class DockerBuild(DockerBase):
 
 class DockerPushTag(DockerBase):
 	def __init__(self, imagename, fromimage):
+		"""
+		Push a docker tag from the specified image. 
+		"""
 		DockerBase.__init__(self, imagename, [], depimage=fromimage)
 
 	def run(self, context):
