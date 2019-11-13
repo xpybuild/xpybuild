@@ -15,7 +15,7 @@ from targets.copy import Copy
 
 defineOutputDirProperty('OUTPUT_DIR', None)
 
-WriteFile('${OUTPUT_DIR}/foo.txt', 'Hello world')
+writefiletarget = WriteFile('${OUTPUT_DIR}/foo.txt', 'Hello world')
 
 # this is to check that the isinstance checks used by PathSet are working right - new and old package names should not have different pathsets! If they do, this will error. 
 Copy('${OUTPUT_DIR}/copy1/', newpathsets.PathSet(oldpathsets.PathSet('${OUTPUT_DIR}/foo.txt')))
@@ -48,7 +48,7 @@ assert targets.unpack.Unpack
 assert targets.zip.Zip
 assert targets.tar.Tarball
 
-import targets.basetarget
-assert targets.basetarget.targetNameToUniqueId # alias for BaseTarget.targetNameToUniqueId
-assert targets.basetarget.BaseTarget.addHashableImplicitInput
-assert targets.basetarget.BaseTarget.addHashableImplicitInputOption
+import basetarget
+assert basetarget.targetNameToUniqueId # alias for BaseTarget.targetNameToUniqueId
+assert writefiletarget.addHashableImplicitInput # alias on target instances
+assert writefiletarget.addHashableImplicitInputOption
