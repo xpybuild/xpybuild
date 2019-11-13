@@ -484,17 +484,11 @@ def defineOption(name, default):
 	
 	@param name: The option name, which should usually be in lowerCamelCase, with 
 	a TitleCase prefix specific to this target or group of targets, often 
-	matching the target name, e.g. "Javac.compilerArgs". 
+	matching the target name, e.g. ``Javac.compilerArgs``. 
 
-	@param default: The default value of the option
+	@param default: The default value of the option.
 	"""
-	init = BuildInitializationContext.getBuildInitializationContext()
-	if init:
-		init._defineOption(name, default)
-	elif 'doctest' not in sys.argv[0] and 'sphinx' not in sys.argv[0]:
-		# this check is so we notice if unfortunate module order causes us to try to 
-		# define options before we have a real context to put them in
-		assert False, 'Cannot define options at this point in the build as there is no initialization build context active'
+	BuildInitializationContext._defineOption(name, default)
 
 def setGlobalOption(key, value):
 	"""

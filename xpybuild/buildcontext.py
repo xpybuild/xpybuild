@@ -538,8 +538,8 @@ class BuildInitializationContext(BaseContext):
 		from xpybuild.propertysupport import ExtensionBasedFileEncodingDecider
 		from xpybuild.utils.process import defaultProcessOutputEncodingDecider
 		if 'common.fileEncodingDecider' not in self._definedOptions:
-			self._defineOption('common.fileEncodingDecider', ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider())
-			self._defineOption('common.processOutputEncodingDecider', defaultProcessOutputEncodingDecider)
+			BuildInitializationContext._defineOption('common.fileEncodingDecider', ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider())
+			BuildInitializationContext._defineOption('common.processOutputEncodingDecider', defaultProcessOutputEncodingDecider)
 
 		
 		# all the valid ones will have been popped already
@@ -740,7 +740,8 @@ class BuildInitializationContext(BaseContext):
 		"""
 		return self._outputDirs
 
-	def _defineOption(self, name, default):
+	@staticmethod
+	def _defineOption(name, default):
 		""" 
 		.. private:: For internal use only. 
 		
@@ -753,6 +754,7 @@ class BuildInitializationContext(BaseContext):
 			raise BuildException('Cannot define option "%s" more than once'%name)
 
 		BuildInitializationContext._definedOptions[name] = default
+	
 	def setGlobalOption(self, key, value):
 		"""
 		.. private:: For internal use only. 
