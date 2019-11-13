@@ -29,6 +29,7 @@ from xpybuild.utils.buildfilelocation import BuildFileLocation
 from xpybuild.utils.functors import Composable
 from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.fileutils import openForWrite, normLongPath, mkdir
+import xpybuild.utils.stringutils
 
 import logging
 
@@ -48,15 +49,17 @@ class BaseTarget(Composable):
 
 	.. rubric:: Implementing a new target class
 	
-	If you are subclassing ``BaseTarget`` to create a new target class, you must implement `run`. Occasionally you 
-	may also wish to override `clean`. The following methods are available for use by target subclasses, 
-	either at construction time (``__init__``) or at build time (during `run` or `clean`):
+	If you are subclassing ``BaseTarget`` to create a new target class, you must implement `run`. 
+	
+	In rare occasions you may also wish to override `clean`. The following methods are available for use by target 
+	subclasses, either at construction time (``__init__``) or at build time (during `run` or `clean`):
 
 	.. autosummary ::
-		addHashableImplicitInputOption
-		addHashableImplicitInput
+		registerImplicitInputOption
+		registerImplicitInput
 		getOption
 		openFile
+		targetNameToUniqueId
 	
 	This class provides several read-only attributes for use by subclasses.
 
@@ -133,11 +136,16 @@ class BaseTarget(Composable):
 		self.__path = None # set by _resolveTargetPath
 		self.__workDir = None
 		
-		self.__hashableImplicitInputs = []
+		self.__registeredImplicitInputs = []
 
 		# put the class first, since it results in better ordering (e.g. for errors)
 		# use a space to delimit these to make it easier to copy to the clipboard by double-clicking
 		self.__stringvalue = f'<{self.type}> {self.name}'
+		
+		# aliases for pre-3.0
+		self.addHashableImplicitInputOption = self.registerImplicitInputOption
+		self.addHashableImplicitInput = self.registerImplicitInput
+
 		
 	def __returnOrRaiseIfNone(self, value, exceptionMessage):
 		if value is not None: return value
@@ -243,7 +251,7 @@ class BaseTarget(Composable):
 			else:
 				fileutils.deleteFile(self.path)
 
-	def addHashableImplicitInputOption(self, optionKey):
+	def registerImplicitInputOption(self, optionKey):
 		"""Target classes can call this from their ``__init__()`` to add the resolved value of the specified option(s) as 
 		'implicit inputs' of this target. 
 		
@@ -259,10 +267,10 @@ class BaseTarget(Composable):
 			or a callable that accepts an optionKey and dynamically decides which options to include, 
 			returning True if it should be included. For example::
 		  
-				self.addHashableImplicitInputOption(lambda optionKey: optionKey.startswith(('java.', 'javac.')))
+				self.registerImplicitInputOption(lambda optionKey: optionKey.startswith(('java.', 'javac.')))
 		
 		"""
-		self.addHashableImplicitInput(lambda context: self.__getMatchingOptions(context, optionKey))
+		self.registerImplicitInput(lambda context: self.__getMatchingOptions(context, optionKey))
 
 	def __getMatchingOptions(self, context, optionKey):
 		if callable(optionKey):
@@ -280,7 +288,7 @@ class BaseTarget(Composable):
 			result.append(f'option {k}={value}')
 		return result
 
-	def addHashableImplicitInput(self, item):
+	def registerImplicitInput(self, item):
 		"""Target classes can call this from their ``__init__()`` to add the specified string line(s) as 
 		'implicit inputs' of this target. 
 		
@@ -302,22 +310,22 @@ class BaseTarget(Composable):
 				  any ``None`` items in the list are ignored. 
 		"""
 		assert isinstance(item, str) or callable(item)
-		self.__hashableImplicitInputs.append(item)
+		self.__registeredImplicitInputs.append(item)
 	
 	def getHashableImplicitInputs(self, context):
 		"""(deprecated) Target classes can implement this to add the string line(s) as 'implicit inputs' of this target. 
 		
-		@deprecated: The `addHashableImplicitInput` or `addHashableImplicitInputOption` methods should be called 
+		@deprecated: The `registerImplicitInput` or `registerImplicitInputOption` methods should be called 
 		instead of overriding this method. 
 
 		The default implementation returns nothing, unless 
-		`addHashableImplicitInput` or `addHashableImplicitInputOption`
-		have been called, so only the resolved paths of the file/directory dependencies will be used. 
+		`registerImplicitInput` or `registerImplicitInputOption`
+		have been called (in which case only the resolved paths of the file/directory dependencies will be used). 
 		
 		"""
-		if self.__hashableImplicitInputs:
+		if self.__registeredImplicitInputs:
 			result = []
-			for x in self.__hashableImplicitInputs:
+			for x in self.__registeredImplicitInputs:
 				if x is None: continue
 				if callable(x) and not hasattr(x, 'resolveToString'): # if we aren't delegating to expandPropertyValues to resolve this
 					x = x(context)
@@ -456,15 +464,26 @@ class BaseTarget(Composable):
 		"""
 		return self.__priority
 
-def targetNameToUniqueId(name):
-	"""Munge a target name (unexpanded path) into an identifier that is 
-	not an absolute path, and (unless very long) does not contain any directory 
-	elements. This id is suitable for temporary filenames and directories etc
-	
-	"""
-	# remove chars that are not valid on unix/windows file systems (e.g. colon)
-	x = re.sub(r'[^()+./\w-]','_', name.replace('\\','/').replace('${','_').replace('}','_').rstrip('/'))
-	if len(x) < 256: x = x.replace('/','.') # avoid deeply nested directories in general
-	return x
+
+	@staticmethod
+	def targetNameToUniqueId(name: str) -> str:
+		"""Convert a target name (containing unexpanded property values) into a convenient unique identifier. 
+		
+		The resulting identifier is not an absolute path, and (unless very long) does not contain any directory 
+		elements. This id is suitable for temporary filenames and directories etc
+		
+		"""
+		# remove chars that are not valid on unix/windows file systems (e.g. colon)
+		x = re.sub(r'[^()+./\w-]','_', name.replace('\\','/').replace('${','_').replace('}','_').rstrip('/'))
+		if len(x) < 256: x = x.replace('/','.') # avoid deeply nested directories in general
+		return x
+
+
+targetNameToUniqueId = BaseTarget.targetNameToUniqueId # alias for pre-3.0 projects
+""".. private:: See static method instead.
+
+.. deprecated:: Use `BaseTarget.targetNameToUniqueId` instead. 
+"""
+
 
 from xpybuild.pathsets import PathSet, BasePathSet

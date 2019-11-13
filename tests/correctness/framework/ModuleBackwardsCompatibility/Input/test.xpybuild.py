@@ -47,3 +47,8 @@ import targets.unpack, targets.zip, targets.tar # all moved to archive
 assert targets.unpack.Unpack
 assert targets.zip.Zip
 assert targets.tar.Tarball
+
+import targets.basetarget
+assert targets.basetarget.targetNameToUniqueId # alias for BaseTarget.targetNameToUniqueId
+assert targets.basetarget.BaseTarget.addHashableImplicitInput
+assert targets.basetarget.BaseTarget.addHashableImplicitInputOption

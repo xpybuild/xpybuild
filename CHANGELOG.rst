@@ -60,6 +60,11 @@ if you're using them:
 - `xpybuild.utils.fileutils` methods ``getstat``, ``getmtime``, ``getsize``, 
   ``exists``, ``isfile``, ``isdir`` have been renamed to ``cached_XXX`` 
   to better indicate the semantics. The old names are deprecated. 
+- ``xpybuild.targets.basetarget.targetNameToUniqueId`` is replaced by 
+  `xpybuild.targets.basetarget.BaseTarget.targetNameToUniqueId`. 
+- ``xpybuild.basetarget.BaseTarget.addHashableImplicitInput/Option`` is replaced by 
+  `xpybuild.basetarget.BaseTarget.registerImplicitInput` and 
+  `xpybuild.basetarget.BaseTarget.registerImplicitInputOption`. 
 
 See also the module re-organization listed under breaking changes; all xpybuild 
 modules and classes should now be accessed via their new names, typically 
