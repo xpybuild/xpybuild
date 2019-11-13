@@ -389,9 +389,9 @@ __normLongPathCache = {} # GIL protects integrity of dict, no need for extra loc
 
 def normPath(path):
 	"""
-	Normalizes and absolutizes a path (os.path.abspath), converts to a canonical 
-	form (e.g. normalizing the case of the drive letter on Windows), but unlike `normLongPath` does not 
-	add the ``\\\\?\\`` prefix needed to permit long paths. 
+	Normalizes but does NOT absolutize a path (os.path.normpath). This converts an absolute or relative path to a 
+	canonical form (e.g. normalizing the case of the drive letter on Windows), but unlike `normLongPath` does not 
+	add the ``\\\\?\\`` prefix needed to permit long paths or absolutize. 
 	
 	@param path: the absolute path to be converted should be a unicode string where possible, as specifying a byte 
 	string will not work if the path contains non-ascii characters. 
@@ -400,14 +400,14 @@ def normPath(path):
 
 	# NB: abspath also normalizes slashes
 	hadslash = isDirPath(path)
-	path = os.path.abspath(path)
+	path = os.path.normpath(path)
 	# annoyingly we have to do this check since abspath strips off slashes in most cases but not always (e.g. not if given a \\?\ path)
 	if hadslash and not path.endswith(os.path.sep): path += os.path.sep
 	
 	# normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case 
 	# for drive letters (more so than directory names), with different cmd prompts frequently using different 
 	# capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts
-	if __isWindows and len(path)>2 and path[1] == ':' and path[0] >= 'A' and path[0] <= 'Z': 
+	if __isWindows and os.path.isabs(path) and len(path)>2 and path[1] == ':' and path[0] >= 'A' and path[0] <= 'Z': 
 		path = path[0].lower()+path[1:]
 	return path
 	
