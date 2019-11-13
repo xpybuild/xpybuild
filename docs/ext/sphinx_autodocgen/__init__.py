@@ -285,42 +285,7 @@ class AutoDocGen:
 			else:
 				logger.debug(f'Ignoring unknown member type: {mname} {repr(m)}')
 				continue
-		#for mname, m in mod.__dict__.items():
-			"""if moduleall and mname not in moduleall: 
-				# best practice is to define __all__, and if someone has done that then great
-				logger.info(f'{self} Skipping member which is not in __all__ for this module: {modulename}.{mname}')
-				continue
-			elif getattr(m, '__module__', modulename) != modulename: 
-				# need to immediately rule out the majority of items which aren't really defined in this module; 
-				# data attributes don't have module set on them
-				continue
-			
-			if inspect.isclass(m):
-				if isinstance(m, BaseException):
-					mtype = 'exception'
-				else:
-					mtype = 'class'
-			elif inspect.ismodule(m):
-				continue # submodules are handled above, so anything here will be an imported module that we don't want
-			elif inspect.isfunction(m):
-				mtype = 'function'
-			else:
-				mtype = 'data' # this is a guess
-			if mtype not in membersByType: continue
-			
-			# TODO: call autodoc_skip_member; actually copy logic from filter_members, e.g. if doc'd
-			defaultskip = False
-			# TODO: maybe make the above subject to this too
-			if any(self.app.emit('autodoc-skip-member', 
-				mtype, # what
-				mname, # name
-				m, # obj
-				defaultskip, # whether to skip by default
-				{}, # options TODO: poplate this
-			)):
-				continue
-			"""
-			# TODO: if we want to support source file ordering, could implement that here for configured member types
+
 			membersByType[mtype].append((mname,m))
 
 		logger.debug('%s Visiting module %s with members: %s', self, modulename, membersByType)
