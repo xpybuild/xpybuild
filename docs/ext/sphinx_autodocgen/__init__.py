@@ -59,14 +59,15 @@ class AutoDocGen:
 		
 		By default we skip names that begin with a single underscore. """
 
-		skip_on_docstring_regex: str='.. private: '
-		""" If a member or module's docstring contains this regular expression then it will be skipped 
-		(unless the skipping is vetoed'd by autodoc-skip-member). 
+		skip_on_docstring_regex: str='.. private::'
+		""" If a member or module's docstring contains this regular expression then it will be skipped. 
 		
 		This regex works on attribute docstrings (which Sphinx supports, even though Python's ``__doc__`` does not 
-		work for attributes). 
+		work for attributes), so is more robust than checking ``__doc__`` from the ``autodoc-skip-member`` hook. 
 		
-		By default we skip if the docstring contains the special directive (defined by this extension) ``.. private:: ``. """
+		By default we skip if the docstring contains the special directive (defined by this extension) 
+		``.. private:: REASON HERE``. 
+		"""
 
 		write_documented_items_output_file: str = None
 		"""A diagnostic option that writes a sorted list of all documented modules and (direct) members to a text 

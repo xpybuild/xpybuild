@@ -816,6 +816,11 @@ class BuildContext(BaseContext):
 
 # as of v3.0 this is not documented and retained only for compatibility - better to use static singleton method
 getBuildInitializationContext = BuildInitializationContext.getBuildInitializationContext
+"""
+.. private:: Removed from public API
+
+Use `BuildInitializationContext.getBuildInitializationContext` instead. 
+"""
 
 # some import need to live down here to avoid circular dependencies
 from xpybuild.utils.functors import Composable, Compose

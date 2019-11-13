@@ -168,7 +168,7 @@ class BaseTarget(Composable):
 
 	def resolveToString(self, context):
 		"""
-		.. private: There is usually no need for this to be called other than by the framework. 		
+		.. private:: There is usually no need for this to be called other than by the framework. 		
 		Resolves this target's path and returns as a string. 
 		
 		It is acceptable to call this while the build files are still being 
@@ -186,7 +186,7 @@ class BaseTarget(Composable):
 		return self.__path
 
 	def _resolveTargetPath(self, context):
-		""".. private: Internal method for resolving path from name, performing any 
+		""".. private:: Internal method for resolving path from name, performing any 
 		required expansion etc. 
 		
 		Do not override this method.
@@ -205,7 +205,7 @@ class BaseTarget(Composable):
 			self.__optionsResolved = context._mergeListOfOptionDicts([context._globalOptions, self.__optionsTargetOverridesUnresolved], target=self)
 
 	def _resolveUnderlyingDependencies(self, context, rawdeps=False):
-		""".. private: Internal method for resolving dependencies needed by this target, 
+		""".. private:: Internal method for resolving dependencies needed by this target, 
 		e.g. doing path expansion, globbing, etc. 
 		
 		Do not override this method. This method should be invoked only once, 
@@ -335,7 +335,7 @@ class BaseTarget(Composable):
 		return []
 	
 	def getTags(self): 
-		""" .. private: Not exposed publically as there is no public use case for this. 
+		""" .. private:: Not exposed publically as there is no public use case for this. 
 		
 		@returns: The list of tags associated with this target. """
 		return self.__tags
@@ -442,7 +442,7 @@ class BaseTarget(Composable):
 
 	def updateStampFile(self):
 		"""
-		.. private: Not useful enough to be in the public API. 
+		.. private:: Not useful enough to be in the public API. 
 		
 		Assumes self.path is a stamp file that just needs creating / timestamp updating and does so """
 		path = normLongPath(self.path)
@@ -452,7 +452,7 @@ class BaseTarget(Composable):
 
 	
 	def getPriority(self):
-		""" .. private: Not exposed publically as there is no public use case for this. 
+		""" .. private:: Not exposed publically as there is no public use case for this. 
 		"""
 		return self.__priority
 

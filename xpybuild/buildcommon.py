@@ -70,7 +70,7 @@ def include(file):
 
 def normpath(path):
 	"""
-	.. private: This is deprecated in favour of fileutils.normLongPath and hidden from documentation to avoid polluting the docs. 
+	.. private:: This is deprecated in favour of fileutils.normLongPath and hidden from documentation to avoid polluting the docs. 
 
 	Normalizes the specified file or dir path to remove ".." sequences and 
 	differences in the capitalization of Windows drive letters. 
@@ -98,13 +98,15 @@ IS_WINDOWS: bool = platform.system()=='Windows'
 if IS_WINDOWS:
 	def isWindows():
 		""" Returns True if this is a windows platform. 
-		@deprecated: Use the IS_WINDOWS constant instead. 
+		
+		@deprecated: Use the `IS_WINDOWS` constant instead. 
 		"""
 		return True
 else:
 	def isWindows():
 		""" Returns True if this is a windows platform. 
-		@deprecated: Use the IS_WINDOWS constant instead. 
+		
+		@deprecated: Use the `IS_WINDOWS` constant instead. 
 		"""
 		return False
 
@@ -131,7 +133,7 @@ def registerPreBuildCheck(fn):
 	getBuildInitializationContext().registerPreBuildCheck(fn)
 
 class StringFormatter(object):
-	""" A simple named functor for applying a %s-style string format, useful 
+	""" A simple named functor for applying a ``%s``-style string format, useful 
 	in situations where a function is needed to add a suffix/prefix for the 
 	value of an option. 
 	"""
@@ -145,7 +147,7 @@ class StringFormatter(object):
 		return self.fmt % args[0]
 	
 class FilenameStringFormatter(object):
-	""" A simple named functor for applying a %s-style string format. 
+	""" A simple named functor for applying a ``%s``-style string format. 
 		 Formatter is just applied to the basename part of the filename,
 		 the dirname part is preserved as-is.
 	"""

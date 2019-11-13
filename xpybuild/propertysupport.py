@@ -249,7 +249,7 @@ def getPropertyValue(propertyName) -> object:
 
 def getProperty(propertyName):
 	"""
-	.. private: Hidden from documentation from v3.0 to avoid confusing people. 
+	.. private:: Hidden from documentation from v3.0 to avoid confusing people. 
 	
 	@deprecated: For consistency use getPropertyValue instead. 
 	"""

@@ -78,7 +78,7 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
 		logger.info(f'conf.py: ALREADY Skipping member: {name}')
 		return None
 
-	if obj.__doc__ and '.. private: ' in obj.__doc__: 
+	if obj.__doc__ and '.. private:: ' in obj.__doc__: 
 		logger.info(f'conf.py: skipping private member: {obj}')
 		return True
 		
