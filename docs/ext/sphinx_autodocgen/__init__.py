@@ -59,12 +59,21 @@ class AutoDocGen:
 		
 		By default we skip names that begin with a single underscore. """
 
+		skip_on_docstring_regex: str='.. private: '
+		""" If a member or module's docstring contains this regular expression then it will be skipped 
+		(unless the skipping is vetoed'd by autodoc-skip-member). 
+		
+		This regex works on attribute docstrings (which Sphinx supports, even though Python's ``__doc__`` does not 
+		work for attributes). 
+		
+		By default we skip if the docstring contains the special directive (defined by this extension) ``.. private:: ``. """
+
 		write_documented_items_output_file: str = None
 		"""A diagnostic option that writes a sorted list of all documented modules and (direct) members to a text 
 		file. This allows before/after diffing of documented members after you make changes. It could be compared by a 
 		test to a reference file, to ensure you don't add items to the documented public API without noticing. """
 
-		_config_keys = ['modules', 'generated_source_dir', 'skip_module_regex', 'write_documented_items_output_file']
+		_config_keys = ['modules', 'generated_source_dir', 'skip_module_regex', 'skip_on_docstring_regex', 'write_documented_items_output_file']
 
 	def __init__(self, app):
 		"""
@@ -256,22 +265,28 @@ class AutoDocGen:
 		if not documenter.parse_name() or not documenter.import_object():
 			assert False, 'documenter failed to import module %s'%module
 		
+		# must call this before filter_members will work correctly
 		documenter.analyzer = ModuleAnalyzer.for_module(modulename)
-		documenter.analyzer.find_attr_docs()
+		attr_docs = documenter.analyzer.find_attr_docs()
 
 		# find out which members are documentable; use __dict__.items() to retain the ordering info, but delegate to 
 		# autodoc get_object_members for its __all__ handling logic
 		permittedmembers = set(memberinfo[0] for memberinfo in documenter.get_object_members(want_all=True)[1])
 		members = [(mname,m) for mname, m in mod.__dict__.items() if mname in permittedmembers]
+		
+		skip_on_docstring_regex = self.config['skip_on_docstring_regex']
 
 		# TODO: ordering c.f. autodoc_member_order
 		for (mname, m, isattr) in documenter.filter_members(members, want_all=True):
-			if not self.app.config['autodoc_default_options'].get('imported-members',False) and getattr(m, '__module__', modulename) != modulename: 
+			if not isattr and not self.app.config['autodoc_default_options'].get('imported-members',False) and getattr(m, '__module__', modulename) != modulename: 
 				# need to immediately rule out the majority of items which aren't really defined in this module; 
-				# data attributes don't have module set on them so don't do the check for those
+				# data attributes don't have module set on them so don't do the check for those else we'd miss stuff that 
+				# should be included
 				continue
-
-			if inspect.isclass(m):
+			
+			if isattr:
+				mtype = 'data'
+			elif inspect.isclass(m):
 				if isinstance(m, BaseException):
 					mtype = 'exception'
 				else:
@@ -280,11 +295,19 @@ class AutoDocGen:
 				continue # submodules are handled above, so anything here will be an imported module that we don't want
 			elif inspect.isfunction(m):
 				mtype = 'function'
-			elif isattr:
-				mtype = 'data' # this is a guess
 			else:
 				logger.debug(f'Ignoring unknown member type: {mname} {repr(m)}')
 				continue
+
+			if skip_on_docstring_regex:
+				if ('', mname) in attr_docs:
+					docstring = '\n'.join(attr_docs[('', mname)])
+				else:
+					docstring = getattr(m, '__doc__', None)
+				
+				if docstring and re.search(skip_on_docstring_regex, docstring):
+					logger.info(f'{self} Skipping {modulename}.{mname} due to its docstring matching the skip_on_docstring_regex')
+					continue
 
 			membersByType[mtype].append((mname,m))
 
