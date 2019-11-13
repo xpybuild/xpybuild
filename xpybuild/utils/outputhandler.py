@@ -55,13 +55,16 @@ class ProcessOutputHandler(object):
 	Subclasses may often wish to do some of the following:
 	
 		- override the logic for deciding what consistutes an error/warning 
-			(see _decideLogLevel)
+		  (see `_decideLogLevel`)
+		
 		- use a regex to get the filename and number from error messages to 
-			support IDE jump-to integration (see _parseLocationFromLine)
-		- strip timestamp/threadid prefixes from lines (see _preprocessLine) 
+		  support IDE jump-to integration (see `_parseLocationFromLine`)
+		
+		- strip timestamp/thread id prefixes from lines (see `_preprocessLine`) 
+		
 		- support warnings-as-errors behaviour by putting the first warning into 
-			the final error message if the only error is that there are warnings 
-			(by overriding handleEnd)
+		  the final error message if the only error is that there are warnings 
+		  (by overriding `handleEnd`)
 	
 	This class is not thread-safe, so locking should be provided by the caller 
 	if multiple threads are in use (e.g. for reading stdout and stderr in parallel). 
@@ -185,17 +188,17 @@ class ProcessOutputHandler(object):
 			cls = ProcessOutputHandler
 		return cls(name, options=options, **kwargs)
 	
-	def handleLine(self, line, isstderr=False):
+	def handleLine(self, line:str, isstderr=False):
 		"""
 		Called once for every line in the stdout and stderr 
 		(stderr after, if not during stdout). 
 		
 		Line must be a unicode str (not bytes). 
 		
-		The default implementation uses _decideLogLevel to decide how to 
-		interpret each line, then calls _preprocessLine and _parseLocationFromLine 
+		The default implementation uses `_decideLogLevel()` to decide how to 
+		interpret each line, then calls `_preprocessLine()` and `_parseLocationFromLine()` 
 		on the line before stashing errors/warnings, and passing the 
-		pre-processed line to _log for logging at the specified level. 
+		pre-processed line to `_log()` for logging at the specified level. 
 		
 		@param isstderr: if stdout/err are segregated then this can be used as a 
 		hint to indicate the source of the line. 
@@ -222,6 +225,16 @@ class ProcessOutputHandler(object):
 			self._log(level, line, filename, fileline, col)
 	
 	def handleEnd(self, returnCode=None):
+		"""
+		Called when the process has terminated, to collate any warnings, errors and other messages, 
+		and in conjunction with the ``returnCode`` optionally raise an `xpybuild.utils.buildexceptions.BuildException` 
+		with a suitable message. 
+		
+		The default implementation logs a message summarizing the total number of warnings, then raises a 
+		``BuildException`` if there were any error or (unless ``ignoreReturnCode`` was set) if ``returnCode`` is 
+		non-zero. The exception message will contain the first error, or if none the first warning, or failing that, 
+		the last line of the output. 
+		"""
 		if self._warnings: self._logger.warning('%d warnings during %s', len(self._warnings), self._name)
 			
 		if self._errors: 
@@ -242,19 +255,21 @@ class ProcessOutputHandler(object):
 			return
 		raise BuildException(msg)
 	
-	def _decideLogLevel(self, line, isstderr):
+	def _decideLogLevel(self, line: str, isstderr: bool) -> int:
 		"""
-		Used by the default handleLine implementation to 
+		Called by the default `handleLine` implementation to 
 		decide whether the specified (raw, not yet pre-processed) line is a 
 		warning, an error, or else whether it should be logged at INFO/DEBUG 
-		or not at all. Called exactly once per line. 
+		or not at all. 
 		
-		The default implementation uses "error[\s]*([A-Z]\d+)?:" to check for 
+		Called exactly once per line. 
+		
+		The default implementation uses ``error[\\s]*([A-Z]\\d+)?:`` to check for 
 		errors (similarly for warnings), and logs everything else only at INFO, 
 		and also treats all stderr output as error lines. 
 		
-		Typically returns logging.ERROR, logging.WARNING, logging.DEBUG/INFO or 
-		None. 
+		Typically returns ``logging.ERROR``, ``logging.WARNING``, ``logging.DEBUG/INFO`` or 
+		``None``. 
 		"""
 		
 		assert isinstance(line, str), 'ProcessOutputHandler does not accept bytes - caller must decode bytes to a character str (e.g. l.decode(defaultProcessOutputEncodingDecider(...)))'
@@ -265,7 +280,11 @@ class ProcessOutputHandler(object):
 	
 	def _parseLocationFromLine(self, line):
 		"""
-		Return (filename, linenumber, col, line)
+		Called by `handleLine` to attempt to extract a location from the specified line, which will be included in 
+		any associated WARN or ERROR messages, reformatted as needed for whatever `xpybuild.utils.consoleformatter` 
+		formatter is in use. 
+		
+		Returns (filename, linenumber, col, line)
 		
 		For backwards compat, returning (filename,location) is also permitted
 		
@@ -276,7 +295,7 @@ class ProcessOutputHandler(object):
 		"""
 		return None,None,None,line
 	
-	def _log(self, level, msg, filename=None, fileline=None, filecol=None):
+	def _log(self, level: int, msg: str, filename=None, fileline=None, filecol=None):
 		""" Writes the specified msg to the logger. 
 		
 		If filename and fileline are specified, they are passed to the logrecord, 
@@ -300,7 +319,7 @@ class ProcessOutputHandler(object):
 				r.xpybuild_col = filecol
 		self._logger.handle(r)
 
-	def _preprocessLine(self, line): 
+	def _preprocessLine(self, line: str): 
 		""" 
 		Performs any necessary transformations on the line before it is 
 		logged or stored. By default it strips() whitespace. 

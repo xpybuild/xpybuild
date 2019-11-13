@@ -108,6 +108,9 @@ autodocgen_config = {
 	'generated_source_dir': DOC_SOURCE_DIR+'/autodocgen/',
 	'skip_module_regex': '(xpybuild[.]internal.*|.*[.]__)', # if module matches this then it and any of its submodules will be skipped
 	'write_documented_items_output_file': XPYBUILD_ROOT_DIR+'/_build_output/docs/autodocgen_documented_items.txt',
+	'autodoc_options_decider': {
+		'xpybuild.utils.outputhandler.ProcessOutputHandler': {'members':True, 'private-members':True},
+	},
 }
 
 def setup(app):

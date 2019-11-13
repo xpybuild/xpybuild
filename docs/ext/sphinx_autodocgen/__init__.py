@@ -69,12 +69,25 @@ class AutoDocGen:
 		``.. private:: REASON HERE``. 
 		"""
 
+		autodoc_options_decider = lambda app, what, fullname, obj, docstring, defaultOptions, extra: defaultOptions
+		"""
+		A callback function that returns a dict of the autodoc options to use for documenting the specified item, 
+		similar to the autodoc ``autodoc_default_options`` configuration option. 
+		
+		For example this could be used to enable autodoc flags such as 'private-members' by returning 
+		{'private-members':True} for some names and not others. Return defaultOptions to use the defaults. 
+		
+		Alternatively, for simple cases just set this to a dict whose key is fullname and value is the desired options 
+		dict. 
+		"""
+
 		write_documented_items_output_file: str = None
 		"""A diagnostic option that writes a sorted list of all documented modules and (direct) members to a text 
 		file. This allows before/after diffing of documented members after you make changes. It could be compared by a 
 		test to a reference file, to ensure you don't add items to the documented public API without noticing. """
 
-		_config_keys = ['modules', 'generated_source_dir', 'skip_module_regex', 'skip_on_docstring_regex', 'write_documented_items_output_file']
+		_config_keys = ['modules', 'generated_source_dir', 'skip_module_regex', 'skip_on_docstring_regex', 
+			'autodoc_options_decider', 'write_documented_items_output_file']
 
 	def __init__(self, app):
 		"""
@@ -123,9 +136,14 @@ class AutoDocGen:
 		for k in self.Config._config_keys:
 			self.config.setdefault(k, getattr(self.Config, k))
 		
+		if isinstance(self.config['autodoc_options_decider'], dict):
+			optionsdict = self.config['autodoc_options_decider']
+			self.config['autodoc_options_decider'] = lambda app, what, fullname, obj, docstring, defaultOptions, extra: (
+				optionsdict[fullname] if fullname in optionsdict else defaultOptions)
+		
 		modules = self.config['modules']
 		generated_dir = self.config['generated_source_dir']
-		assert os.path.normpath(generated_dir) != os.path.normpath('.'), 'Cannot use current path as generated_source_dir - everything would be wiped out!' 
+		assert os.path.normpath(generated_dir) != os.path.normpath('.'), 'Cannot use current path as generated_source_dir - everything would be wiped out!'  
 		
 		self.clean()
 
@@ -138,7 +156,7 @@ class AutoDocGen:
 		self.documented_items = set() # list of names of everything we've documented, which can be used for diff-ing output
 		
 		for mod in modules:
-			self.visitModule(mod)
+			self.visit_module(mod)
 		
 		if self.config['write_documented_items_output_file']:
 			with open(os.path.join(self.config['generated_source_dir'], self.config['write_documented_items_output_file']), 'w', encoding='utf-8') as f:
@@ -147,27 +165,35 @@ class AutoDocGen:
 				for m in items:
 					f.write(f'{m}\n')
 
-	def getMemberTemplateRST(self, name, obj, memberType):
+	def get_module_member_rst(self, memberType, qualifiedName, obj, docstring):
+		name = qualifiedName.split('.')[-1]
 		result = """
 {name_escaped}
 {name_underline}
 
 .. auto{type}:: {name}
-"""
-		if memberType in {'class', 'exception'}: result += """  :members:
-"""
-		return result
-
-	def generateMemberRST(self, name, obj, memberType):
-		return self.getMemberTemplateRST(name, obj, memberType).format(
-			#TODO: qualified_name=obj.__qualname__,
+""".format(
+			qualified_name=qualifiedName,
 			name=name,
 			name_escaped=rst.escape(name),
 			name_underline=member_underline*len(rst.escape(name)),
 			type=memberType
 		)
+		
+		defaults = {'members':bool(memberType in {'class', 'exception'})} # TODO: could get this from the autodoc default
+		autodocoptions = self.config['autodoc_options_decider'](self.app, memberType, qualifiedName, obj, docstring, defaults, None)
 
-	def generateMemberTypeRST(self, module, memberType: str, members: List[Tuple[str,object]]):
+		if autodocoptions is None: autodocoptions = defaults
+		for k, v in autodocoptions.items():
+			if v is False: continue
+			result +=f'   :{k}:'
+			if not (v is None or v is True):
+				result += ' '+v
+			result += '\n'
+		
+		return result
+
+	def generate_member_type_rst(self, module, memberType: str, members: List[Tuple[str,object,str]]):
 		"""Generate RST for members of a specified type. 
 		
 		@returns: A string, or None if there is to be no dedicated section for this member type (e.g. if you want 
@@ -175,8 +201,8 @@ class AutoDocGen:
 		
 		"""
 		
-		for mname, m in members:
-			self.documented_items.add(f'{module.__name__} {memberType}: {mname}')
+		for mname, m, _ in members:
+			self.documented_items.add(f'{mname} ({memberType})')
 		
 		# special case, for modules an autosummary works best for seeing at a glance what's in each module
 		if memberType in autosummary_member_types:
@@ -186,11 +212,11 @@ class AutoDocGen:
 				".. autosummary::", 
 				"  :toctree: ./", 
 				""]+[
-				f'  {name}' for (name,_) in members])
-		
-		return '\n'.join(self.generateMemberRST(mname, m, memberType) for (mname,m) in members)
+				f'  {name}' for (name,_, _) in members])
 
-	def generateModuleRST(self, module, membersByType: Dict[str, List[Tuple[str,object]]]):
+		return '\n'.join(self.get_module_member_rst(memberType, mname, m, docstring) for (mname,m, docstring) in members)
+
+	def generate_module_rst(self, module, membersByType: Dict[str, List[Tuple[str,object,str]]]):
 		"""
 		Generates the RST for a Python module. 
 		
@@ -200,7 +226,7 @@ class AutoDocGen:
 
 		module_fullname = module.__name__
 
-		self.documented_items.add(module_fullname)
+		self.documented_items.add(f'{module_fullname} (module)')
 
 		output = """
 {module_fullname}
@@ -215,11 +241,12 @@ class AutoDocGen:
 		for memberType, members in membersByType.items():
 			if not members: continue # don't show empty sections
 
-			extra = self.generateMemberTypeRST(module, memberType, members)
+			extra = self.generate_member_type_rst(module, memberType, members)
+			
 			if extra: output += '\n'+extra	
 		return output
 		
-	def visitModule(self, module) -> bool:
+	def visit_module(self, module) -> bool:
 		"""
 		Visit the specified module and generate doc for it, and if it is a package module also any submodules.
 		
@@ -243,8 +270,8 @@ class AutoDocGen:
 		if hasattr(mod, '__path__'): # if this is a package (i.e. contains other modules)
 			for _, submodulename, _ in pkgutil.iter_modules(mod.__path__, prefix=modulename+ '.'):
 				submodule = importlib.import_module(submodulename.lstrip('.'))
-				if not self.visitModule(submodule): continue
-				if 'module' in membersByType: membersByType['module'].append( (submodulename, submodule))
+				if not self.visit_module(submodule): continue
+				if 'module' in membersByType: membersByType['module'].append( (submodulename, submodule, submodule.__doc__))
 				
 		moduleall = set(getattr(mod, '__all__', []))
 
@@ -300,21 +327,20 @@ class AutoDocGen:
 				logger.debug(f'Ignoring unknown member type: {mname} {repr(m)}')
 				continue
 
+			if ('', mname) in attr_docs:
+				docstring = '\n'.join(attr_docs[('', mname)])
+			else:
+				docstring = getattr(m, '__doc__', None)
 			if skip_on_docstring_regex:
-				if ('', mname) in attr_docs:
-					docstring = '\n'.join(attr_docs[('', mname)])
-				else:
-					docstring = getattr(m, '__doc__', None)
-				
 				if docstring and re.search(skip_on_docstring_regex, docstring):
 					logger.info(f'{self} Skipping {modulename}.{mname} due to its docstring matching the skip_on_docstring_regex')
 					continue
 
-			membersByType[mtype].append((mname,m))
+			membersByType[mtype].append((modulename+'.'+mname, m, docstring))
 
 		logger.debug('%s Visiting module %s with members: %s', self, modulename, membersByType)
 
-		rst = self.generateModuleRST(mod, membersByType)
+		rst = self.generate_module_rst(mod, membersByType)
 		if not rst: 
 			logger.info(f'{self} No RST generated for {modulename}')
 			return
