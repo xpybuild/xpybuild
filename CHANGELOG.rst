@@ -34,10 +34,12 @@ Breaking changes
      `xpybuild.utils.buildfilelocation.formatFileLocation`.
    - ``propertyfunctors`` contents have been moved into `xpybuild.propertysupport`, 
      except for ``make_functor`` which has moved to `xpybuild.utils.functors.makeFunctor`. 
-   - ``buildexceptions`` module was moved to `xpybuild.utils.buildexceptions`. 
-   - ``Touch`` target was moved from ``targets.touch`` to `xpybuild.targets.writefile.Touch`. 
+   - ``buildexceptions`` module was moved to `xpybuild.utils.buildexceptions`; the 
+     `buildcommon.enableLegacyXpybuildModuleNames()` function temporarily allows use of the old name. 
+   - ``Touch`` target was moved from ``targets.touch`` to `xpybuild.targets.writefile.Touch`; the 
+     `buildcommon.enableLegacyXpybuildModuleNames()` function temporarily allows use of the old name.
    - ``Unpack``, ``Zip`` and ``Tarball`` targets were moved to the `xpybuild.targets.archive` 
-     module. 
+     module; the `buildcommon.enableLegacyXpybuildModuleNames()` function temporarily allows use of the old name.
    - The console formatter modules ``teamcity``, ``visualstudio`` and ``make`` 
      have been deleted and their contents moved into `xpybuild.utils.consoleformatter`. 
    - The ``formatTimePeriod`` method was removed from ``timeutils`` and moved to 
@@ -91,6 +93,9 @@ Fixes
 Enhancements
 ------------
 
+-  Command line now accepts a new option ``--rebuild-ignore-deps`` or ``--rid`` which is equivalent to 
+   ``--rebuild --ignore-deps`` and produces a quick way to force a rebuild of a few targets/tags without any of their 
+   dependencies getting rebuilt. 
 -  `xpybuild.targets.copy.FilteredCopy`, `xpybuild.targets.writefile.WriteFile`: Added option ``common.fileEncodingDecider``
    which is used by FilteredCopy and WriteFile to decide what encoding
    to use for reading/writing text files. The default is an

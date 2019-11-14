@@ -85,8 +85,11 @@ def main(args):
 '  (if none is specified, the default operation is a normal build)',
 '      --clean                Clean specified targets incl all deps (default=all)',
 '      --rebuild              Clean specified targets incl all deps then build',
-'                             (add --ignore-deps to rebuild just specified ',
-'                             targets)',
+'      --rebuild-ignore-deps  Clean only the specified targets (not deps) then ',
+'        (or --rid)           build those targets and any missing dependencies, ',
+'                             but not any out-of-date dependencies. This is a ',
+'                             fast but less correct way to get a quick ',
+'                             incremental build, so use with care. ',
 '',
 ' --ft --find-targets <str>   List targets containing the specified substring', 
 ' --ti --target-info <str>    Print details including build file location for ',
@@ -162,7 +165,7 @@ def main(args):
 		opts,targets = getopt.gnu_getopt(args, "knJh?x:j:l:L:f:F:", 
 			["help","exclude=","parallel","workers=","keep-going",
 			"log-level=","logfile=","buildfile=", "dry-run",
-			"targets", 'target-info=', 'ti=', "properties", "options", "clean", "rebuild", "ignore-deps", "id",
+			"targets", 'target-info=', 'ti=', "properties", "options", "clean", "rebuild", "rebuild-ignore-deps", "rid", "ignore-deps", "id",
 			"format=", "timefile=", "ft=", "find-targets=", "depgraph=", 'cpu-stats', 'random-priority', 'profile', 'verify'])
 		
 		for o, a in opts: # option arguments
@@ -213,6 +216,9 @@ def main(args):
 				buildOptions['keep-going'] = True
 			elif o in ['rebuild']:
 				task = _TASK_REBUILD
+			elif o in ['rebuild-ignore-deps', 'rid']:
+				task = _TASK_REBUILD
+				buildOptions['ignore-deps'] = True
 			elif o in ['id', 'ignore-deps']:
 				buildOptions['ignore-deps'] = True
 			elif o in ['k', 'keep-going']:
