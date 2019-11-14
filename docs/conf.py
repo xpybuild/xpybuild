@@ -117,6 +117,12 @@ def setup(app):
 	app.connect("autodoc-skip-member", autodoc_skip_member)
 	app.connect('autodoc-process-docstring', process_docstring_fixEpydocIndentation)
 
+	def supportGitHubPages(app, exception):
+		outputdir = os.path.abspath('./html')
+		open(outputdir+'/.nojekyll', 'wb').close()
+	app.connect('build-finished', supportGitHubPages)
+
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
