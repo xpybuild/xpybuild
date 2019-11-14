@@ -250,10 +250,17 @@
 	<span class="n">getBuildInitializationContext</span><span class="p">()</span><span class="o">.</span><span class="n">defineAtomicTargetGroup</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
 	<span class="k">return</span> <span class="n">targets</span></div>
 
-<div class="viewcode-block" id="requireXpyBuildVersion"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.requireXpyBuildVersion">[docs]</a><span class="k">def</span> <span class="nf">requireXpyBuildVersion</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="requireXpybuildVersion"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.requireXpybuildVersion">[docs]</a><span class="k">def</span> <span class="nf">requireXpybuildVersion</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Checks that this xpybuild is at least a certain version number. &quot;&quot;&quot;</span>
 	<span class="kn">from</span> <span class="nn">xpybuild.utils.stringutils</span> <span class="k">import</span> <span class="n">compareVersions</span>
 	<span class="k">if</span> <span class="n">compareVersions</span><span class="p">(</span><span class="n">XPYBUILD_VERSION</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;This build file requires xpyBuild at least version &quot;</span><span class="o">+</span><span class="n">version</span><span class="o">+</span><span class="s2">&quot; but this is xpyBuild &quot;</span><span class="o">+</span><span class="n">XPYBUILD_VERSION</span><span class="p">)</span></div>
+
+<span class="n">requireXpyBuildVersion</span> <span class="o">=</span> <span class="n">requireXpybuildVersion</span>
+<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">.. private:: Old name for compatibility. </span>
+
+<span class="sd">Use requireXpyBuildVersion instead.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="registerPreBuildCheck"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.registerPreBuildCheck">[docs]</a><span class="k">def</span> <span class="nf">registerPreBuildCheck</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Defines a check which will be called after any clean but before any build actions take place.</span>

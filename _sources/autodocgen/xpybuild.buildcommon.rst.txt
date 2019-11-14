@@ -58,10 +58,10 @@ defineAtomicTargetGroup
 .. autofunction:: defineAtomicTargetGroup
 
 
-requireXpyBuildVersion
+requireXpybuildVersion
 ======================
 
-.. autofunction:: requireXpyBuildVersion
+.. autofunction:: requireXpybuildVersion
 
 
 registerPreBuildCheck
