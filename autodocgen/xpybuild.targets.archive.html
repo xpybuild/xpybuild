@@ -182,16 +182,22 @@
             
   <div class="section" id="module-xpybuild.targets.archive">
 <span id="xpybuild-targets-archive"></span><h1>xpybuild.targets.archive<a class="headerlink" href="#module-xpybuild.targets.archive" title="Permalink to this headline">¶</a></h1>
-<p>Targets relating to creating and unpacking archives.</p>
+<p>Targets relating to creating and unpacking archives such as <code class="docutils literal notranslate"><span class="pre">.\zip</span></code>, <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code>.</p>
 <div class="section" id="tarball">
 <h2>Tarball<a class="headerlink" href="#tarball" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="xpybuild.targets.archive.Tarball">
 <em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.archive.</code><code class="sig-name descname">Tarball</code><span class="sig-paren">(</span><em class="sig-param">archive</em>, <em class="sig-param">inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#Tarball"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.Tarball" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
-<p>Target that creates a .tar archive from a set of input files.</p>
-<p>archive: the archive to be created</p>
-<p>inputs: the files (usually pathsets) to be included in the archive.</p>
+<p>Target that creates a <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> archive from a set of input files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>archive</strong> – The archive to be created, which should end with <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code>.</p></li>
+<li><p><strong>inputs</strong> – The files (usually pathsets) to be included in the archive.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -201,9 +207,15 @@
 <dt id="xpybuild.targets.archive.Zip">
 <em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.archive.</code><code class="sig-name descname">Zip</code><span class="sig-paren">(</span><em class="sig-param">archive</em>, <em class="sig-param">inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#Zip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.Zip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
-<p>Target that creates a zip archive from a set of input files.</p>
-<p>archive: the archive to be created</p>
-<p>inputs: the files (usually pathsets) to be included in the archive.</p>
+<p>Target that creates a <code class="docutils literal notranslate"><span class="pre">.zip</span></code> archive from a set of input files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>archive</strong> – The archive to be created, ending with <code class="docutils literal notranslate"><span class="pre">.zip</span></code>.</p></li>
+<li><p><strong>inputs</strong> – The files (usually pathsets) to be included in the archive.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -214,7 +226,7 @@
 <em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.archive.</code><code class="sig-name descname">Unpack</code><span class="sig-paren">(</span><em class="sig-param">dest</em>, <em class="sig-param">archives</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#Unpack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.Unpack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Target that creates a new directory containing the unpacked contents 
-of one or more archives (e.g. .zip files).</p>
+of one or more archives of one of these types: <code class="docutils literal notranslate"><span class="pre">.zip</span> <span class="pre">.jar</span> <span class="pre">.war</span> <span class="pre">.tar.gz</span> <span class="pre">.tar.bz2</span> <span class="pre">.tar</span></code>.</p>
 <p>The parent directory will be created if it doesn’t exist already.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

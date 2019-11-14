@@ -170,6 +170,8 @@
 
 <span class="sd">The main target in this module is `xpybuild.targets.java.Jar`.</span>
 
+<span class="sd">The directory containing the JDK is identified by the option ``java.home``. </span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">shutil</span>
 
@@ -194,7 +196,10 @@
 <span class="k">def</span> <span class="nf">_isJavaFile</span><span class="p">(</span><span class="n">p</span><span class="p">):</span> <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.java&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SignJars"><a class="viewcode-back" href="../../../autodocgen/xpybuild.targets.java.html#xpybuild.targets.java.SignJars">[docs]</a><span class="k">class</span> <span class="nc">SignJars</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot; Copy jars into a target directory and sign them with the supplied keystore, optionally also updating their manifests</span>
+	<span class="sd">&quot;&quot;&quot; Copy jars into a target directory and sign them with the supplied keystore, optionally also updating their manifests. </span>
+<span class="sd">	</span>
+<span class="sd">	Additional command line arguments can be passed to ``signjars`` using the option ``jarsigner.options`` (default ``[]``). </span>
+<span class="sd">	</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">jars</span><span class="p">,</span> <span class="n">keystore</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">storepass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">manifestDefaults</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; </span>
@@ -306,7 +311,41 @@
 				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Error processing </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">dest</span><span class="p">),</span> <span class="n">e</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Javac"><a class="viewcode-back" href="../../../autodocgen/xpybuild.targets.java.html#xpybuild.targets.java.Javac">[docs]</a><span class="k">class</span> <span class="nc">Javac</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot; Compile java source to a directory (without jarring it)</span>
+	<span class="sd">&quot;&quot;&quot; Compile Java classes to a directory (without creating a ``.jar``). </span>
+<span class="sd">	</span>
+<span class="sd">	Example usage::</span>
+<span class="sd">	</span>
+<span class="sd">		Jar(&#39;${OUTPUT_DIR}/myapp.jar&#39;, </span>
+<span class="sd">			# FindPaths walks a directory tree, supporting complex ant-style globbing patterns for include/exclude</span>
+<span class="sd">			compile=[</span>
+<span class="sd">				FindPaths(&#39;./src/&#39;, excludes=[&#39;**/VersionConstants.java&#39;]), </span>
+<span class="sd">				&#39;${BUILD_WORK_DIR}/filtered-java-src/VersionConstants.java&#39;,</span>
+<span class="sd">			],</span>
+<span class="sd">			</span>
+<span class="sd">			# DirBasedPathSet statically lists dependent paths under a directory</span>
+<span class="sd">			classpath=[DirBasedPathSet(&#39;${MY_DEPENDENT_LIBRARY_DIR}/&#39;, &#39;mydep-api.jar&#39;, &#39;mydep-core.jar&#39;)],</span>
+<span class="sd">			</span>
+<span class="sd">			# Specify Jar-specific key/values for the MANIFEST.MF (in addition to any set globally via options)</span>
+<span class="sd">			manifest={&#39;Implementation-Title&#39;:&#39;My Amazing Java Application&#39;}, </span>
+<span class="sd">			</span>
+<span class="sd">			package=FindPaths(&#39;resources/&#39;, includes=&#39;**/*.properties&#39;),</span>
+<span class="sd">		)</span>
+
+<span class="sd">		setGlobalOption(&#39;jar.manifest.defaults&#39;, {&#39;Implementation-Version&#39;: &#39;${APP_VERSION}&#39;, &#39;Implementation-Vendor&#39;: &#39;My Company&#39;})</span>
+
+<span class="sd">	</span>
+<span class="sd">	The following options can be set with ``Javac(...).option(key, value)`` </span>
+<span class="sd">	or `xpybuild.propertysupport.setGlobalOption()` to customize the compilation process:</span>
+<span class="sd">		</span>
+<span class="sd">		- ``javac.warningsAsErrors: bool`` Make the build fail if any warnings are detected. </span>
+<span class="sd">		- ``javac.debug = False`` Include debug information (line numbers) in the compiled ``.class`` files. </span>
+<span class="sd">		- ``javac.encoding = &quot;ASCII&quot;`` The character encoding for ``.java`` source files. </span>
+<span class="sd">		- ``javac.source = &quot;&quot;`` The ``.java`` source compliance level. </span>
+<span class="sd">		- ``javac.target = &quot;&quot;`` The ``.class`` compliance level. </span>
+<span class="sd">		- ``javac.options = []`` A list of extra options to pass to ``javac``. </span>
+<span class="sd">		- ``javac.logs = &quot;${BUILD_WORK_DIR}/javac_logs&quot;`` The directory in which errors/warnings from ``javac`` will be written. </span>
+<span class="sd">		- ``javac.outputHandlerFactory = JavacProcessOutputHandler`` The class used to parse and handle error/warning messages. </span>
+<span class="sd">	</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="nb">compile</span> <span class="o">=</span> <span class="kc">None</span>
 	<span class="n">classpath</span> <span class="o">=</span> <span class="kc">None</span>
@@ -316,7 +355,7 @@
 
 <span class="sd">		@param compile: PathSet (or list)  of things to compile</span>
 
-<span class="sd">		@param classpath: PathSet (or list) of things to be on the classpath; </span>
+<span class="sd">		@param classpath: PathSet (or list) of things to be on the classpath</span>
 
 <span class="sd">		@param options: [DEPRECATED - use .option() instead]</span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -349,7 +388,14 @@
 				<span class="k">if</span> <span class="n">v</span> <span class="ow">and</span> <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;javac.&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">&#39;java.home&#39;</span><span class="p">)])</span></div>
 
 <div class="viewcode-block" id="Jar"><a class="viewcode-back" href="../../../autodocgen/xpybuild.targets.java.html#xpybuild.targets.java.Jar">[docs]</a><span class="k">class</span> <span class="nc">Jar</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot; Create a Jar, first compiling some java, then packing it all up</span>
+	<span class="sd">&quot;&quot;&quot; Create a jar, first compiling some Java classes, then packing it all up as a ``.jar``. </span>
+<span class="sd">	</span>
+<span class="sd">	In addition to the options listed on the `Javac` target, the following options can be set when </span>
+<span class="sd">	creating a Jar, using ``Jar(...).option(key, value)`` or `xpybuild.propertysupport.setGlobalOption()`:</span>
+<span class="sd">		</span>
+<span class="sd">		- ``jar.manifest.defaults = {}`` Default key/value pairs (e.g. version number) to include in the ``MANIFEST.MF`` of every jar. </span>
+<span class="sd">		- ``jar.manifest.classpathAppend = []`` Add additional classpath entries to the ``MANIFEST.MF`` which are needed at runtime but not during compilation. </span>
+<span class="sd">		- ``jar.options = []`` A list of extra options to pass to ``jar``. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="nb">compile</span> <span class="o">=</span> <span class="kc">None</span>
 	<span class="n">classpath</span> <span class="o">=</span> <span class="kc">None</span>
@@ -357,27 +403,29 @@
 	<span class="n">manifest</span> <span class="o">=</span> <span class="kc">None</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jar</span><span class="p">,</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">manifest</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">preserveManifestFormatting</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; </span>
-<span class="sd">		To add additional entries to the manifest&#39;s classpath which are needed at runtime </span>
-<span class="sd">		but not during compilation, use .option(&#39;jar.manifest.classpathAppend&#39;, [...])</span>
-<span class="sd">		</span>
-<span class="sd">		@param jar: path to jar to create</span>
 
-<span class="sd">		@param compile: PathSet (or list)  of things to compile</span>
+<span class="sd">		@param jar: path to jar to create.</span>
+
+<span class="sd">		@param compile: PathSet (or list)  of things to compile.</span>
 
 <span class="sd">		@param classpath: PathSet (or list) of things to be on the classpath; </span>
-<span class="sd">		destination mapping indicates how they will appear in the manifest</span>
+<span class="sd">			destination mapping indicates how they will appear in the manifest.</span>
 
-<span class="sd">		@param manifest: map of manifest entries (can be empty), OR a string with the filename to use </span>
-<span class="sd">		OR None to disable manifest generation and just produce a normal zip</span>
+<span class="sd">		@param manifest: Typically a map of ``MANIFEST.MF`` entries (can be empty) such as::</span>
+<span class="sd">		</span>
+<span class="sd">				manifest={&#39;Implementation-Title&#39;:&#39;My Amazing Java Application&#39;}, </span>
+<span class="sd">			</span>
+<span class="sd">			Alternative, specify a string to get the manifest from a file, or ``None`` </span>
+<span class="sd">			to disable manifest generation and just produce a normal zip. </span>
 
-<span class="sd">		@param options: [DEPRECATED - use .option() instead]</span>
+<span class="sd">		@param options: (deprecated - use ``.option()`` instead). </span>
 
 <span class="sd">		@param package: PathSet (or list) of other files to include in the jar; </span>
-<span class="sd">			destination mapping indicates where they will appear in the jar</span>
+<span class="sd">			destination mapping indicates where they will appear in the jar.</span>
 <span class="sd">		</span>
 <span class="sd">		@param preserveManifestFormatting: an advanced option that prevents the jar tool from </span>
 <span class="sd">			reformatting the specified manifest file to comply with Java conventions </span>
-<span class="sd">			(also prevents manifest merging if jar already exists)</span>
+<span class="sd">			(also prevents manifest merging if jar already exists).</span>
 
 <span class="sd">		</span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -474,7 +522,21 @@
 				<span class="k">if</span> <span class="n">v</span> <span class="ow">and</span> <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;javac.&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;jar.&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">&#39;java.home&#39;</span><span class="p">)])</span></div>
 
 <div class="viewcode-block" id="Javadoc"><a class="viewcode-back" href="../../../autodocgen/xpybuild.targets.java.html#xpybuild.targets.java.Javadoc">[docs]</a><span class="k">class</span> <span class="nc">Javadoc</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot; Creates javadoc from a set of input files</span>
+	<span class="sd">&quot;&quot;&quot; Creates Javadoc from a set of input files. </span>
+<span class="sd">	</span>
+<span class="sd">	The following options can be set with ``Javadoc(...).option(key, value)`` to customize the documentation process:</span>
+<span class="sd">		</span>
+<span class="sd">		- ``javadoc.title = &quot;Documentation&quot;`` The title. </span>
+<span class="sd">		</span>
+<span class="sd">		- ``javac.ignoreSourceFilesFromClasspath = False`` By default, Javadoc will parse any source .java files </span>
+<span class="sd">		  present in the classpath in case they contain comments </span>
+<span class="sd">		  that should be inherited by the source files being documented. If these files contain errors (such as missing </span>
+<span class="sd">		  optional dependencies) it will cause Javadoc to fail. This option prevents the classpath from being searched </span>
+<span class="sd">		  for source files (by setting -sourcepath to a non-existent directoryu), which avoids errors and may also speed </span>
+<span class="sd">		  up the Javadoc generation. </span>
+
+<span class="sd">		- ``javac.access = &quot;public&quot;`` Identifies which members and classes to include. </span>
+<span class="sd">		</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destdir</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>

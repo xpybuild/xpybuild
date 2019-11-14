@@ -184,13 +184,15 @@
 <span id="xpybuild-targets-java"></span><h1>xpybuild.targets.java<a class="headerlink" href="#module-xpybuild.targets.java" title="Permalink to this headline">¶</a></h1>
 <p>Contains targets for building and documenting Java applications.</p>
 <p>The main target in this module is <a class="reference internal" href="#xpybuild.targets.java.Jar" title="xpybuild.targets.java.Jar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.java.Jar</span></code></a>.</p>
+<p>The directory containing the JDK is identified by the option <code class="docutils literal notranslate"><span class="pre">java.home</span></code>.</p>
 <div class="section" id="signjars">
 <h2>SignJars<a class="headerlink" href="#signjars" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="xpybuild.targets.java.SignJars">
 <em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.java.</code><code class="sig-name descname">SignJars</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">jars</em>, <em class="sig-param">keystore</em>, <em class="sig-param">alias=None</em>, <em class="sig-param">storepass=None</em>, <em class="sig-param">manifestDefaults=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/java.html#SignJars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.java.SignJars" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
-<p>Copy jars into a target directory and sign them with the supplied keystore, optionally also updating their manifests</p>
+<p>Copy jars into a target directory and sign them with the supplied keystore, optionally also updating their manifests.</p>
+<p>Additional command line arguments can be passed to <code class="docutils literal notranslate"><span class="pre">signjars</span></code> using the option <code class="docutils literal notranslate"><span class="pre">jarsigner.options</span></code> (default <code class="docutils literal notranslate"><span class="pre">[]</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -214,13 +216,47 @@ is found in the original manifest.mf file already.</p></li>
 <dt id="xpybuild.targets.java.Javac">
 <em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.java.</code><code class="sig-name descname">Javac</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">compile</em>, <em class="sig-param">classpath</em>, <em class="sig-param">options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/java.html#Javac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.java.Javac" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
-<p>Compile java source to a directory (without jarring it)</p>
+<p>Compile Java classes to a directory (without creating a <code class="docutils literal notranslate"><span class="pre">.jar</span></code>).</p>
+<p>Example usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Jar</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{OUTPUT_DIR}</span><span class="s1">/myapp.jar&#39;</span><span class="p">,</span> 
+        <span class="c1"># FindPaths walks a directory tree, supporting complex ant-style globbing patterns for include/exclude</span>
+        <span class="nb">compile</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;./src/&#39;</span><span class="p">,</span> <span class="n">excludes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;**/VersionConstants.java&#39;</span><span class="p">]),</span> 
+                <span class="s1">&#39;$</span><span class="si">{BUILD_WORK_DIR}</span><span class="s1">/filtered-java-src/VersionConstants.java&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+        
+        <span class="c1"># DirBasedPathSet statically lists dependent paths under a directory</span>
+        <span class="n">classpath</span><span class="o">=</span><span class="p">[</span><span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{MY_DEPENDENT_LIBRARY_DIR}</span><span class="s1">/&#39;</span><span class="p">,</span> <span class="s1">&#39;mydep-api.jar&#39;</span><span class="p">,</span> <span class="s1">&#39;mydep-core.jar&#39;</span><span class="p">)],</span>
+        
+        <span class="c1"># Specify Jar-specific key/values for the MANIFEST.MF (in addition to any set globally via options)</span>
+        <span class="n">manifest</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Implementation-Title&#39;</span><span class="p">:</span><span class="s1">&#39;My Amazing Java Application&#39;</span><span class="p">},</span> 
+        
+        <span class="n">package</span><span class="o">=</span><span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;resources/&#39;</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="s1">&#39;**/*.properties&#39;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">setGlobalOption</span><span class="p">(</span><span class="s1">&#39;jar.manifest.defaults&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Implementation-Version&#39;</span><span class="p">:</span> <span class="s1">&#39;$</span><span class="si">{APP_VERSION}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;Implementation-Vendor&#39;</span><span class="p">:</span> <span class="s1">&#39;My Company&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>The following options can be set with <code class="docutils literal notranslate"><span class="pre">Javac(...).option(key,</span> <span class="pre">value)</span></code> 
+or <a class="reference internal" href="xpybuild.propertysupport.html#xpybuild.propertysupport.setGlobalOption" title="xpybuild.propertysupport.setGlobalOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.propertysupport.setGlobalOption()</span></code></a> to customize the compilation process:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">javac.warningsAsErrors:</span> <span class="pre">bool</span></code> Make the build fail if any warnings are detected.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">javac.debug</span> <span class="pre">=</span> <span class="pre">False</span></code> Include debug information (line numbers) in the compiled <code class="docutils literal notranslate"><span class="pre">.class</span></code> files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">javac.encoding</span> <span class="pre">=</span> <span class="pre">&quot;ASCII&quot;</span></code> The character encoding for <code class="docutils literal notranslate"><span class="pre">.java</span></code> source files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">javac.source</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></code> The <code class="docutils literal notranslate"><span class="pre">.java</span></code> source compliance level.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">javac.target</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></code> The <code class="docutils literal notranslate"><span class="pre">.class</span></code> compliance level.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">javac.options</span> <span class="pre">=</span> <span class="pre">[]</span></code> A list of extra options to pass to <code class="docutils literal notranslate"><span class="pre">javac</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">javac.logs</span> <span class="pre">=</span> <span class="pre">&quot;${BUILD_WORK_DIR}/javac_logs&quot;</span></code> The directory in which errors/warnings from <code class="docutils literal notranslate"><span class="pre">javac</span></code> will be written.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">javac.outputHandlerFactory</span> <span class="pre">=</span> <span class="pre">JavacProcessOutputHandler</span></code> The class used to parse and handle error/warning messages.</p></li>
+</ul>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>output</strong> – output dir for class files</p></li>
 <li><p><strong>compile</strong> – PathSet (or list)  of things to compile</p></li>
-<li><p><strong>classpath</strong> – PathSet (or list) of things to be on the classpath;</p></li>
+<li><p><strong>classpath</strong> – PathSet (or list) of things to be on the classpath</p></li>
 <li><p><strong>options</strong> – [DEPRECATED - use .option() instead]</p></li>
 </ul>
 </dd>
@@ -234,24 +270,36 @@ is found in the original manifest.mf file already.</p></li>
 <dt id="xpybuild.targets.java.Jar">
 <em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.java.</code><code class="sig-name descname">Jar</code><span class="sig-paren">(</span><em class="sig-param">jar</em>, <em class="sig-param">compile</em>, <em class="sig-param">classpath</em>, <em class="sig-param">manifest</em>, <em class="sig-param">options=None</em>, <em class="sig-param">package=None</em>, <em class="sig-param">preserveManifestFormatting=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/java.html#Jar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.java.Jar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
-<p>Create a Jar, first compiling some java, then packing it all up</p>
-<p>To add additional entries to the manifest’s classpath which are needed at runtime 
-but not during compilation, use .option(‘jar.manifest.classpathAppend’, […])</p>
+<p>Create a jar, first compiling some Java classes, then packing it all up as a <code class="docutils literal notranslate"><span class="pre">.jar</span></code>.</p>
+<p>In addition to the options listed on the <a class="reference internal" href="#xpybuild.targets.java.Javac" title="xpybuild.targets.java.Javac"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Javac</span></code></a> target, the following options can be set when 
+creating a Jar, using <code class="docutils literal notranslate"><span class="pre">Jar(...).option(key,</span> <span class="pre">value)</span></code> or <a class="reference internal" href="xpybuild.propertysupport.html#xpybuild.propertysupport.setGlobalOption" title="xpybuild.propertysupport.setGlobalOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.propertysupport.setGlobalOption()</span></code></a>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">jar.manifest.defaults</span> <span class="pre">=</span> <span class="pre">{}</span></code> Default key/value pairs (e.g. version number) to include in the <code class="docutils literal notranslate"><span class="pre">MANIFEST.MF</span></code> of every jar.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jar.manifest.classpathAppend</span> <span class="pre">=</span> <span class="pre">[]</span></code> Add additional classpath entries to the <code class="docutils literal notranslate"><span class="pre">MANIFEST.MF</span></code> which are needed at runtime but not during compilation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jar.options</span> <span class="pre">=</span> <span class="pre">[]</span></code> A list of extra options to pass to <code class="docutils literal notranslate"><span class="pre">jar</span></code>.</p></li>
+</ul>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>jar</strong> – path to jar to create</p></li>
-<li><p><strong>compile</strong> – PathSet (or list)  of things to compile</p></li>
+<li><p><strong>jar</strong> – path to jar to create.</p></li>
+<li><p><strong>compile</strong> – PathSet (or list)  of things to compile.</p></li>
 <li><p><strong>classpath</strong> – PathSet (or list) of things to be on the classpath; 
-destination mapping indicates how they will appear in the manifest</p></li>
-<li><p><strong>manifest</strong> – map of manifest entries (can be empty), OR a string with the filename to use 
-OR None to disable manifest generation and just produce a normal zip</p></li>
-<li><p><strong>options</strong> – [DEPRECATED - use .option() instead]</p></li>
+destination mapping indicates how they will appear in the manifest.</p></li>
+<li><p><strong>manifest</strong> – <p>Typically a map of <code class="docutils literal notranslate"><span class="pre">MANIFEST.MF</span></code> entries (can be empty) such as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">manifest</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Implementation-Title&#39;</span><span class="p">:</span><span class="s1">&#39;My Amazing Java Application&#39;</span><span class="p">},</span> 
+</pre></div>
+</div>
+<p>Alternative, specify a string to get the manifest from a file, or <code class="docutils literal notranslate"><span class="pre">None</span></code> 
+to disable manifest generation and just produce a normal zip.</p>
+</p></li>
+<li><p><strong>options</strong> – (deprecated - use <code class="docutils literal notranslate"><span class="pre">.option()</span></code> instead).</p></li>
 <li><p><strong>package</strong> – PathSet (or list) of other files to include in the jar; 
-destination mapping indicates where they will appear in the jar</p></li>
+destination mapping indicates where they will appear in the jar.</p></li>
 <li><p><strong>preserveManifestFormatting</strong> – an advanced option that prevents the jar tool from 
 reformatting the specified manifest file to comply with Java conventions 
-(also prevents manifest merging if jar already exists)</p></li>
+(also prevents manifest merging if jar already exists).</p></li>
 </ul>
 </dd>
 </dl>
@@ -264,7 +312,20 @@ reformatting the specified manifest file to comply with Java conventions
 <dt id="xpybuild.targets.java.Javadoc">
 <em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.java.</code><code class="sig-name descname">Javadoc</code><span class="sig-paren">(</span><em class="sig-param">destdir</em>, <em class="sig-param">source</em>, <em class="sig-param">classpath</em>, <em class="sig-param">options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/java.html#Javadoc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.java.Javadoc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
-<p>Creates javadoc from a set of input files</p>
+<p>Creates Javadoc from a set of input files.</p>
+<p>The following options can be set with <code class="docutils literal notranslate"><span class="pre">Javadoc(...).option(key,</span> <span class="pre">value)</span></code> to customize the documentation process:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">javadoc.title</span> <span class="pre">=</span> <span class="pre">&quot;Documentation&quot;</span></code> The title.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">javac.ignoreSourceFilesFromClasspath</span> <span class="pre">=</span> <span class="pre">False</span></code> By default, Javadoc will parse any source .java files 
+present in the classpath in case they contain comments 
+that should be inherited by the source files being documented. If these files contain errors (such as missing 
+optional dependencies) it will cause Javadoc to fail. This option prevents the classpath from being searched 
+for source files (by setting -sourcepath to a non-existent directoryu), which avoids errors and may also speed 
+up the Javadoc generation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">javac.access</span> <span class="pre">=</span> <span class="pre">&quot;public&quot;</span></code> Identifies which members and classes to include.</p></li>
+</ul>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

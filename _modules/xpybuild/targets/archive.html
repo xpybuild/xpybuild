@@ -166,7 +166,7 @@
 <span class="c1">#</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Targets relating to creating and unpacking archives. </span>
+<span class="sd">Targets relating to creating and unpacking archives such as ``.\zip``, ``.tar.gz``. </span>
 
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -186,14 +186,14 @@
 <span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
 
 <div class="viewcode-block" id="Tarball"><a class="viewcode-back" href="../../../autodocgen/xpybuild.targets.archive.html#xpybuild.targets.archive.Tarball">[docs]</a><span class="k">class</span> <span class="nc">Tarball</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot; Target that creates a .tar archive from a set of input files.</span>
+	<span class="sd">&quot;&quot;&quot; Target that creates a ``.tar.gz`` archive from a set of input files.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		archive: the archive to be created</span>
+<span class="sd">		@param archive: The archive to be created, which should end with ``.tar.gz``. </span>
 
-<span class="sd">		inputs: the files (usually pathsets) to be included in the archive.</span>
+<span class="sd">		@param inputs: The files (usually pathsets) to be included in the archive.</span>
 
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
@@ -218,14 +218,14 @@
 		<span class="k">return</span> <span class="n">r</span></div>
 
 <div class="viewcode-block" id="Zip"><a class="viewcode-back" href="../../../autodocgen/xpybuild.targets.archive.html#xpybuild.targets.archive.Zip">[docs]</a><span class="k">class</span> <span class="nc">Zip</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot; Target that creates a zip archive from a set of input files.</span>
+	<span class="sd">&quot;&quot;&quot; Target that creates a ``.zip`` archive from a set of input files.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		archive: the archive to be created</span>
+<span class="sd">		@param archive: The archive to be created, ending with ``.zip``. </span>
 
-<span class="sd">		inputs: the files (usually pathsets) to be included in the archive.</span>
+<span class="sd">		@param inputs: The files (usually pathsets) to be included in the archive.</span>
 
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
@@ -296,7 +296,7 @@
 
 <div class="viewcode-block" id="Unpack"><a class="viewcode-back" href="../../../autodocgen/xpybuild.targets.archive.html#xpybuild.targets.archive.Unpack">[docs]</a><span class="k">class</span> <span class="nc">Unpack</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Target that creates a new directory containing the unpacked contents </span>
-<span class="sd">	of one or more archives (e.g. .zip files). </span>
+<span class="sd">	of one or more archives of one of these types: ``.zip .jar .war .tar.gz .tar.bz2 .tar``.</span>
 <span class="sd">	</span>
 <span class="sd">	The parent directory will be created if it doesn&#39;t exist already. </span>
 <span class="sd">	&quot;&quot;&quot;</span>

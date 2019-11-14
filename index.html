@@ -150,6 +150,106 @@
             
   <div class="section" id="welcome-to-xpybuild">
 <h1>Welcome to xpybuild<a class="headerlink" href="#welcome-to-xpybuild" title="Permalink to this headline">¶</a></h1>
+<p>Xpybuild is a fast cross-platform, cross-language build system that uses Python as the build file format.</p>
+<p>It supports Windows and Linux, uses build scripts written in Python 3.6+, and has built-in targets for Java, C/C++ and
+C# compilation, and for packaging/distribution operations like file copy/filtering and creating and unpacking
+.zip and .tar.gz archives.</p>
+<p>Why another build system? Simply put, while there’s plenty to love about popular build tools such as Make, Ant, Maven,
+Gradle and SCons, they all have their blind spots, and we wanted to create something that combined the best bits of each.</p>
+<p>Xpybuild exists because we value:</p>
+<blockquote>
+<div><ul>
+<li><p><em>fast</em>, highly parallel builds that scale well, and deliver incremental/no-op builds really fast. For example, a large
+project with 2000+ highly complex C++, C#, Java and packaging output targets can check all dependencies to determine
+whether any incremental rebuilding is required in 2-4 seconds on a typical desktop machine. Many build systems
+just don’t scale once you get into the 100s and 1000s of targets,
+leaving busy developers twiddling their thumbs throughout the day.</p></li>
+<li><p><em>simple</em> build files that don’t overcomplicate basic tasks. Building a basic Java .jar or C++ executable should
+be just a few simple lines of build script, and not require the build file author to burn time
+re-implementing potentially error-prone logic for standard operations like cleaning or up-to-dateness checking.</p></li>
+<li><p><em>cross-platform</em> builds without the headaches. Any build system that relies on shell commands (e.g. Make) is always
+going to be prone to subtle behaviour differences between Unix-style systems and Windows; using Python abstracts
+away almost all such differences making it easy to create scripts that work everywhere.</p></li>
+<li><p><em>clear error messages</em>, and ‘fail-fast’ instead of ‘silently wrong’ behaviour. There’s nothing worse than a build script
+that generates different/wrong output to what’s expected due to a minor
+typo in a file path or command line argument. Xpybuild is deliberately intolerant of mistakes such as commands
+that actually do nothing due to lack of matching input, and never swallow errors (though you can explicitly
+specify –keep-going when you need to).</p>
+<p>It also includes a pluggable mechanism for parsing error/warning messages
+from different compilers and reformatting them for common IDEs and CI providers such as Visual Studio and
+Teamcity, and includes the build script location in all errors. The icing on the cake is that since everything
+is written in Python all stack traces are in user-editable Python text files (not hidden away in a Java class)
+so it’s easy to add debugging code if you ever need to.</p>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="sample-build-script">
+<h1>Sample build script<a class="headerlink" href="#sample-build-script" title="Permalink to this headline">¶</a></h1>
+<p>Here’s a sample build script that shows how easy it is to do some non-trivial compilation and packaging operations
+using xpybuild. Note how the build script specifies what is to be built but the framework takes care of up-to-dateness
+and cleaning without any extra logic in the build script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.targets.java</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.targets.copy</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.targets.archive</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># xpybuild properties are immutable substitution values</span>
+<span class="c1"># which can be overridden on the command line if needed</span>
+<span class="c1"># (property type can be a string/path/outputdir/list/enumeration/bool)</span>
+<span class="n">defineStringProperty</span><span class="p">(</span><span class="s1">&#39;APP_VERSION&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0.0.0&#39;</span><span class="p">)</span>
+<span class="n">defineOutputDirProperty</span><span class="p">(</span><span class="s1">&#39;OUTPUT_DIR&#39;</span><span class="p">,</span> <span class="s1">&#39;build-output&#39;</span><span class="p">)</span>
+<span class="n">definePathProperty</span><span class="p">(</span><span class="s1">&#39;MY_DEPENDENT_LIBRARY_DIR&#39;</span><span class="p">,</span> <span class="s1">&#39;./libs&#39;</span><span class="p">,</span> <span class="n">mustExist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">Jar</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{OUTPUT_DIR}</span><span class="s1">/myapp.jar&#39;</span><span class="p">,</span>
+        <span class="c1"># FindPaths walks a directory tree, supporting complex ant-style globbing patterns for include/exclude</span>
+        <span class="nb">compile</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;./src/&#39;</span><span class="p">,</span> <span class="n">excludes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;**/VersionConstants.java&#39;</span><span class="p">]),</span>
+                <span class="s1">&#39;$</span><span class="si">{BUILD_WORK_DIR}</span><span class="s1">/filtered-java-src/VersionConstants.java&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+
+        <span class="c1"># DirBasedPathSet statically lists dependent paths under a directory</span>
+        <span class="n">classpath</span><span class="o">=</span><span class="p">[</span><span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{MY_DEPENDENT_LIBRARY_DIR}</span><span class="s1">/&#39;</span><span class="p">,</span> <span class="s1">&#39;mydep-api.jar&#39;</span><span class="p">,</span> <span class="s1">&#39;mydep-core.jar&#39;</span><span class="p">)],</span>
+
+        <span class="c1"># Specify Jar-specific key/values for the MANIFEST.MF (in addition to any set globally via options)</span>
+        <span class="n">manifest</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Implementation-Title&#39;</span><span class="p">:</span><span class="s1">&#39;My Amazing Java Application&#39;</span><span class="p">},</span>
+<span class="p">)</span><span class="o">.</span><span class="n">tags</span><span class="p">(</span><span class="s1">&#39;myapp&#39;</span><span class="p">)</span> <span class="c1"># tags make it easy to build a subset of targets on the command line</span>
+
+<span class="n">FilteredCopy</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{BUILD_WORK_DIR}</span><span class="s1">/filtered-java-src/VersionConstants.java&#39;</span><span class="p">,</span> <span class="s1">&#39;./src/VersionConstants.java&#39;</span><span class="p">,</span>
+        <span class="n">StringReplaceLineMapper</span><span class="p">(</span><span class="s1">&#39;@APP_VERSION@&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{APP_VERSION}</span><span class="s1">&#39;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># Global &#39;options&#39; provide an easy way to apply common settings to all targets;</span>
+<span class="c1"># options can be overridden for individual targets using `BaseTarget.option(key,value)`</span>
+<span class="n">setGlobalOption</span><span class="p">(</span><span class="s1">&#39;jar.manifest.defaults&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Implementation-Version&#39;</span><span class="p">:</span> <span class="s1">&#39;$</span><span class="si">{APP_VERSION}</span><span class="s1">&#39;</span><span class="p">})</span>
+
+<span class="n">Zip</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{OUTPUT_DIR}</span><span class="s1">/myapp-$</span><span class="si">{APP_VERSION}</span><span class="s1">.zip&#39;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="s1">&#39;$</span><span class="si">{OUTPUT_DIR}</span><span class="s1">/myapp.jar&#39;</span><span class="p">,</span>
+
+        <span class="c1"># The xpybuild &quot;PathSet&quot; concept provides a powerful way to specify sets of source paths,</span>
+        <span class="c1"># and to map each to a corresponding destination (in this case by adding on a prefix)</span>
+        <span class="n">AddDestPrefix</span><span class="p">(</span><span class="s1">&#39;licenses/&#39;</span><span class="p">,</span> <span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;./license-files/&#39;</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="s1">&#39;**/*.txt&#39;</span><span class="p">))</span>
+<span class="p">])</span>
+
+<span class="c1"># In a large build, you&#39;d split your build across multiple files, included like this:</span>
+<span class="n">include</span><span class="p">(</span><span class="s1">&#39;subdir/otherbits.xpybuild.py&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This example shows the Jar, FilteredCopy and Zip targets, but explore the <a class="reference internal" href="autodocgen/xpybuild.targets.html#module-xpybuild.targets" title="xpybuild.targets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets</span></code></a> package to see C/C++ and
+C# support, and see what else is available. The <a class="reference internal" href="autodocgen/xpybuild.pathsets.html#module-xpybuild.pathsets" title="xpybuild.pathsets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.pathsets</span></code></a> module explains more about the powerful “PathSet”
+concept that powers xpybuild’s dependency and up-to-dateness checking. See <a class="reference internal" href="autodocgen/xpybuild.propertysupport.html#module-xpybuild.propertysupport" title="xpybuild.propertysupport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.propertysupport</span></code></a> for more about
+properties and options.</p>
+<p>We hope you love using xpybuild!</p>
+</div>
+<div class="section" id="download">
+<h1>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h1>
+<p>Download the latest release of xpybuild from GitHub: <a class="reference external" href="https://github.com/xpybuild/xpybuild/releases">https://github.com/xpybuild/xpybuild/releases</a></p>
+</div>
+<div class="section" id="api-documentation">
+<h1>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -173,6 +273,12 @@
 </li>
 </ul>
 </div>
+</div>
+<div class="section" id="license">
+<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<p>Copyright (c) 2013-2019 Ben Spiller and Matthew Johnson</p>
+<p>Copyright (c) 2013-2019 Software AG, Darmstadt, Germany and/or its licensors</p>
+<p>Licensed under the Apache License, Version 2.0 - see <a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
 </div>
 
 
