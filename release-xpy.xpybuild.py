@@ -30,7 +30,7 @@ from xpybuild.targets.writefile import WriteFile
 from xpybuild.targets.custom import CustomCommand
 from xpybuild.utils.outputhandler import ProcessOutputHandler
 
-requireXpyBuildVersion('3.0')
+requireXpybuildVersion('3.0')
 
 try:
 	import sphinx

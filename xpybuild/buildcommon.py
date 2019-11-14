@@ -103,10 +103,17 @@ def defineAtomicTargetGroup(*targets):
 	getBuildInitializationContext().defineAtomicTargetGroup(targets)
 	return targets
 
-def requireXpyBuildVersion(version: str):
+def requireXpybuildVersion(version: str):
 	""" Checks that this xpybuild is at least a certain version number. """
 	from xpybuild.utils.stringutils import compareVersions
 	if compareVersions(XPYBUILD_VERSION, version) < 0: raise Exception("This build file requires xpyBuild at least version "+version+" but this is xpyBuild "+XPYBUILD_VERSION)
+
+requireXpyBuildVersion = requireXpybuildVersion
+""" 
+.. private:: Old name for compatibility. 
+
+Use requireXpyBuildVersion instead.
+"""
 
 def registerPreBuildCheck(fn):
 	""" Defines a check which will be called after any clean but before any build actions take place.

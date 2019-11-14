@@ -568,7 +568,7 @@ def main(args):
 					log.critical('*** XPYBUILD SUCCEEDED: %s built (%d up-to-date)', targetsBuilt if targetsBuilt else '<NO TARGETS>', (totalTargets-targetsBuilt))
 					return 0
 			finally:
-				publishArtifact('XPyBuild logfile', logFile)
+				publishArtifact('Xpybuild logfile', logFile)
 		else:
 			raise Exception('Task type not implemented yet - '+task) # should not happen
 		
