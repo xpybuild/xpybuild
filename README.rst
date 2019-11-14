@@ -7,10 +7,8 @@ xpybuild
 	:target: https://codecov.io/gh/xpybuild/xpybuild
 
 Documentation: https://xpybuild.github.io/xpybuild/
-Download: https://github.com/xpybuild/xpybuild/releases
 
-.. xpybuild documentation master file, created by
-   sphinx-quickstart on Wed Oct 23 18:53:21 2019.
+Download: https://github.com/xpybuild/xpybuild/releases
 
 Welcome to xpybuild
 -------------------
@@ -106,7 +104,9 @@ and cleaning without any extra logic in the build script::
 	# In a large build, you'd split your build across multiple files, included like this:
 	include('subdir/otherbits.xpybuild.py')
 
-This example shows the Jar, FilteredCopy and Zip targets, but explore the `xpybuild.targets` package to see C/C++ and
+Full documentation is available here: https://xpybuild.github.io/xpybuild/
+
+The above example shows the Jar, FilteredCopy and Zip targets, but explore the `xpybuild.targets` package to see C/C++ and
 C# support, and see what else is available. The `xpybuild.pathsets` module explains more about the powerful "PathSet" 
 concept that powers xpybuild's dependency and up-to-dateness checking. See `xpybuild.propertysupport` for more about 
 properties and options. 
