@@ -22,6 +22,8 @@ Contains targets for building and documenting Java applications.
 
 The main target in this module is `xpybuild.targets.java.Jar`.
 
+The directory containing the JDK is identified by the option ``java.home``. 
+
 """
 import os, inspect, os.path, shutil
 
@@ -46,7 +48,10 @@ defineOption('javac.logs', '${BUILD_WORK_DIR}/javac_logs')
 def _isJavaFile(p): return p.lower().endswith('.java')
 
 class SignJars(BaseTarget):
-	""" Copy jars into a target directory and sign them with the supplied keystore, optionally also updating their manifests
+	""" Copy jars into a target directory and sign them with the supplied keystore, optionally also updating their manifests. 
+	
+	Additional command line arguments can be passed to ``signjars`` using the option ``jarsigner.options`` (default ``[]``). 
+	
 	"""
 	def __init__(self, output, jars, keystore, alias=None, storepass=None, manifestDefaults=None):
 		""" 
@@ -158,7 +163,41 @@ class SignJars(BaseTarget):
 				raise BuildException('Error processing %s: %s'%(os.path.basename(dest), e))
 
 class Javac(BaseTarget):
-	""" Compile java source to a directory (without jarring it)
+	""" Compile Java classes to a directory (without creating a ``.jar``). 
+	
+	Example usage::
+	
+		Jar('${OUTPUT_DIR}/myapp.jar', 
+			# FindPaths walks a directory tree, supporting complex ant-style globbing patterns for include/exclude
+			compile=[
+				FindPaths('./src/', excludes=['**/VersionConstants.java']), 
+				'${BUILD_WORK_DIR}/filtered-java-src/VersionConstants.java',
+			],
+			
+			# DirBasedPathSet statically lists dependent paths under a directory
+			classpath=[DirBasedPathSet('${MY_DEPENDENT_LIBRARY_DIR}/', 'mydep-api.jar', 'mydep-core.jar')],
+			
+			# Specify Jar-specific key/values for the MANIFEST.MF (in addition to any set globally via options)
+			manifest={'Implementation-Title':'My Amazing Java Application'}, 
+			
+			package=FindPaths('resources/', includes='**/*.properties'),
+		)
+
+		setGlobalOption('jar.manifest.defaults', {'Implementation-Version': '${APP_VERSION}', 'Implementation-Vendor': 'My Company'})
+
+	
+	The following options can be set with ``Javac(...).option(key, value)`` 
+	or `xpybuild.propertysupport.setGlobalOption()` to customize the compilation process:
+		
+		- ``javac.warningsAsErrors: bool`` Make the build fail if any warnings are detected. 
+		- ``javac.debug = False`` Include debug information (line numbers) in the compiled ``.class`` files. 
+		- ``javac.encoding = "ASCII"`` The character encoding for ``.java`` source files. 
+		- ``javac.source = ""`` The ``.java`` source compliance level. 
+		- ``javac.target = ""`` The ``.class`` compliance level. 
+		- ``javac.options = []`` A list of extra options to pass to ``javac``. 
+		- ``javac.logs = "${BUILD_WORK_DIR}/javac_logs"`` The directory in which errors/warnings from ``javac`` will be written. 
+		- ``javac.outputHandlerFactory = JavacProcessOutputHandler`` The class used to parse and handle error/warning messages. 
+	
 	"""
 	compile = None
 	classpath = None
@@ -168,7 +207,7 @@ class Javac(BaseTarget):
 
 		@param compile: PathSet (or list)  of things to compile
 
-		@param classpath: PathSet (or list) of things to be on the classpath; 
+		@param classpath: PathSet (or list) of things to be on the classpath
 
 		@param options: [DEPRECATED - use .option() instead]
 		"""
@@ -201,7 +240,14 @@ class Javac(BaseTarget):
 				if v and (k.startswith('javac.') or k == 'java.home')])
 
 class Jar(BaseTarget):
-	""" Create a Jar, first compiling some java, then packing it all up
+	""" Create a jar, first compiling some Java classes, then packing it all up as a ``.jar``. 
+	
+	In addition to the options listed on the `Javac` target, the following options can be set when 
+	creating a Jar, using ``Jar(...).option(key, value)`` or `xpybuild.propertysupport.setGlobalOption()`:
+		
+		- ``jar.manifest.defaults = {}`` Default key/value pairs (e.g. version number) to include in the ``MANIFEST.MF`` of every jar. 
+		- ``jar.manifest.classpathAppend = []`` Add additional classpath entries to the ``MANIFEST.MF`` which are needed at runtime but not during compilation. 
+		- ``jar.options = []`` A list of extra options to pass to ``jar``. 
 	"""
 	compile = None
 	classpath = None
@@ -209,27 +255,29 @@ class Jar(BaseTarget):
 	manifest = None
 	def __init__(self, jar, compile, classpath, manifest, options=None, package=None, preserveManifestFormatting=False):
 		""" 
-		To add additional entries to the manifest's classpath which are needed at runtime 
-		but not during compilation, use .option('jar.manifest.classpathAppend', [...])
-		
-		@param jar: path to jar to create
 
-		@param compile: PathSet (or list)  of things to compile
+		@param jar: path to jar to create.
+
+		@param compile: PathSet (or list)  of things to compile.
 
 		@param classpath: PathSet (or list) of things to be on the classpath; 
-		destination mapping indicates how they will appear in the manifest
+			destination mapping indicates how they will appear in the manifest.
 
-		@param manifest: map of manifest entries (can be empty), OR a string with the filename to use 
-		OR None to disable manifest generation and just produce a normal zip
+		@param manifest: Typically a map of ``MANIFEST.MF`` entries (can be empty) such as::
+		
+				manifest={'Implementation-Title':'My Amazing Java Application'}, 
+			
+			Alternative, specify a string to get the manifest from a file, or ``None`` 
+			to disable manifest generation and just produce a normal zip. 
 
-		@param options: [DEPRECATED - use .option() instead]
+		@param options: (deprecated - use ``.option()`` instead). 
 
 		@param package: PathSet (or list) of other files to include in the jar; 
-			destination mapping indicates where they will appear in the jar
+			destination mapping indicates where they will appear in the jar.
 		
 		@param preserveManifestFormatting: an advanced option that prevents the jar tool from 
 			reformatting the specified manifest file to comply with Java conventions 
-			(also prevents manifest merging if jar already exists)
+			(also prevents manifest merging if jar already exists).
 
 		
 		"""
@@ -326,7 +374,21 @@ class Jar(BaseTarget):
 				if v and (k.startswith('javac.') or k.startswith('jar.') or k == 'java.home')])
 
 class Javadoc(BaseTarget):
-	""" Creates javadoc from a set of input files
+	""" Creates Javadoc from a set of input files. 
+	
+	The following options can be set with ``Javadoc(...).option(key, value)`` to customize the documentation process:
+		
+		- ``javadoc.title = "Documentation"`` The title. 
+		
+		- ``javac.ignoreSourceFilesFromClasspath = False`` By default, Javadoc will parse any source .java files 
+		  present in the classpath in case they contain comments 
+		  that should be inherited by the source files being documented. If these files contain errors (such as missing 
+		  optional dependencies) it will cause Javadoc to fail. This option prevents the classpath from being searched 
+		  for source files (by setting -sourcepath to a non-existent directoryu), which avoids errors and may also speed 
+		  up the Javadoc generation. 
+
+		- ``javac.access = "public"`` Identifies which members and classes to include. 
+		
 	"""
 	def __init__(self, destdir, source, classpath, options):
 		"""
