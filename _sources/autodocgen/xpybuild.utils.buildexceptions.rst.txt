@@ -1,0 +1,15 @@
+
+xpybuild.utils.buildexceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.utils.buildexceptions
+
+.. currentmodule:: xpybuild.utils.buildexceptions
+
+
+
+BuildException
+==============
+
+.. autoclass:: BuildException
+   :members:

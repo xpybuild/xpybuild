@@ -1,0 +1,60 @@
+
+xpybuild.targets.native
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.targets.native
+
+.. currentmodule:: xpybuild.targets.native
+
+
+
+exename
+=======
+
+.. autodata:: exename
+
+
+objectname
+==========
+
+.. autodata:: objectname
+
+
+libname
+=======
+
+.. autodata:: libname
+
+
+staticlibname
+=============
+
+.. autodata:: staticlibname
+
+
+Cpp
+===
+
+.. autoclass:: Cpp
+   :members:
+
+
+C
+=
+
+.. autoclass:: C
+   :members:
+
+
+Link
+====
+
+.. autoclass:: Link
+   :members:
+
+
+Ar
+==
+
+.. autoclass:: Ar
+   :members:

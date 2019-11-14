@@ -1,0 +1,23 @@
+
+xpybuild.utils.outputhandler
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.utils.outputhandler
+
+.. currentmodule:: xpybuild.utils.outputhandler
+
+
+
+ProcessOutputHandler
+====================
+
+.. autoclass:: ProcessOutputHandler
+   :members:
+   :private-members:
+
+
+StdoutRedirector
+================
+
+.. autoclass:: StdoutRedirector
+   :members:

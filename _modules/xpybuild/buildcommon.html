@@ -1,40 +1,149 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>xpybuild.buildcommon &#8212; xpybuild 3.0.dev2 documentation</title>
-    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.buildcommon &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
     
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autodocgen/xpybuild.html">xpybuild</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>xpybuild.buildcommon</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for xpybuild.buildcommon</h1><div class="highlight"><pre>
 <span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
@@ -59,6 +168,11 @@
 <span class="c1"># $Id: buildcommon.py 301527 2017-02-06 15:31:43Z matj $</span>
 <span class="c1">#</span>
 
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Contains standard functionality for use in build files such as `xpybuild.buildcommon.include`, useful constants such as `xpybuild.buildcommon.IS_WINDOWS` and </span>
+<span class="sd">functionality for adding prefixes/suffixes to paths such as `xpybuild.buildcommon.FilenameStringFormatter`. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">traceback</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">locale</span><span class="o">,</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">platform</span>
@@ -78,9 +192,9 @@
 <span class="sd">&quot;&quot;&quot;The current xpybuild version.&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="include"><a class="viewcode-back" href="../../generated/xpybuild.buildcommon.html#xpybuild.buildcommon.include">[docs]</a><span class="k">def</span> <span class="nf">include</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+<div class="viewcode-block" id="include"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.include">[docs]</a><span class="k">def</span> <span class="nf">include</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Parse and register the targets and properties in in the specified </span>
-<span class="sd">	xpybuild.py file. </span>
+<span class="sd">	``XXX.xpybuild.py`` file. </span>
 <span class="sd">	</span>
 <span class="sd">	Targets should only be defined in files included using this method, </span>
 <span class="sd">	not using python import statements. </span>
@@ -106,29 +220,6 @@
 	
 	<span class="k">return</span> <span class="n">namespace</span></div>
 
-
-<div class="viewcode-block" id="normpath"><a class="viewcode-back" href="../../generated/xpybuild.buildcommon.html#xpybuild.buildcommon.normpath">[docs]</a><span class="k">def</span> <span class="nf">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">	.. private: This is deprecated in favour of fileutils.normLongPath and hidden from documentation to avoid polluting the docs. </span>
-
-<span class="sd">	Normalizes the specified file or dir path to remove &quot;..&quot; sequences and </span>
-<span class="sd">	differences in the capitalization of Windows drive letters. </span>
-<span class="sd">	</span>
-<span class="sd">	Does not add Windows long-path safety or absolutization. </span>
-<span class="sd">	</span>
-<span class="sd">	Leaves in place any  trailing platform-appropriate character to indicate </span>
-<span class="sd">	directory if appropriate.</span>
-<span class="sd">	&quot;&quot;&quot;</span>
-	<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-	
-	<span class="c1"># normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case </span>
-	<span class="c1"># for drive letters (more so than directory names), with different cmd prompts frequently using different </span>
-	<span class="c1"># capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts</span>
-	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span> <span class="ow">and</span> <span class="n">IS_WINDOWS</span> <span class="ow">and</span> <span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;:&#39;</span><span class="p">:</span> 
-		<span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">+</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-			
-	<span class="k">return</span> <span class="n">path</span></div>
-
 <span class="n">IS_WINDOWS</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span><span class="o">==</span><span class="s1">&#39;Windows&#39;</span>
 <span class="sd">&quot;&quot;&quot; A boolean that specifies whether this is Windows or some other operating system. &quot;&quot;&quot;</span>
 <span class="c1"># (we won&#39;t want constants for every possible OS here, but since there is so much conditionalization between </span>
@@ -137,17 +228,19 @@
 <span class="k">if</span> <span class="n">IS_WINDOWS</span><span class="p">:</span>
 	<span class="k">def</span> <span class="nf">isWindows</span><span class="p">():</span>
 		<span class="sd">&quot;&quot;&quot; Returns True if this is a windows platform. </span>
-<span class="sd">		@deprecated: Use the IS_WINDOWS constant instead. </span>
+<span class="sd">		</span>
+<span class="sd">		@deprecated: Use the `IS_WINDOWS` constant instead. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="kc">True</span>
 <span class="k">else</span><span class="p">:</span>
-<div class="viewcode-block" id="isWindows"><a class="viewcode-back" href="../../generated/xpybuild.buildcommon.html#xpybuild.buildcommon.isWindows">[docs]</a>	<span class="k">def</span> <span class="nf">isWindows</span><span class="p">():</span>
+<div class="viewcode-block" id="isWindows"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.isWindows">[docs]</a>	<span class="k">def</span> <span class="nf">isWindows</span><span class="p">():</span>
 		<span class="sd">&quot;&quot;&quot; Returns True if this is a windows platform. </span>
-<span class="sd">		@deprecated: Use the IS_WINDOWS constant instead. </span>
+<span class="sd">		</span>
+<span class="sd">		@deprecated: Use the `IS_WINDOWS` constant instead. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="defineAtomicTargetGroup"><a class="viewcode-back" href="../../generated/xpybuild.buildcommon.html#xpybuild.buildcommon.defineAtomicTargetGroup">[docs]</a><span class="k">def</span> <span class="nf">defineAtomicTargetGroup</span><span class="p">(</span><span class="o">*</span><span class="n">targets</span><span class="p">):</span>
+<div class="viewcode-block" id="defineAtomicTargetGroup"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.defineAtomicTargetGroup">[docs]</a><span class="k">def</span> <span class="nf">defineAtomicTargetGroup</span><span class="p">(</span><span class="o">*</span><span class="n">targets</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; The given targets must all be built before anything which depends on any of those targets.</span>
 <span class="sd">	</span>
 <span class="sd">	Returns the flattened list of targets. </span>
@@ -158,19 +251,19 @@
 	<span class="n">getBuildInitializationContext</span><span class="p">()</span><span class="o">.</span><span class="n">defineAtomicTargetGroup</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
 	<span class="k">return</span> <span class="n">targets</span></div>
 
-<div class="viewcode-block" id="requireXpyBuildVersion"><a class="viewcode-back" href="../../generated/xpybuild.buildcommon.html#xpybuild.buildcommon.requireXpyBuildVersion">[docs]</a><span class="k">def</span> <span class="nf">requireXpyBuildVersion</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="requireXpyBuildVersion"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.requireXpyBuildVersion">[docs]</a><span class="k">def</span> <span class="nf">requireXpyBuildVersion</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Checks that this xpybuild is at least a certain version number. &quot;&quot;&quot;</span>
 	<span class="kn">from</span> <span class="nn">xpybuild.utils.stringutils</span> <span class="k">import</span> <span class="n">compareVersions</span>
 	<span class="k">if</span> <span class="n">compareVersions</span><span class="p">(</span><span class="n">XPYBUILD_VERSION</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;This build file requires xpyBuild at least version &quot;</span><span class="o">+</span><span class="n">version</span><span class="o">+</span><span class="s2">&quot; but this is xpyBuild &quot;</span><span class="o">+</span><span class="n">XPYBUILD_VERSION</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="registerPreBuildCheck"><a class="viewcode-back" href="../../generated/xpybuild.buildcommon.html#xpybuild.buildcommon.registerPreBuildCheck">[docs]</a><span class="k">def</span> <span class="nf">registerPreBuildCheck</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+<div class="viewcode-block" id="registerPreBuildCheck"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.registerPreBuildCheck">[docs]</a><span class="k">def</span> <span class="nf">registerPreBuildCheck</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Defines a check which will be called after any clean but before any build actions take place.</span>
 <span class="sd">	    fn should be a functor that takes a context and raises a BuildException if the check fails. &quot;&quot;&quot;</span>
 	<span class="kn">from</span> <span class="nn">buildcontext</span> <span class="k">import</span> <span class="n">getBuildInitializationContext</span>
 	<span class="n">getBuildInitializationContext</span><span class="p">()</span><span class="o">.</span><span class="n">registerPreBuildCheck</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StringFormatter"><a class="viewcode-back" href="../../generated/xpybuild.buildcommon.html#xpybuild.buildcommon.StringFormatter">[docs]</a><span class="k">class</span> <span class="nc">StringFormatter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot; A simple named functor for applying a %s-style string format, useful </span>
+<div class="viewcode-block" id="StringFormatter"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.StringFormatter">[docs]</a><span class="k">class</span> <span class="nc">StringFormatter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; A simple named functor for applying a ``%s``-style string format, useful </span>
 <span class="sd">	in situations where a function is needed to add a suffix/prefix for the </span>
 <span class="sd">	value of an option. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -183,8 +276,8 @@
 		<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 	
-<div class="viewcode-block" id="FilenameStringFormatter"><a class="viewcode-back" href="../../generated/xpybuild.buildcommon.html#xpybuild.buildcommon.FilenameStringFormatter">[docs]</a><span class="k">class</span> <span class="nc">FilenameStringFormatter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot; A simple named functor for applying a %s-style string format. </span>
+<div class="viewcode-block" id="FilenameStringFormatter"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.FilenameStringFormatter">[docs]</a><span class="k">class</span> <span class="nc">FilenameStringFormatter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; A simple named functor for applying a ``%s``-style string format. </span>
 <span class="sd">		 Formatter is just applied to the basename part of the filename,</span>
 <span class="sd">		 the dirname part is preserved as-is.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -199,7 +292,7 @@
 
 <span class="kn">import</span> <span class="nn">pkgutil</span>
 
-<div class="viewcode-block" id="enableLegacyXpybuildModuleNames"><a class="viewcode-back" href="../../generated/xpybuild.buildcommon.html#xpybuild.buildcommon.enableLegacyXpybuildModuleNames">[docs]</a><span class="k">def</span> <span class="nf">enableLegacyXpybuildModuleNames</span><span class="p">():</span>
+<div class="viewcode-block" id="enableLegacyXpybuildModuleNames"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.enableLegacyXpybuildModuleNames">[docs]</a><span class="k">def</span> <span class="nf">enableLegacyXpybuildModuleNames</span><span class="p">():</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Adds aliases for pre-3.0 module names e.g. `buildcommon` instead of `xpybuild.buildcommon`, etc. </span>
 <span class="sd">	</span>
@@ -241,44 +334,52 @@
 <span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">flatten</span>
 
 <span class="n">isDirPath</span> <span class="o">=</span> <span class="n">xpybuild</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">fileutils</span><span class="o">.</span><span class="n">isDirPath</span>
-<span class="sd">&quot;&quot;&quot;Returns true if the path is a directory (ends with a slash, / or \\\\). &quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;Returns true if the path is a directory (ends with a slash, ``/`` or ``\\\\``). &quot;&quot;&quot;</span>
+
+<span class="n">normpath</span> <span class="o">=</span> <span class="n">xpybuild</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">fileutils</span><span class="o">.</span><span class="n">normPath</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. private:: This is deprecated in favour of fileutils.normPath and hidden from documentation to avoid polluting the docs. </span>
+
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 
+           </div>
+           
           </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>

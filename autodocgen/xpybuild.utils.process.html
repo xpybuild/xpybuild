@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.utils.process &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.utils.progress" href="xpybuild.utils.progress.html" />
+    <link rel="prev" title="xpybuild.utils.outputhandler" href="xpybuild.utils.outputhandler.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="xpybuild.html">xpybuild</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.basetarget.html">xpybuild.basetarget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcommon.html">xpybuild.buildcommon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcontext.html">xpybuild.buildcontext</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.pathsets.html">xpybuild.pathsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.propertysupport.html">xpybuild.propertysupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.targets.html">xpybuild.targets</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="xpybuild.utils.html">xpybuild.utils</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.antglob.html">xpybuild.utils.antglob</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.buildexceptions.html">xpybuild.utils.buildexceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.buildfilelocation.html">xpybuild.utils.buildfilelocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.compilers.html">xpybuild.utils.compilers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.consoleformatter.html">xpybuild.utils.consoleformatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.fileutils.html">xpybuild.utils.fileutils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.flatten.html">xpybuild.utils.flatten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.functors.html">xpybuild.utils.functors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.java.html">xpybuild.utils.java</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.outputhandler.html">xpybuild.utils.outputhandler</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">xpybuild.utils.process</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#defaultprocessoutputencodingdecider">defaultProcessOutputEncodingDecider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#call">call</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.progress.html">xpybuild.utils.progress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.stringutils.html">xpybuild.utils.stringutils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.terminal.html">xpybuild.utils.terminal</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="xpybuild.html">xpybuild</a> &raquo;</li>
+        
+          <li><a href="xpybuild.utils.html">xpybuild.utils</a> &raquo;</li>
+        
+      <li>xpybuild.utils.process</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/autodocgen/xpybuild.utils.process.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-xpybuild.utils.process">
+<span id="xpybuild-utils-process"></span><h1>xpybuild.utils.process<a class="headerlink" href="#module-xpybuild.utils.process" title="Permalink to this headline">¶</a></h1>
+<p>Support functions for invoking processes from targets.</p>
+<p>Build file authors should use <a class="reference internal" href="xpybuild.targets.custom.html#xpybuild.targets.custom.CustomCommand" title="xpybuild.targets.custom.CustomCommand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.custom.CustomCommand</span></code></a> instead of this module.</p>
+<div class="section" id="defaultprocessoutputencodingdecider">
+<h2>defaultProcessOutputEncodingDecider<a class="headerlink" href="#defaultprocessoutputencodingdecider" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.utils.process.defaultProcessOutputEncodingDecider">
+<code class="sig-prename descclassname">xpybuild.utils.process.</code><code class="sig-name descname">defaultProcessOutputEncodingDecider</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">executable</em>, <em class="sig-param">**forfutureuse</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/process.html#defaultProcessOutputEncodingDecider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.process.defaultProcessOutputEncodingDecider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function providing the default implementation of the <code class="docutils literal notranslate"><span class="pre">common.processOutputEncodingDecider</span></code>
+option, which determines what encoding to use for parsing output from subprocesses.</p>
+<p>The default implementation ignores the executable argument and returns the same 
+encoding used by the xpybuild process itself (typically the sys.stdout or system default locale).</p>
+<p>A custom function can be provided for this option, using the same signature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> – The current <code class="xref py py-obj docutils literal notranslate"><span class="pre">BuildContext</span></code>, which can be used to expand properties. 
+For some targets this may not be set (i.e. None).</p></li>
+<li><p><strong>executable</strong> – The full absolute path of the executable producing the output.</p></li>
+<li><p><strong>forfutureuse</strong> – Pass through any additional keyword arguments using <code class="docutils literal notranslate"><span class="pre">**forfutureuse</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="call">
+<h2>call<a class="headerlink" href="#call" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.utils.process.call">
+<code class="sig-prename descclassname">xpybuild.utils.process.</code><code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param">args</em>, <em class="sig-param">env=None</em>, <em class="sig-param">cwd=None</em>, <em class="sig-param">outputHandler=None</em>, <em class="sig-param">outputEncoding=None</em>, <em class="sig-param">timeout=None</em>, <em class="sig-param">displayName=None</em>, <em class="sig-param">options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/process.html#call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.process.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call a process with the specified args, logging stderr and stdout to the specified 
+output handler which will throw an exception if the exit code or output 
+of the process indicates an error.</p>
+<p>NB: Consider using the CustomCommand target instead of invoking this directly whenever possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – The command and arguments to invoke (a list, the first element of which is the executable). 
+None items in this list will be ignored.</p></li>
+<li><p><strong>outputHandler</strong> – a ProcessOutputHandler instance, perhaps constructed using 
+the <code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessOutputHandler.create</span></code> method. If not specified, a default is created 
+based on the supplied options.</p></li>
+<li><p><strong>env</strong> – Override the environment the process is started in (defaults to the parent environment)</p></li>
+<li><p><strong>cwd</strong> – Change the working directory the process is started in (defaults to the parent cwd)</p></li>
+<li><p><strong>outputEncoding</strong> – name of the character encoding the process generates. If specified, 
+this overrides the <code class="docutils literal notranslate"><span class="pre">common.processOutputEncodingDecider</span></code> option value (see <a class="reference internal" href="#xpybuild.utils.process.defaultProcessOutputEncodingDecider" title="xpybuild.utils.process.defaultProcessOutputEncodingDecider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">defaultProcessOutputEncodingDecider</span></code></a>).</p></li>
+<li><p><strong>timeout</strong> – maximum time a process is allowed to run. If an options dictionary is not 
+present, this should ALWAYS be set to a value e.g. options[‘process.timeout’].</p></li>
+<li><p><strong>displayName</strong> – human-friendly description of the process for use in error messages, including the target name if possible=</p></li>
+<li><p><strong>options</strong> – where possible, always pass in a dictionary of resolved options, which may be used to customize 
+how this function operates.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="xpybuild.utils.progress.html" class="btn btn-neutral float-right" title="xpybuild.utils.progress" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="xpybuild.utils.outputhandler.html" class="btn btn-neutral float-left" title="xpybuild.utils.outputhandler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

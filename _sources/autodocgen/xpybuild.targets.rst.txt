@@ -1,0 +1,22 @@
+
+xpybuild.targets
+~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.targets
+
+.. currentmodule:: xpybuild.targets
+
+
+.. autosummary::
+  :toctree: ./
+
+  xpybuild.targets.archive
+  xpybuild.targets.copy
+  xpybuild.targets.csharp
+  xpybuild.targets.custom
+  xpybuild.targets.docker
+  xpybuild.targets.download
+  xpybuild.targets.java
+  xpybuild.targets.native
+  xpybuild.targets.symlink
+  xpybuild.targets.writefile

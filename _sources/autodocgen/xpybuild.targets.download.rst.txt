@@ -1,0 +1,15 @@
+
+xpybuild.targets.download
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.targets.download
+
+.. currentmodule:: xpybuild.targets.download
+
+
+
+Download
+========
+
+.. autoclass:: Download
+   :members:

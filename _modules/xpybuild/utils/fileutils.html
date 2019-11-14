@@ -1,40 +1,149 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>xpybuild.utils.fileutils &#8212; xpybuild 3.0.dev2 documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.utils.fileutils &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
     
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
     
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodocgen/xpybuild.html">xpybuild</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>xpybuild.utils.fileutils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for xpybuild.utils.fileutils</h1><div class="highlight"><pre>
 <span></span><span class="c1"># fileutils - helper methods related to the file system</span>
@@ -57,7 +166,9 @@
 <span class="c1">#</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">@undocumented: _getStatCacheSize</span>
+<span class="sd">Functions for manipulating files and paths including `xpybuild.utils.fileutils.openForWrite`, </span>
+<span class="sd">`xpybuild.utils.fileutils.mkdir`, `xpybuild.utils.fileutils.toLongPathSafe` and `xpybuild.utils.fileutils.parsePropertiesFile`.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">platform</span><span class="o">,</span> <span class="nn">threading</span>
@@ -114,14 +225,14 @@
 
 <span class="n">openForWrite</span> <span class="o">=</span> <span class="n">_Win32FileWriter</span> <span class="k">if</span> <span class="n">__isWindows</span> <span class="k">else</span> <span class="nb">open</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Open file for writing and return a corresponding text or binary stream file object. </span>
+<span class="sd">Open a file for writing and return a corresponding text or binary stream file object. </span>
 
 <span class="sd">This has the same semantics as open/io.open, but should be used instead of open/io.open </span>
 <span class="sd">to avoid file system race conditions on Windows. This class must be used from a </span>
 <span class="sd">`with` clause. </span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="mkdir"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.mkdir">[docs]</a><span class="k">def</span> <span class="nf">mkdir</span><span class="p">(</span><span class="n">newdir</span><span class="p">):</span>
+<div class="viewcode-block" id="mkdir"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.mkdir">[docs]</a><span class="k">def</span> <span class="nf">mkdir</span><span class="p">(</span><span class="n">newdir</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Recursively create the specified directory if it doesn&#39;t already exist. </span>
 <span class="sd">	</span>
 <span class="sd">	If it does, exit without error. </span>
@@ -148,7 +259,7 @@
 			<span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Problem creating directory </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">newdir</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
 	<span class="k">return</span> <span class="n">origdir</span></div>
 
-<div class="viewcode-block" id="deleteDir"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.deleteDir">[docs]</a><span class="k">def</span> <span class="nf">deleteDir</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="deleteDir"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.deleteDir">[docs]</a><span class="k">def</span> <span class="nf">deleteDir</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Recursively delete the contents of a directory. </span>
 <span class="sd">	</span>
 <span class="sd">	Contains magic hacks so it works even on paths that exceed the Windows MAX_PATH 260 character length. </span>
@@ -244,7 +355,7 @@
 				<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Unable to delete dir </span><span class="si">%s</span><span class="s2"> - original exception is: &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span>
 				<span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Unable to delete dir </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="deleteFile"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.deleteFile">[docs]</a><span class="k">def</span> <span class="nf">deleteFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="deleteFile"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.deleteFile">[docs]</a><span class="k">def</span> <span class="nf">deleteFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">allowRetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;Delete the specified file, with the option of automatically retrying a few times if the first attempt fails </span>
 <span class="sd">	(to get around Windows weirdness), throwing an exception if the file still exists at the end of retrying. </span>
 <span class="sd">	</span>
@@ -287,7 +398,7 @@
 				<span class="k">else</span><span class="p">:</span>
 					<span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Unable to delete file </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="parsePropertiesFile"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.parsePropertiesFile">[docs]</a><span class="k">def</span> <span class="nf">parsePropertiesFile</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">excludeLines</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="parsePropertiesFile"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.parsePropertiesFile">[docs]</a><span class="k">def</span> <span class="nf">parsePropertiesFile</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">excludeLines</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">	Parse the contents of the specified properties file or line list, and return an ordered list </span>
 <span class="sd">	of (key,value,lineno) pairs.</span>
@@ -352,7 +463,7 @@
 		<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
 			<span class="k">return</span> <span class="kc">False</span>
 <span class="k">else</span><span class="p">:</span>
-<div class="viewcode-block" id="isDirPath"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.isDirPath">[docs]</a>	<span class="k">def</span> <span class="nf">isDirPath</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="isDirPath"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.isDirPath">[docs]</a>	<span class="k">def</span> <span class="nf">isDirPath</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Returns true if the path is a directory (ends with / or \\).</span>
 <span class="sd">		</span>
 <span class="sd">		&gt;&gt;&gt; isDirPath(None)</span>
@@ -374,13 +485,13 @@
 
 
 <span class="n">__longPathCache</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># GIL protects integrity of dict, no need for extra locking as it&#39;s only a cache</span>
-<div class="viewcode-block" id="toLongPathSafe"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.toLongPathSafe">[docs]</a><span class="k">def</span> <span class="nf">toLongPathSafe</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="toLongPathSafe"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.toLongPathSafe">[docs]</a><span class="k">def</span> <span class="nf">toLongPathSafe</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Converts the specified path string to a form suitable for passing to API </span>
 <span class="sd">	calls if it exceeds the maximum path length on this OS. </span>
 <span class="sd">	</span>
 <span class="sd">	Currently, this is necessary only on Windows, where a string </span>
-<span class="sd">	starting with \\?\ must be used to get correct behaviour for long paths. </span>
+<span class="sd">	starting with ``\\\\?\\`` must be used to get correct behaviour for long paths. </span>
 <span class="sd">	</span>
 <span class="sd">	Unlike L{normLongPath} which also performs the long path conversion, this </span>
 <span class="sd">	function does NOT convert to a canonical form, normalize slashes or </span>
@@ -396,7 +507,7 @@
 <span class="sd">	length, which allows extra characters to be added on to the end of the </span>
 <span class="sd">	string (e.g. &quot;.log&quot; or a directory filename) safely. </span>
 <span class="sd">	</span>
-<span class="sd">	@return: The passed-in path, possibly with a &quot;\\?\&quot; prefix added and </span>
+<span class="sd">	@return: The passed-in path, possibly with a ``\\\\?\\`` prefix added and </span>
 <span class="sd">	forward slashes converted to backslashes on Windows. Any trailing slash </span>
 <span class="sd">	is preserved by this function (though will be converted to a backslash). </span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -415,39 +526,56 @@
 			<span class="c1"># consecutive \ separators are not permitted in \\?\ paths</span>
 				<span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span>
 
-		<span class="k">try</span><span class="p">:</span>
-			<span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">):</span> 
-				<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">UNC</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span> <span class="c1"># \\?\UNC\server\share Oh My</span>
-			<span class="k">else</span><span class="p">:</span>
-				<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">path</span>
-		<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-			<span class="c1"># can throw an exception if path is a bytestring containing non-ascii characters</span>
-			<span class="c1"># to be safe, fallback to original string, just hoping it isn&#39;t both </span>
-			<span class="c1"># international AND long</span>
-			<span class="c1"># could try converting using a default encoding, but slightly error-prone</span>
-			<span class="k">pass</span> 
+		<span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">):</span> 
+			<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">UNC</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span> <span class="c1"># \\?\UNC\server\share Oh My</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">path</span>
 		<span class="n">__longPathCache</span><span class="p">[</span><span class="n">inputpath</span><span class="p">]</span>  <span class="o">=</span> <span class="n">path</span>
 	<span class="k">return</span> <span class="n">path</span></div>
 
 <span class="n">__normLongPathCache</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># GIL protects integrity of dict, no need for extra locking as it&#39;s only a cache</span>
+
+<div class="viewcode-block" id="normPath"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.normPath">[docs]</a><span class="k">def</span> <span class="nf">normPath</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Normalizes but does NOT absolutize a path (os.path.normpath). This converts an absolute or relative path to a </span>
+<span class="sd">	canonical form (e.g. normalizing the case of the drive letter on Windows), but unlike `normLongPath` does not </span>
+<span class="sd">	add the ``\\\\?\\`` prefix needed to permit long paths or absolutize. </span>
+<span class="sd">	</span>
+<span class="sd">	@param path: the absolute path to be converted should be a unicode string where possible, as specifying a byte </span>
+<span class="sd">	string will not work if the path contains non-ascii characters. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="kc">None</span>
+
+	<span class="c1"># NB: abspath also normalizes slashes</span>
+	<span class="n">hadslash</span> <span class="o">=</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+	<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+	<span class="c1"># annoyingly we have to do this check since abspath strips off slashes in most cases but not always (e.g. not if given a \\?\ path)</span>
+	<span class="k">if</span> <span class="n">hadslash</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">):</span> <span class="n">path</span> <span class="o">+=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span>
 	
-<div class="viewcode-block" id="normLongPath"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.normLongPath">[docs]</a><span class="k">def</span> <span class="nf">normLongPath</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+	<span class="c1"># normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case </span>
+	<span class="c1"># for drive letters (more so than directory names), with different cmd prompts frequently using different </span>
+	<span class="c1"># capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts</span>
+	<span class="k">if</span> <span class="n">__isWindows</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span> <span class="ow">and</span> <span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;:&#39;</span> <span class="ow">and</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="s1">&#39;A&#39;</span> <span class="ow">and</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="s1">&#39;Z&#39;</span><span class="p">:</span> 
+		<span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">+</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+	<span class="k">return</span> <span class="n">path</span></div>
+	
+<div class="viewcode-block" id="normLongPath"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.normLongPath">[docs]</a><span class="k">def</span> <span class="nf">normLongPath</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Normalizes and absolutizes a path (os.path.abspath), converts to a canonical </span>
 <span class="sd">	form (e.g. normalizing the case of the drive letter on Windows), and on </span>
-<span class="sd">	windows adds the &quot;\\?\&quot; prefix needed to force correct handling of long </span>
+<span class="sd">	windows adds the ``\\\\?\\`` prefix needed to force correct handling of long </span>
 <span class="sd">	(&gt;256 chars) paths (same as L{toLongPathSafe}). </span>
 <span class="sd">	</span>
 <span class="sd">	@param path: the absolute path to be converted should be a unicode string where possible, as specifying a byte </span>
 <span class="sd">	string will not work if the path contains non-ascii characters. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span> <span class="k">return</span> <span class="n">path</span>
+	<span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="n">path</span>
 	
 	<span class="c1"># profiling shows normLongPath is surprisingly costly; caching results reduces dep checking by 2-3x</span>
 	<span class="k">if</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">__normLongPathCache</span><span class="p">:</span> <span class="k">return</span> <span class="n">__normLongPathCache</span><span class="p">[</span><span class="n">path</span><span class="p">]</span>
 	<span class="n">inputpath</span> <span class="o">=</span> <span class="n">path</span>
 	<span class="c1"># currently there is some duplication between this and buildcommon.normpath which we ought to fix at some point</span>
-	
+
 	<span class="c1"># normpath does nothing to normalize case, and windows seems to be quite random about upper/lower case </span>
 	<span class="c1"># for drive letters (more so than directory names), with different cmd prompts frequently using different </span>
 	<span class="c1"># capitalization, so normalize at least that bit, to prevent spurious rebuilding from different prompts</span>
@@ -460,25 +588,18 @@
 	<span class="k">else</span><span class="p">:</span>
 		<span class="c1"># abspath also normalizes slashes</span>
 		<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-		
+
 		<span class="k">if</span> <span class="n">iswindows</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">):</span>
-			<span class="k">try</span><span class="p">:</span>
-				<span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">):</span> 
-					<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">UNC</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span> <span class="c1"># \\?\UNC\server\share Oh My</span>
-				<span class="k">else</span><span class="p">:</span>
-					<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">path</span>
-			<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-				<span class="c1"># can throw an exception if path is a bytestring containing non-ascii characters</span>
-				<span class="c1"># to be safe, fallback to original string, just hoping it isn&#39;t both </span>
-				<span class="c1"># international AND long</span>
-				<span class="c1"># could try converting using a default encoding, but slightly error-prone</span>
-				<span class="k">pass</span> 
+			<span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">):</span> 
+				<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">UNC</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span> <span class="c1"># \\?\UNC\server\share Oh My</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">?</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">path</span>
 	<span class="n">__normLongPathCache</span><span class="p">[</span><span class="n">inputpath</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
 	<span class="k">return</span> <span class="n">path</span></div>
 	
 <span class="n">__statcache</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">__statcache_get</span> <span class="o">=</span> <span class="n">__statcache</span><span class="o">.</span><span class="n">get</span>
-<div class="viewcode-block" id="cached_stat"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.cached_stat">[docs]</a><span class="k">def</span> <span class="nf">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">errorIfMissing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="cached_stat"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.cached_stat">[docs]</a><span class="k">def</span> <span class="nf">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">errorIfMissing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Cached-once os.stat (DO NOT USE if you expect it to change after startup). </span>
 <span class="sd">	Returns False if missing.  &quot;&quot;&quot;</span>
 	<span class="n">st</span> <span class="o">=</span> <span class="n">__statcache_get</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -493,31 +614,37 @@
 		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot find path &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">path</span><span class="p">)</span>
 	<span class="k">return</span> <span class="n">st</span></div>
 
-<div class="viewcode-block" id="cached_getmtime"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.cached_getmtime">[docs]</a><span class="k">def</span> <span class="nf">cached_getmtime</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="cached_getmtime"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.cached_getmtime">[docs]</a><span class="k">def</span> <span class="nf">cached_getmtime</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Cached-once os.getmtime (DO NOT USE if you expect it to change after startup) &quot;&quot;&quot;</span>
 	<span class="k">return</span> <span class="n">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">errorIfMissing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">st_mtime</span></div>
-<div class="viewcode-block" id="cached_getsize"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.cached_getsize">[docs]</a><span class="k">def</span> <span class="nf">cached_getsize</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="cached_getsize"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.cached_getsize">[docs]</a><span class="k">def</span> <span class="nf">cached_getsize</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Cached-once os.path.getsize (DO NOT USE if you expect it to change after startup) &quot;&quot;&quot;</span>
 	<span class="k">return</span> <span class="n">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">errorIfMissing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span></div>
-<div class="viewcode-block" id="cached_exists"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.cached_exists">[docs]</a><span class="k">def</span> <span class="nf">cached_exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="cached_exists"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.cached_exists">[docs]</a><span class="k">def</span> <span class="nf">cached_exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Cached-once os.path.exists (DO NOT USE if you expect it to change after startup) &quot;&quot;&quot;</span>
 	<span class="k">return</span> <span class="n">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span></div>
-<div class="viewcode-block" id="cached_isfile"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.cached_isfile">[docs]</a><span class="k">def</span> <span class="nf">cached_isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="cached_isfile"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.cached_isfile">[docs]</a><span class="k">def</span> <span class="nf">cached_isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Cached-once os.path.isfile (DO NOT USE if you expect it to change after startup) &quot;&quot;&quot;</span>
 	<span class="n">st</span> <span class="o">=</span> <span class="n">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 	<span class="k">return</span> <span class="p">(</span><span class="n">st</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_ISREG</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">st_mode</span><span class="p">)</span></div>
-<div class="viewcode-block" id="cached_isdir"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.cached_isdir">[docs]</a><span class="k">def</span> <span class="nf">cached_isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="cached_isdir"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.fileutils.html#xpybuild.buildcommon.cached_isdir">[docs]</a><span class="k">def</span> <span class="nf">cached_isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Cached-once os.path.isdir (DO NOT USE if you expect it to change after startup) &quot;&quot;&quot;</span>
 	<span class="n">st</span> <span class="o">=</span> <span class="n">cached_stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 	<span class="k">return</span> <span class="p">(</span><span class="n">st</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_ISDIR</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">st_mode</span><span class="p">)</span></div>
 
 <span class="c1"># for compatibility with pre-3.0</span>
 <span class="n">getstat</span> <span class="o">=</span> <span class="n">cached_stat</span>
+<span class="sd">&quot;&quot;&quot; .. private:: Use cached_ function instead. &quot;&quot;&quot;</span>
 <span class="n">getmtime</span> <span class="o">=</span> <span class="n">cached_getmtime</span>
+<span class="sd">&quot;&quot;&quot; .. private:: Use cached_ function instead. &quot;&quot;&quot;</span>
 <span class="n">getsize</span> <span class="o">=</span> <span class="n">cached_getsize</span>
+<span class="sd">&quot;&quot;&quot; .. private:: Use cached_ function instead. &quot;&quot;&quot;</span>
 <span class="n">exists</span> <span class="o">=</span> <span class="n">cached_exists</span>
+<span class="sd">&quot;&quot;&quot; .. private:: Use cached_ function instead. &quot;&quot;&quot;</span>
 <span class="n">isfile</span> <span class="o">=</span> <span class="n">cached_isfile</span>
+<span class="sd">&quot;&quot;&quot; .. private:: Use cached_ function instead. &quot;&quot;&quot;</span>
 <span class="n">isdir</span> <span class="o">=</span> <span class="n">cached_isdir</span>
+<span class="sd">&quot;&quot;&quot; .. private:: Use cached_ function instead. &quot;&quot;&quot;</span>
 
 <span class="k">def</span> <span class="nf">_getStatCacheSize</span><span class="p">():</span>
 	<span class="sd">&quot;&quot;&quot;</span>
@@ -525,46 +652,52 @@
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">__statcache</span><span class="p">)</span>
 
-<div class="viewcode-block" id="resetStatCache"><a class="viewcode-back" href="../../../generated/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.resetStatCache">[docs]</a><span class="k">def</span> <span class="nf">resetStatCache</span><span class="p">():</span>
-	<span class="sd">&quot;&quot;&quot; Resets cached stat data &quot;&quot;&quot;</span>
-	<span class="n">__statcache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+<span class="k">def</span> <span class="nf">resetStatCache</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot; Resets cached stat data.</span>
+<span class="sd">	</span>
+<span class="sd">	.. private:: For internal use only. </span>
+
+<span class="sd">	 &quot;&quot;&quot;</span>
+	<span class="n">__statcache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 </pre></div>
 
+           </div>
+           
           </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>

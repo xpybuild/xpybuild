@@ -1,0 +1,768 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.propertysupport &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.targets" href="xpybuild.targets.html" />
+    <link rel="prev" title="xpybuild.pathsets" href="xpybuild.pathsets.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="xpybuild.html">xpybuild</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.basetarget.html">xpybuild.basetarget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcommon.html">xpybuild.buildcommon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcontext.html">xpybuild.buildcontext</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.pathsets.html">xpybuild.pathsets</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">xpybuild.propertysupport</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#extensionbasedfileencodingdecider">ExtensionBasedFileEncodingDecider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dirname">dirname</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#basename">basename</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sub">sub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#joinpaths">joinPaths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#definestringproperty">defineStringProperty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#definepathproperty">definePathProperty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#defineoutputdirproperty">defineOutputDirProperty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#registeroutputdirproperties">registerOutputDirProperties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#defineenumerationproperty">defineEnumerationProperty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#definebooleanproperty">defineBooleanProperty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#definepropertiesfromfile">definePropertiesFromFile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getpropertyvalue">getPropertyValue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#expandlistproperty">expandListProperty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enableenvironmentpropertyoverrides">enableEnvironmentPropertyOverrides</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#defineoption">defineOption</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setglobaloption">setGlobalOption</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.targets.html">xpybuild.targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.utils.html">xpybuild.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="xpybuild.html">xpybuild</a> &raquo;</li>
+        
+      <li>xpybuild.propertysupport</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/autodocgen/xpybuild.propertysupport.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-xpybuild.propertysupport">
+<span id="xpybuild-propertysupport"></span><h1>xpybuild.propertysupport<a class="headerlink" href="#module-xpybuild.propertysupport" title="Permalink to this headline">¶</a></h1>
+<p>Contains functions and classes for use in build files when you need to define and use properties and options.</p>
+<p class="rubric">Build properties</p>
+<p>Properties are named, immutable values that are defined in build files (or read from a <code class="docutils literal notranslate"><span class="pre">.properties</span> <span class="pre">file</span></code>), and can be used 
+throughout the build using <code class="docutils literal notranslate"><span class="pre">${PROP_NAME}</span></code> syntax. To avoid typos and mistakes, every property must be explicitly 
+defined in exactly one <code class="docutils literal notranslate"><span class="pre">.py</span></code> build file or <code class="docutils literal notranslate"><span class="pre">.properties</span></code> file. There are several permitted types for property values, 
+and the type is indicated where they are defined:</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xpybuild.propertysupport.defineStringProperty" title="xpybuild.propertysupport.defineStringProperty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">defineStringProperty</span></code></a>(name, default)</p></td>
+<td><p>Define a string property which can be used in ${…} substitution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xpybuild.propertysupport.definePathProperty" title="xpybuild.propertysupport.definePathProperty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">definePathProperty</span></code></a>(name, default[, mustExist])</p></td>
+<td><p>Define a string property that will be converted to an absolute path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xpybuild.propertysupport.defineOutputDirProperty" title="xpybuild.propertysupport.defineOutputDirProperty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">defineOutputDirProperty</span></code></a>(name, default)</p></td>
+<td><p>Define a string property that will also be registered as an output directory (indicating that it will  always be deleted during a clean).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xpybuild.propertysupport.defineEnumerationProperty" title="xpybuild.propertysupport.defineEnumerationProperty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">defineEnumerationProperty</span></code></a>(name, default, …)</p></td>
+<td><p>Defines a property that must take one of the specified values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xpybuild.propertysupport.defineBooleanProperty" title="xpybuild.propertysupport.defineBooleanProperty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">defineBooleanProperty</span></code></a>(name[, default])</p></td>
+<td><p>Defines a boolean property that will have a True or False value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xpybuild.propertysupport.definePropertiesFromFile" title="xpybuild.propertysupport.definePropertiesFromFile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">definePropertiesFromFile</span></code></a>(propertiesFile[, …])</p></td>
+<td><p>Defines a set of string properties from a .properties file</p></td>
+</tr>
+</tbody>
+</table>
+<p>Properties can be overridden on the command line using <code class="docutils literal notranslate"><span class="pre">PROPNAME=value</span></code> or if using an environment variable 
+if the <a class="reference internal" href="#xpybuild.propertysupport.enableEnvironmentPropertyOverrides" title="xpybuild.propertysupport.enableEnvironmentPropertyOverrides"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enableEnvironmentPropertyOverrides</span></code></a> function is called.</p>
+<p>Usually property values should not be resolved until the build phase beings, using methods such as 
+<a class="reference internal" href="xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.getPropertyValue" title="xpybuild.buildcontext.BaseContext.getPropertyValue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcontext.BaseContext.getPropertyValue</span></code></a>. However in some cases it is necessary to evaluate a property 
+during the initialization phase while reading the build files which can be achieved using <a class="reference internal" href="#xpybuild.propertysupport.getPropertyValue" title="xpybuild.propertysupport.getPropertyValue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getPropertyValue</span></code></a> or 
+<a class="reference internal" href="#xpybuild.propertysupport.expandListProperty" title="xpybuild.propertysupport.expandListProperty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expandListProperty</span></code></a>.</p>
+<p>To see a list of the property names and values for the current build and machine, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xpybuild</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">properties</span>
+</pre></div>
+</div>
+<p class="rubric">Target options</p>
+<p>Options provide a way to customize the behaviour of targets either globally throughout the build or for specific 
+targets. For example, the location of the JDK used for compiling Java program is specified by an option (<code class="docutils literal notranslate"><span class="pre">java.home</span></code>), 
+which also other other Java-related targets such as Javadoc generation.</p>
+<p>Often an option will be set to the value of a property, so that the property setting, reuse and overriding mechanisms 
+can be used.</p>
+<p>Information about the defined option names and their value type and default is available in the documentation for the 
+associated targets. To specify the default value for an option globally for all targetsin your build, call 
+<a class="reference internal" href="#xpybuild.propertysupport.setGlobalOption" title="xpybuild.propertysupport.setGlobalOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setGlobalOption()</span></code></a> from one of the build files. To override an option for an individual target ion your build file, call 
+the <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.option" title="xpybuild.basetarget.BaseTarget.option"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget.option()</span></code></a> function. Target authors should use <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.getOption" title="xpybuild.basetarget.BaseTarget.getOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget.getOption()</span></code></a> or 
+<code class="docutils literal notranslate"><span class="pre">BaseTarget.options</span></code> to get the fully-resolved values for that target (whether from the global default or a per-target overrride).</p>
+<p>To see a list of the option names and global values for all (currently imported) targets in the current build, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xpybuild</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">options</span>
+</pre></div>
+</div>
+<p class="rubric">Late-binding property functions (functors)</p>
+<p>The concept of functors is useful when you need to pass a value to a target that should be determined dynamically 
+during the build phase of the build (once all properties have been defined) rather than statically when the build 
+files are read. For example, taking a path property value and extracting the directory name from it. The following 
+functors are provided in-the-box:</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xpybuild.propertysupport.dirname" title="xpybuild.propertysupport.dirname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dirname</span></code></a>(path)</p></td>
+<td><p>A late-binding function which performs property expansion on its argument and then removes the file parts of the argument.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xpybuild.propertysupport.basename" title="xpybuild.propertysupport.basename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basename</span></code></a>(path)</p></td>
+<td><p>A late-binding function which performs property expansion on its argument and then removes the directory parts of the argument.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xpybuild.propertysupport.sub" title="xpybuild.propertysupport.sub"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub</span></code></a>(pat, rep, arg)</p></td>
+<td><p>A late-binding function which performs regex substitution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xpybuild.propertysupport.joinPaths" title="xpybuild.propertysupport.joinPaths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">joinPaths</span></code></a>(pathset[, pathsep])</p></td>
+<td><p>A late-binding function which resolves the specified PathSet and  then joins its contents together to form a string using os.pathsep or a  specified separator character.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="extensionbasedfileencodingdecider">
+<h2>ExtensionBasedFileEncodingDecider<a class="headerlink" href="#extensionbasedfileencodingdecider" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.propertysupport.ExtensionBasedFileEncodingDecider">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">ExtensionBasedFileEncodingDecider</code><span class="sig-paren">(</span><em class="sig-param">extToEncoding={}</em>, <em class="sig-param">default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#ExtensionBasedFileEncodingDecider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Can be used for the <code class="xref py py-obj docutils literal notranslate"><span class="pre">common.fileEncodingDecider</span></code> option which decides what file encoding to use for 
+reading/writing a text file given its path.</p>
+<p>The decider option is called with arguments: (context, path), and returns the name of the encoding to be used for this path. 
+Additional keyword arguments may be passed to the decider in future.</p>
+<p>This extension-based decider uses the specified dictionary of extensions to determine which 
+extension to use, including the special value <a class="reference internal" href="#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.BINARY" title="xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.BINARY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionBasedFileEncodingDecider.BINARY</span></code></a> 
+which indicates non-text files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>defaultEncoding</strong> – The name of the default encoding to be used, another decider to delegate to, or None to defer to the configured global option. 
+Recommended values are: ‘utf-8’, ‘ascii’ or locale.getpreferredencoding().</p></li>
+<li><p><strong>extToEncoding</strong> – A dictionary whose keys are extensions such as ‘.xml’, ‘.foo.bar.baz’ and values specify the encoding to use for each one, 
+or the constant <a class="reference internal" href="#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.BINARY" title="xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.BINARY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionBasedFileEncodingDecider.BINARY</span></code></a> which indicates a non-text file (not all targets support binary). 
+The extensions can contain ${…} properties.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.BINARY">
+<code class="sig-name descname">BINARY</code><em class="property"> = '&lt;binary&gt;'</em><a class="headerlink" href="#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.BINARY" title="Permalink to this definition">¶</a></dt>
+<dd><p>This constant should be used with ExtensionBasedFileEncodingDecider to indicate binary files that 
+should not be opened in text mode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.decide">
+<code class="sig-name descname">decide</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">path</em>, <em class="sig-param">**forfutureuse</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/xpybuild/propertysupport.html#ExtensionBasedFileEncodingDecider.decide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.decide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decides what encoding to use for a given path.</p>
+<p>Can be overridden by subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> – The <code class="xref py py-obj docutils literal notranslate"><span class="pre">BuildContext</span></code></p></li>
+<li><p><strong>path</strong> – The full expanded path of the file to be decided.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The encoding name to return.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider">
+<em class="property">static </em><code class="sig-name descname">getDefaultFileEncodingDecider</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the file encoding decider that is used by default if per-target 
+or global option is specified.</p>
+<p>Currently this supports utf-8 encoding of json/xml/yaml/yml files, 
+and binary for common non-application/text mime types such as image files 
+(based on the mime settings of the current machine).</p>
+<p>Additional types may be added to this in future releases, so you should 
+use <code class="xref py py-obj docutils literal notranslate"><span class="pre">setGlobalOption('common.fileEncodingDecider',</span> <span class="pre">...)</span></code> if you wish to control 
+the encodings precisely and ensure identical behaviour across machines.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="dirname">
+<h2>dirname<a class="headerlink" href="#dirname" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.propertysupport.dirname">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">dirname</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#dirname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.dirname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.utils.functors.html#xpybuild.utils.functors.Composable" title="xpybuild.utils.functors.Composable"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.functors.Composable</span></code></a></p>
+<p>A late-binding function which performs property expansion on its argument and then
+removes the file parts of the argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – The input path, possibly containing unreplaced properties.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="xpybuild.propertysupport.dirname.resolveToString">
+<code class="sig-name descname">resolveToString</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#dirname.resolveToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.dirname.resolveToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the expansion and dirname on the argument path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>context</strong> – a BuildContext</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="s2">&quot;path/&quot;</span><span class="p">))</span>
+<span class="go">&#39;dirname()&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="s2">&quot;path/$</span><span class="si">{foo}</span><span class="s2">/bar&quot;</span><span class="p">))</span>
+<span class="go">&#39;dirname(path/${foo})&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="s2">&quot;path/$</span><span class="si">{foo}</span><span class="s2">/bar/&quot;</span><span class="p">))</span>
+<span class="go">&#39;dirname(path/${foo})&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dirname</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{PATH}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;PATH&#39;</span><span class="p">:</span><span class="s1">&#39;/path/base&#39;</span><span class="p">}))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&#39;/path&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dirname</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{PATH}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;PATH&#39;</span><span class="p">:</span><span class="s1">&#39;/path/base/&#39;</span><span class="p">}))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&#39;/path&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{OUTPUT_DIR}</span><span class="s2">/&quot;</span><span class="o">+</span><span class="n">dirname</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{INPUT}</span><span class="s2">&quot;</span><span class="p">))</span>
+<span class="go">&#39;${OUTPUT_DIR}/+dirname(${INPUT})&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{OUTPUT_DIR}</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">dirname</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{INPUT}</span><span class="s2">&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;OUTPUT_DIR&#39;</span><span class="p">:</span><span class="s1">&#39;/target&#39;</span><span class="p">,</span> <span class="s1">&#39;INPUT&#39;</span><span class="p">:</span><span class="s1">&#39;/libs/foo&#39;</span><span class="p">}))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&#39;${OUTPUT_DIR}/libs&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{A}</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">dirname</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{B}</span><span class="s2">&quot;</span><span class="p">)))</span>
+<span class="go">&#39;dirname(${A}+dirname(${B}))&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dirname</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{A}</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">dirname</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{B}</span><span class="s2">&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;/foo/bar-&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="s1">&#39;/baz/quux&#39;</span><span class="p">}))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&#39;/foo/bar-&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="basename">
+<h2>basename<a class="headerlink" href="#basename" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.propertysupport.basename">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">basename</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#basename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.basename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.utils.functors.html#xpybuild.utils.functors.Composable" title="xpybuild.utils.functors.Composable"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.functors.Composable</span></code></a></p>
+<p>A late-binding function which performs property expansion on its argument and then
+removes the directory parts of the argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – The input path, possibly containing unreplaced properties.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="xpybuild.propertysupport.basename.resolveToString">
+<code class="sig-name descname">resolveToString</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#basename.resolveToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.basename.resolveToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the expansion and basename on the argument path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>context</strong> – a BuildContext</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;path/&quot;</span><span class="p">))</span>
+<span class="go">&#39;basename(path)&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;path/$</span><span class="si">{foo}</span><span class="s2">/bar&quot;</span><span class="p">))</span>
+<span class="go">&#39;basename(bar)&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;path/$</span><span class="si">{foo}</span><span class="s2">/bar/&quot;</span><span class="p">))</span>
+<span class="go">&#39;basename(bar)&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{PATH}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;PATH&#39;</span><span class="p">:</span><span class="s1">&#39;/path/base&#39;</span><span class="p">}))</span>
+<span class="go">&#39;base&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{PATH}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;PATH&#39;</span><span class="p">:</span><span class="s1">&#39;/path/base/&#39;</span><span class="p">}))</span>
+<span class="go">&#39;base&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{OUTPUT_DIR}</span><span class="s2">/&quot;</span><span class="o">+</span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{INPUT}</span><span class="s2">&quot;</span><span class="p">))</span>
+<span class="go">&#39;${OUTPUT_DIR}/+basename(${INPUT})&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{OUTPUT_DIR}</span><span class="s2">/&quot;</span><span class="o">+</span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{INPUT}</span><span class="s2">&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;OUTPUT_DIR&#39;</span><span class="p">:</span><span class="s1">&#39;/target&#39;</span><span class="p">,</span> <span class="s1">&#39;INPUT&#39;</span><span class="p">:</span><span class="s1">&#39;/libs/foo&#39;</span><span class="p">}))</span>
+<span class="go">&#39;${OUTPUT_DIR}/foo&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{A}</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{B}</span><span class="s2">&quot;</span><span class="p">)))</span>
+<span class="go">&#39;basename(${A}+basename(${B}))&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{A}</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{B}</span><span class="s2">&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;/foo/bar-&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="s1">&#39;/baz/quux&#39;</span><span class="p">}))</span>
+<span class="go">&#39;bar-quux&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="sub">
+<h2>sub<a class="headerlink" href="#sub" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.propertysupport.sub">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">sub</code><span class="sig-paren">(</span><em class="sig-param">pat</em>, <em class="sig-param">rep</em>, <em class="sig-param">arg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#sub"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.sub" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.utils.functors.html#xpybuild.utils.functors.Composable" title="xpybuild.utils.functors.Composable"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.functors.Composable</span></code></a></p>
+<p>A late-binding function which performs regex substitution.
+The pattern is passed through verbatim, the replacement and the input
+have property expansion performed on them before invoking the regular
+expression.</p>
+<p>The pattern/replacement syntax is the same as re.sub</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pat</strong> – the regex pattern to match</p></li>
+<li><p><strong>rep</strong> – the replacement string</p></li>
+<li><p><strong>arg</strong> – the input</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="xpybuild.propertysupport.sub.resolveToString">
+<code class="sig-name descname">resolveToString</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#sub.resolveToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.sub.resolveToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do property expansion on the inputs and then perform the regex</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>context</strong> – a BuildContext</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;aa&#39;</span><span class="p">))</span>
+<span class="go">&#39;sub(a,b,aa)&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;aa&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({}))</span>
+<span class="go">&#39;bb&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;output/&quot;</span><span class="o">+</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{REP}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{INPUT}</span><span class="s1">&#39;</span><span class="p">))</span>
+<span class="go">&#39;output/+sub(a,${REP},${INPUT})&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="s2">&quot;output/&quot;</span><span class="o">+</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{REP}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{INPUT}</span><span class="s1">&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;REP&#39;</span><span class="p">:</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;INPUT&#39;</span><span class="p">:</span><span class="s1">&#39;aa&#39;</span><span class="p">}))</span>
+<span class="go">&#39;output/cc&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;output/&quot;</span><span class="o">+</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">sub</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="s1">&#39;$</span><span class="si">{REP}</span><span class="s1">&#39;</span><span class="p">),</span> <span class="n">sub</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;$</span><span class="si">{INPUT}</span><span class="s1">&#39;</span><span class="p">)))</span>
+<span class="go">&#39;output/+sub(b,sub(c,d,${REP}),sub(a,b,${INPUT}))&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="s2">&quot;output/&quot;</span><span class="o">+</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">sub</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="s1">&#39;$</span><span class="si">{REP}</span><span class="s1">&#39;</span><span class="p">),</span> <span class="n">sub</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;$</span><span class="si">{INPUT}</span><span class="s1">&#39;</span><span class="p">)))</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;REP&#39;</span><span class="p">:</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;INPUT&#39;</span><span class="p">:</span><span class="s1">&#39;aa&#39;</span><span class="p">}))</span>
+<span class="go">&#39;output/dd&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="joinpaths">
+<h2>joinPaths<a class="headerlink" href="#joinpaths" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.propertysupport.joinPaths">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">joinPaths</code><span class="sig-paren">(</span><em class="sig-param">pathset</em>, <em class="sig-param">pathsep=':'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#joinPaths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.joinPaths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.utils.functors.html#xpybuild.utils.functors.Composable" title="xpybuild.utils.functors.Composable"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.functors.Composable</span></code></a></p>
+<p>A late-binding function which resolves the specified PathSet and 
+then joins its contents together to form a string using os.pathsep or a 
+specified separator character.</p>
+<dl class="method">
+<dt id="xpybuild.propertysupport.joinPaths.resolveToString">
+<code class="sig-name descname">resolveToString</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#joinPaths.resolveToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.joinPaths.resolveToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do property expansion on the inputs and then perform the regex</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>context</strong> – a BuildContext</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="definestringproperty">
+<h2>defineStringProperty<a class="headerlink" href="#definestringproperty" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.propertysupport.defineStringProperty">
+<code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">defineStringProperty</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">default</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#defineStringProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.defineStringProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a string property which can be used in ${…} substitution.</p>
+<p>Do not use this generic function for any properties representing a file 
+system path, or a boolean/enumeration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The property name</p></li>
+<li><p><strong>default</strong> – The default value of the propert (can contain other ${…} variables)
+If set to None, the property must be set on the command line each time</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="definepathproperty">
+<h2>definePathProperty<a class="headerlink" href="#definepathproperty" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.propertysupport.definePathProperty">
+<code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">definePathProperty</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">default</em>, <em class="sig-param">mustExist=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#definePathProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.definePathProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a string property that will be converted to an absolute path.</p>
+<p>Path is normalized and any trailing slashes are removed. An error is raised 
+if the path does not exist when the property is defined if mustExist=True.</p>
+<p>Paths are always absolutized.</p>
+<p>For paths which represent output directories of this build, call 
+registerOutputDirProperties afterwards.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of the property</p></li>
+<li><p><strong>default</strong> – The default path value of the property (can contain other ${…} variables). 
+If a relative path, will be resolved relative to the build file in 
+which it is defined. 
+If set to None, the property must be set on the command line each time</p></li>
+<li><p><strong>mustExist</strong> – True if it’s an error to specify a directory that doesn’t
+exist (will raise a BuildException)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="defineoutputdirproperty">
+<h2>defineOutputDirProperty<a class="headerlink" href="#defineoutputdirproperty" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.propertysupport.defineOutputDirProperty">
+<code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">defineOutputDirProperty</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">default</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#defineOutputDirProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.defineOutputDirProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a string property that will also be registered as an output directory (indicating that it will 
+always be deleted during a clean).</p>
+<p>Equivalent to calling <a class="reference internal" href="#xpybuild.propertysupport.definePathProperty" title="xpybuild.propertysupport.definePathProperty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">definePathProperty</span></code></a> then <a class="reference internal" href="#xpybuild.propertysupport.registerOutputDirProperties" title="xpybuild.propertysupport.registerOutputDirProperties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">registerOutputDirProperties</span></code></a>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="registeroutputdirproperties">
+<h2>registerOutputDirProperties<a class="headerlink" href="#registeroutputdirproperties" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.propertysupport.registerOutputDirProperties">
+<code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">registerOutputDirProperties</code><span class="sig-paren">(</span><em class="sig-param">*propertyNames</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#registerOutputDirProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.registerOutputDirProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers the specified path property name(s) as being an output directory 
+of this build, meaning that they will be created automatically at the 
+beginning of the build process, and removed during a global clean.</p>
+<p>Typical usage is to call this just after definePathProperty.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="defineenumerationproperty">
+<h2>defineEnumerationProperty<a class="headerlink" href="#defineenumerationproperty" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.propertysupport.defineEnumerationProperty">
+<code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">defineEnumerationProperty</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">default</em>, <em class="sig-param">enumValues</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#defineEnumerationProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.defineEnumerationProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a property that must take one of the specified values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of the property</p></li>
+<li><p><strong>default</strong> – The default value of the property (can contain other ${…} variables)
+If set to None, the property must be set on the command line each time</p></li>
+<li><p><strong>enumValues</strong> – A list of valid values for this property (can contain other ${…} variables)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="definebooleanproperty">
+<h2>defineBooleanProperty<a class="headerlink" href="#definebooleanproperty" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.propertysupport.defineBooleanProperty">
+<code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">defineBooleanProperty</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">default=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#defineBooleanProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.defineBooleanProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a boolean property that will have a True or False value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The property name</p></li>
+<li><p><strong>default</strong> – The default value (default = False)
+If set to None, the property must be set on the command line each time</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="definepropertiesfromfile">
+<h2>definePropertiesFromFile<a class="headerlink" href="#definepropertiesfromfile" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.propertysupport.definePropertiesFromFile">
+<code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">definePropertiesFromFile</code><span class="sig-paren">(</span><em class="sig-param">propertiesFile</em>, <em class="sig-param">prefix=None</em>, <em class="sig-param">excludeLines=None</em>, <em class="sig-param">conditions=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#definePropertiesFromFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.definePropertiesFromFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a set of string properties from a .properties file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>propertiesFile</strong> – The file to include properties from (can include ${…} variables)</p></li>
+<li><p><strong>prefix</strong> – if specified, this prefix will be added to the start of all property names from this file</p></li>
+<li><p><strong>excludeLines</strong> – a string of list of strings to search for, any KEY containing these strings will be ignored</p></li>
+<li><p><strong>conditions</strong> – an optional list of string conditions that can appear in property 
+keys e.g. “FOO&lt;condition&gt;=bar” where lines with no condition in this list 
+are ignored. Conditions are typically lowercase.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="getpropertyvalue">
+<h2>getPropertyValue<a class="headerlink" href="#getpropertyvalue" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.propertysupport.getPropertyValue">
+<code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">getPropertyValue</code><span class="sig-paren">(</span><em class="sig-param">propertyName</em><span class="sig-paren">)</span> &#x2192; object<a class="reference internal" href="../_modules/xpybuild/propertysupport.html#getPropertyValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.getPropertyValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current value of the given property (can only be used during build file parsing).</p>
+<p>Where possible, instead of using this method defer property resolution until 
+the build phase (after all files have been parsed) and use <code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcontext.BuildContext.getPropertyValue</span></code> instead.</p>
+<p>For Boolean properties this will be a python Boolean, for everything else it will be a string.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="expandlistproperty">
+<h2>expandListProperty<a class="headerlink" href="#expandlistproperty" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.propertysupport.expandListProperty">
+<code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">expandListProperty</code><span class="sig-paren">(</span><em class="sig-param">propertyName</em><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="../_modules/xpybuild/propertysupport.html#expandListProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.expandListProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility method for use during build file parsing  property and target definition 
+that returns a list containing the values of the specified 
+list property.</p>
+<p>This is useful for quickly defining multiple targets (e.g. file copies) 
+based on a list defined as a property.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>propertyName</strong> – must end with [] e.g. ‘MY_JARS[]’</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="enableenvironmentpropertyoverrides">
+<h2>enableEnvironmentPropertyOverrides<a class="headerlink" href="#enableenvironmentpropertyoverrides" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.propertysupport.enableEnvironmentPropertyOverrides">
+<code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">enableEnvironmentPropertyOverrides</code><span class="sig-paren">(</span><em class="sig-param">prefix</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#enableEnvironmentPropertyOverrides"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.enableEnvironmentPropertyOverrides" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns on support for value overrides for defined properties from the 
+environment as well as from the command line.</p>
+<p>Allows any property value to be overridden from an environment variable, 
+provided the env var begins with the specified prefix.</p>
+<p>This setting only affects properties defined after the point in the 
+build files where it is called.</p>
+<p>Property values specified on the command line take precedence over env 
+vars, which in turn take precedence over the defaults specified when 
+properties are defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prefix</strong> – The prefix added to the start of a build property name to form 
+the name of the environment variable; the prefix is stripped from the 
+env var name before it is compared with properties defined by the build. This is mandatory (cannot be 
+empty) and should be set to a build-specific string (e.g. <code class="docutils literal notranslate"><span class="pre">XYZ_</span></code>) in 
+order to ensure that there is no chance of build properties being 
+accidentally overridden. (e.g. many users have JAVA_HOME in their env 
+but also in their build, however it may be important for them to 
+have different values, and subtle bugs could result if the build 
+property was able to be set implicitly from the environment).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="defineoption">
+<h2>defineOption<a class="headerlink" href="#defineoption" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.propertysupport.defineOption">
+<code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">defineOption</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">default</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#defineOption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.defineOption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define an option with a default (can be overridden globally using setGlobalOption() or on individual targets).</p>
+<p>This method is typically used only when implementing a new kind of target.</p>
+<p>Options are not available for <code class="docutils literal notranslate"><span class="pre">${...}</span></code> expansion (like properties), but 
+rather as used for (optionally inheritably) settings that affect the 
+behaviour of one or more targets. They are accessed using self.options 
+in any target instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The option name, which should usually be in lowerCamelCase, with 
+a TitleCase prefix specific to this target or group of targets, often 
+matching the target name, e.g. <code class="docutils literal notranslate"><span class="pre">Javac.compilerArgs</span></code>.</p></li>
+<li><p><strong>default</strong> – The default value of the option.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="setglobaloption">
+<h2>setGlobalOption<a class="headerlink" href="#setglobaloption" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.propertysupport.setGlobalOption">
+<code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">setGlobalOption</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#setGlobalOption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.setGlobalOption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Globally override the default for an option</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="xpybuild.targets.html" class="btn btn-neutral float-right" title="xpybuild.targets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="xpybuild.pathsets.html" class="btn btn-neutral float-left" title="xpybuild.pathsets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

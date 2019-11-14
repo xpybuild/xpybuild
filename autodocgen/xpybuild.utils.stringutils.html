@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.utils.stringutils &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.utils.terminal" href="xpybuild.utils.terminal.html" />
+    <link rel="prev" title="xpybuild.utils.progress" href="xpybuild.utils.progress.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="xpybuild.html">xpybuild</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.basetarget.html">xpybuild.basetarget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcommon.html">xpybuild.buildcommon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcontext.html">xpybuild.buildcontext</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.pathsets.html">xpybuild.pathsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.propertysupport.html">xpybuild.propertysupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.targets.html">xpybuild.targets</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="xpybuild.utils.html">xpybuild.utils</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.antglob.html">xpybuild.utils.antglob</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.buildexceptions.html">xpybuild.utils.buildexceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.buildfilelocation.html">xpybuild.utils.buildfilelocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.compilers.html">xpybuild.utils.compilers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.consoleformatter.html">xpybuild.utils.consoleformatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.fileutils.html">xpybuild.utils.fileutils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.flatten.html">xpybuild.utils.flatten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.functors.html">xpybuild.utils.functors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.java.html">xpybuild.utils.java</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.outputhandler.html">xpybuild.utils.outputhandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.process.html">xpybuild.utils.process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.progress.html">xpybuild.utils.progress</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">xpybuild.utils.stringutils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#compareversions">compareVersions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#formattimeperiod">formatTimePeriod</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.terminal.html">xpybuild.utils.terminal</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="xpybuild.html">xpybuild</a> &raquo;</li>
+        
+          <li><a href="xpybuild.utils.html">xpybuild.utils</a> &raquo;</li>
+        
+      <li>xpybuild.utils.stringutils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/autodocgen/xpybuild.utils.stringutils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-xpybuild.utils.stringutils">
+<span id="xpybuild-utils-stringutils"></span><h1>xpybuild.utils.stringutils<a class="headerlink" href="#module-xpybuild.utils.stringutils" title="Permalink to this headline">¶</a></h1>
+<p>Utility functions for manipulating strings, such as 
+<a class="reference internal" href="#xpybuild.utils.stringutils.compareVersions" title="xpybuild.utils.stringutils.compareVersions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.stringutils.compareVersions</span></code></a>.</p>
+<div class="section" id="compareversions">
+<h2>compareVersions<a class="headerlink" href="#compareversions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.utils.stringutils.compareVersions">
+<code class="sig-prename descclassname">xpybuild.utils.stringutils.</code><code class="sig-name descname">compareVersions</code><span class="sig-paren">(</span><em class="sig-param">v1: str</em>, <em class="sig-param">v2: str</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/xpybuild/utils/stringutils.html#compareVersions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.stringutils.compareVersions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compares two alphanumeric dotted version strings to see which is more recent.</p>
+<p>Example usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">compareVersions</span><span class="p">(</span><span class="n">thisversion</span><span class="p">,</span> <span class="s1">&#39;1.2.alpha-3&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="o">...</span> <span class="c1"># thisversion is newer than 1.2.alpha-3 </span>
+</pre></div>
+</div>
+<p>The comparison algorithm ignores case, and normalizes separators ./-/_ 
+so that <code class="xref py py-obj docutils literal notranslate"><span class="pre">'1.alpha2'=='1Alpha2'</span></code>. Any string components are compared 
+lexicographically with other strings, and compared to numbers 
+strings are always considered greater.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v1</strong> – A string containing a version number, with any number of components.</p></li>
+<li><p><strong>v2</strong> – A string containing a version number, with any number of components.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an integer &gt; 0 if v1&gt;v2, 
+an integer &lt; 0 if v1&lt;v2, 
+or 0 if they are semantically the same.</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;10-alpha5.dev10&#39;</span><span class="p">,</span> <span class="s1">&#39;10alpha-5-dEv_10&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="c1"># normalization of case and separators</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2.0&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.02&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2.3&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2.3&#39;</span><span class="p">)</span>
+<span class="go">-1</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;10.2&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2.text&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2.0&#39;</span><span class="p">)</span> <span class="c1"># letters are &gt; numbers</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2.text&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span> <span class="c1"># letters are &gt; numbers </span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;10.2alpha1&#39;</span><span class="p">,</span> <span class="s1">&#39;10.2alpha&#39;</span><span class="p">)</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;10.2dev&#39;</span><span class="p">,</span> <span class="s1">&#39;10.2alpha&#39;</span><span class="p">)</span> <span class="c1"># letters are compared lexicographically</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="formattimeperiod">
+<h2>formatTimePeriod<a class="headerlink" href="#formattimeperiod" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.utils.stringutils.formatTimePeriod">
+<code class="sig-prename descclassname">xpybuild.utils.stringutils.</code><code class="sig-name descname">formatTimePeriod</code><span class="sig-paren">(</span><em class="sig-param">secs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/stringutils.html#formatTimePeriod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.stringutils.formatTimePeriod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format a time period to a short display string.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="xpybuild.utils.terminal.html" class="btn btn-neutral float-right" title="xpybuild.utils.terminal" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="xpybuild.utils.progress.html" class="btn btn-neutral float-left" title="xpybuild.utils.progress" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

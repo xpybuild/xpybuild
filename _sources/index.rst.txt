@@ -10,4 +10,5 @@ Welcome to xpybuild
    :maxdepth: 2
    :caption: Contents:
    
-   generated/modules.rst
+   autodocgen/xpybuild.rst
+   changelog.rst

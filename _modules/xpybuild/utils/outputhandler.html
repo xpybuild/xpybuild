@@ -1,45 +1,154 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>xpybuild.utils.outputhandler &#8212; xpybuild 3.0.dev2 documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.utils.outputhandler &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
     
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
     
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodocgen/xpybuild.html">xpybuild</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>xpybuild.utils.outputhandler</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for xpybuild.utils.outputhandler</h1><div class="highlight"><pre>
 <span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
 <span class="c1">#</span>
-<span class="c1"># Copyright (c) 2014 - 2018 Software AG, Darmstadt, Germany and/or its licensors</span>
+<span class="c1"># Copyright (c) 2014 - 2019 Software AG, Darmstadt, Germany and/or its licensors</span>
 <span class="c1">#</span>
 <span class="c1">#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
 <span class="c1">#   you may not use this file except in compliance with the License.</span>
@@ -57,6 +166,12 @@
 <span class="c1"># Authors: Ben Spiller</span>
 <span class="c1">#</span>
 
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Contains `xpybuild.utils.outputhandler.ProcessOutputHandler` which targets use to parse the output from subprocesses </span>
+<span class="sd">and decide whether warnings, errors or fatal build failures should be raised as a result. </span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">subprocess</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
 <span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span>
@@ -66,13 +181,13 @@
 
 <span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;processoutput&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ProcessOutputHandler"><a class="viewcode-back" href="../../../generated/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">ProcessOutputHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessOutputHandler"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">ProcessOutputHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">	An extensible class for handling stdout/stderr output lines and return code </span>
+<span class="sd">	An extensible class for handling the stdout/stderr output lines and return code </span>
 <span class="sd">	from a process, accumulating error and warnings, and converting into </span>
 <span class="sd">	appropriate log statements and a summary exception if it failed. </span>
 <span class="sd">	</span>
-<span class="sd">	It is expected that subclasses would be created to abtract away handling of </span>
+<span class="sd">	Subclasses should be created to abtract away handling of </span>
 <span class="sd">	output from different particular types of process (e.g. Java compilation, </span>
 <span class="sd">	gmake, msbuild, etc).</span>
 <span class="sd">	</span>
@@ -86,17 +201,21 @@
 <span class="sd">	called to get further information if desired. </span>
 <span class="sd">	</span>
 <span class="sd">	Subclasses may often wish to do some of the following:</span>
+<span class="sd">	</span>
 <span class="sd">		- override the logic for deciding what consistutes an error/warning </span>
-<span class="sd">			(see _decideLogLevel)</span>
+<span class="sd">		  (see `_decideLogLevel`)</span>
+<span class="sd">		</span>
 <span class="sd">		- use a regex to get the filename and number from error messages to </span>
-<span class="sd">			support IDE jump-to integration (see _parseLocationFromLine)</span>
-<span class="sd">		- strip timestamp/threadid prefixes from lines (see _preprocessLine) </span>
+<span class="sd">		  support IDE jump-to integration (see `_parseLocationFromLine`)</span>
+<span class="sd">		</span>
+<span class="sd">		- strip timestamp/thread id prefixes from lines (see `_preprocessLine`) </span>
+<span class="sd">		</span>
 <span class="sd">		- support warnings-as-errors behaviour by putting the first warning into </span>
-<span class="sd">			the final error message if the only error is that there are warnings </span>
-<span class="sd">			(by overriding handleEnd)</span>
+<span class="sd">		  the final error message if the only error is that there are warnings </span>
+<span class="sd">		  (by overriding `handleEnd`)</span>
 <span class="sd">	</span>
 <span class="sd">	This class is not thread-safe, so locking should be provided by the caller </span>
-<span class="sd">	if multiple threads are in use (e.g. for reading stdout+err in parallel). </span>
+<span class="sd">	if multiple threads are in use (e.g. for reading stdout and stderr in parallel). </span>
 <span class="sd">	</span>
 <span class="sd">	&gt;&gt;&gt; h = ProcessOutputHandler(&#39;myhandler&#39;)</span>
 <span class="sd">	&gt;&gt;&gt; h.handleLine(u&#39;error: My error&#39;)</span>
@@ -121,7 +240,7 @@
 
 <span class="sd">	&quot;&quot;&quot;</span>
 	
-<div class="viewcode-block" id="ProcessOutputHandler.Options"><a class="viewcode-back" href="../../../generated/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler.Options">[docs]</a>	<span class="k">class</span> <span class="nc">Options</span><span class="p">:</span> <span class="c1"># may rework how we handle docstrings for options in a future release</span>
+<div class="viewcode-block" id="ProcessOutputHandler.Options"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler.Options">[docs]</a>	<span class="k">class</span> <span class="nc">Options</span><span class="p">:</span> <span class="c1"># may rework how we handle docstrings for options in a future release</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		This class may be renamed or removed, please do not use it directly. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -166,22 +285,20 @@
 	
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">		The constructor for this object. Subclasses that override this should </span>
-<span class="sd">		always pass **kwargs down to the super constructor to allow for new </span>
-<span class="sd">		functionality to be added</span>
+<span class="sd">		Subclasses must pass any ``**kwargs`` down to the super() constructor </span>
+<span class="sd">		to allow for new functionality to be added in future. </span>
 <span class="sd">		</span>
 <span class="sd">		@param name: a short display name for this process or target, used as a </span>
-<span class="sd">		prefix for log lines. </span>
+<span class="sd">			prefix for log lines. </span>
 <span class="sd">		</span>
-<span class="sd">		@param treatStdErrAsErrors: controls where all content on stderr </span>
-<span class="sd">		(rather than stdout) is treated as an error by default. The correct </span>
-<span class="sd">		setting depends on how the process being invoked uses stdout/err. </span>
+<span class="sd">		@param treatStdErrAsErrors: controls whether all content on stderr </span>
+<span class="sd">			(rather than stdout) is treated as an error by default. The correct </span>
+<span class="sd">			setting depends on how the process being invoked uses stdout/err. </span>
 <span class="sd">		</span>
-<span class="sd">		@keyword options: a dictionary of resolved option values, in case aspects </span>
-<span class="sd">		of this handler are customizable. Available to implementations as </span>
-<span class="sd">		self.options (if None is passed, self.options will be an empty </span>
-<span class="sd">		dictionary)</span>
+<span class="sd">		@param options: a dictionary of resolved option values, in case aspects </span>
+<span class="sd">			of this handler are customizable. Available to implementations as </span>
+<span class="sd">			`self.options` (if None is passed, ``self.options`` will be an empty </span>
+<span class="sd">			dictionary)</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_errors</span> <span class="o">=</span> <span class="p">[]</span>
@@ -196,7 +313,7 @@
 		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regexIgnore</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regexIgnore</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_regexIgnore</span><span class="p">)</span>
 		<span class="k">assert</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">,</span> <span class="s1">&#39;Unexpected keyword argument to ProcessOutputHandler: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 	
-<div class="viewcode-block" id="ProcessOutputHandler.create"><a class="viewcode-back" href="../../../generated/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler.create">[docs]</a>	<span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ProcessOutputHandler.create"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler.create">[docs]</a>	<span class="nd">@staticmethod</span>
 	<span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Create a new ProcessOutputHandler using the specified target options. </span>
@@ -219,17 +336,17 @@
 			<span class="bp">cls</span> <span class="o">=</span> <span class="n">ProcessOutputHandler</span>
 		<span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 	
-<div class="viewcode-block" id="ProcessOutputHandler.handleLine"><a class="viewcode-back" href="../../../generated/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler.handleLine">[docs]</a>	<span class="k">def</span> <span class="nf">handleLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessOutputHandler.handleLine"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler.handleLine">[docs]</a>	<span class="k">def</span> <span class="nf">handleLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">isstderr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Called once for every line in the stdout and stderr </span>
 <span class="sd">		(stderr after, if not during stdout). </span>
 <span class="sd">		</span>
 <span class="sd">		Line must be a unicode str (not bytes). </span>
 <span class="sd">		</span>
-<span class="sd">		The default implementation uses _decideLogLevel to decide how to </span>
-<span class="sd">		interpret each line, then calls _preprocessLine and _parseLocationFromLine </span>
+<span class="sd">		The default implementation uses `_decideLogLevel()` to decide how to </span>
+<span class="sd">		interpret each line, then calls `_preprocessLine()` and `_parseLocationFromLine()` </span>
 <span class="sd">		on the line before stashing errors/warnings, and passing the </span>
-<span class="sd">		pre-processed line to _log for logging at the specified level. </span>
+<span class="sd">		pre-processed line to `_log()` for logging at the specified level. </span>
 <span class="sd">		</span>
 <span class="sd">		@param isstderr: if stdout/err are segregated then this can be used as a </span>
 <span class="sd">		hint to indicate the source of the line. </span>
@@ -255,7 +372,17 @@
 				<span class="bp">self</span><span class="o">.</span><span class="n">_warnings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 			<span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">fileline</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span></div>
 	
-	<span class="k">def</span> <span class="nf">handleEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">returnCode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessOutputHandler.handleEnd"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler.handleEnd">[docs]</a>	<span class="k">def</span> <span class="nf">handleEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">returnCode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Called when the process has terminated, to collate any warnings, errors and other messages, </span>
+<span class="sd">		and in conjunction with the ``returnCode`` optionally raise an `xpybuild.utils.buildexceptions.BuildException` </span>
+<span class="sd">		with a suitable message. </span>
+<span class="sd">		</span>
+<span class="sd">		The default implementation logs a message summarizing the total number of warnings, then raises a </span>
+<span class="sd">		``BuildException`` if there were any error or (unless ``ignoreReturnCode`` was set) if ``returnCode`` is </span>
+<span class="sd">		non-zero. The exception message will contain the first error, or if none the first warning, or failing that, </span>
+<span class="sd">		the last line of the output. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_warnings</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> warnings during </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_warnings</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
 			
 		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">:</span> 
@@ -274,32 +401,38 @@
 				<span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39; and no output generated&#39;</span>
 		<span class="k">else</span><span class="p">:</span>
 			<span class="k">return</span>
-		<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+		<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 	
-	<span class="k">def</span> <span class="nf">_decideLogLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessOutputHandler._decideLogLevel"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler._decideLogLevel">[docs]</a>	<span class="k">def</span> <span class="nf">_decideLogLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">isstderr</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Used by the default handleLine implementation to </span>
+<span class="sd">		Called by the default `handleLine` implementation to </span>
 <span class="sd">		decide whether the specified (raw, not yet pre-processed) line is a </span>
 <span class="sd">		warning, an error, or else whether it should be logged at INFO/DEBUG </span>
-<span class="sd">		or not at all. Called exactly once per line. </span>
+<span class="sd">		or not at all. </span>
 <span class="sd">		</span>
-<span class="sd">		The default implementation uses &quot;error[\s]*([A-Z]\d+)?:&quot; to check for </span>
+<span class="sd">		Called exactly once per line. </span>
+<span class="sd">		</span>
+<span class="sd">		The default implementation uses ``error[\\s]*([A-Z]\\d+)?:`` to check for </span>
 <span class="sd">		errors (similarly for warnings), and logs everything else only at INFO, </span>
 <span class="sd">		and also treats all stderr output as error lines. </span>
 <span class="sd">		</span>
-<span class="sd">		Typically returns logging.ERROR, logging.WARNING, logging.DEBUG/INFO or </span>
-<span class="sd">		None. </span>
+<span class="sd">		Typically returns ``logging.ERROR``, ``logging.WARNING``, ``logging.DEBUG/INFO`` or </span>
+<span class="sd">		``None``. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		
 		<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s1">&#39;ProcessOutputHandler does not accept bytes - caller must decode bytes to a character str (e.g. l.decode(defaultProcessOutputEncodingDecider(...)))&#39;</span>
 		
 		<span class="k">if</span> <span class="p">(</span><span class="n">isstderr</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_treatStdErrAsErrors</span><span class="p">)</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;error[\s]*([A-Z]+\d+)?:&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">):</span> <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span>
 		<span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;warning[\s]*([A-Z]+\d+)?:&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">):</span> <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span>
-		<span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span> <span class="c1"># default log level</span>
+		<span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span> <span class="c1"># default log level</span></div>
 	
-	<span class="k">def</span> <span class="nf">_parseLocationFromLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessOutputHandler._parseLocationFromLine"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler._parseLocationFromLine">[docs]</a>	<span class="k">def</span> <span class="nf">_parseLocationFromLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Return (filename, linenumber, col, line)</span>
+<span class="sd">		Called by `handleLine` to attempt to extract a location from the specified line, which will be included in </span>
+<span class="sd">		any associated WARN or ERROR messages, reformatted as needed for whatever `xpybuild.utils.consoleformatter` </span>
+<span class="sd">		formatter is in use. </span>
+<span class="sd">		</span>
+<span class="sd">		Returns (filename, linenumber, col, line)</span>
 <span class="sd">		</span>
 <span class="sd">		For backwards compat, returning (filename,location) is also permitted</span>
 <span class="sd">		</span>
@@ -308,9 +441,9 @@
 <span class="sd">		linenumber is a string and may be a simple line number or may be a &quot;lineno,col&quot; string. </span>
 <span class="sd">		</span>
 <span class="sd">		&quot;&quot;&quot;</span>
-		<span class="k">return</span> <span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="n">line</span>
+		<span class="k">return</span> <span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="n">line</span></div>
 	
-	<span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fileline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filecol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessOutputHandler._log"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler._log">[docs]</a>	<span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fileline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filecol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Writes the specified msg to the logger. </span>
 <span class="sd">		</span>
 <span class="sd">		If filename and fileline are specified, they are passed to the logrecord, </span>
@@ -332,9 +465,9 @@
 				<span class="n">r</span><span class="o">.</span><span class="n">xpybuild_line</span> <span class="o">=</span> <span class="n">fileline</span>
 			<span class="k">if</span> <span class="n">filecol</span><span class="p">:</span>
 				<span class="n">r</span><span class="o">.</span><span class="n">xpybuild_col</span> <span class="o">=</span> <span class="n">filecol</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></div>
 
-	<span class="k">def</span> <span class="nf">_preprocessLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span> 
+<div class="viewcode-block" id="ProcessOutputHandler._preprocessLine"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler._preprocessLine">[docs]</a>	<span class="k">def</span> <span class="nf">_preprocessLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">		Performs any necessary transformations on the line before it is </span>
 <span class="sd">		logged or stored. By default it strips() whitespace. </span>
@@ -342,13 +475,13 @@
 <span class="sd">		This can be overridden to add support for stripping </span>
 <span class="sd">		timestamps, thread ids, unwanted indentation, etc. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
-		<span class="k">return</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+		<span class="k">return</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 	
 	<span class="k">def</span> <span class="nf">getErrors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span>
 	<span class="k">def</span> <span class="nf">getWarnings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_warnings</span>
 	<span class="k">def</span> <span class="nf">getLastOutputLine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessLine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lastLine</span><span class="p">)</span></div>
 	
-<div class="viewcode-block" id="StdoutRedirector"><a class="viewcode-back" href="../../../generated/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.StdoutRedirector">[docs]</a><span class="k">class</span> <span class="nc">StdoutRedirector</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
+<div class="viewcode-block" id="StdoutRedirector"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.StdoutRedirector">[docs]</a><span class="k">class</span> <span class="nc">StdoutRedirector</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Redirects stdout to a file verbatim and reports errors on stderr &quot;&quot;&quot;</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; </span>
@@ -370,41 +503,43 @@
 <span class="n">defineOption</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="n">ProcessOutputHandler</span><span class="p">)</span>
 </pre></div>
 
+           </div>
+           
           </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>

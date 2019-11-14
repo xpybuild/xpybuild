@@ -1,0 +1,22 @@
+
+xpybuild.targets.writefile
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.targets.writefile
+
+.. currentmodule:: xpybuild.targets.writefile
+
+
+
+WriteFile
+=========
+
+.. autoclass:: WriteFile
+   :members:
+
+
+Touch
+=====
+
+.. autoclass:: Touch
+   :members:

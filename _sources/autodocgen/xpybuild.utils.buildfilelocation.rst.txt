@@ -1,0 +1,21 @@
+
+xpybuild.utils.buildfilelocation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.utils.buildfilelocation
+
+.. currentmodule:: xpybuild.utils.buildfilelocation
+
+
+
+BuildFileLocation
+=================
+
+.. autoclass:: BuildFileLocation
+   :members:
+
+
+formatFileLocation
+==================
+
+.. autofunction:: formatFileLocation

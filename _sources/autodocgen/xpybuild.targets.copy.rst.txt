@@ -1,0 +1,77 @@
+
+xpybuild.targets.copy
+~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.targets.copy
+
+.. currentmodule:: xpybuild.targets.copy
+
+
+
+Copy
+====
+
+.. autoclass:: Copy
+   :members:
+
+
+FilteredCopy
+============
+
+.. autoclass:: FilteredCopy
+   :members:
+
+
+FileContentsMapper
+==================
+
+.. autoclass:: FileContentsMapper
+   :members:
+
+
+OmitLines
+=========
+
+.. autoclass:: OmitLines
+   :members:
+
+
+StringReplaceLineMapper
+=======================
+
+.. autoclass:: StringReplaceLineMapper
+   :members:
+
+
+RegexLineMapper
+===============
+
+.. autoclass:: RegexLineMapper
+   :members:
+
+
+InsertFileContentsLineMapper
+============================
+
+.. autoclass:: InsertFileContentsLineMapper
+   :members:
+
+
+AddFileHeader
+=============
+
+.. autoclass:: AddFileHeader
+   :members:
+
+
+AddFileFooter
+=============
+
+.. autoclass:: AddFileFooter
+   :members:
+
+
+createReplaceDictLineMappers
+============================
+
+.. autofunction:: createReplaceDictLineMappers

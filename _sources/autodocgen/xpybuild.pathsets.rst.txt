@@ -1,0 +1,111 @@
+
+xpybuild.pathsets
+~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.pathsets
+
+.. currentmodule:: xpybuild.pathsets
+
+
+
+MapSrc
+======
+
+.. autodata:: MapSrc
+
+
+BasePathSet
+===========
+
+.. autoclass:: BasePathSet
+   :members:
+
+
+DirBasedPathSet
+===============
+
+.. autoclass:: DirBasedPathSet
+   :members:
+
+
+FindPaths
+=========
+
+.. autoclass:: FindPaths
+   :members:
+
+
+TargetsWithTag
+==============
+
+.. autoclass:: TargetsWithTag
+   :members:
+
+
+TargetsWithinDir
+================
+
+.. autoclass:: TargetsWithinDir
+   :members:
+
+
+FilteredPathSet
+===============
+
+.. autoclass:: FilteredPathSet
+   :members:
+
+
+AddDestPrefix
+=============
+
+.. autoclass:: AddDestPrefix
+   :members:
+
+
+MapDest
+=======
+
+.. autoclass:: MapDest
+   :members:
+
+
+MapDestFromSrc
+==============
+
+.. autoclass:: MapDestFromSrc
+   :members:
+
+
+FlattenDest
+===========
+
+.. autoclass:: FlattenDest
+   :members:
+
+
+RemoveDestParents
+=================
+
+.. autoclass:: RemoveDestParents
+   :members:
+
+
+SingletonDestRenameMapper
+=========================
+
+.. autoclass:: SingletonDestRenameMapper
+   :members:
+
+
+DirGeneratedByTarget
+====================
+
+.. autoclass:: DirGeneratedByTarget
+   :members:
+
+
+PathSet
+=======
+
+.. autofunction:: PathSet

@@ -1,0 +1,55 @@
+
+xpybuild.utils.consoleformatter
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.utils.consoleformatter
+
+.. currentmodule:: xpybuild.utils.consoleformatter
+
+
+
+ConsoleFormatter
+================
+
+.. autoclass:: ConsoleFormatter
+   :members:
+
+
+DefaultConsoleFormatter
+=======================
+
+.. autoclass:: DefaultConsoleFormatter
+   :members:
+
+
+TeamcityHandler
+===============
+
+.. autoclass:: TeamcityHandler
+   :members:
+
+
+MakeConsoleFormatter
+====================
+
+.. autoclass:: MakeConsoleFormatter
+   :members:
+
+
+VisualStudioConsoleFormatter
+============================
+
+.. autoclass:: VisualStudioConsoleFormatter
+   :members:
+
+
+registerConsoleFormatter
+========================
+
+.. autofunction:: registerConsoleFormatter
+
+
+publishArtifact
+===============
+
+.. autofunction:: publishArtifact

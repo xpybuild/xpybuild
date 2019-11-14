@@ -1,0 +1,29 @@
+
+xpybuild.buildcontext
+~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.buildcontext
+
+.. currentmodule:: xpybuild.buildcontext
+
+
+
+BaseContext
+===========
+
+.. autoclass:: BaseContext
+   :members:
+
+
+BuildInitializationContext
+==========================
+
+.. autoclass:: BuildInitializationContext
+   :members:
+
+
+BuildContext
+============
+
+.. autoclass:: BuildContext
+   :members:

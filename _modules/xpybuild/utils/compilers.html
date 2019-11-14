@@ -1,40 +1,149 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>xpybuild.utils.compilers &#8212; xpybuild 3.0.dev2 documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.utils.compilers &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
     
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
     
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodocgen/xpybuild.html">xpybuild</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>xpybuild.utils.compilers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for xpybuild.utils.compilers</h1><div class="highlight"><pre>
 <span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
@@ -56,6 +165,10 @@
 <span class="c1"># $Id: compilers.py 301527 2017-02-06 15:31:43Z matj $</span>
 <span class="c1">#</span>
 
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Support classes for the C/C++ native compiler chain, used by the `xpybuild.targets.native` module. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">traceback</span>
 
 <span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
@@ -65,7 +178,7 @@
 <span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="k">import</span> <span class="n">ProcessOutputHandler</span>
 <span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span>
 
-<div class="viewcode-block" id="Process"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Process">[docs]</a><span class="k">class</span> <span class="nc">Process</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Process"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Process">[docs]</a><span class="k">class</span> <span class="nc">Process</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Parent type for compiler/tool chain process classes,</span>
 <span class="sd">	contain helper method for calling the compiler process</span>
@@ -73,7 +186,7 @@
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">environs</span> <span class="o">=</span> <span class="n">environs</span> <span class="ow">or</span> <span class="p">{}</span>
 	
-<div class="viewcode-block" id="Process.getExpandedEnvirons"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Process.getExpandedEnvirons">[docs]</a>	<span class="k">def</span> <span class="nf">getExpandedEnvirons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Process.getExpandedEnvirons"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Process.getExpandedEnvirons">[docs]</a>	<span class="k">def</span> <span class="nf">getExpandedEnvirons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Return the environment variables to be used for this process, </span>
 <span class="sd">		either passed explicitly into this method, or passed into </span>
@@ -108,13 +221,13 @@
 		<span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">dirpath</span><span class="p">)</span> <span class="c1"># legitimate but useful for debugging</span>
 	<span class="k">return</span> <span class="n">dirpath</span>
 
-<div class="viewcode-block" id="Compiler"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Compiler">[docs]</a><span class="k">class</span> <span class="nc">Compiler</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<div class="viewcode-block" id="Compiler"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Compiler">[docs]</a><span class="k">class</span> <span class="nc">Compiler</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A compiler (of some sort or other)</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
-<div class="viewcode-block" id="Compiler.compile"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Compiler.compile">[docs]</a>	<span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
+<div class="viewcode-block" id="Compiler.compile"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Compiler.compile">[docs]</a>	<span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		output: The object file to create</span>
 
@@ -128,13 +241,13 @@
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">assert</span> <span class="kc">False</span></div></div>
 
-<div class="viewcode-block" id="Depends"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Depends">[docs]</a><span class="k">class</span> <span class="nc">Depends</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<div class="viewcode-block" id="Depends"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Depends">[docs]</a><span class="k">class</span> <span class="nc">Depends</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	The command to use to generate a list of dependencies from a list of source files</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
-<div class="viewcode-block" id="Depends.depends"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Depends.depends">[docs]</a>	<span class="k">def</span> <span class="nf">depends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
+<div class="viewcode-block" id="Depends.depends"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Depends.depends">[docs]</a>	<span class="k">def</span> <span class="nf">depends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		src: A list of source file paths</span>
 
@@ -146,13 +259,13 @@
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">assert</span> <span class="kc">False</span></div></div>
 
-<div class="viewcode-block" id="Linker"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Linker">[docs]</a><span class="k">class</span> <span class="nc">Linker</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<div class="viewcode-block" id="Linker"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Linker">[docs]</a><span class="k">class</span> <span class="nc">Linker</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Link a set of object files into an executable or a shared library</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
-<div class="viewcode-block" id="Linker.link"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Linker.link">[docs]</a>	<span class="k">def</span> <span class="nf">link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">shared</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libdirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Linker.link"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Linker.link">[docs]</a>	<span class="k">def</span> <span class="nf">link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">shared</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libdirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		output: The library/executable to create</span>
 
@@ -168,14 +281,14 @@
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">assert</span> <span class="kc">False</span></div></div>
 
-<div class="viewcode-block" id="Archiver"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Archiver">[docs]</a><span class="k">class</span> <span class="nc">Archiver</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<div class="viewcode-block" id="Archiver"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Archiver">[docs]</a><span class="k">class</span> <span class="nc">Archiver</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A tool to put a set of object files into an archive for static linking.</span>
 <span class="sd">	Typically only used on unix.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
-<div class="viewcode-block" id="Archiver.archive"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Archiver.archive">[docs]</a>	<span class="k">def</span> <span class="nf">archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span> 
+<div class="viewcode-block" id="Archiver.archive"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Archiver.archive">[docs]</a>	<span class="k">def</span> <span class="nf">archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		output: The archive file path to create</span>
 
@@ -185,7 +298,7 @@
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">assert</span> <span class="kc">False</span></div></div>
 
-<div class="viewcode-block" id="ToolChain"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.ToolChain">[docs]</a><span class="k">class</span> <span class="nc">ToolChain</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ToolChain"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.ToolChain">[docs]</a><span class="k">class</span> <span class="nc">ToolChain</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A collection of compilers, linkers and other tools which represents a complete native tool chain</span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -214,7 +327,7 @@
 	
 	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> instance&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="c1"># make sure we get a stable stringification of the instance stored in the native.compilers option</span></div>
 
-<div class="viewcode-block" id="UnixCompiler"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.UnixCompiler">[docs]</a><span class="k">class</span> <span class="nc">UnixCompiler</span><span class="p">(</span><span class="n">Compiler</span><span class="p">):</span>
+<div class="viewcode-block" id="UnixCompiler"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.UnixCompiler">[docs]</a><span class="k">class</span> <span class="nc">UnixCompiler</span><span class="p">(</span><span class="n">Compiler</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A compiler using standard Unix compiler arguments/syntax</span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -240,7 +353,7 @@
 
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.link.wholearchive&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-<div class="viewcode-block" id="UnixLinker"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.UnixLinker">[docs]</a><span class="k">class</span> <span class="nc">UnixLinker</span><span class="p">(</span><span class="n">Linker</span><span class="p">):</span>
+<div class="viewcode-block" id="UnixLinker"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.UnixLinker">[docs]</a><span class="k">class</span> <span class="nc">UnixLinker</span><span class="p">(</span><span class="n">Linker</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A linker using standard Unix linker arguments/syntax</span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -272,7 +385,7 @@
 		<span class="n">environs</span><span class="p">[</span><span class="s1">&#39;LD_LIBRARY_PATH&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">libdirs</span><span class="o">+</span><span class="p">[</span><span class="n">environs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;LD_LIBRARY_PATH&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)])</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">linker_handler</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="UnixArchiver"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.UnixArchiver">[docs]</a><span class="k">class</span> <span class="nc">UnixArchiver</span><span class="p">(</span><span class="n">Archiver</span><span class="p">):</span>
+<div class="viewcode-block" id="UnixArchiver"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.UnixArchiver">[docs]</a><span class="k">class</span> <span class="nc">UnixArchiver</span><span class="p">(</span><span class="n">Archiver</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A archiver using standard Unix archiver arguments/syntax</span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -296,7 +409,7 @@
 		<span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ar_handler</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GccProcessOutputHandler"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.GccProcessOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">GccProcessOutputHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
+<div class="viewcode-block" id="GccProcessOutputHandler"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.GccProcessOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">GccProcessOutputHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A ProcessOutputHandler than can parse the output of GCC tools</span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -332,7 +445,7 @@
 		<span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">handleEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">returnCode</span><span class="o">=</span><span class="n">returnCode</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GCC"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.GCC">[docs]</a><span class="k">class</span> <span class="nc">GCC</span><span class="p">(</span><span class="n">ToolChain</span><span class="p">,</span> <span class="n">UnixCompiler</span><span class="p">,</span> <span class="n">UnixLinker</span><span class="p">,</span> <span class="n">Depends</span><span class="p">):</span>
+<div class="viewcode-block" id="GCC"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.GCC">[docs]</a><span class="k">class</span> <span class="nc">GCC</span><span class="p">(</span><span class="n">ToolChain</span><span class="p">,</span> <span class="n">UnixCompiler</span><span class="p">,</span> <span class="n">UnixLinker</span><span class="p">,</span> <span class="n">Depends</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A tool chain based on the GNU Compiler Collection</span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -390,7 +503,7 @@
 
 		<span class="k">return</span> <span class="n">deplist</span></div>
 
-<div class="viewcode-block" id="VisualStudioProcessOutputHandler"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.VisualStudioProcessOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">VisualStudioProcessOutputHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
+<div class="viewcode-block" id="VisualStudioProcessOutputHandler"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.VisualStudioProcessOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">VisualStudioProcessOutputHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A ProcessOutputHandler that can parse the output of Visual Studio tools</span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -471,7 +584,7 @@
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;visualstudio.outputHandlerFactory&#39;</span><span class="p">,</span> <span class="n">VisualStudioProcessOutputHandler</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;Allows overriding the output handler used by Visual Studio for compiler output such as errors and warnings. &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="VisualStudio"><a class="viewcode-back" href="../../../generated/xpybuild.utils.compilers.html#xpybuild.utils.compilers.VisualStudio">[docs]</a><span class="k">class</span> <span class="nc">VisualStudio</span><span class="p">(</span><span class="n">Compiler</span><span class="p">,</span> <span class="n">Linker</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">Archiver</span><span class="p">,</span> <span class="n">ToolChain</span><span class="p">):</span>
+<div class="viewcode-block" id="VisualStudio"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.VisualStudio">[docs]</a><span class="k">class</span> <span class="nc">VisualStudio</span><span class="p">(</span><span class="n">Compiler</span><span class="p">,</span> <span class="n">Linker</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">Archiver</span><span class="p">,</span> <span class="n">ToolChain</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A ToolChain representing using Visual Studio compilers et al</span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -571,41 +684,43 @@
 		<span class="k">return</span> <span class="n">deplist</span></div>
 </pre></div>
 
+           </div>
+           
           </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>

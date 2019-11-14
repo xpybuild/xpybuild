@@ -1,0 +1,76 @@
+
+xpybuild.buildcommon
+~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.buildcommon
+
+.. currentmodule:: xpybuild.buildcommon
+
+
+
+XPYBUILD\_VERSION
+=================
+
+.. autodata:: XPYBUILD_VERSION
+
+
+IS\_WINDOWS
+===========
+
+.. autodata:: IS_WINDOWS
+
+
+isDirPath
+=========
+
+.. autodata:: isDirPath
+
+
+StringFormatter
+===============
+
+.. autoclass:: StringFormatter
+   :members:
+
+
+FilenameStringFormatter
+=======================
+
+.. autoclass:: FilenameStringFormatter
+   :members:
+
+
+include
+=======
+
+.. autofunction:: include
+
+
+isWindows
+=========
+
+.. autofunction:: isWindows
+
+
+defineAtomicTargetGroup
+=======================
+
+.. autofunction:: defineAtomicTargetGroup
+
+
+requireXpyBuildVersion
+======================
+
+.. autofunction:: requireXpyBuildVersion
+
+
+registerPreBuildCheck
+=====================
+
+.. autofunction:: registerPreBuildCheck
+
+
+enableLegacyXpybuildModuleNames
+===============================
+
+.. autofunction:: enableLegacyXpybuildModuleNames

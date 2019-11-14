@@ -1,0 +1,38 @@
+
+xpybuild.utils.java
+~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.utils.java
+
+.. currentmodule:: xpybuild.utils.java
+
+
+
+create\_manifest
+================
+
+.. autofunction:: create_manifest
+
+
+javac
+=====
+
+.. autofunction:: javac
+
+
+jar
+===
+
+.. autofunction:: jar
+
+
+signjar
+=======
+
+.. autofunction:: signjar
+
+
+javadoc
+=======
+
+.. autofunction:: javadoc

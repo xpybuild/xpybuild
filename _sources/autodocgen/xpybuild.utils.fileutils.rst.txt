@@ -1,0 +1,98 @@
+
+xpybuild.utils.fileutils
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.utils.fileutils
+
+.. currentmodule:: xpybuild.utils.fileutils
+
+
+
+openForWrite
+============
+
+.. autodata:: openForWrite
+
+
+mkdir
+=====
+
+.. autofunction:: mkdir
+
+
+deleteDir
+=========
+
+.. autofunction:: deleteDir
+
+
+deleteFile
+==========
+
+.. autofunction:: deleteFile
+
+
+parsePropertiesFile
+===================
+
+.. autofunction:: parsePropertiesFile
+
+
+isDirPath
+=========
+
+.. autofunction:: isDirPath
+
+
+toLongPathSafe
+==============
+
+.. autofunction:: toLongPathSafe
+
+
+normPath
+========
+
+.. autofunction:: normPath
+
+
+normLongPath
+============
+
+.. autofunction:: normLongPath
+
+
+cached\_stat
+============
+
+.. autofunction:: cached_stat
+
+
+cached\_getmtime
+================
+
+.. autofunction:: cached_getmtime
+
+
+cached\_getsize
+===============
+
+.. autofunction:: cached_getsize
+
+
+cached\_exists
+==============
+
+.. autofunction:: cached_exists
+
+
+cached\_isfile
+==============
+
+.. autofunction:: cached_isfile
+
+
+cached\_isdir
+=============
+
+.. autofunction:: cached_isdir

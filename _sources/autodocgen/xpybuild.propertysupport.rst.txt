@@ -1,0 +1,115 @@
+
+xpybuild.propertysupport
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.propertysupport
+
+.. currentmodule:: xpybuild.propertysupport
+
+
+
+ExtensionBasedFileEncodingDecider
+=================================
+
+.. autoclass:: ExtensionBasedFileEncodingDecider
+   :members:
+
+
+dirname
+=======
+
+.. autoclass:: dirname
+   :members:
+
+
+basename
+========
+
+.. autoclass:: basename
+   :members:
+
+
+sub
+===
+
+.. autoclass:: sub
+   :members:
+
+
+joinPaths
+=========
+
+.. autoclass:: joinPaths
+   :members:
+
+
+defineStringProperty
+====================
+
+.. autofunction:: defineStringProperty
+
+
+definePathProperty
+==================
+
+.. autofunction:: definePathProperty
+
+
+defineOutputDirProperty
+=======================
+
+.. autofunction:: defineOutputDirProperty
+
+
+registerOutputDirProperties
+===========================
+
+.. autofunction:: registerOutputDirProperties
+
+
+defineEnumerationProperty
+=========================
+
+.. autofunction:: defineEnumerationProperty
+
+
+defineBooleanProperty
+=====================
+
+.. autofunction:: defineBooleanProperty
+
+
+definePropertiesFromFile
+========================
+
+.. autofunction:: definePropertiesFromFile
+
+
+getPropertyValue
+================
+
+.. autofunction:: getPropertyValue
+
+
+expandListProperty
+==================
+
+.. autofunction:: expandListProperty
+
+
+enableEnvironmentPropertyOverrides
+==================================
+
+.. autofunction:: enableEnvironmentPropertyOverrides
+
+
+defineOption
+============
+
+.. autofunction:: defineOption
+
+
+setGlobalOption
+===============
+
+.. autofunction:: setGlobalOption

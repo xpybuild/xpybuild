@@ -1,0 +1,312 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.utils.flatten &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.utils.functors" href="xpybuild.utils.functors.html" />
+    <link rel="prev" title="xpybuild.utils.fileutils" href="xpybuild.utils.fileutils.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="xpybuild.html">xpybuild</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.basetarget.html">xpybuild.basetarget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcommon.html">xpybuild.buildcommon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcontext.html">xpybuild.buildcontext</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.pathsets.html">xpybuild.pathsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.propertysupport.html">xpybuild.propertysupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.targets.html">xpybuild.targets</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="xpybuild.utils.html">xpybuild.utils</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.antglob.html">xpybuild.utils.antglob</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.buildexceptions.html">xpybuild.utils.buildexceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.buildfilelocation.html">xpybuild.utils.buildfilelocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.compilers.html">xpybuild.utils.compilers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.consoleformatter.html">xpybuild.utils.consoleformatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.fileutils.html">xpybuild.utils.fileutils</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">xpybuild.utils.flatten</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#flatten">flatten</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getstringlist">getStringList</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.functors.html">xpybuild.utils.functors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.java.html">xpybuild.utils.java</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.outputhandler.html">xpybuild.utils.outputhandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.process.html">xpybuild.utils.process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.progress.html">xpybuild.utils.progress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.stringutils.html">xpybuild.utils.stringutils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.terminal.html">xpybuild.utils.terminal</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="xpybuild.html">xpybuild</a> &raquo;</li>
+        
+          <li><a href="xpybuild.utils.html">xpybuild.utils</a> &raquo;</li>
+        
+      <li>xpybuild.utils.flatten</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/autodocgen/xpybuild.utils.flatten.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-xpybuild.utils.flatten">
+<span id="xpybuild-utils-flatten"></span><h1>xpybuild.utils.flatten<a class="headerlink" href="#module-xpybuild.utils.flatten" title="Permalink to this headline">¶</a></h1>
+<p>Utility functions for normalizing and flattening deeply nested lists.</p>
+<div class="section" id="flatten">
+<h2>flatten<a class="headerlink" href="#flatten" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.utils.flatten.flatten">
+<code class="sig-prename descclassname">xpybuild.utils.flatten.</code><code class="sig-name descname">flatten</code><span class="sig-paren">(</span><em class="sig-param">input</em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="../_modules/xpybuild/utils/flatten.html#flatten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.flatten.flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the input flattened to an array.</p>
+<p>input: any variable composed of lists/generators/tuples, strings, lambda functions or other 
+objects, nested arbitrarily.</p>
+<p>Empty strings and None items are removed.</p>
+<p>Returns a list of strings or other objects depth 1.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">flatten</span><span class="p">(</span><span class="s1">&#39;hi&#39;</span><span class="p">)</span>
+<span class="go">[&#39;hi&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flatten</span><span class="p">([</span><span class="s1">&#39;hi&#39;</span><span class="p">,</span> <span class="s1">&#39;ho&#39;</span><span class="p">,</span> <span class="s1">&#39;hum&#39;</span><span class="p">])</span>
+<span class="go">[&#39;hi&#39;, &#39;ho&#39;, &#39;hum&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flatten</span><span class="p">([</span><span class="s1">&#39;hi&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ho&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hum&#39;</span><span class="p">]</span> <span class="p">]</span> <span class="p">])</span>
+<span class="go">[&#39;hi&#39;, &#39;ho&#39;, &#39;hum&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flatten</span><span class="p">([</span><span class="s1">&#39;hi&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;ho&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;hum&#39;</span><span class="p">)</span> <span class="p">)</span> <span class="p">])</span>
+<span class="go">[&#39;hi&#39;, &#39;ho&#39;, &#39;hum&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flatten</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">[3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flatten</span><span class="p">(</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="go">[2, 3, 4]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flatten</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">)</span>
+<span class="go">[&#39;3&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flatten</span><span class="p">([</span><span class="s1">&#39;hi&#39;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="s1">&#39;ho&#39;</span><span class="p">,</span> <span class="s1">&#39;hum&#39;</span><span class="p">])</span>
+<span class="go">[&#39;hi&#39;, &#39;ho&#39;, &#39;hum&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flatten</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="go">[]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="getstringlist">
+<h2>getStringList<a class="headerlink" href="#getstringlist" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.utils.flatten.getStringList">
+<code class="sig-prename descclassname">xpybuild.utils.flatten.</code><code class="sig-name descname">getStringList</code><span class="sig-paren">(</span><em class="sig-param">stringOrListOfStrings</em><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="../_modules/xpybuild/utils/flatten.html#getStringList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.flatten.getStringList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of strings, either identical to the input (if it’s already a list), or with the input wrapped in 
+a new sequence (if it’s a string), or an empty sequence (if its None).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">)</span>
+<span class="go">[&#39;abc&#39;]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">([</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">])</span>
+<span class="go">[&#39;abc&#39;, &#39;def&#39;]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">((</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">))</span>
+<span class="go">[&#39;abc&#39;, &#39;def&#39;]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">(</span><span class="nb">tuple</span><span class="p">([</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">]))</span>
+<span class="go">[&#39;abc&#39;, &#39;def&#39;]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">([[</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">]])</span>
+<span class="go">[&#39;abc&#39;, &#39;def&#39;]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="go">[]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">The specified value must be a list of strings: &quot;5&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="xpybuild.utils.functors.html" class="btn btn-neutral float-right" title="xpybuild.utils.functors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="xpybuild.utils.fileutils.html" class="btn btn-neutral float-left" title="xpybuild.utils.fileutils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

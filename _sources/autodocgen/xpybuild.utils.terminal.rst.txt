@@ -1,0 +1,14 @@
+
+xpybuild.utils.terminal
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.utils.terminal
+
+.. currentmodule:: xpybuild.utils.terminal
+
+
+
+getTerminalSize
+===============
+
+.. autofunction:: getTerminalSize

@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.targets.writefile &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.utils" href="xpybuild.utils.html" />
+    <link rel="prev" title="xpybuild.targets.symlink" href="xpybuild.targets.symlink.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="xpybuild.html">xpybuild</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.basetarget.html">xpybuild.basetarget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcommon.html">xpybuild.buildcommon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcontext.html">xpybuild.buildcontext</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.pathsets.html">xpybuild.pathsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.propertysupport.html">xpybuild.propertysupport</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="xpybuild.targets.html">xpybuild.targets</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.targets.archive.html">xpybuild.targets.archive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.targets.copy.html">xpybuild.targets.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.targets.csharp.html">xpybuild.targets.csharp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.targets.custom.html">xpybuild.targets.custom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.targets.docker.html">xpybuild.targets.docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.targets.download.html">xpybuild.targets.download</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.targets.java.html">xpybuild.targets.java</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.targets.native.html">xpybuild.targets.native</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.targets.symlink.html">xpybuild.targets.symlink</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">xpybuild.targets.writefile</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#writefile">WriteFile</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#touch">Touch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.utils.html">xpybuild.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="xpybuild.html">xpybuild</a> &raquo;</li>
+        
+          <li><a href="xpybuild.targets.html">xpybuild.targets</a> &raquo;</li>
+        
+      <li>xpybuild.targets.writefile</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/autodocgen/xpybuild.targets.writefile.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-xpybuild.targets.writefile">
+<span id="xpybuild-targets-writefile"></span><h1>xpybuild.targets.writefile<a class="headerlink" href="#module-xpybuild.targets.writefile" title="Permalink to this headline">¶</a></h1>
+<p>Contains targets for writing a single file containing dynamically generated contents.</p>
+<div class="section" id="writefile">
+<h2>WriteFile<a class="headerlink" href="#writefile" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.writefile.WriteFile">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.writefile.</code><code class="sig-name descname">WriteFile</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">getContents</em>, <em class="sig-param">dependencies=None</em>, <em class="sig-param">mode=None</em>, <em class="sig-param">executable=False</em>, <em class="sig-param">encoding=None</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/writefile.html#WriteFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.writefile.WriteFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
+<p>Target for writing out a text or binary file with the specifiwed dynamically generated (or hardcoded) contents.</p>
+<p>The file will only be updated if its contents have changed.</p>
+<p>Example usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WriteFile</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{OUTPUT_DIR}</span><span class="s1">/foo.txt&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">context</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;Foo:&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{FOO}</span><span class="s1">&#39;</span><span class="p">)]))</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – the output filename</p></li>
+<li><p><strong>getContents</strong> – <blockquote>
+<div><p>a unicode character string (which will be subject to expansion), 
+or binary bytes, or a function that accepts a context as input 
+followed optionally by any specified ‘args’) and returns 
+the string/bytes that should be written to the file, using <code class="docutils literal notranslate"><span class="pre">\n</span></code> for newlines 
+(not <code class="docutils literal notranslate"><span class="pre">os.linesep</span></code> - any occurrences of the newline character <code class="docutils literal notranslate"><span class="pre">\n</span></code> in 
+the provided string will be replaced automatically with the 
+OS-specific line separator unless bytes are provided).</p>
+</div></blockquote>
+<p>The function will be evaluated during the dependency resolution 
+phase (before the build phase commences).</p>
+</p></li>
+<li><p><strong>mode</strong> – unix permissions to set with chmod on the destination files. 
+If not specified, default mode is used. 
+Ignored on Windows platforms.</p></li>
+<li><p><strong>executable</strong> – set to True to add Unix executable permissions (simpler 
+alternative to setting using mode)</p></li>
+<li><p><strong>encoding</strong> – The encoding to use for converting the str to bytes; 
+if not specified the <code class="docutils literal notranslate"><span class="pre">common.fileEncodingDecider</span></code> option is used.</p></li>
+<li><p><strong>args</strong> – optional tuple containing arguments that should be passed to 
+the getContents function, after the context argument (first arg).</p></li>
+<li><p><strong>kwargs</strong> – optional dictionary containing kwargs that should be passed 
+to the getContents function.</p></li>
+<li><p><strong>dependencies</strong> – any targets which need to be built in order to run this
+target.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="touch">
+<h2>Touch<a class="headerlink" href="#touch" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.targets.writefile.Touch">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.writefile.</code><code class="sig-name descname">Touch</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/writefile.html#Touch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.writefile.Touch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
+<p>Target that creates an empty file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – the output filename.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="xpybuild.utils.html" class="btn btn-neutral float-right" title="xpybuild.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="xpybuild.targets.symlink.html" class="btn btn-neutral float-left" title="xpybuild.targets.symlink" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

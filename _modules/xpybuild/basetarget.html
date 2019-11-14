@@ -1,43 +1,152 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>xpybuild.basetarget &#8212; xpybuild 3.0.dev2 documentation</title>
-    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.basetarget &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
     
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autodocgen/xpybuild.html">xpybuild</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>xpybuild.basetarget</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for xpybuild.basetarget</h1><div class="highlight"><pre>
-<span></span><span class="mi">0</span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
+<span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
 <span class="c1">#</span>
 <span class="c1"># Contains the base classes for creating various kinds of target. </span>
 <span class="c1">#</span>
@@ -58,6 +167,13 @@
 <span class="c1"># $Id: basetarget.py 301527 2017-02-06 15:31:43Z matj $</span>
 <span class="c1">#</span>
 
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Contains `xpybuild.basetarget.BaseTarget` which contains </span>
+<span class="sd">methods such as `basetarget.BaseTarget.option`, `basetarget.BaseTarget.tags` for configuring the target instances </span>
+<span class="sd">in your build files, and is also the base class for defining new targets. </span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
@@ -68,28 +184,67 @@
 <span class="kn">from</span> <span class="nn">xpybuild.utils.functors</span> <span class="k">import</span> <span class="n">Composable</span>
 <span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
 <span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">normLongPath</span><span class="p">,</span> <span class="n">mkdir</span>
+<span class="kn">import</span> <span class="nn">xpybuild.utils.stringutils</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<div class="viewcode-block" id="BaseTarget"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget">[docs]</a><span class="k">class</span> <span class="nc">BaseTarget</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot; The base class for all targets. All targets are uniquely identified by </span>
-<span class="sd">	a single name which is a file or a directory (ending with &#39;/&#39;). </span>
+<div class="viewcode-block" id="BaseTarget"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget">[docs]</a><span class="k">class</span> <span class="nc">BaseTarget</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; The base class for all targets. </span>
 <span class="sd">	</span>
-<span class="sd">	Has public read-only attributes: </span>
-<span class="sd">	 - name: the unresolved canonical name for the target (containing unsubstituted properties etc).</span>
-<span class="sd">	 - path: the resolved name with variables expanded etc. Can only be used once target is running or checking up-to-dateness but not during initialization phase.</span>
-<span class="sd">	 - options: a dict of the resolved options for this target. Can only be used once target is running or checking up-to-dateness but not during initialization phase. See also L{getOption()}.</span>
-<span class="sd">	 - workDir (a unique dedicated directory where this target can write </span>
-<span class="sd">	temporary/working files).</span>
+<span class="sd">	.. rubric:: Configuring targets in your build files</span>
 <span class="sd">	</span>
-<span class="sd">	The methods that may be overridden by subclasses are:</span>
-<span class="sd">	 - L{run}</span>
-<span class="sd">	 - L{clean}</span>
-<span class="sd">	 - L{getHashableImplicitInputs}</span>
+<span class="sd">	The following methods can be used to configure any target instance you add to a build file:</span>
 <span class="sd">	</span>
+<span class="sd">	.. autosummary ::</span>
+<span class="sd">		option</span>
+<span class="sd">		tags</span>
+<span class="sd">		clearTags</span>
+<span class="sd">		disableInFullBuild</span>
+<span class="sd">		priority</span>
+
+<span class="sd">	.. rubric:: Implementing a new target class</span>
+<span class="sd">	</span>
+<span class="sd">	If you are subclassing ``BaseTarget`` to create a new target class, you must implement `run`. </span>
+<span class="sd">	</span>
+<span class="sd">	In rare occasions you may also wish to override `clean`. The following methods are available for use by target </span>
+<span class="sd">	subclasses, either at construction time (``__init__``) or at build time (during `run` or `clean`):</span>
+
+<span class="sd">	.. autosummary ::</span>
+<span class="sd">		registerImplicitInputOption</span>
+<span class="sd">		registerImplicitInput</span>
+<span class="sd">		getOption</span>
+<span class="sd">		openFile</span>
+<span class="sd">		targetNameToUniqueId</span>
+<span class="sd">	</span>
+<span class="sd">	This class provides several read-only attributes for use by subclasses.</span>
+
+<span class="sd">	:ivar str name: The canonical name for the target (containing unsubstituted properties).</span>
+<span class="sd">	</span>
+<span class="sd">	:ivar str path: The resolved name with all properties variables expanded. This field is set only once the target is </span>
+<span class="sd">		running or checking up-to-dateness but not during initialization phase when targets are initially constructed.</span>
+<span class="sd">	</span>
+<span class="sd">	:ivar dict options: A ``dict`` of the resolved options for this target. Can only be used once target is running or </span>
+<span class="sd">		checking up-to-dateness but not during the initialization phase. See also `getOption()`.</span>
+<span class="sd">	</span>
+<span class="sd">	:ivar str workDir: A unique dedicated directory where this target can write temporary/working files.</span>
+
+<span class="sd">	.. rubric:: Arguments for the BaseTest __init__ constructor</span>
+
+<span class="sd">	@param name: This target instance&#39;s unique name, which is the file or </span>
+<span class="sd">		directory path which is created as a result of running this target. </span>
+<span class="sd">		The target name may contain ``${...}`` properties (e.g. </span>
+<span class="sd">		``${OUTPUT_DIR}/myoutputfile``), and must use only forward slashes ``/``. </span>
+<span class="sd">		If the target builds a directory it must end with a forward slash. </span>
+<span class="sd">	</span>
+<span class="sd">	@param dependencies: The dependencies, which may need to be </span>
+<span class="sd">		flattened/expanded by the build system; may be any combination of </span>
+<span class="sd">		strings, `xpybuild.pathsets`` and lists, and may also contain </span>
+<span class="sd">		unexpanded variables.</span>
+<span class="sd">		</span>
+<span class="sd">	.. rubric:: BaseTest methods</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 
-	<span class="c1"># to allow targets to be used in sets, override hash to ensure its deterministic</span>
+	<span class="c1"># to allow targets to be used in sets, override hash to ensure it&#39;s deterministic;</span>
 	<span class="c1"># no need to override eq/ne, they use object identity which is already correct</span>
 	<span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot;</span>
@@ -99,16 +254,6 @@
 
 	
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Normal constructor, should only be called from sub-classes since this is a stub.</span>
-
-<span class="sd">		@param name: a unique name for this target (may contain unexpanded ${...}</span>
-<span class="sd">		variables). Should correspond to the file or directory which is created</span>
-<span class="sd">		as a result of running this target.</span>
-<span class="sd">		@param dependencies: a list of dependencies, which may need to be </span>
-<span class="sd">		flattened/expanded by the build system; may be any combination of </span>
-<span class="sd">		strings, PathSets and lists and may also contain unexpanded variables.</span>
-<span class="sd">		&quot;&quot;&quot;</span>
-		
 		<span class="bp">self</span><span class="o">.</span><span class="n">__getAttrImpl</span> <span class="o">=</span> <span class="p">{</span>
 			<span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__returnOrRaiseIfNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="p">,</span> <span class="s1">&#39;Target path has not yet been resolved by this phase of the build process: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="p">),</span>
 			<span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__name</span><span class="p">,</span>
@@ -146,11 +291,16 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">__path</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># set by _resolveTargetPath</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__workDir</span> <span class="o">=</span> <span class="kc">None</span>
 		
-		<span class="bp">self</span><span class="o">.</span><span class="n">__hashableImplicitInputs</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__registeredImplicitInputs</span> <span class="o">=</span> <span class="p">[]</span>
 
 		<span class="c1"># put the class first, since it results in better ordering (e.g. for errors)</span>
 		<span class="c1"># use a space to delimit these to make it easier to copy to the clipboard by double-clicking</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__stringvalue</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;&lt;</span><span class="si">{self.type}</span><span class="s1">&gt; </span><span class="si">{self.name}</span><span class="s1">&#39;</span>
+		
+		<span class="c1"># aliases for pre-3.0</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">addHashableImplicitInputOption</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registerImplicitInputOption</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">addHashableImplicitInput</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registerImplicitInput</span>
+
 		
 	<span class="k">def</span> <span class="nf">__returnOrRaiseIfNone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exceptionMessage</span><span class="p">):</span>
 		<span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="n">value</span>
@@ -179,8 +329,10 @@
 		<span class="sd">&quot;&quot;&quot; Returns a display name including the target name and the target type (class) &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stringvalue</span>
 
-<div class="viewcode-block" id="BaseTarget.resolveToString"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.resolveToString">[docs]</a>	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Resolves this target&#39;s path and returns as a string. </span>
+	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		.. private:: There is usually no need for this to be called other than by the framework. 		</span>
+<span class="sd">		Resolves this target&#39;s path and returns as a string. </span>
 <span class="sd">		</span>
 <span class="sd">		It is acceptable to call this while the build files are still being </span>
 <span class="sd">		parsed (before the dependency checking phase), but an error will result </span>
@@ -194,10 +346,10 @@
 		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span> <span class="c1"># cache it for consistency</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__path</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__path_src</span><span class="p">,</span> <span class="s2">&quot;$</span><span class="si">{OUTPUT_DIR}</span><span class="s2">&quot;</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Resolved target name </span><span class="si">%s</span><span class="s1"> to canonical path </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span></div>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span>
 
 	<span class="k">def</span> <span class="nf">_resolveTargetPath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Internal method for resolving path from name, performing any </span>
+		<span class="sd">&quot;&quot;&quot;.. private:: Internal method for resolving path from name, performing any </span>
 <span class="sd">		required expansion etc. </span>
 <span class="sd">		</span>
 <span class="sd">		Do not override this method.</span>
@@ -216,7 +368,7 @@
 			<span class="bp">self</span><span class="o">.</span><span class="n">__optionsResolved</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">_mergeListOfOptionDicts</span><span class="p">([</span><span class="n">context</span><span class="o">.</span><span class="n">_globalOptions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__optionsTargetOverridesUnresolved</span><span class="p">],</span> <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
 	<span class="k">def</span> <span class="nf">_resolveUnderlyingDependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">rawdeps</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Internal method for resolving dependencies needed by this target, </span>
+		<span class="sd">&quot;&quot;&quot;.. private:: Internal method for resolving dependencies needed by this target, </span>
 <span class="sd">		e.g. doing path expansion, globbing, etc. </span>
 <span class="sd">		</span>
 <span class="sd">		Do not override this method. This method should be invoked only once, </span>
@@ -228,20 +380,19 @@
 		<span class="c1"># don&#39;t think there&#39;s any value in caching this result</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dependencies</span><span class="o">.</span><span class="n">_resolveUnderlyingDependencies</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BaseTarget.run"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.run">[docs]</a>	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Build this target. </span>
+<div class="viewcode-block" id="BaseTarget.run"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.run">[docs]</a>	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BuildContext</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Called by xpybuild to request to target to run its build (all targets must implement this). </span>
 <span class="sd">		</span>
-<span class="sd">		Called after a failed up-to-date check to build this target. </span>
+<span class="sd">		This method is only called when up-to-date checking shows that the target must be built. </span>
 <span class="sd">		It&#39;s possible that execution will show that the target did not really </span>
-<span class="sd">		need to execute, in which case False should be returned (so that dependent tasks do not </span>
-<span class="sd">		necessarily get rebuilt).  </span>
+<span class="sd">		need to execute, in which case False should be returned.  </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;run() is not implemented yet for this target&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseTarget.clean"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.clean">[docs]</a>	<span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Clean this target. </span>
+<div class="viewcode-block" id="BaseTarget.clean"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.clean">[docs]</a>	<span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BuildContext</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Called by xpybuild when the target should be deleted (can be overridden if needed). </span>
 <span class="sd">		</span>
-<span class="sd">		Default implementation will simply delete the target, and any target </span>
+<span class="sd">		The default implementation will simply delete the target, and any target </span>
 <span class="sd">		workdir, but can be overridden to delete additional temporary files if </span>
 <span class="sd">		needed (shouldn&#39;t be).</span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -255,23 +406,26 @@
 			<span class="k">else</span><span class="p">:</span>
 				<span class="n">fileutils</span><span class="o">.</span><span class="n">deleteFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseTarget.addHashableImplicitInputOption"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.addHashableImplicitInputOption">[docs]</a>	<span class="k">def</span> <span class="nf">addHashableImplicitInputOption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optionKey</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Adds the resolved value of the specified option(s) as implicit inputs of this target, </span>
-<span class="sd">		to help detect when the target should be rebuilt. </span>
+<div class="viewcode-block" id="BaseTarget.registerImplicitInputOption"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.registerImplicitInputOption">[docs]</a>	<span class="k">def</span> <span class="nf">registerImplicitInputOption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optionKey</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Target classes can call this from their ``__init__()`` to add the resolved value of the specified option(s) as </span>
+<span class="sd">		&#39;implicit inputs&#39; of this target. </span>
+<span class="sd">		</span>
+<span class="sd">		This list will be written to disk after the target builds successfully, and compared with its recorded value </span>
+<span class="sd">		when subsequently checking the up-to-date-ness of the target.</span>
+<span class="sd">		This allows xpybuild to detect when the target should be rebuilt as a result of a change in options or property </span>
+<span class="sd">		values (e.g. build number, release/debug mode etc), even if no dependencies have changed. </span>
 <span class="sd">		</span>
 <span class="sd">		Call this from the target&#39;s constructor, for each option that this target is affected by, </span>
 <span class="sd">		or with a callable that dynamically selects from the defined options, e.g. based on a prefix. </span>
 <span class="sd">		</span>
-<span class="sd">		See L{getHashableImplicitInputs} for more information.</span>
-<span class="sd">		</span>
 <span class="sd">		@param optionKey: the name of an option (as a string), </span>
-<span class="sd">		  or a callable that accepts an optionKey and dynamically decides which options to include, </span>
-<span class="sd">		  returning True if it should be included. For example::</span>
+<span class="sd">			or a callable that accepts an optionKey and dynamically decides which options to include, </span>
+<span class="sd">			returning True if it should be included. For example::</span>
 <span class="sd">		  </span>
-<span class="sd">		    self.addHashableImplicitInputOption(lambda optionKey: optionKey.startswith(&#39;java.&#39;))</span>
+<span class="sd">				self.registerImplicitInputOption(lambda optionKey: optionKey.startswith((&#39;java.&#39;, &#39;javac.&#39;)))</span>
 <span class="sd">		</span>
 <span class="sd">		&quot;&quot;&quot;</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">addHashableImplicitInput</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__getMatchingOptions</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">optionKey</span><span class="p">))</span></div>
+		<span class="bp">self</span><span class="o">.</span><span class="n">registerImplicitInput</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__getMatchingOptions</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">optionKey</span><span class="p">))</span></div>
 
 	<span class="k">def</span> <span class="nf">__getMatchingOptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">optionKey</span><span class="p">):</span>
 		<span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">optionKey</span><span class="p">):</span>
@@ -289,52 +443,44 @@
 			<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;option </span><span class="si">{k}</span><span class="s1">=</span><span class="si">{value}</span><span class="s1">&#39;</span><span class="p">)</span>
 		<span class="k">return</span> <span class="n">result</span>
 
-	
-<div class="viewcode-block" id="BaseTarget.addHashableImplicitInput"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.addHashableImplicitInput">[docs]</a>	<span class="k">def</span> <span class="nf">addHashableImplicitInput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Adds a target-specific string (or list of strings) giving information about an </span>
-<span class="sd">		implicit input of this target to the list that will be used in detecting </span>
-<span class="sd">		when the target should be rebuilt as a result of changes in options, </span>
-<span class="sd">		property values (e.g. changes in build number,</span>
-<span class="sd">		release/debug mode) and glob results (e.g. addition or removal of a</span>
-<span class="sd">		file should trigger a rebuild). </span>
+<div class="viewcode-block" id="BaseTarget.registerImplicitInput"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.registerImplicitInput">[docs]</a>	<span class="k">def</span> <span class="nf">registerImplicitInput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Target classes can call this from their ``__init__()`` to add the specified string line(s) as </span>
+<span class="sd">		&#39;implicit inputs&#39; of this target. </span>
+<span class="sd">		</span>
+<span class="sd">		This list will be written to disk after the target builds successfully, and compared with its recorded value </span>
+<span class="sd">		when subsequently checking the up-to-date-ness of the target.</span>
+<span class="sd">		This allows xpybuild to detect when the target should be rebuilt as a result of a change in options or property </span>
+<span class="sd">		values (e.g. build number, release/debug mode etc), even if no dependencies have changed. </span>
 <span class="sd">		</span>
 <span class="sd">		Call this from the target&#39;s constructor. </span>
 
-<span class="sd">		@param item: either:</span>
-<span class="sd">		  - a string, which may contain substitution variables, e.g. ``myparameter=&quot;${someprop}&quot;``, </span>
-<span class="sd">		    and will converted to a string using `buildcontext.BuildContext.expandPropertyValues`, or</span>
-<span class="sd">		  - a callable to be invoked during up-to-dateness checking, that accepts a </span>
-<span class="sd">		    context parameter and returns a string or list of strings; </span>
-<span class="sd">		    any ``None`` items in the list are ignored. </span>
+<span class="sd">		@param item: The item to be added to the implicit inputs. </span>
+<span class="sd">		</span>
+<span class="sd">			This can be either:</span>
+<span class="sd">		</span>
+<span class="sd">				- a string, which may contain substitution variables, e.g. ``myparameter=&quot;${someprop}&quot;``, </span>
+<span class="sd">				  and will converted to a string using `buildcontext.BuildContext.expandPropertyValues`, or</span>
+<span class="sd">				- a callable to be invoked during up-to-dateness checking, that accepts a </span>
+<span class="sd">				  context parameter and returns a string or list of strings; </span>
+<span class="sd">				  any ``None`` items in the list are ignored. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">callable</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">__hashableImplicitInputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__registeredImplicitInputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
 	
-<div class="viewcode-block" id="BaseTarget.getHashableImplicitInputs"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.getHashableImplicitInputs">[docs]</a>	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Return a target-specific token (a list of strings) representing the </span>
-<span class="sd">		implicit inputs of this target that cannot be detected using normal </span>
-<span class="sd">		timestamp up-to-date checking.</span>
-<span class="sd">												</span>
-<span class="sd">		This can include options, property values (e.g. changes in build number,</span>
-<span class="sd">		release/debug mode) and glob results (e.g. addition or removal of a</span>
-<span class="sd">		file should trigger a rebuild). </span>
+<div class="viewcode-block" id="BaseTarget.getHashableImplicitInputs"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.getHashableImplicitInputs">[docs]</a>	<span class="k">def</span> <span class="nf">getHashableImplicitInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;(deprecated) Target classes can implement this to add the string line(s) as &#39;implicit inputs&#39; of this target. </span>
 <span class="sd">		</span>
-<span class="sd">		This list will be written to disk (possibly hashed) after the target </span>
-<span class="sd">		builds successfully, and compared with its recorded value when </span>
-<span class="sd">		subsequently checking the up-to-date-ness of the target.</span>
-<span class="sd">		</span>
+<span class="sd">		@deprecated: The `registerImplicitInput` or `registerImplicitInputOption` methods should be called </span>
+<span class="sd">		instead of overriding this method. </span>
+
 <span class="sd">		The default implementation returns nothing, unless </span>
-<span class="sd">		L{addHashableImplicitInput} or L{addHashableImplicitInputOption} </span>
-<span class="sd">		have been called, so only the globbed and </span>
-<span class="sd">		resolved paths of any pathsets in the dependency list will be used. </span>
+<span class="sd">		`registerImplicitInput` or `registerImplicitInputOption`</span>
+<span class="sd">		have been called (in which case only the resolved paths of the file/directory dependencies will be used). </span>
 <span class="sd">		</span>
-<span class="sd">		Some targets should override this to append additional information, </span>
-<span class="sd">		such as relevant property or option values. Alternatively, for simple </span>
-<span class="sd">		cases call L{addHashableImplicitInput} or L{addHashableImplicitInputOption}. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
-		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hashableImplicitInputs</span><span class="p">:</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__registeredImplicitInputs</span><span class="p">:</span>
 			<span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-			<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hashableImplicitInputs</span><span class="p">:</span>
+			<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__registeredImplicitInputs</span><span class="p">:</span>
 				<span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">continue</span>
 				<span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;resolveToString&#39;</span><span class="p">):</span> <span class="c1"># if we aren&#39;t delegating to expandPropertyValues to resolve this</span>
 					<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
@@ -351,31 +497,43 @@
 			<span class="k">return</span> <span class="n">result</span>
 		<span class="k">return</span> <span class="p">[]</span></div>
 	
-<div class="viewcode-block" id="BaseTarget.getTags"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.getTags">[docs]</a>	<span class="k">def</span> <span class="nf">getTags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-		<span class="sd">&quot;&quot;&quot; Return the list of tags associated with this target &quot;&quot;&quot;</span>
-		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tags</span></div>
+	<span class="k">def</span> <span class="nf">getTags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot; .. private:: Not exposed publically as there is no public use case for this. </span>
+<span class="sd">		</span>
+<span class="sd">		@returns: The list of tags associated with this target. &quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tags</span>
 
-<div class="viewcode-block" id="BaseTarget.disableInFullBuild"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.disableInFullBuild">[docs]</a>	<span class="k">def</span> <span class="nf">disableInFullBuild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Stops this target from building in &#39;all&#39; mode, therefore it must be called </span>
-<span class="sd">		explicitly or via a tag.</span>
+<div class="viewcode-block" id="BaseTarget.disableInFullBuild"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.disableInFullBuild">[docs]</a>	<span class="k">def</span> <span class="nf">disableInFullBuild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Called by build file authors to configure this target to not build in ``all`` mode, so that it will only </span>
+<span class="sd">		be built if the target name or tag is specified on the command line (or if pulled in by a dependency).</span>
+<span class="sd">		</span>
+<span class="sd">		This is useful for targets that perform operations such as configuring developer IDEs which would not be </span>
+<span class="sd">		needed in the main build, or for expensive parts of the build that are often not needed such as generation </span>
+<span class="sd">		of installers. </span>
+<span class="sd">		</span>
+<span class="sd">		See also `tag`. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__tags</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__tags</span><span class="p">)</span> <span class="o">-</span> <span class="p">{</span><span class="s1">&#39;all&#39;</span><span class="p">})</span>
 		<span class="n">init</span> <span class="o">=</span> <span class="n">getBuildInitializationContext</span><span class="p">()</span>
 		<span class="n">init</span><span class="o">.</span><span class="n">removeFromTags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">])</span>
 		<span class="k">return</span> <span class="bp">self</span></div>
 	
-<div class="viewcode-block" id="BaseTarget.clearTags"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.clearTags">[docs]</a>	<span class="k">def</span> <span class="nf">clearTags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Removes any tags other than &quot;all&quot; from this target &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BaseTarget.clearTags"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.clearTags">[docs]</a>	<span class="k">def</span> <span class="nf">clearTags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Called by build file authors to removes all tags other than ``all`` from this target.</span>
+<span class="sd">		</span>
+<span class="sd">		See `tag`. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
 		<span class="n">init</span> <span class="o">=</span> <span class="n">getBuildInitializationContext</span><span class="p">()</span>
 		<span class="n">init</span><span class="o">.</span><span class="n">removeFromTags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tags</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__tags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;all&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tags</span> <span class="k">else</span> <span class="p">[]</span>
 		<span class="n">init</span><span class="o">.</span><span class="n">registerTags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tags</span><span class="p">)</span>
 		<span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="BaseTarget.getOption"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.getOption">[docs]</a>	<span class="k">def</span> <span class="nf">getOption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">errorIfNone</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">errorIfEmptyString</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Gets the resolved value of a specified option for this target, with optional </span>
-<span class="sd">		checking to give a friendly error message if the value is an empty string or None. </span>
+<div class="viewcode-block" id="BaseTarget.getOption"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.getOption">[docs]</a>	<span class="k">def</span> <span class="nf">getOption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">errorIfNone</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">errorIfEmptyString</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Target classes can call this during `run` or `clean` to get the resolved value of a specified option for </span>
+<span class="sd">		this target, with optional checking to give a friendly error message if the value is an empty string or None. </span>
+<span class="sd">		</span>
+<span class="sd">		This is a high-levetl alternative to reading directly from `self.options`. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Target tried to access an option key that does not exist: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">key</span><span class="p">)</span>
 		<span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -383,21 +541,25 @@
 			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;This target requires a value to be specified for option &quot;</span><span class="si">%s</span><span class="s1">&quot; (see basetarget.option or setGlobalOption)&#39;</span><span class="o">%</span><span class="n">key</span><span class="p">)</span>
 		<span class="k">return</span> <span class="n">v</span></div>
 
-<div class="viewcode-block" id="BaseTarget.option"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.option">[docs]</a>	<span class="k">def</span> <span class="nf">option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Set an option on this target, overriding any default value provided by setGlobalOption. </span>
-<span class="sd">		If the value contains any property values these will be expanded before the option value is </span>
-<span class="sd">		passed to the target. </span>
+<div class="viewcode-block" id="BaseTarget.option"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.option">[docs]</a>	<span class="k">def</span> <span class="nf">option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Called by build file authors to configure this target instance with an override for an option value. </span>
 <span class="sd">		</span>
-<span class="sd">		Use self.options or L{getOption} to get resolved option values. </span>
+<span class="sd">		This allows target-specific overriding of options. If no override is provided, the value set in </span>
+<span class="sd">		`propertysupport.setGlobalOption` for the whole build is used, or if that was not set then the default </span>
+<span class="sd">		when the option was defined. </span>
+<span class="sd">		</span>
+<span class="sd">		Use `self.options` or `getOption` to get resolved option values when implementing a target class. </span>
+<span class="sd">		</span>
+<span class="sd">		@param key: The name of a previously-defined option.</span>
+<span class="sd">		@param value: The value. If the value is a string and contains any property values these will be expanded </span>
+<span class="sd">		before the option value is passed to the target. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__optionsTargetOverridesUnresolved</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 		<span class="k">return</span> <span class="bp">self</span></div>
 	
-<div class="viewcode-block" id="BaseTarget.openFile"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.openFile">[docs]</a>	<span class="k">def</span> <span class="nf">openFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Opens the specified file, using an encoding specified by the target option&#39;s </span>
-<span class="sd">		`common.fileEncodingDecider` (unless explicitly provided by encoding=). </span>
+<div class="viewcode-block" id="BaseTarget.openFile"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.openFile">[docs]</a>	<span class="k">def</span> <span class="nf">openFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BuildContext</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Target classes can call this from their `run` implementation to open a specified file, using an encoding </span>
+<span class="sd">		specified by the ``common.fileEncodingDecider`` option (unless explicitly provided by ``encoding=``). </span>
 <span class="sd">		</span>
 <span class="sd">		@param context: The context that was passed to run().</span>
 <span class="sd">		@param path: The full absolute path to be opened. </span>
@@ -407,14 +569,11 @@
 		<span class="k">if</span> <span class="s1">&#39;b&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mode</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;encoding&#39;</span><span class="p">):</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;encoding&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;common.fileEncodingDecider&#39;</span><span class="p">)(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
 		<span class="k">return</span> <span class="p">(</span><span class="n">openForWrite</span> <span class="k">if</span> <span class="s1">&#39;w&#39;</span> <span class="ow">in</span> <span class="n">mode</span> <span class="k">else</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">)(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 	
-<div class="viewcode-block" id="BaseTarget.tags"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.tags">[docs]</a>	<span class="k">def</span> <span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tags</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Append one or more &#39;tag&#39; strings that will be associated with this target.</span>
+<div class="viewcode-block" id="BaseTarget.tags"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.tags">[docs]</a>	<span class="k">def</span> <span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tags</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Called by build file authors to append one or more tags to this target to make groups of related targets </span>
+<span class="sd">		easier to build (or just to provide a shorter alias for the target on the command line).</span>
 
-<span class="sd">		These tags can be supplied on the command line to build associated groups of targets, </span>
-<span class="sd">		or just provide a shorter, well-known, name.</span>
-
-<span class="sd">		@param tags: the tag, tags or list of tags to add to the target.</span>
+<span class="sd">		@param tags: The tag, tags or list of tags to add to the target.</span>
 <span class="sd">		</span>
 <span class="sd">		&gt;&gt;&gt; BaseTarget(&#39;a&#39;,[]).tags(&#39;abc&#39;).getTags()</span>
 <span class="sd">		&lt;using test initialization context&gt; &lt;using test initialization context&gt; [&#39;abc&#39;, &#39;all&#39;]</span>
@@ -430,80 +589,98 @@
 		<span class="k">if</span> <span class="n">init</span><span class="p">:</span> <span class="n">init</span><span class="o">.</span><span class="n">registerTags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taglist</span><span class="p">)</span> <span class="c1"># init will be None during doctests</span>
 		<span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="BaseTarget.priority"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.priority">[docs]</a>	<span class="k">def</span> <span class="nf">priority</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">priority</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Set the priority of this target to encourage it (and its deps) to be </span>
-<span class="sd">		built earlier in the process. The default priority is 0.0</span>
+<div class="viewcode-block" id="BaseTarget.priority"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.priority">[docs]</a>	<span class="k">def</span> <span class="nf">priority</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">priority</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Called by build file authors to configure the priority of this target to encourage it (and its dependencies) </span>
+<span class="sd">		to be built earlier in the process. </span>
+<span class="sd">		</span>
+<span class="sd">		The default priority is 0.0</span>
 
 <span class="sd">		@param priority: a float representing the priority. Higher numbers will be built</span>
-<span class="sd">		first where possible. Cannot be negative. </span>
+<span class="sd">			first where possible. Cannot be negative. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">if</span> <span class="n">priority</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
 			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Target priority cannot be set to a lower number than 0.0&#39;</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__priority</span> <span class="o">=</span> <span class="n">priority</span>
 		<span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="BaseTarget.updateStampFile"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.updateStampFile">[docs]</a>	<span class="k">def</span> <span class="nf">updateStampFile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Assumes self.path is a stamp file that just needs creating / timestamp updating and does so &quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">updateStampFile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		.. private:: Not useful enough to be in the public API. </span>
+<span class="sd">		</span>
+<span class="sd">		Assumes self.path is a stamp file that just needs creating / timestamp updating and does so &quot;&quot;&quot;</span>
 		<span class="n">path</span> <span class="o">=</span> <span class="n">normLongPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 		<span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 		<span class="k">with</span> <span class="n">openForWrite</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-			<span class="k">pass</span></div>
+			<span class="k">pass</span>
 
 	
-<div class="viewcode-block" id="BaseTarget.getPriority"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.getPriority">[docs]</a>	<span class="k">def</span> <span class="nf">getPriority</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Return the current priority of this target &quot;&quot;&quot;</span>
-		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__priority</span></div></div>
+	<span class="k">def</span> <span class="nf">getPriority</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; .. private:: Not exposed publically as there is no public use case for this. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__priority</span>
 
-<div class="viewcode-block" id="targetNameToUniqueId"><a class="viewcode-back" href="../../generated/xpybuild.basetarget.html#xpybuild.basetarget.targetNameToUniqueId">[docs]</a><span class="k">def</span> <span class="nf">targetNameToUniqueId</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot; Munge a target name (unexpanded path) into an identifier that is </span>
-<span class="sd">	not an absolute path, and (unless very long) does not contain any directory </span>
-<span class="sd">	elements. This id is suitable for temporary filenames and directories etc</span>
-<span class="sd">	</span>
-<span class="sd">	&quot;&quot;&quot;</span>
-	<span class="c1"># remove chars that are not valid on unix/windows file systems (e.g. colon)</span>
-	<span class="n">x</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^()+./\w-]&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;${&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
-	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">256</span><span class="p">:</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="c1"># avoid deeply nested directories in general</span>
-	<span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="BaseTarget.targetNameToUniqueId"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.targetNameToUniqueId">[docs]</a>	<span class="nd">@staticmethod</span>
+	<span class="k">def</span> <span class="nf">targetNameToUniqueId</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+		<span class="sd">&quot;&quot;&quot;Convert a target name (containing unexpanded property values) into a convenient unique identifier. </span>
+<span class="sd">		</span>
+<span class="sd">		The resulting identifier is not an absolute path, and (unless very long) does not contain any directory </span>
+<span class="sd">		elements. This id is suitable for temporary filenames and directories etc</span>
+<span class="sd">		</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="c1"># remove chars that are not valid on unix/windows file systems (e.g. colon)</span>
+		<span class="n">x</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^()+./\w-]&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;${&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">256</span><span class="p">:</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="c1"># avoid deeply nested directories in general</span>
+		<span class="k">return</span> <span class="n">x</span></div></div>
+
+
+<span class="n">targetNameToUniqueId</span> <span class="o">=</span> <span class="n">BaseTarget</span><span class="o">.</span><span class="n">targetNameToUniqueId</span> <span class="c1"># alias for pre-3.0 projects</span>
+<span class="sd">&quot;&quot;&quot;.. private:: See static method instead.</span>
+
+<span class="sd">.. deprecated:: Use `BaseTarget.targetNameToUniqueId` instead. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 
 <span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
 </pre></div>
 
+           </div>
+           
           </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>

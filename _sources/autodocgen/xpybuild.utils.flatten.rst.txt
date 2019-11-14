@@ -1,0 +1,20 @@
+
+xpybuild.utils.flatten
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.utils.flatten
+
+.. currentmodule:: xpybuild.utils.flatten
+
+
+
+flatten
+=======
+
+.. autofunction:: flatten
+
+
+getStringList
+=============
+
+.. autofunction:: getStringList

@@ -1,0 +1,19 @@
+
+xpybuild
+~~~~~~~~
+
+.. automodule:: xpybuild
+
+.. currentmodule:: xpybuild
+
+
+.. autosummary::
+  :toctree: ./
+
+  xpybuild.basetarget
+  xpybuild.buildcommon
+  xpybuild.buildcontext
+  xpybuild.pathsets
+  xpybuild.propertysupport
+  xpybuild.targets
+  xpybuild.utils

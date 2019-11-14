@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.utils &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.utils.antglob" href="xpybuild.utils.antglob.html" />
+    <link rel="prev" title="xpybuild.targets.writefile" href="xpybuild.targets.writefile.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="xpybuild.html">xpybuild</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.basetarget.html">xpybuild.basetarget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcommon.html">xpybuild.buildcommon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcontext.html">xpybuild.buildcontext</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.pathsets.html">xpybuild.pathsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.propertysupport.html">xpybuild.propertysupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.targets.html">xpybuild.targets</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">xpybuild.utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.antglob.html">xpybuild.utils.antglob</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.buildexceptions.html">xpybuild.utils.buildexceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.buildfilelocation.html">xpybuild.utils.buildfilelocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.compilers.html">xpybuild.utils.compilers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.consoleformatter.html">xpybuild.utils.consoleformatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.fileutils.html">xpybuild.utils.fileutils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.flatten.html">xpybuild.utils.flatten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.functors.html">xpybuild.utils.functors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.java.html">xpybuild.utils.java</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.outputhandler.html">xpybuild.utils.outputhandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.process.html">xpybuild.utils.process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.progress.html">xpybuild.utils.progress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.stringutils.html">xpybuild.utils.stringutils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.terminal.html">xpybuild.utils.terminal</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="xpybuild.html">xpybuild</a> &raquo;</li>
+        
+      <li>xpybuild.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/autodocgen/xpybuild.utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-xpybuild.utils">
+<span id="xpybuild-utils"></span><h1>xpybuild.utils<a class="headerlink" href="#module-xpybuild.utils" title="Permalink to this headline">¶</a></h1>
+<p>Contains utility functions and classes for use in build files and custom target classes, such as <a class="reference internal" href="xpybuild.utils.fileutils.html#module-xpybuild.utils.fileutils" title="xpybuild.utils.fileutils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.fileutils</span></code></a> and <a class="reference internal" href="xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler" title="xpybuild.utils.outputhandler.ProcessOutputHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.outputhandler.ProcessOutputHandler</span></code></a>.</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="xpybuild.utils.antglob.html#module-xpybuild.utils.antglob" title="xpybuild.utils.antglob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.antglob</span></code></a></p></td>
+<td><p>Ant-style <code class="docutils literal notranslate"><span class="pre">**/*</span></code> globbing functionality, as used by <a class="reference internal" href="xpybuild.pathsets.html#xpybuild.pathsets.FindPaths" title="xpybuild.pathsets.FindPaths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.pathsets.FindPaths</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="xpybuild.utils.buildexceptions.html#module-xpybuild.utils.buildexceptions" title="xpybuild.utils.buildexceptions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.buildexceptions</span></code></a></p></td>
+<td><p>The <a class="reference internal" href="xpybuild.utils.buildexceptions.html#xpybuild.utils.buildexceptions.BuildException" title="xpybuild.utils.buildexceptions.BuildException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.buildexceptions.BuildException</span></code></a> class used for (non-internal) problems encountered while building.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="xpybuild.utils.buildfilelocation.html#module-xpybuild.utils.buildfilelocation" title="xpybuild.utils.buildfilelocation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.buildfilelocation</span></code></a></p></td>
+<td><p>Support for identifying the location of the <code class="docutils literal notranslate"><span class="pre">XXX.xpybuild.py</span></code> file currently being parsed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="xpybuild.utils.compilers.html#module-xpybuild.utils.compilers" title="xpybuild.utils.compilers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.compilers</span></code></a></p></td>
+<td><p>Support classes for the C/C++ native compiler chain, used by the <a class="reference internal" href="xpybuild.targets.native.html#module-xpybuild.targets.native" title="xpybuild.targets.native"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.native</span></code></a> module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="xpybuild.utils.consoleformatter.html#module-xpybuild.utils.consoleformatter" title="xpybuild.utils.consoleformatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.consoleformatter</span></code></a></p></td>
+<td><p>Pluggable classes for customizing the format that xpybuild uses when writing log messages to stdout (for example,  for Teamcity, make, Visual Studio, etc).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="xpybuild.utils.fileutils.html#module-xpybuild.utils.fileutils" title="xpybuild.utils.fileutils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.fileutils</span></code></a></p></td>
+<td><p>Functions for manipulating files and paths including <a class="reference internal" href="xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.openForWrite" title="xpybuild.utils.fileutils.openForWrite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.fileutils.openForWrite</span></code></a>,  <a class="reference internal" href="xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.mkdir" title="xpybuild.utils.fileutils.mkdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.fileutils.mkdir</span></code></a>, <a class="reference internal" href="xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.toLongPathSafe" title="xpybuild.utils.fileutils.toLongPathSafe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.fileutils.toLongPathSafe</span></code></a> and <a class="reference internal" href="xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.parsePropertiesFile" title="xpybuild.utils.fileutils.parsePropertiesFile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.fileutils.parsePropertiesFile</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="xpybuild.utils.flatten.html#module-xpybuild.utils.flatten" title="xpybuild.utils.flatten"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.flatten</span></code></a></p></td>
+<td><p>Utility functions for normalizing and flattening deeply nested lists.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="xpybuild.utils.functors.html#module-xpybuild.utils.functors" title="xpybuild.utils.functors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.functors</span></code></a></p></td>
+<td><p>Contains <a class="reference internal" href="xpybuild.utils.functors.html#xpybuild.utils.functors.Composable" title="xpybuild.utils.functors.Composable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.functors.Composable</span></code></a> and associated classes for creating late-binding functions/functors.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="xpybuild.utils.java.html#module-xpybuild.utils.java" title="xpybuild.utils.java"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.java</span></code></a></p></td>
+<td><p>Support classes for the Java targets in <a class="reference internal" href="xpybuild.targets.java.html#module-xpybuild.targets.java" title="xpybuild.targets.java"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.java</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="xpybuild.utils.outputhandler.html#module-xpybuild.utils.outputhandler" title="xpybuild.utils.outputhandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.outputhandler</span></code></a></p></td>
+<td><p>Contains <a class="reference internal" href="xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler" title="xpybuild.utils.outputhandler.ProcessOutputHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.outputhandler.ProcessOutputHandler</span></code></a> which targets use to parse the output from subprocesses  and decide whether warnings, errors or fatal build failures should be raised as a result.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="xpybuild.utils.process.html#module-xpybuild.utils.process" title="xpybuild.utils.process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.process</span></code></a></p></td>
+<td><p>Support functions for invoking processes from targets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="xpybuild.utils.progress.html#module-xpybuild.utils.progress" title="xpybuild.utils.progress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.progress</span></code></a></p></td>
+<td><p>Console formatter classes that write a progress bar to stdout as xpybuild runs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="xpybuild.utils.stringutils.html#module-xpybuild.utils.stringutils" title="xpybuild.utils.stringutils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.stringutils</span></code></a></p></td>
+<td><p>Utility functions for manipulating strings, such as  <a class="reference internal" href="xpybuild.utils.stringutils.html#xpybuild.utils.stringutils.compareVersions" title="xpybuild.utils.stringutils.compareVersions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.stringutils.compareVersions</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="xpybuild.utils.terminal.html#module-xpybuild.utils.terminal" title="xpybuild.utils.terminal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.terminal</span></code></a></p></td>
+<td><p>Utility functions for getting information about the stdout terminal, which may be useful when implementing  console formatters.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="xpybuild.utils.antglob.html" class="btn btn-neutral float-right" title="xpybuild.utils.antglob" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="xpybuild.targets.writefile.html" class="btn btn-neutral float-left" title="xpybuild.targets.writefile" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,40 +1,149 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>xpybuild.utils.java &#8212; xpybuild 3.0.dev2 documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.utils.java &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
     
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
     
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodocgen/xpybuild.html">xpybuild</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>xpybuild.utils.java</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for xpybuild.utils.java</h1><div class="highlight"><pre>
 <span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
@@ -55,6 +164,11 @@
 <span class="c1">#</span>
 <span class="c1"># $Id: java.py 301527 2017-02-06 15:31:43Z matj $</span>
 <span class="c1">#</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Support classes for the Java targets in `xpybuild.targets.java`. </span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">locale</span>
@@ -78,7 +192,7 @@
 <span class="c1"># Options for creating manifests</span>
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;jar.manifest.defaults&#39;</span><span class="p">,</span> <span class="p">{})</span>
 
-<div class="viewcode-block" id="create_manifest"><a class="viewcode-back" href="../../../generated/xpybuild.utils.java.html#xpybuild.utils.java.create_manifest">[docs]</a><span class="k">def</span> <span class="nf">create_manifest</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<div class="viewcode-block" id="create_manifest"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.java.html#xpybuild.utils.java.create_manifest">[docs]</a><span class="k">def</span> <span class="nf">create_manifest</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Create a manifest file in path from the map properties.</span>
 
 <span class="sd">	@param path: The absolute path in which to create a manifest file. If None is specified, </span>
@@ -135,7 +249,7 @@
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.debug&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.warningsAsErrors&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
-<div class="viewcode-block" id="JavacProcessOutputHandler"><a class="viewcode-back" href="../../../generated/xpybuild.utils.java.html#xpybuild.utils.java.JavacProcessOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">JavacProcessOutputHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">JavacProcessOutputHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">targetName</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># unusually, we pass in the targetname here, since there are usually so many different &quot;javac&quot;s</span>
 		<span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;javac&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="kc">None</span>
@@ -276,10 +390,10 @@
 		
 		<span class="n">publishArtifact</span><span class="p">(</span><span class="s1">&#39;javac </span><span class="si">%s</span><span class="s1"> output&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">_targetName</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logbasename</span><span class="o">+</span><span class="s1">&#39;.out&#39;</span><span class="p">)</span>
 		
-		<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+		<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="javac"><a class="viewcode-back" href="../../../generated/xpybuild.utils.java.html#xpybuild.utils.java.javac">[docs]</a><span class="k">def</span> <span class="nf">javac</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">logbasename</span><span class="p">,</span> <span class="n">targetname</span><span class="p">,</span> <span class="n">workDir</span><span class="p">):</span>
+<div class="viewcode-block" id="javac"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.java.html#xpybuild.utils.java.javac">[docs]</a><span class="k">def</span> <span class="nf">javac</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">logbasename</span><span class="p">,</span> <span class="n">targetname</span><span class="p">,</span> <span class="n">workDir</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Compile some java files to class files.</span>
 
 <span class="sd">	Will raise BuildException if compilation fails.</span>
@@ -363,7 +477,7 @@
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;jar.options&#39;</span><span class="p">,</span> <span class="p">[])</span>
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.outputHandlerFactory&#39;</span><span class="p">,</span> <span class="n">JavacProcessOutputHandler</span><span class="p">)</span>
 
-<div class="viewcode-block" id="jar"><a class="viewcode-back" href="../../../generated/xpybuild.utils.java.html#xpybuild.utils.java.jar">[docs]</a><span class="k">def</span> <span class="nf">jar</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">manifest</span><span class="p">,</span> <span class="n">sourcedir</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">preserveManifestFormatting</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="jar"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.java.html#xpybuild.utils.java.jar">[docs]</a><span class="k">def</span> <span class="nf">jar</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">manifest</span><span class="p">,</span> <span class="n">sourcedir</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">preserveManifestFormatting</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Create a jar file containing a manifest and some other files</span>
 
 <span class="sd">	@param path: jar file to create. Typically this file does not already exist, but if it does </span>
@@ -418,7 +532,7 @@
 	
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;jarsigner.options&#39;</span><span class="p">,</span> <span class="p">[])</span>
 
-<div class="viewcode-block" id="signjar"><a class="viewcode-back" href="../../../generated/xpybuild.utils.java.html#xpybuild.utils.java.signjar">[docs]</a><span class="k">def</span> <span class="nf">signjar</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">keystore</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">storepass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="signjar"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.java.html#xpybuild.utils.java.signjar">[docs]</a><span class="k">def</span> <span class="nf">signjar</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">keystore</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">storepass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Signs an existing jar.</span>
 
 <span class="sd">	@param path: Jar file to sign</span>
@@ -458,7 +572,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javadoc.ignoreSourceFilesFromClasspath&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
-<div class="viewcode-block" id="javadoc"><a class="viewcode-back" href="../../../generated/xpybuild.utils.java.html#xpybuild.utils.java.javadoc">[docs]</a><span class="k">def</span> <span class="nf">javadoc</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">workDir</span><span class="p">,</span> <span class="n">outputHandler</span><span class="p">):</span>
+<div class="viewcode-block" id="javadoc"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.java.html#xpybuild.utils.java.javadoc">[docs]</a><span class="k">def</span> <span class="nf">javadoc</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">workDir</span><span class="p">,</span> <span class="n">outputHandler</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Create javadoc from sources and a set of options</span>
 
 <span class="sd">	@param path: The directory under which to create the javadoc</span>
@@ -505,41 +619,43 @@
 
 </pre></div>
 
+           </div>
+           
           </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>

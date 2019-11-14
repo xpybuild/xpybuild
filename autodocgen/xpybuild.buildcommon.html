@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.buildcommon &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.buildcontext" href="xpybuild.buildcontext.html" />
+    <link rel="prev" title="xpybuild.basetarget" href="xpybuild.basetarget.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="xpybuild.html">xpybuild</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.basetarget.html">xpybuild.basetarget</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">xpybuild.buildcommon</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#xpybuild-version">XPYBUILD_VERSION</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#is-windows">IS_WINDOWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#isdirpath">isDirPath</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stringformatter">StringFormatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filenamestringformatter">FilenameStringFormatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#include">include</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#iswindows">isWindows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#defineatomictargetgroup">defineAtomicTargetGroup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#requirexpybuildversion">requireXpyBuildVersion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#registerprebuildcheck">registerPreBuildCheck</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enablelegacyxpybuildmodulenames">enableLegacyXpybuildModuleNames</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcontext.html">xpybuild.buildcontext</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.pathsets.html">xpybuild.pathsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.propertysupport.html">xpybuild.propertysupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.targets.html">xpybuild.targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.utils.html">xpybuild.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="xpybuild.html">xpybuild</a> &raquo;</li>
+        
+      <li>xpybuild.buildcommon</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/autodocgen/xpybuild.buildcommon.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-xpybuild.buildcommon">
+<span id="xpybuild-buildcommon"></span><h1>xpybuild.buildcommon<a class="headerlink" href="#module-xpybuild.buildcommon" title="Permalink to this headline">¶</a></h1>
+<p>Contains standard functionality for use in build files such as <a class="reference internal" href="#xpybuild.buildcommon.include" title="xpybuild.buildcommon.include"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcommon.include</span></code></a>, useful constants such as <a class="reference internal" href="#xpybuild.buildcommon.IS_WINDOWS" title="xpybuild.buildcommon.IS_WINDOWS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcommon.IS_WINDOWS</span></code></a> and 
+functionality for adding prefixes/suffixes to paths such as <a class="reference internal" href="#xpybuild.buildcommon.FilenameStringFormatter" title="xpybuild.buildcommon.FilenameStringFormatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcommon.FilenameStringFormatter</span></code></a>.</p>
+<div class="section" id="xpybuild-version">
+<h2>XPYBUILD_VERSION<a class="headerlink" href="#xpybuild-version" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="xpybuild.buildcommon.XPYBUILD_VERSION">
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">XPYBUILD_VERSION</code><em class="property"> = '3.0.dev2'</em><a class="headerlink" href="#xpybuild.buildcommon.XPYBUILD_VERSION" title="Permalink to this definition">¶</a></dt>
+<dd><p>The current xpybuild version.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="is-windows">
+<h2>IS_WINDOWS<a class="headerlink" href="#is-windows" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="xpybuild.buildcommon.IS_WINDOWS">
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">IS_WINDOWS</code><em class="property"> = False</em><a class="headerlink" href="#xpybuild.buildcommon.IS_WINDOWS" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean that specifies whether this is Windows or some other operating system.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="isdirpath">
+<h2>isDirPath<a class="headerlink" href="#isdirpath" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="xpybuild.buildcommon.isDirPath">
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">isDirPath</code><em class="property"> = &lt;function isDirPath&gt;</em><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#isDirPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.isDirPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if the path is a directory (ends with a slash, <code class="docutils literal notranslate"><span class="pre">/</span></code> or <code class="docutils literal notranslate"><span class="pre">\\</span></code>).</p>
+</dd></dl>
+
+</div>
+<div class="section" id="stringformatter">
+<h2>StringFormatter<a class="headerlink" href="#stringformatter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.buildcommon.StringFormatter">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">StringFormatter</code><span class="sig-paren">(</span><em class="sig-param">formatstring</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#StringFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.StringFormatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A simple named functor for applying a <code class="docutils literal notranslate"><span class="pre">%s</span></code>-style string format, useful 
+in situations where a function is needed to add a suffix/prefix for the 
+value of an option.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="filenamestringformatter">
+<h2>FilenameStringFormatter<a class="headerlink" href="#filenamestringformatter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.buildcommon.FilenameStringFormatter">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">FilenameStringFormatter</code><span class="sig-paren">(</span><em class="sig-param">formatstring</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#FilenameStringFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.FilenameStringFormatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A simple named functor for applying a <code class="docutils literal notranslate"><span class="pre">%s</span></code>-style string format. 
+Formatter is just applied to the basename part of the filename,
+the dirname part is preserved as-is.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="include">
+<h2>include<a class="headerlink" href="#include" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.buildcommon.include">
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">include</code><span class="sig-paren">(</span><em class="sig-param">file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#include"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.include" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse and register the targets and properties in in the specified 
+<code class="docutils literal notranslate"><span class="pre">XXX.xpybuild.py</span></code> file.</p>
+<p>Targets should only be defined in files included using this method, 
+not using python import statements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file</strong> – a path relative to the directory containing this file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="iswindows">
+<h2>isWindows<a class="headerlink" href="#iswindows" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.buildcommon.isWindows">
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">isWindows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#isWindows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.isWindows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if this is a windows platform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Deprecated</dt>
+<dd class="field-odd"><p>Use the <a class="reference internal" href="#xpybuild.buildcommon.IS_WINDOWS" title="xpybuild.buildcommon.IS_WINDOWS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IS_WINDOWS</span></code></a> constant instead.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="defineatomictargetgroup">
+<h2>defineAtomicTargetGroup<a class="headerlink" href="#defineatomictargetgroup" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.buildcommon.defineAtomicTargetGroup">
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">defineAtomicTargetGroup</code><span class="sig-paren">(</span><em class="sig-param">*targets</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#defineAtomicTargetGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.defineAtomicTargetGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>The given targets must all be built before anything which depends on any of those targets.</p>
+<p>Returns the flattened list of targets.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="requirexpybuildversion">
+<h2>requireXpyBuildVersion<a class="headerlink" href="#requirexpybuildversion" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.buildcommon.requireXpyBuildVersion">
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">requireXpyBuildVersion</code><span class="sig-paren">(</span><em class="sig-param">version: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#requireXpyBuildVersion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.requireXpyBuildVersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks that this xpybuild is at least a certain version number.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="registerprebuildcheck">
+<h2>registerPreBuildCheck<a class="headerlink" href="#registerprebuildcheck" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.buildcommon.registerPreBuildCheck">
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">registerPreBuildCheck</code><span class="sig-paren">(</span><em class="sig-param">fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#registerPreBuildCheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.registerPreBuildCheck" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a check which will be called after any clean but before any build actions take place.
+fn should be a functor that takes a context and raises a BuildException if the check fails.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="enablelegacyxpybuildmodulenames">
+<h2>enableLegacyXpybuildModuleNames<a class="headerlink" href="#enablelegacyxpybuildmodulenames" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.buildcommon.enableLegacyXpybuildModuleNames">
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">enableLegacyXpybuildModuleNames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#enableLegacyXpybuildModuleNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.enableLegacyXpybuildModuleNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds aliases for pre-3.0 module names e.g. <code class="xref py py-obj docutils literal notranslate"><span class="pre">buildcommon</span></code> instead of <a class="reference internal" href="#module-xpybuild.buildcommon" title="xpybuild.buildcommon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcommon</span></code></a>, etc.</p>
+<p>The old names are deprecated, so this should be used only as a temporary measure.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="xpybuild.buildcontext.html" class="btn btn-neutral float-right" title="xpybuild.buildcontext" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="xpybuild.basetarget.html" class="btn btn-neutral float-left" title="xpybuild.basetarget" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

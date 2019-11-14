@@ -1,0 +1,726 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Change Log &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="xpybuild.utils.terminal" href="autodocgen/xpybuild.utils.terminal.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="autodocgen/xpybuild.html">xpybuild</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#current-release">3.0 - current release</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#breaking-changes">Breaking changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deprecation">Deprecation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fixes">Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enhancements">Enhancements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">1.15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Breaking changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Deprecation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Enhancements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">1.14</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Breaking changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Deprecation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Enhancements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id11">1.13</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id12">Breaking changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Deprecation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">Breaking changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">Enhancements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id17">1.12</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id18">Breaking changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id19">Deprecation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id20">Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">Enhancements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Change Log</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/changelog.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="change-log">
+<h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="current-release">
+<h2>3.0 - current release<a class="headerlink" href="#current-release" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="breaking-changes">
+<h3>Breaking changes<a class="headerlink" href="#breaking-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Now requires Python 3.6+ instead of Python 2</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">output</span></code> and <code class="docutils literal notranslate"><span class="pre">buildOptions</span></code> required arguments to the
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">ConsoleFormatter</span></code> base class constructor.</p></li>
+<li><p>FilteredCopy mappers and the WriteFilter target now handle only
+unicode str objects and not bytes.</p></li>
+<li><p>BuildContext.defaultOptions() was removed, as there is no legitimate
+use case for it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tmpdir</span></code> has been removed from the target’s <code class="docutils literal notranslate"><span class="pre">self.options</span></code>;
+instead if needed the target’s <code class="docutils literal notranslate"><span class="pre">self.workDir</span></code> should be used
+explicitly.</p></li>
+<li><p>Module names and contents have been re-organized in this release,
+which will require changes to build files in some cases:</p>
+<ul>
+<li><p>All xpybuild modules have been moved to a new <code class="docutils literal notranslate"><span class="pre">xpybuild.</span></code> module
+for namespacing purposes. The <a class="reference internal" href="autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.enableLegacyXpybuildModuleNames" title="xpybuild.buildcommon.enableLegacyXpybuildModuleNames"><code class="xref py py-obj docutils literal notranslate"><span class="pre">buildcommon.enableLegacyXpybuildModuleNames()</span></code></a>
+function can be called (after importing xpybuild.buildcommon)
+to allow unqualified access to the names if you have a large
+project, though this is a temporary measure and willbe removed
+eventually.</p></li>
+<li><p>The xpybuild.py entry-point script is now one level above the
+directory for the <code class="docutils literal notranslate"><span class="pre">xpybuild</span></code> package.</p></li>
+<li><p>The <code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.main()</span></code> function (which some scripts may have
+directly referenced) is replaced by
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.__main__.main</span></code>.</p></li>
+<li><p>The undocumented <code class="docutils literal notranslate"><span class="pre">_XPYBUILD_VERSION</span></code> constant was renamed to
+<a class="reference internal" href="autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.XPYBUILD_VERSION" title="xpybuild.buildcommon.XPYBUILD_VERSION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcommon.XPYBUILD_VERSION</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">formatFileLocation</span></code> was moved from <code class="docutils literal notranslate"><span class="pre">buildcommon</span></code> to
+<a class="reference internal" href="autodocgen/xpybuild.utils.buildfilelocation.html#xpybuild.utils.buildfilelocation.formatFileLocation" title="xpybuild.utils.buildfilelocation.formatFileLocation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.buildfilelocation.formatFileLocation</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">propertyfunctors</span></code> contents have been moved into <a class="reference internal" href="autodocgen/xpybuild.propertysupport.html#module-xpybuild.propertysupport" title="xpybuild.propertysupport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.propertysupport</span></code></a>,
+except for <code class="docutils literal notranslate"><span class="pre">make_functor</span></code> which has moved to <a class="reference internal" href="autodocgen/xpybuild.utils.functors.html#xpybuild.utils.functors.makeFunctor" title="xpybuild.utils.functors.makeFunctor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.functors.makeFunctor</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">buildexceptions</span></code> module was moved to <a class="reference internal" href="autodocgen/xpybuild.utils.buildexceptions.html#module-xpybuild.utils.buildexceptions" title="xpybuild.utils.buildexceptions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.buildexceptions</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Touch</span></code> target was moved from <code class="docutils literal notranslate"><span class="pre">targets.touch</span></code> to <a class="reference internal" href="autodocgen/xpybuild.targets.writefile.html#xpybuild.targets.writefile.Touch" title="xpybuild.targets.writefile.Touch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.writefile.Touch</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Unpack</span></code>, <code class="docutils literal notranslate"><span class="pre">Zip</span></code> and <code class="docutils literal notranslate"><span class="pre">Tarball</span></code> targets were moved to the <a class="reference internal" href="autodocgen/xpybuild.targets.archive.html#module-xpybuild.targets.archive" title="xpybuild.targets.archive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.archive</span></code></a>
+module.</p></li>
+<li><p>The console formatter modules <code class="docutils literal notranslate"><span class="pre">teamcity</span></code>, <code class="docutils literal notranslate"><span class="pre">visualstudio</span></code> and <code class="docutils literal notranslate"><span class="pre">make</span></code>
+have been deleted and their contents moved into <a class="reference internal" href="autodocgen/xpybuild.utils.consoleformatter.html#module-xpybuild.utils.consoleformatter" title="xpybuild.utils.consoleformatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.consoleformatter</span></code></a>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">formatTimePeriod</span></code> method was removed from <code class="docutils literal notranslate"><span class="pre">timeutils</span></code> and moved to
+<a class="reference internal" href="autodocgen/xpybuild.utils.stringutils.html#xpybuild.utils.stringutils.formatTimePeriod" title="xpybuild.utils.stringutils.formatTimePeriod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.stringutils.formatTimePeriod</span></code></a>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">lowerCurrentProcessPriority()</span></code> function was removed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">buildcommon.getStdoutEncoding</span></code> was removed, replaced by
+<a class="reference internal" href="autodocgen/xpybuild.utils.process.html#xpybuild.utils.process.defaultProcessOutputEncodingDecider" title="xpybuild.utils.process.defaultProcessOutputEncodingDecider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.process.defaultProcessOutputEncodingDecider</span></code></a> and the associated option.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="deprecation">
+<h3>Deprecation<a class="headerlink" href="#deprecation" title="Permalink to this headline">¶</a></h3>
+<p>The following deprecated items are likely to be removed soon, so action is required
+if you’re using them:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">buildcommon.normpath</span></code> is deprecated and should not be used - switch to
+<a class="reference internal" href="autodocgen/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.normLongPath" title="xpybuild.utils.fileutils.normLongPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.fileutils.normLongPath</span></code></a> or <a class="reference internal" href="autodocgen/xpybuild.utils.fileutils.html#xpybuild.utils.fileutils.normPath" title="xpybuild.utils.fileutils.normPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.fileutils.normPath</span></code></a> instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getBuildInitializationContext()</span></code> is deprecated and replaced by
+<a class="reference internal" href="autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext" title="xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext()</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">propertysupport.getProperty</span></code> is deprecated in favour of
+<a class="reference internal" href="autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.getPropertyValue" title="xpybuild.propertysupport.getPropertyValue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.propertysupport.getPropertyValue</span></code></a>.</p></li>
+<li><p><a class="reference internal" href="autodocgen/xpybuild.utils.fileutils.html#module-xpybuild.utils.fileutils" title="xpybuild.utils.fileutils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.fileutils</span></code></a> methods <code class="docutils literal notranslate"><span class="pre">getstat</span></code>, <code class="docutils literal notranslate"><span class="pre">getmtime</span></code>, <code class="docutils literal notranslate"><span class="pre">getsize</span></code>,
+<code class="docutils literal notranslate"><span class="pre">exists</span></code>, <code class="docutils literal notranslate"><span class="pre">isfile</span></code>, <code class="docutils literal notranslate"><span class="pre">isdir</span></code> have been renamed to <code class="docutils literal notranslate"><span class="pre">cached_XXX</span></code>
+to better indicate the semantics. The old names are deprecated.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xpybuild.targets.basetarget.targetNameToUniqueId</span></code> is replaced by
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.basetarget.BaseTarget.targetNameToUniqueId</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget.addHashableImplicitInput/Option</span></code> is replaced by
+<a class="reference internal" href="autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.registerImplicitInput" title="xpybuild.basetarget.BaseTarget.registerImplicitInput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget.registerImplicitInput</span></code></a> and
+<a class="reference internal" href="autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.registerImplicitInputOption" title="xpybuild.basetarget.BaseTarget.registerImplicitInputOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget.registerImplicitInputOption</span></code></a>.</p></li>
+</ul>
+<p>See also the module re-organization listed under breaking changes; all xpybuild
+modules and classes should now be accessed via their new names, typically
+starting <code class="docutils literal notranslate"><span class="pre">xpybuild.`</span> <span class="pre">(e.g.</span> <span class="pre">``xpybuild.targets.copy</span></code> etc).</p>
+<p>The following have also been deprecated:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">isWindows()</span></code> function is deprecated in favour of the <a class="reference internal" href="autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.IS_WINDOWS" title="xpybuild.buildcommon.IS_WINDOWS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcommon.IS_WINDOWS</span></code></a>
+constant (which is faster).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BuildContext.mergeOptions()</span></code> is deprecated in favour of
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget.options</span></code>, or (for situations where there is no target such
+as PathSets) <code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcontext.BuildContext.getGlobalOption()</span></code>.</p></li>
+</ul>
+</div>
+<div class="section" id="fixes">
+<h3>Fixes<a class="headerlink" href="#fixes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fixed a couple of bugs in incremental C++ compilation - one that
+could cause unnecessary incremental compilation of targets that
+depend on generated C/C++ source or include files, and another in
+which the build would fail rather than re-running makedepends if some
+of the cached dependencies no longer exist.</p></li>
+</ul>
+</div>
+<div class="section" id="enhancements">
+<h3>Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="autodocgen/xpybuild.targets.copy.html#xpybuild.targets.copy.FilteredCopy" title="xpybuild.targets.copy.FilteredCopy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.copy.FilteredCopy</span></code></a>, <a class="reference internal" href="autodocgen/xpybuild.targets.writefile.html#xpybuild.targets.writefile.WriteFile" title="xpybuild.targets.writefile.WriteFile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.writefile.WriteFile</span></code></a>: Added option <code class="docutils literal notranslate"><span class="pre">common.fileEncodingDecider</span></code>
+which is used by FilteredCopy and WriteFile to decide what encoding
+to use for reading/writing text files. The default is an
+ExtensionBasedFileEncodingDecider instance which specifies UTF-8 for
+yaml/json/xml files, binary for some common binary types such as
+images, and ‘ascii’ for everything else - which means an exception
+will be thrown if any files containing characters outside the 7-bit
+ASCII range are present. Alternative encodings such as utf-8 can be
+specified for a given file extension, globally or on a per-target
+basis.</p></li>
+<li><p><a class="reference internal" href="autodocgen/xpybuild.targets.writefile.html#xpybuild.targets.writefile.WriteFile" title="xpybuild.targets.writefile.WriteFile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.writefile.WriteFile</span></code></a>: added <code class="docutils literal notranslate"><span class="pre">encoding=</span></code> option to WriteFile
+(<code class="docutils literal notranslate"><span class="pre">common.fileEncodingDecider</span></code> option is used if not specified).</p></li>
+<li><p><a class="reference internal" href="autodocgen/xpybuild.targets.writefile.html#xpybuild.targets.writefile.WriteFile" title="xpybuild.targets.writefile.WriteFile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.writefile.WriteFile</span></code></a>: added support for writing binary bytes.</p></li>
+<li><p><a class="reference internal" href="autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a>: Added <code class="docutils literal notranslate"><span class="pre">BaseTarget.openFile</span></code> which should be used for
+opening files (especially text files) from targets. It automatically
+picks the correct encoding to use for text files using the
+<code class="docutils literal notranslate"><span class="pre">common.fileEncodingDecider</span></code> option. This uses the <code class="docutils literal notranslate"><span class="pre">openForWrite</span></code>
+method which can now be used to write unicode strings in text mode,
+not only binary bytes. The available options are now pretty similar
+to what <code class="docutils literal notranslate"><span class="pre">io.open</span></code> supports, and <code class="docutils literal notranslate"><span class="pre">openForWrite</span></code> should be used
+instead of io.open/open to avoid possible file system races on
+Windows.</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">basetarget.BaseTarget.addImplicitInput</span></code>: added ability to pass a callable
+that returns a list of items, so there’s no longer anything that only
+<code class="docutils literal notranslate"><span class="pre">getHashableImplicitInputs()</span></code> can do.</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseTarget.addImplicitInputOption</span></code>: added ability to pass a
+lambda that dynamically selects which of the defined options to include,
+for example based on prefix matching.</p></li>
+<li><p><a class="reference internal" href="autodocgen/xpybuild.targets.custom.html#xpybuild.targets.custom.CustomCommand" title="xpybuild.targets.custom.CustomCommand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.custom.CustomCommand</span></code></a>: now supports customized handling
+of process output and return code using the new
+<code class="docutils literal notranslate"><span class="pre">CustomCommand.outputHandlerFactory</span></code> option.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">utils.stringutils.compareVersions</span></code> method for comparing
+dotted version strings.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>1.15<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h3>Breaking changes<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Native C/C++ targets now treat include directories as dependencies,
+which means that the set of targets they depend on can (and must) be
+known before the build begins (i.e. without running makedepend). All
+include directories must now either be statically available before
+the build starts, or themselves be a directory target. For advanced
+cases where you need to specify an include directory that is not
+itself a target but is made up of a set of file or directory targets,
+use TargetsWithinDir.</p></li>
+<li><p>PathSet class no longer exists, replaced by a function of the same
+name that creates a new instance only if needed. If you have code
+that subclasses PathSet change it to subclass BasePathSet.</p></li>
+<li><p>BasePathSet._resolveUnderlyingDepenencies() now returns a generator
+of (path, pathset) instead of a list of [path]. This only affects
+users with a custom subclass of BasePathSet with an override of this
+method (and does not affect you if you used DerivedPathSet).</p></li>
+<li><p>Target priority can no longer be set to a negative number; 0.0 is the
+minimum.</p></li>
+<li><p>The native C target was previously using the C++
+(<code class="docutils literal notranslate"><span class="pre">native.cxx.flags</span></code>) compiler options during dependency generation
+ratehr than <code class="docutils literal notranslate"><span class="pre">native.c.flags</span></code>; this is now fixed but it may be
+necessary to add additional flags explicitly if you have C targets
+that are relying on them.</p></li>
+<li><p>The build now runs in parallel by default (equivalent to -J); if you
+need single-threaded execution, use the command line parameter
+<code class="docutils literal notranslate"><span class="pre">-j1</span></code>.</p></li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h3>Deprecation<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Support for specifying C/C++ include directories without a trailing
+slash (as is normal in xpybuild) is now discouraged and may be
+removed in a future release.</p></li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h3>Fixes<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Native C/C++ compilation dependency checking has been rewritten to
+fix a number of correctness and performance problems in both full and
+incremental builds, especially around handling of include directories
+and source files generated by another target.</p></li>
+<li><p>Jar: manifest creation (create_manifest) was in some cases
+generating invalid manifest.mf files if whitespace in values happened
+to be near the newline position. This is corrected, leading/trailing
+whitespace is stripped from keys and values automatically, non-ASCII
+(I18N) characters are correctly encoded to UTF-8, and (for
+simplicity) \n newlines are now used regardless of the local OS
+default.</p></li>
+<li><p>Javac: to avoid unwanted failures, stdout outpuot is no logner used
+for warnings/errors, and also when the return code is 0 (success) any
+stderr output is treated as warnings not errors regardless of its
+content. Does not affect <code class="docutils literal notranslate"><span class="pre">javac.warningsAsErrors</span></code> is implemented by
+javac itself.</p></li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h3>Enhancements<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>Pathsets: A new pathset called TargetsWithinDir has been added. This
+is similar to TargetsWithTag but uses just a parent directory name to
+locate associated targets, and can be used as a parameter to
+FindPaths if you need to copy files generated by all targets under
+the specified directory.</p></li>
+<li><p>A new check has been added that will cause a build failure if any
+target is depending on a file (located under the output directory)
+that is generated by a directory target but without using
+DirGeneratedByTarget. This is a subtle but common cause of race
+conditions due to incorrect dependency information, and it should now
+be more obvious if such a problem exists.</p></li>
+<li><p>basetarget: new utility methods have been added
+addHashableImplicitInputOption(‘optionkey’) and
+addHashableImplicitInput(‘foo=bar’) to make it easier for target
+classes to specify their implicit inputs without needing to implement
+getHashableImplicitInputs()</p></li>
+<li><p>buildcontext: getExpandPropertyValues() now handles callable(context)
+inputs as well as other strings, allowing it to perform common
+resolutions needed in many different situations.</p></li>
+<li><p>Command line: new (experimental) option –verify that can be used to
+run the build in a slower and stricter mode that will flag up
+potential build problems. This feature should be considered
+experimental in this release.</p></li>
+<li><p>Javac: now respects the <code class="docutils literal notranslate"><span class="pre">ProcessOutputHandler.regexIgnore</span></code> option.</p></li>
+<li><p>Copy: added <code class="docutils literal notranslate"><span class="pre">Copy.symlinks</span></code> option which can be used to enable
+copying of symlinks. To turn this on globally for your build, use
+<code class="docutils literal notranslate"><span class="pre">setGlobalOption('Copy.symlinks',</span> <span class="pre">True)</span></code>.</p></li>
+<li><p>FilteredCopy: added disablePropertyExpansion to
+AddFileHeader/AddFileFooter/RegexLineMapper</p></li>
+<li><p>FilteredCopy: added FileContentsMapper.startFile(context, src, dest)
+API method that can be used to skip use of this mapper for certain
+files, and/or to insert content based on the source or destination
+path into the file.</p></li>
+<li><p>FilteredCopy: added FileContentsMapper.prepare(context) API method
+that can be used to prepare fields based on the context to speed up
+the actual mapping.</p></li>
+<li><p>Cpp/C native targets: added
+<code class="docutils literal notranslate"><span class="pre">native.include.upToDateCheckIgnoreRegex</span></code> and
+<code class="docutils literal notranslate"><span class="pre">native.include.upToDateCheckIgnoreSystemHeaders</span></code> options which can
+be used to speed up up-to-date checking by excluding large include
+directories that never change.</p></li>
+<li><p>The build now runs in parallel by default (no need to use the <code class="docutils literal notranslate"><span class="pre">-J</span></code>
+option). Additionally, the default number of workers can now be
+specified in the build file, as an integer or float, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="n">setGlobalOption</span><span class="p">(</span><span class="s1">&#39;build.workers&#39;</span><span class="p">,</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.75</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The default value for this option is one worker per CPU. The maximum
+number of workers can be limited on a per-machine/user basis using
+the <code class="docutils literal notranslate"><span class="pre">XPYBUILD_WORKERS_PER_CPU</span></code> and/or <code class="docutils literal notranslate"><span class="pre">XPYBUILD_MAX_WORKERS</span></code>
+variables. The <code class="docutils literal notranslate"><span class="pre">-j</span></code> command line option can still be used to
+explicitly override the number of workers (taking precedence over all
+other settings), for example use <code class="docutils literal notranslate"><span class="pre">-j1</span></code> for a single-threaded build.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>1.14<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h3>Breaking changes<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>FindPaths/anGlob: Add constraint that **/*/ patterns are no longer
+permitted; this construct is not very useful in practice and
+supporting it would hurt performance considerably.</p></li>
+</ul>
+</div>
+<div class="section" id="id8">
+<h3>Deprecation<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id9">
+<h3>Fixes<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>“Unknown option tmpdir” regression introduced 1.13 when calling
+mergeOptions(options=self.options) is now fixed; though it’s
+recommended to just use self.options and avoid mergeOptions now.</p></li>
+<li><p>CustomCommand was only passing environment variables from the parent
+process/shell to the new process when env overrides were specified
+but not when an empty env dictionary was specified. Now these are
+passed in all cases.</p></li>
+</ul>
+</div>
+<div class="section" id="id10">
+<h3>Enhancements<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Significant performance improvement to depending checking phase
+(fixing a regression introduced in 1.13, plus additional
+improvements), and to FindPaths and antGlob, especially when matching
+a large number of patterns within a single directory.</p></li>
+<li><p>IS_WINDOWS: new constant, replaces the isWindows() function and is
+significantly faster to use.</p></li>
+<li><p>fileutils.toLongPathSafe: new method which implements Windows logic
+for allowing paths longer than 256 characters to be operated on. This
+is similar to normLongPath but does not perform
+canonicalization/normalization so is a lot faster for cases where
+that is not required.</p></li>
+<li><p>StringReplaceLineMapper now has an optional parameter
+disablePropertyExpansion which can be used to disable ${…}
+expansion</p></li>
+<li><p>Improved usability of –profile option, which now generates textual
+output, aggregates across all threads, and includes profiling for the
+build file parsing phase</p></li>
+<li><p>Improve dependency checking performance</p></li>
+<li><p>Javadoc now has an option “javadoc.ignoreSourceFilesFromClasspath”
+which can be enabled to prevent .java files in classpath jars from
+being parsed (by setting an empty directory for the -sourcepath),
+which can lead to errors if classpath jars contain source that
+requires optional dependencies which are not present.</p></li>
+<li><p>ProcessOutputHandler: new option regexIgnore can be set to a string
+which will be ignored by the output handler. This can be used to
+suppress unwanted logging, and to selectively ignore warning and
+error lines.</p></li>
+<li><p>ProcessOutputHandler: new option ignoreReturnCode can be set to
+prevent a non-zero return code from being treated as an error.</p></li>
+<li><p>ProcessOutputHandler: new option factory can be set to specify a
+function or class to be used instead of ProcessOutputHandler for
+output of a specific target, allowing detailed customization of
+behaviour. The new static function ProcessOutputHandler.create(…,
+options) should be used instead of the ProcessOutputHandler handler
+to ensure that this option is honoured if set.</p></li>
+<li><p>javac/visualstudio/csharp/docker: all have a new outputHandlerFactory
+option which can be set to override the default ProcessOutputHandler
+subclass used for these targets, for example to customize handling of
+errors and warnings.</p></li>
+<li><p>process.call(): this method now accepts an options dictionary, which
+should be set wherever possible; this avoids callers having to deal
+with passing boilerplate defaults in to call manually.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id11">
+<h2>1.13<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id12">
+<h3>Breaking changes<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>It is now an error to use a relative path in a PathSet that is
+instantiated after the end of the parsing phase (e.g. while building
+or dependency checking a target) or from a python “import” statement.
+This is because it is impossible to guarantee a correct location can
+be found and better to fail early and clearly than in a subtle way.
+Either ensure PathSets are instantiated as top-level items in build
+files referenced from an include(…) statement, or use an absolute
+path if this is not possible.</p></li>
+<li><p>normLongPath now returns paths including a trailing slash if the
+input contains a trailing slash (indicating a directory), whereas
+before the trailing slash would be stripped off. The provides
+consistency with normpath.</p></li>
+</ul>
+</div>
+<div class="section" id="id13">
+<h3>Deprecation<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Assigning to self.options (e.g. from a target’s constructor) is
+deprecated; it will continue to be permitted for now, but due to
+various edge cases this pattern is strongly discouraged. Best
+practice is to call .option(…) on the target after the constructor
+has returned to specify any target-specific options.</p></li>
+</ul>
+</div>
+<div class="section" id="id14">
+<h3>Breaking changes<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The semantics of reading self.options from a target have changed in
+order to fix some edge cases and provide better usability. Previously
+reading self.options was permitted at any point in the build
+lifecycle but would usually return unresolved target-specific
+overrides and sometimes inconsistent results. Now reading
+self.options will return a dictionary containing fully resolved
+options in force for this target, including global option values and
+target-specific overrides. It is no longer permitted to read the
+self.options from a target’s constructor i.e. during the build
+initialization phase (as the resolved option values are not yet
+available); this will now produce an exception.</p></li>
+</ul>
+</div>
+<div class="section" id="id15">
+<h3>Fixes<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>A target or tag that is disabled in the full build will now be
+included in the build if specified explicitly even when “all” is also
+specified in the same invocation of xpybuild.py</p></li>
+<li><p>Target options specified using .options(…) were being applied on a
+per-class basis, leading to the options set on the final target of a
+given class taking effect for all targets of that class. This is now
+fixed.</p></li>
+</ul>
+</div>
+<div class="section" id="id16">
+<h3>Enhancements<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Options framework: a target-specific dictionary of resovled options
+is now available directly from basetarget.options so there is no
+longer any need to use buildcontext.mergeOptions. There is also a new
+method basetarget.getOption() for getting an option value with
+automatic checking for None/empty string values.</p></li>
+<li><p>Cpp/C: Improve clarity of error messages from C/C++ dependency
+checking by including the source file in the message (if there is
+only one - which is the common case)</p></li>
+<li><p>FilteredCopy: permit an empty list of mappers to make it easier to
+specify replacements that only apply to one platform (e.g. line
+endings), add best practice info in target doc and add
+allowUnusedMappers property for when all else fails</p></li>
+<li><p>Improve build file location and exception handling: only attach build
+file location information to an exception if it is obtained during
+the parsing phase, and only from the include(…) file currently
+being processed, to avoid unuseful locations from common utility
+classes. Except for where an error results from an item with its own
+location such as a PathSet, set location to None and use the location
+of the target being built/dependency-checked. Allow including both
+location (e.g. from a pathset) and target name in an exception
+message if both are available.</p></li>
+<li><p>Add ProcessOutputHandler.getLastOutputLine() method and use it to
+improve the default handleEnd() message if there is a non-zero error
+code but no errors or warnings</p></li>
+<li><p>Include regualar progress messages during dependency resolution, and
+log a message when starting each build phase</p></li>
+<li><p>Add PySys-based framework for proper automated testing of xpybuild</p></li>
+<li><p>PathSets, Jar: previously use of “..” in destination paths was
+disallowed by AddDestPrefix and most other mappers, now it is
+permitted which allows use of AddDestPrefix to add parent-relative
+paths to the classpath in .jar manifests. Targets that use the
+destinations to write to the local file system are required to check
+for and disallow “..” to avoid accidentally writing to locations
+outside their specified target directory.</p></li>
+<li><p>Add Download target for retrieving HTTP/FTP URLs</p></li>
+<li><p>Add DockerBuild and DockerTagUpload targets for building docker
+images and pushing them to repositories</p></li>
+<li><p>BaseTarget: add updateStampFile() method for targets which use an
+artificial output file to maintain up-to-dateness</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id17">
+<h2>1.12<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h2>
+<p>This is the first official public release of xpybuild</p>
+<div class="section" id="id18">
+<h3>Breaking changes<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Zip: Changed Zip target to fail with an error if duplicate entries
+are added to the zip, previously the target would create a zip with
+duplicate entries which would cause problems for some tools</p></li>
+<li><p>functors: Moved internal.functors to utils.functors</p></li>
+<li><p>teamcity.<em>publishArtifact: Deprecate teamcity.</em>publishArtifact
+and replace with a general-purpose BuildContext.publishArtifact
+method that can be handled in a custom way by each output formatter</p></li>
+<li><p>utils.loghandler.LogHandler: Remove utils.loghandler.LogHandler to
+utils.consoleformatter.ConsoleFormatter (also renamed all known
+subclasses)</p></li>
+</ul>
+</div>
+<div class="section" id="id19">
+<h3>Deprecation<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>teamcity._publishArtifact: replaced with a general-purpose
+BuildContext.publishArtifact method</p></li>
+</ul>
+</div>
+<div class="section" id="id20">
+<h3>Fixes<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Jar: Jar generation now always uses platform-neutral / separators
+instead of OS-specific slashes in manifest.mf files, which is
+required for Java to read them correctly</p></li>
+<li><p>CustomCommand: Publish stdout/err as artifacts even if large; also
+fix logic for deciding whether command succeeded or failed</p></li>
+</ul>
+</div>
+<div class="section" id="id21">
+<h3>Enhancements<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Jar: The jar.manifest.classpathAppend option now allows and ignores
+“None” items in the list</p></li>
+<li><p>Cpp/C: Check for explicit dependencies before implicit dependencies,
+so we get error messages sooner</p></li>
+<li><p>VisualStudioProcessOutputHandler: Added new options
+“visualstudio.transientErrorRegex” which allows certain errors (e.g.
+Access Denied) to be handled with a wait-and-retry rather than
+immediately failing</p></li>
+<li><p>CSharp, SignJars, Javadoc, Cpp: Target options are now passed down to
+process output handlers to allow customizeable behaviour</p></li>
+<li><p>CustomCommand: support full set of expansions including PathSets for
+environment variable values</p></li>
+<li><p>CustomCommand: add CustomCommand.TARGET and DEPENDENCIES special
+values to avoid the need to duplicate information</p></li>
+<li><p>All targets: Output handlers will include the first warning line in
+the target failure exception if there were no specified errors logged</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="autodocgen/xpybuild.utils.terminal.html" class="btn btn-neutral float-left" title="xpybuild.utils.terminal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

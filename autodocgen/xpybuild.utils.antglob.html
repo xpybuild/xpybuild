@@ -1,0 +1,608 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.utils.antglob &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.utils.buildexceptions" href="xpybuild.utils.buildexceptions.html" />
+    <link rel="prev" title="xpybuild.utils" href="xpybuild.utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="xpybuild.html">xpybuild</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.basetarget.html">xpybuild.basetarget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcommon.html">xpybuild.buildcommon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcontext.html">xpybuild.buildcontext</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.pathsets.html">xpybuild.pathsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.propertysupport.html">xpybuild.propertysupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.targets.html">xpybuild.targets</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="xpybuild.utils.html">xpybuild.utils</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">xpybuild.utils.antglob</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#globpatternset">GlobPatternSet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#globunusedpatterntracker">GlobUnusedPatternTracker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#antglobmatch">antGlobMatch</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.buildexceptions.html">xpybuild.utils.buildexceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.buildfilelocation.html">xpybuild.utils.buildfilelocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.compilers.html">xpybuild.utils.compilers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.consoleformatter.html">xpybuild.utils.consoleformatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.fileutils.html">xpybuild.utils.fileutils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.flatten.html">xpybuild.utils.flatten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.functors.html">xpybuild.utils.functors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.java.html">xpybuild.utils.java</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.outputhandler.html">xpybuild.utils.outputhandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.process.html">xpybuild.utils.process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.progress.html">xpybuild.utils.progress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.stringutils.html">xpybuild.utils.stringutils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xpybuild.utils.terminal.html">xpybuild.utils.terminal</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="xpybuild.html">xpybuild</a> &raquo;</li>
+        
+          <li><a href="xpybuild.utils.html">xpybuild.utils</a> &raquo;</li>
+        
+      <li>xpybuild.utils.antglob</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/autodocgen/xpybuild.utils.antglob.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-xpybuild.utils.antglob">
+<span id="xpybuild-utils-antglob"></span><h1>xpybuild.utils.antglob<a class="headerlink" href="#module-xpybuild.utils.antglob" title="Permalink to this headline">¶</a></h1>
+<p>Ant-style <code class="docutils literal notranslate"><span class="pre">**/*</span></code> globbing functionality, as used by <a class="reference internal" href="xpybuild.pathsets.html#xpybuild.pathsets.FindPaths" title="xpybuild.pathsets.FindPaths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.pathsets.FindPaths</span></code></a>.</p>
+<div class="section" id="globpatternset">
+<h2>GlobPatternSet<a class="headerlink" href="#globpatternset" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.utils.antglob.GlobPatternSet">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.antglob.</code><code class="sig-name descname">GlobPatternSet</code><span class="sig-paren">(</span><em class="sig-param">patterns</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Holds a set of one or more ant-style glob patterns, which can be used to 
+filter a set of paths based on whether each path matches any of the 
+specified patterns.</p>
+<p>Typically there will be one GlobPatternSet for includes and another for 
+excludes.</p>
+<p>This object is immutable and thread-safe.</p>
+<p>Glob patterns may contain ‘*’ (indicating zero or more non-slash 
+characters) or ‘**’ (indicating zero or more characters including slashes). 
+The ‘?’ character is not supported.</p>
+<p>Do not call the <code class="docutils literal notranslate"><span class="pre">GlobPatternSet()</span></code> constructor - use <a class="reference internal" href="#xpybuild.utils.antglob.GlobPatternSet.create" title="xpybuild.utils.antglob.GlobPatternSet.create"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create</span></code></a> instead of constructing directly.</p>
+<dl class="method">
+<dt id="xpybuild.utils.antglob.GlobPatternSet.create">
+<em class="property">static </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param">patterns</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new GlobPatternSet for matching any of the specified patterns.</p>
+<p>Patterns ending with a ‘/’ can only match directories, and patterns without 
+can only match files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>patterns</strong> – a string, or a list of one or more pattern strings. 
+Glob patterns may contain ‘*’ (indicating zero or more non-slash 
+characters) or ‘**’ (indicating zero or more characters including slashes). 
+Backslashes are not permitted. Empty pattern strings are ignored.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.utils.antglob.GlobPatternSet.getPathMatches">
+<code class="sig-name descname">getPathMatches</code><span class="sig-paren">(</span><em class="sig-param">rootdir</em>, <em class="sig-param">filenames=None</em>, <em class="sig-param">dirnames=None</em>, <em class="sig-param">unusedPatternsTracker=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet.getPathMatches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet.getPathMatches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check these patterns against one or more basenames (dir names and filenames) 
+within a single root directory and return the list which match at least 
+one pattern.</p>
+<p>Using this method is a lot more efficient than checking each file 
+in a directory independently, especially when there are many files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rootdir</strong> – The parent of the file/dir names to be matched. 
+Must use forward slashes not backslashes, and must end with a slash. 
+Can be empty but not None.</p></li>
+<li><p><strong>filenames</strong> – A list of base file names within the rootdir, to be 
+matched. There must be no empty names in the list, but an empty/None list 
+can be specified. 
+No slash characters may be present in the names.</p></li>
+<li><p><strong>dirnames</strong> – <dl class="simple">
+<dt>A list of base directory names within the rootdir, to be </dt><dd><p>matched. There must be no empty names in the list, but an empty/None list 
+can be specified.</p>
+</dd>
+</dl>
+<p>No slash characters may be present in the names, except optionally 
+as a suffix.</p>
+</p></li>
+<li><p><strong>unusedPatternsTracker</strong> – Optionally specify an instance of 
+<a class="reference internal" href="#xpybuild.utils.antglob.GlobUnusedPatternTracker" title="xpybuild.utils.antglob.GlobUnusedPatternTracker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GlobUnusedPatternTracker</span></code></a> which will be notified of the patterns that 
+are used, allow an error to be produced for any that are not used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If either filenames or dirnames is None then the result is a 
+single list of basenames. If both filenames and dirnames are lists 
+(even if empty) the result is a tuple (filenames, dirnames). 
+Directory entries will have a trailing slash only if they did in the input 
+dirnames list.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.utils.antglob.GlobPatternSet.removeUnmatchableDirectories">
+<code class="sig-name descname">removeUnmatchableDirectories</code><span class="sig-paren">(</span><em class="sig-param">rootdir</em>, <em class="sig-param">dirnames</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet.removeUnmatchableDirectories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet.removeUnmatchableDirectories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modifies the specifies list of dirnames, removing any which cannot possibly 
+match this include pattern. This is a useful optimization for os.walk.</p>
+<p>As this function is intended as a quick optimization it may leave in some 
+dirs that could not match, but will definitely not remove any that could.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rootdir</strong> – The parent of the file/dir names to be matched. 
+Must use forward slashes not backslashes, and must end with a slash. 
+Can be empty but not None.</p></li>
+<li><p><strong>dirnames</strong> – a list of directory basenames contained in rootdir</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the same dirnames instance passed in (with any modifications made).</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;**&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
+<span class="go">[&#39;dir1&#39;, &#39;dir2&#39;]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;**/&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
+<span class="go">[&#39;dir1&#39;, &#39;dir2&#39;]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;**/foo&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
+<span class="go">[&#39;dir1&#39;, &#39;dir2&#39;]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;a/b/c/d/**&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
+<span class="go">[]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;abc/def/dir1/d/**&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
+<span class="go">[&#39;dir1&#39;]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;abc/def/dir1/d/**/&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
+<span class="go">[&#39;dir1&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.utils.antglob.GlobPatternSet.matches">
+<code class="sig-name descname">matches</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet.matches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet.matches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the specified path matches any of the patterns in this set 
+or False if not.</p>
+<p>Note that <a class="reference internal" href="#xpybuild.utils.antglob.GlobPatternSet.getPathMatches" title="xpybuild.utils.antglob.GlobPatternSet.getPathMatches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getPathMatches</span></code></a> is considerably more efficient than this method 
+when there are several paths to be matched in the same directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – A path string. Must not be empty, must not contains 
+backslashes, and must end with a slash if it is a directory.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="globunusedpatterntracker">
+<h2>GlobUnusedPatternTracker<a class="headerlink" href="#globunusedpatterntracker" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.utils.antglob.GlobUnusedPatternTracker">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.antglob.</code><code class="sig-name descname">GlobUnusedPatternTracker</code><span class="sig-paren">(</span><em class="sig-param">patternSet</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobUnusedPatternTracker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobUnusedPatternTracker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for recording which patterns have successfully been used in a match, 
+in order to provide error messages or warnings listing unused patterns.</p>
+<p>This object should not be shared between threads.</p>
+<dl class="method">
+<dt id="xpybuild.utils.antglob.GlobUnusedPatternTracker.getUnusedPatterns">
+<code class="sig-name descname">getUnusedPatterns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobUnusedPatternTracker.getUnusedPatterns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobUnusedPatternTracker.getUnusedPatterns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of the patterns that have not been used.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="antglobmatch">
+<h2>antGlobMatch<a class="headerlink" href="#antglobmatch" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.utils.antglob.antGlobMatch">
+<code class="sig-prename descclassname">xpybuild.utils.antglob.</code><code class="sig-name descname">antGlobMatch</code><span class="sig-paren">(</span><em class="sig-param">pattern</em>, <em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#antGlobMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.antGlobMatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matches a path against an ant-style glob pattern which may contain 
+<code class="docutils literal notranslate"><span class="pre">*</span></code> or <code class="docutils literal notranslate"><span class="pre">**</span></code>.</p>
+<p>If the path is a directory, it must end with a slash. 
+Patterns ending with a <code class="docutils literal notranslate"><span class="pre">/</span></code> can only match directories, and patterns without 
+can only match files.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*.b&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*.b&#39;</span><span class="p">,</span> <span class="s1">&#39;a.b&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;b.*&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;b.*&#39;</span><span class="p">,</span> <span class="s1">&#39;b.a&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;ab&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;axxxb&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;axxx&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;xxxb&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b.*/c&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b.x/c&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b.*/c&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/c&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*c&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/b/c&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/d&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/**/b&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b/**&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b/**/*&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/**/b&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b/**&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/**/d/e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d/e&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*x/**/&#39;</span><span class="p">,</span> <span class="s1">&#39;x/a/b/&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*x/**&#39;</span><span class="p">,</span> <span class="s1">&#39;x/a/b&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*x/**/&#39;</span><span class="p">,</span> <span class="s1">&#39;x/a/b&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*x/**&#39;</span><span class="p">,</span> <span class="s1">&#39;x/a/b/&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*[[*&#39;</span><span class="p">,</span> <span class="s1">&#39;[[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*[[*&#39;</span><span class="p">,</span> <span class="s1">&#39;xx[[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*ab*&#39;</span><span class="p">,</span> <span class="s1">&#39;abxx&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*[]*&#39;</span><span class="p">,</span> <span class="s1">&#39;[&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;aa*.b*c*/&#39;</span><span class="p">,</span> <span class="s1">&#39;aa.bc/&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;aa*.b*c*/&#39;</span><span class="p">,</span> <span class="s1">&#39;aaxxx.bxcxx/&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;aa*b*c*&#39;</span><span class="p">,</span> <span class="s1">&#39;xaabc&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;aa*.*c*&#39;</span><span class="p">,</span> <span class="s1">&#39;aaYc&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b.x/c.x&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b.x/c.x/d.x&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/c.x/y/d.x&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/y/c.x/d.x&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/y/c.x/d.x&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x/&#39;</span><span class="p">,</span> <span class="s1">&#39;a/y/c.x/d.x/&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b/c/d/e/**&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d/e/f/PPP/g/h/i/foo.e&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;PPP/g/h/i/foo.e&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d/e/f/PPP/foo.e&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/PPP/g/h/i/j/k/l/m/n/o/foo.e&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d/e/f/g/h/i/foo.e&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/**/**/PPP/**/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;f/PPP/x/PPP/foo.e&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/f/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;f/PPP/a/b/c/d/e/PPP/f/foo.e&#39;</span><span class="p">)</span> <span class="c1"># this one is debatable (could decide not to match first PPP to allow second to match, but in general hard to reliably detect that condition given any later **s would invalidate any attempt to do it by counting); this behaviour is simpler to describe and more efficient to implement</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*/**/f/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;f/PPP/a/b/c/d/e/PPP/f/foo.e&#39;</span><span class="p">)</span> 
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="xpybuild.utils.buildexceptions.html" class="btn btn-neutral float-right" title="xpybuild.utils.buildexceptions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="xpybuild.utils.html" class="btn btn-neutral float-left" title="xpybuild.utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

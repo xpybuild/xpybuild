@@ -1,0 +1,36 @@
+
+xpybuild.targets.java
+~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.targets.java
+
+.. currentmodule:: xpybuild.targets.java
+
+
+
+SignJars
+========
+
+.. autoclass:: SignJars
+   :members:
+
+
+Javac
+=====
+
+.. autoclass:: Javac
+   :members:
+
+
+Jar
+===
+
+.. autoclass:: Jar
+   :members:
+
+
+Javadoc
+=======
+
+.. autoclass:: Javadoc
+   :members:

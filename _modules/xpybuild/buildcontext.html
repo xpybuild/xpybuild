@@ -1,40 +1,149 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>xpybuild.buildcontext &#8212; xpybuild 3.0.dev2 documentation</title>
-    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.buildcontext &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
     
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autodocgen/xpybuild.html">xpybuild</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>xpybuild.buildcontext</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for xpybuild.buildcontext</h1><div class="highlight"><pre>
 <span></span><span class="c1"># xpyBuild - eXtensible Python-based Build System</span>
@@ -58,6 +167,22 @@
 <span class="c1">#</span>
 <span class="c1"># $Id: buildcontext.py 301527 2017-02-06 15:31:43Z matj $</span>
 <span class="c1">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Contains the `xpybuild.buildcontext.BuildContext` class which targets use to resolve property values and paths during the build process, </span>
+<span class="sd">and the `xpybuild.buildcontext.BuildInitializationContext` which is can be used for accessing this information while the build files are </span>
+<span class="sd">being parsed. </span>
+
+<span class="sd">The most useful methods are:</span>
+
+<span class="sd">.. autosummary::</span>
+<span class="sd">	BaseContext.getFullPath</span>
+<span class="sd">	BaseContext.getPropertyValue</span>
+<span class="sd">	BaseContext.expandListPropertyValue</span>
+<span class="sd">	BaseContext.expandPropertyValues</span>
+<span class="sd">	BaseContext.publishArtifact</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">getopt</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">traceback</span><span class="o">,</span> <span class="nn">types</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 
@@ -66,8 +191,9 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;xpybuild&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BaseContext"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext">[docs]</a><span class="k">class</span> <span class="nc">BaseContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseContext"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext">[docs]</a><span class="k">class</span> <span class="nc">BaseContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Common functionality needed during initialization and build phases. </span>
+<span class="sd">	</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initialProperties</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -78,7 +204,7 @@
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_properties</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">initialProperties</span> <span class="ow">or</span> <span class="p">{})</span>
 
-<div class="viewcode-block" id="BaseContext.publishArtifact"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.publishArtifact">[docs]</a>	<span class="k">def</span> <span class="nf">publishArtifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">displayName</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseContext.publishArtifact"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.publishArtifact">[docs]</a>	<span class="k">def</span> <span class="nf">publishArtifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">displayName</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Publishes the specified local path as an artifact, </span>
 <span class="sd">		if supported by the configured output format. </span>
 <span class="sd">		</span>
@@ -90,10 +216,10 @@
 		<span class="c1"># this is a convenience method</span>
 		<span class="n">publishArtifact</span><span class="p">(</span><span class="n">displayName</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseContext.getPropertyValue"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.getPropertyValue">[docs]</a>	<span class="k">def</span> <span class="nf">getPropertyValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseContext.getPropertyValue"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.getPropertyValue">[docs]</a>	<span class="k">def</span> <span class="nf">getPropertyValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Get the value of the specified property or raise a BuildException if it doesn&#39;t exist.</span>
 
-<span class="sd">		@param name: the property name (without ${...}) to retrieve. Must be a string.</span>
+<span class="sd">		@param name: the property name (without ``${...}``) to retrieve. Must be a string.</span>
 <span class="sd">		</span>
 <span class="sd">		@return: For Boolean properties this will be a python Boolean, for everything else it will be a string. </span>
 <span class="sd">		</span>
@@ -144,11 +270,11 @@
 			
 		<span class="k">return</span> <span class="n">result</span></div>
 	
-<div class="viewcode-block" id="BaseContext.expandPropertyValues"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.expandPropertyValues">[docs]</a>	<span class="k">def</span> <span class="nf">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Expand all ${PROP_NAME} properties in the specified string. </span>
+<div class="viewcode-block" id="BaseContext.expandPropertyValues"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.expandPropertyValues">[docs]</a>	<span class="k">def</span> <span class="nf">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Expand all ``${PROP_NAME}`` properties in the specified string. </span>
 
-<span class="sd">		Use a double dollar to escape if needed, e.g. &quot;$${foo}&quot; will end up as </span>
-<span class="sd">		&quot;${foo}&quot; unescaped. This assumes expandPropertyValues is not called </span>
+<span class="sd">		Use a double dollar to escape if needed, e.g. ``$${foo}`` will end up as </span>
+<span class="sd">		``${foo}`` unescaped. This assumes expandPropertyValues is not called </span>
 <span class="sd">		more than once on the same string (it is not idempotent). </span>
 <span class="sd">		</span>
 <span class="sd">		Boolean values are expanded to &quot;true&quot; or &quot;false&quot;</span>
@@ -246,11 +372,11 @@
 			<span class="k">else</span><span class="p">:</span>
 				<span class="k">return</span> <span class="n">string</span></div>
 
-<div class="viewcode-block" id="BaseContext.expandListPropertyValue"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.expandListPropertyValue">[docs]</a>	<span class="k">def</span> <span class="nf">expandListPropertyValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propertyName</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseContext.expandListPropertyValue"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.expandListPropertyValue">[docs]</a>	<span class="k">def</span> <span class="nf">expandListPropertyValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propertyName</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Get the list represented by the specified property or raise a </span>
 <span class="sd">		BuildException if it doesn&#39;t exist.</span>
 
-<span class="sd">		@param propertyName: the property name (without ${...}) to retrieve. Must be a string </span>
+<span class="sd">		@param propertyName: the property name (without ``${...}``) to retrieve. Must be a string </span>
 <span class="sd">		and end with &quot;[]&quot;.</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">assert</span> <span class="ow">not</span> <span class="n">propertyName</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;$&#39;</span><span class="p">),</span> <span class="n">propertyName</span>
@@ -258,11 +384,13 @@
 		<span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="n">propertyName</span><span class="p">)</span>
 		<span class="k">return</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span></div>
 	
-<div class="viewcode-block" id="BaseContext.getProperties"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.getProperties">[docs]</a>	<span class="k">def</span> <span class="nf">getProperties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseContext.getProperties"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.getProperties">[docs]</a>	<span class="k">def</span> <span class="nf">getProperties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Return a new copy of the properties dictionary (values may be of any type). Do not use this method unless </span>
+<span class="sd">		Return a new copy of the properties dictionary (values may be of any type). </span>
+<span class="sd">		</span>
+<span class="sd">		Do not use this method unless </span>
 <span class="sd">		really necessary (e.g. for keyword substitution) - in almost all cases it is better to simply specify the </span>
-<span class="sd">		required properties explicitly to getPropertyValue or expandPropertyValues. </span>
+<span class="sd">		required properties explicitly to `getPropertyValue` or `expandPropertyValues`. </span>
 <span class="sd">		</span>
 <span class="sd">		&gt;&gt;&gt; BaseContext({&#39;A&#39;:&#39;b&#39;}).getProperties()</span>
 <span class="sd">		{&#39;A&#39;: &#39;b&#39;}</span>
@@ -272,6 +400,7 @@
 	<span class="k">def</span> <span class="nf">_recursiveExpandProperties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Recurses over obj, replacing any strings it finds.</span>
+<span class="sd">		</span>
 <span class="sd">		&gt;&gt;&gt; BaseContext({&#39;test&#39;:&#39;foo&#39;})._recursiveExpandProperties(&#39;${test}&#39;)</span>
 <span class="sd">		&#39;foo&#39;</span>
 <span class="sd">		&gt;&gt;&gt; BaseContext({&#39;test&#39;:&#39;foo&#39;})._recursiveExpandProperties([&#39;${test}&#39;, &#39;${test}&#39;])</span>
@@ -324,15 +453,14 @@
 					<span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_definedOptions</span><span class="p">:</span> <span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s2">&quot;Unknown option </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
 					<span class="n">fulloptions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recursiveExpandProperties</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 				<span class="k">except</span> <span class="n">BuildException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-					<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Failed to resolve option &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">key</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">location</span> <span class="k">if</span> <span class="n">target</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+					<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Failed to resolve option &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">key</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">location</span> <span class="k">if</span> <span class="n">target</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">None</span>
 		<span class="k">return</span> <span class="n">fulloptions</span>
 				
 
-<div class="viewcode-block" id="BaseContext.mergeOptions"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.mergeOptions">[docs]</a>	<span class="k">def</span> <span class="nf">mergeOptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
-		<span class="sd">&quot;&quot;&quot; [DEPRECATED] </span>
-<span class="sd">		</span>
-<span class="sd">		@deprecated: Use the target&#39;s self.options to get the resolved dictionary of options instead of this method, or L{getGlobalOptions} </span>
-<span class="sd">			for PathSets and functors where there is no target available. </span>
+<div class="viewcode-block" id="BaseContext.mergeOptions"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.mergeOptions">[docs]</a>	<span class="k">def</span> <span class="nf">mergeOptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
+		<span class="sd">&quot;&quot;&quot;		</span>
+<span class="sd">		@deprecated: Instead, use the target&#39;s `xpybuild.basetarget.BaseTarget.options` to get the resolved dictionary of options instead of this method, or </span>
+<span class="sd">			`getGlobalOption` for PathSets and functors where there is no target available. </span>
 <span class="sd">		</span>
 <span class="sd">		Merges together the default options, the globally overridden options and any set on the target.</span>
 
@@ -353,15 +481,15 @@
 		<span class="k">else</span><span class="p">:</span> <span class="c1"># if we&#39;re given a target, assume we&#39;re past the initialization phase</span>
 			<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mergeListOfOptionDicts</span><span class="p">([</span><span class="n">target</span><span class="o">.</span><span class="n">options</span><span class="p">,</span> <span class="n">options</span><span class="p">],</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseContext.getGlobalOption"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.getGlobalOption">[docs]</a>	<span class="k">def</span> <span class="nf">getGlobalOption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseContext.getGlobalOption"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.getGlobalOption">[docs]</a>	<span class="k">def</span> <span class="nf">getGlobalOption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;Get the value of the specified global option for this build. </span>
 <span class="sd">		</span>
 <span class="sd">		This can be useful for PathSets and functors, however in any situation </span>
-<span class="sd">		where there is a target, use L{BaseTarget.options} instead, so that per-target </span>
+<span class="sd">		where there is a target, use `xpybuild.basetarget.BaseTarget.options` instead, so that per-target </span>
 <span class="sd">		option overrides are respected. &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_globalOptions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="BaseContext.getFullPath"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.getFullPath">[docs]</a>	<span class="k">def</span> <span class="nf">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">defaultDir</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseContext.getFullPath"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.getFullPath">[docs]</a>	<span class="k">def</span> <span class="nf">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">defaultDir</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Expands any properties in the specified path, then removes trailing path separators, normalizes it for this </span>
 <span class="sd">		platform and then makes it an absolute path if necessary, using the specified default directory. </span>
 <span class="sd">		</span>
@@ -428,13 +556,17 @@
 				
 			<span class="k">return</span> <span class="n">path</span></div></div>
 			
-<div class="viewcode-block" id="BuildInitializationContext"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext">[docs]</a><span class="k">class</span> <span class="nc">BuildInitializationContext</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildInitializationContext"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext">[docs]</a><span class="k">class</span> <span class="nc">BuildInitializationContext</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">	Provides context used only during the initialization phase of the build, including the ability to change property </span>
-<span class="sd">	values that will later become immutable. Once initialization is complete, this object should be considered </span>
-<span class="sd">	immutable. </span>
+<span class="sd">	Provides context used only during the initialization phase of the build. </span>
+<span class="sd">	</span>
+<span class="sd">	Once initialization is complete, this object can no longer be used. </span>
+<span class="sd">	</span>
+<span class="sd">	Wherever possible, delay resolution of properties to the build phase instead of performing operations with </span>
+<span class="sd">	this class, which results in cleaner build scripts and avoids the problem of trying to use a property before </span>
+<span class="sd">	it has been defined. </span>
 
-<span class="sd">	This is the class returned by L{getBuildInitializationContext}</span>
+<span class="sd">	If you do need an instance of this class, use `BuildInitializationContext.getBuildInitializationContext`. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	
 	<span class="sd">&quot;&quot;&quot; Manages the process of loading a build file, and contains the static </span>
@@ -472,11 +604,15 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">_preBuildCallbacks</span> <span class="o">=</span> <span class="p">[]</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_globalOptions</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="BuildInitializationContext.getBuildInitializationContext"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext">[docs]</a>	<span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BuildInitializationContext.getBuildInitializationContext"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext">[docs]</a>	<span class="nd">@staticmethod</span>
 	<span class="k">def</span> <span class="nf">getBuildInitializationContext</span><span class="p">():</span>
 		<span class="sd">&quot;&quot;&quot;Returns the singleton `BuildInitializationContext` instance during parsing of build files, </span>
 <span class="sd">		which is occasionally necessary for looking up properties etc. </span>
-<span class="sd">		</span>
+
+<span class="sd">		Wherever possible, delay resolution of properties to the build phase instead of performing operations with </span>
+<span class="sd">		this class, which results in cleaner build scripts and avoids the problem of trying to use a property before </span>
+<span class="sd">		it has been defined. </span>
+
 <span class="sd">		It is an error to call this method after parsing of build files has completed, </span>
 <span class="sd">		since a `BuildContext` is used for that phase of the build instead. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -487,8 +623,11 @@
 			
 		<span class="k">return</span> <span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">__buildInitializationContext</span></div>
 
-<div class="viewcode-block" id="BuildInitializationContext.initializeFromBuildFile"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.initializeFromBuildFile">[docs]</a>	<span class="k">def</span> <span class="nf">initializeFromBuildFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buildFile</span><span class="p">,</span> <span class="n">isRealBuild</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Load the specified build file, which is the initialization phase during which properties are defined and </span>
+	<span class="k">def</span> <span class="nf">initializeFromBuildFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buildFile</span><span class="p">,</span> <span class="n">isRealBuild</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		.. private:: For internal use only. </span>
+
+<span class="sd">		Load the specified build file, which is the initialization phase during which properties are defined and </span>
 <span class="sd">		the build file target definitions will register themselves with this object. </span>
 
 <span class="sd">		Should only be called from within xpybuild, not from build files. To include another build file </span>
@@ -547,13 +686,13 @@
 		<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">ExtensionBasedFileEncodingDecider</span>
 		<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="k">import</span> <span class="n">defaultProcessOutputEncodingDecider</span>
 		<span class="k">if</span> <span class="s1">&#39;common.fileEncodingDecider&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definedOptions</span><span class="p">:</span>
-			<span class="bp">self</span><span class="o">.</span><span class="n">_defineOption</span><span class="p">(</span><span class="s1">&#39;common.fileEncodingDecider&#39;</span><span class="p">,</span> <span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">getDefaultFileEncodingDecider</span><span class="p">())</span>
-			<span class="bp">self</span><span class="o">.</span><span class="n">_defineOption</span><span class="p">(</span><span class="s1">&#39;common.processOutputEncodingDecider&#39;</span><span class="p">,</span> <span class="n">defaultProcessOutputEncodingDecider</span><span class="p">)</span>
+			<span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_defineOption</span><span class="p">(</span><span class="s1">&#39;common.fileEncodingDecider&#39;</span><span class="p">,</span> <span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">getDefaultFileEncodingDecider</span><span class="p">())</span>
+			<span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_defineOption</span><span class="p">(</span><span class="s1">&#39;common.processOutputEncodingDecider&#39;</span><span class="p">,</span> <span class="n">defaultProcessOutputEncodingDecider</span><span class="p">)</span>
 
 		
 		<span class="c1"># all the valid ones will have been popped already</span>
 		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_propertyOverrides</span><span class="p">:</span>
-			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Cannot specify value for undefined build property/properties: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_propertyOverrides</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span></div>
+			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Cannot specify value for undefined build property/properties: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_propertyOverrides</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
 	
 	<span class="k">def</span> <span class="nf">_finalizeGlobalOptions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># internal method called at end of build initialization phase</span>
 		<span class="c1"># use this proxy to make it unmodifiable so we can pass it around (most targets don&#39;t need to override any options)</span>
@@ -579,8 +718,11 @@
 				<span class="bp">self</span><span class="o">.</span><span class="n">_envPropertyOverrides</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 	
-<div class="viewcode-block" id="BuildInitializationContext.defineProperty"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.defineProperty">[docs]</a>	<span class="k">def</span> <span class="nf">defineProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">coerceToValidValue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Defines a user-settable property, specifying a default value and </span>
+	<span class="k">def</span> <span class="nf">defineProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">coerceToValidValue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		.. private:: For internal use only. </span>
+
+<span class="sd">		Defines a user-settable property, specifying a default value and </span>
 <span class="sd">		an optional method to validate values specified by the user. </span>
 <span class="sd">		Return the value assigned to the property. </span>
 
@@ -628,10 +770,13 @@
 		<span class="k">else</span><span class="p">:</span>
 			<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Setting property </span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 		
-		<span class="k">return</span> <span class="n">value</span></div>
+		<span class="k">return</span> <span class="n">value</span>
 	
-<div class="viewcode-block" id="BuildInitializationContext.registerOutputDir"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.registerOutputDir">[docs]</a>	<span class="k">def</span> <span class="nf">registerOutputDir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputDir</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Registers that the specified directory should be created before the </span>
+	<span class="k">def</span> <span class="nf">registerOutputDir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputDir</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		.. private:: For internal use only. </span>
+<span class="sd">		</span>
+<span class="sd">		Registers that the specified directory should be created before the </span>
 <span class="sd">		build starts.</span>
 <span class="sd">						 </span>
 <span class="sd">		Build files should use L{propertysupport.defineOutputDirProperty} </span>
@@ -640,10 +785,13 @@
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_initializationCheck</span><span class="p">()</span>
 		
-		<span class="bp">self</span><span class="o">.</span><span class="n">_outputDirs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">outputDir</span><span class="p">)</span></div>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_outputDirs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">outputDir</span><span class="p">)</span>
 	
-<div class="viewcode-block" id="BuildInitializationContext.registerTarget"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.registerTarget">[docs]</a>	<span class="k">def</span> <span class="nf">registerTarget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Registers the target with the context.</span>
+	<span class="k">def</span> <span class="nf">registerTarget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		.. private:: For internal use only. </span>
+
+<span class="sd">		Registers the target with the context.</span>
 
 <span class="sd">		Called internally from L{basetarget.BaseTarget} and does not need to be called directly.</span>
 <span class="sd">		Will raise an exception if called after the build files have been parsed.</span>
@@ -655,20 +803,26 @@
 			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Duplicate target name &quot;</span><span class="si">%s</span><span class="s1">&quot; (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_targetsMap</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">location</span><span class="p">),</span> <span class="n">location</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_targetsMap</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">target</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_targetsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">registerTags</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">getTags</span><span class="p">())</span></div>
+		<span class="bp">self</span><span class="o">.</span><span class="n">registerTags</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">getTags</span><span class="p">())</span>
 
-<div class="viewcode-block" id="BuildInitializationContext.registerTags"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.registerTags">[docs]</a>	<span class="k">def</span> <span class="nf">registerTags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">taglist</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Registers tags and their matching targets with the context.</span>
+	<span class="k">def</span> <span class="nf">registerTags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">taglist</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		.. private:: For internal use only. </span>
+
+<span class="sd">		Registers tags and their matching targets with the context.</span>
 
 <span class="sd">		Called internally from L{basetarget.BaseTarget.tags} and does not need to be called directly.</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">taglist</span><span class="p">:</span>
 			<span class="n">targetsForTag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="p">[])</span>
 			<span class="k">if</span> <span class="ow">not</span> <span class="n">targetsForTag</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tags</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">targetsForTag</span>
-			<span class="n">targetsForTag</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target</span><span class="p">)</span></div>
+			<span class="n">targetsForTag</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BuildInitializationContext.removeFromTags"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.removeFromTags">[docs]</a>	<span class="k">def</span> <span class="nf">removeFromTags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">taglist</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Removes a target from a set of tags</span>
+	<span class="k">def</span> <span class="nf">removeFromTags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">taglist</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		.. private:: For internal use only. </span>
+
+<span class="sd">		Removes a target from a set of tags</span>
 
 <span class="sd">		Called internally from L{basetarget.BaseTarget.disableInFullBuild}</span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -676,9 +830,9 @@
 			<span class="n">tlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tags</span><span class="p">[</span><span class="n">tname</span><span class="p">]</span> <span class="c1"># if the tag does not exist, build file is broken and it should be an error</span>
 			
 			<span class="c1"># must do comparison based on name and not value of target, since we have no implemented equality</span>
-			<span class="bp">self</span><span class="o">.</span><span class="n">_tags</span><span class="p">[</span><span class="n">tname</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tlist</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">]</span></div>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_tags</span><span class="p">[</span><span class="n">tname</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tlist</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
 
-<div class="viewcode-block" id="BuildInitializationContext.isRealBuild"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.isRealBuild">[docs]</a>	<span class="k">def</span> <span class="nf">isRealBuild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildInitializationContext.isRealBuild"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.isRealBuild">[docs]</a>	<span class="k">def</span> <span class="nf">isRealBuild</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 		<span class="sd">&quot;&quot;&quot; Returns True if a real build is going to take place, or False if </span>
 <span class="sd">		the build files are just being parsed in order to list available </span>
 <span class="sd">		targets/properties. </span>
@@ -689,16 +843,23 @@
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__isRealBuild</span></div>
 
-<div class="viewcode-block" id="BuildInitializationContext.registerPreBuildCheck"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.registerPreBuildCheck">[docs]</a>	<span class="k">def</span> <span class="nf">registerPreBuildCheck</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Register a functor to be called before builds.</span>
-<span class="sd">			 Functor should take a context and raise if the check fails &quot;&quot;&quot;</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">_preBuildCallbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span></div>
+	<span class="k">def</span> <span class="nf">registerPreBuildCheck</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		.. private:: For internal use only. </span>
 
-<div class="viewcode-block" id="BuildInitializationContext.getPreBuildCallbacks"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.getPreBuildCallbacks">[docs]</a>	<span class="k">def</span> <span class="nf">getPreBuildCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Return the list of pre-build callback functors &quot;&quot;&quot;</span>
-		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preBuildCallbacks</span></div>
+<span class="sd">		Register a functor to be called before builds.</span>
+<span class="sd">		</span>
+<span class="sd">		Functor should take a context and raise if the check fails &quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_preBuildCallbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BuildInitializationContext.getTargetsWithTag"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.getTargetsWithTag">[docs]</a>	<span class="k">def</span> <span class="nf">getTargetsWithTag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">getPreBuildCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		.. private:: For internal use only. </span>
+
+<span class="sd">		Return the list of pre-build callback functors &quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preBuildCallbacks</span>
+
+<div class="viewcode-block" id="BuildInitializationContext.getTargetsWithTag"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.getTargetsWithTag">[docs]</a>	<span class="k">def</span> <span class="nf">getTargetsWithTag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Returns the list of target objects with the specified tag name </span>
 <span class="sd">		(throws BuildException if not defined). </span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -709,25 +870,30 @@
 
 
 
-<div class="viewcode-block" id="BuildInitializationContext.tags"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.tags">[docs]</a>	<span class="k">def</span> <span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildInitializationContext.tags"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.tags">[docs]</a>	<span class="k">def</span> <span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Returns the map of tag names to lists of target objects</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tags</span></div>
 
-<div class="viewcode-block" id="BuildInitializationContext.targets"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.targets">[docs]</a>	<span class="k">def</span> <span class="nf">targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildInitializationContext.targets"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.targets">[docs]</a>	<span class="k">def</span> <span class="nf">targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Return a map of targetName:target</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_targetsMap</span></div>
 		
 	<span class="c1"># methods used by the scheduler</span>
-<div class="viewcode-block" id="BuildInitializationContext.getOutputDirs"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.getOutputDirs">[docs]</a>	<span class="k">def</span> <span class="nf">getOutputDirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildInitializationContext.getOutputDirs"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.getOutputDirs">[docs]</a>	<span class="k">def</span> <span class="nf">getOutputDirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Return the list of registered output dirs. </span>
+<span class="sd">		</span>
 <span class="sd">		Note that some of these might be nested inside other output dirs. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputDirs</span></div>
 
-	<span class="k">def</span> <span class="nf">_defineOption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Register an available option and specify its default value.</span>
+	<span class="nd">@staticmethod</span>
+	<span class="k">def</span> <span class="nf">_defineOption</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">		.. private:: For internal use only. </span>
+<span class="sd">		</span>
+<span class="sd">		Register an available option and specify its default value.</span>
 
 <span class="sd">		Called internally from L{propertysupport.defineOption} and does not </span>
 <span class="sd">		need to be called directly</span>
@@ -736,8 +902,12 @@
 			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Cannot define option &quot;</span><span class="si">%s</span><span class="s1">&quot; more than once&#39;</span><span class="o">%</span><span class="n">name</span><span class="p">)</span>
 
 		<span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_definedOptions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">default</span>
-<div class="viewcode-block" id="BuildInitializationContext.setGlobalOption"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.setGlobalOption">[docs]</a>	<span class="k">def</span> <span class="nf">setGlobalOption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Set a global value for an option</span>
+	
+	<span class="k">def</span> <span class="nf">setGlobalOption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		.. private:: For internal use only. </span>
+
+<span class="sd">		 Set a global value for an option</span>
 
 <span class="sd">		Called internally from L{propertysupport.setGlobalOption} and does not </span>
 <span class="sd">		need to be called directly</span>
@@ -748,19 +918,21 @@
 			<span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Resetting global option </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">BuildFileLocation</span><span class="p">()</span><span class="o">.</span><span class="n">getLineString</span><span class="p">())</span>
 		<span class="k">else</span><span class="p">:</span>
 			<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting global option </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">BuildFileLocation</span><span class="p">()</span><span class="o">.</span><span class="n">getLineString</span><span class="p">())</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">_globalOptions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_globalOptions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-<div class="viewcode-block" id="BuildInitializationContext.defineAtomicTargetGroup"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.defineAtomicTargetGroup">[docs]</a>	<span class="k">def</span> <span class="nf">defineAtomicTargetGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; The given targets must all be built before anything which depends on any of those targets &quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">defineAtomicTargetGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		.. private:: For internal use only. </span>
+
+<span class="sd">		The given targets must all be built before anything which depends on any of those targets &quot;&quot;&quot;</span>
 		<span class="n">targets</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">_targetGroups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span></div></div>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_targetGroups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BuildContext"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildContext">[docs]</a><span class="k">class</span> <span class="nc">BuildContext</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildContext"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildContext">[docs]</a><span class="k">class</span> <span class="nc">BuildContext</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Provides context used only during the build phase of the build (after initialization is complete), </span>
 <span class="sd">	i.e. the ability to expand variables (but not to change their value). </span>
 <span class="sd">	</span>
-<span class="sd">	@undocumented: _getTopLevelOutputDirs, _resolveTargetGroups</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initializationContext</span><span class="p">,</span> <span class="n">targetPaths</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Create a BuildContext from a L{BuildInitializationContext}. </span>
@@ -795,12 +967,11 @@
 			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outputDirs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">outputDirs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span> 
 			<span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="k">if</span> <span class="n">IS_WINDOWS</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BuildContext.isPathWithinOutputDir"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildContext.isPathWithinOutputDir">[docs]</a>	<span class="k">def</span> <span class="nf">isPathWithinOutputDir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Returns true if the specified path is a descendent of any of </span>
+<div class="viewcode-block" id="BuildContext.isPathWithinOutputDir"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildContext.isPathWithinOutputDir">[docs]</a>	<span class="k">def</span> <span class="nf">isPathWithinOutputDir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+		<span class="sd">&quot;&quot;&quot; Returns True if the specified path is a descendent of any of </span>
 <span class="sd">		this build&#39;s output directories. </span>
 
 <span class="sd">		@param path: A normalized absolute path (must use correct slashes for the platform). </span>
-<span class="sd">		@return: True or False</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__topLevelOutputDirsRegex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
 	
@@ -818,9 +989,10 @@
 				<span class="n">targetGroups</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">_targetGroups</span> <span class="o">=</span> <span class="n">targetGroups</span>
 	
-<div class="viewcode-block" id="BuildContext.getTargetsWithTag"><a class="viewcode-back" href="../../generated/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildContext.getTargetsWithTag">[docs]</a>	<span class="k">def</span> <span class="nf">getTargetsWithTag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot; Returns the list of target objects with the specified tag name </span>
-<span class="sd">		(throws BuildException if not defined). </span>
+<div class="viewcode-block" id="BuildContext.getTargetsWithTag"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildContext.getTargetsWithTag">[docs]</a>	<span class="k">def</span> <span class="nf">getTargetsWithTag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; Returns the list of target objects with the specified tag name. </span>
+<span class="sd">		</span>
+<span class="sd">		Throws BuildException if not defined. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">getTargetsWithTag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span></div>
 
@@ -855,6 +1027,11 @@
 
 <span class="c1"># as of v3.0 this is not documented and retained only for compatibility - better to use static singleton method</span>
 <span class="n">getBuildInitializationContext</span> <span class="o">=</span> <span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">getBuildInitializationContext</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. private:: Removed from public API</span>
+
+<span class="sd">Use `BuildInitializationContext.getBuildInitializationContext` instead. </span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># some import need to live down here to avoid circular dependencies</span>
 <span class="kn">from</span> <span class="nn">xpybuild.utils.functors</span> <span class="k">import</span> <span class="n">Composable</span><span class="p">,</span> <span class="n">Compose</span>
@@ -866,41 +1043,43 @@
 <span class="kn">from</span> <span class="nn">xpybuild.utils.consoleformatter</span> <span class="k">import</span> <span class="n">publishArtifact</span>
 </pre></div>
 
+           </div>
+           
           </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">xpybuild 3.0.dev2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019, Ben Spiller and Matthew Johnson.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>

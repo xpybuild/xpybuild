@@ -1,0 +1,15 @@
+
+xpybuild.targets.symlink
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.targets.symlink
+
+.. currentmodule:: xpybuild.targets.symlink
+
+
+
+SymLink
+=======
+
+.. autoclass:: SymLink
+   :members:

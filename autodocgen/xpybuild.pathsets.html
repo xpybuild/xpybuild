@@ -1,0 +1,890 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>xpybuild.pathsets &mdash; xpybuild v3.0.dev2 3.0.dev2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xpybuild.propertysupport" href="xpybuild.propertysupport.html" />
+    <link rel="prev" title="xpybuild.buildcontext" href="xpybuild.buildcontext.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> xpybuild v3.0.dev2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="xpybuild.html">xpybuild</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.basetarget.html">xpybuild.basetarget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcommon.html">xpybuild.buildcommon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.buildcontext.html">xpybuild.buildcontext</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">xpybuild.pathsets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mapsrc">MapSrc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#basepathset">BasePathSet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dirbasedpathset">DirBasedPathSet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#findpaths">FindPaths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#targetswithtag">TargetsWithTag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#targetswithindir">TargetsWithinDir</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filteredpathset">FilteredPathSet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adddestprefix">AddDestPrefix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mapdest">MapDest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mapdestfromsrc">MapDestFromSrc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flattendest">FlattenDest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#removedestparents">RemoveDestParents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#singletondestrenamemapper">SingletonDestRenameMapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dirgeneratedbytarget">DirGeneratedByTarget</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pathset">PathSet</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.propertysupport.html">xpybuild.propertysupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.targets.html">xpybuild.targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xpybuild.utils.html">xpybuild.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">xpybuild v3.0.dev2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="xpybuild.html">xpybuild</a> &raquo;</li>
+        
+      <li>xpybuild.pathsets</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/autodocgen/xpybuild.pathsets.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-xpybuild.pathsets">
+<span id="xpybuild-pathsets"></span><h1>xpybuild.pathsets<a class="headerlink" href="#module-xpybuild.pathsets" title="Permalink to this headline">¶</a></h1>
+<p>PathSets are used throughout xpybuild to specify the source files and directories to build, how they are to be checked 
+for up-to-dateness, and (for targets where it’s relevant) the destination for each source file.</p>
+<p>Here’s an example showing some of the most common PathSets and how to use them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Copy</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{OUTPUT_DIR}</span><span class="s1">/docs/&#39;</span><span class="p">,</span> <span class="n">PathSet</span><span class="p">(</span>
+        <span class="s1">&#39;./README.txt&#39;</span><span class="p">,</span> 
+        <span class="s1">&#39;./dev/CHANGELOG.txt&#39;</span><span class="p">,</span>
+        <span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;legal/&#39;</span><span class="p">,</span> <span class="p">[</span>
+                <span class="s1">&#39;LICENSE.txt&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;EULA.txt&#39;</span><span class="p">,</span>
+        <span class="p">]),</span>
+        <span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;samples/&#39;</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;**&#39;</span><span class="p">],</span> <span class="n">excludes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;**/*.pyc&#39;</span><span class="p">]),</span>
+        <span class="n">FindPaths</span><span class="p">(</span><span class="n">DirGeneratedByTarget</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{OUTPUT_DIR}</span><span class="s1">/api-docs/&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;/html&#39;</span><span class="p">),</span>
+        <span class="n">AddDestPrefix</span><span class="p">(</span><span class="s1">&#39;community/&#39;</span><span class="p">,</span> <span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;samples-community/&#39;</span><span class="p">)),</span>
+<span class="p">))</span>
+</pre></div>
+</div>
+<p class="rubric">The main PathSet classes</p>
+<p>For simple cases where you just need to specify a few files <strong>statically</strong>, use <a class="reference internal" href="#xpybuild.pathsets.PathSet" title="xpybuild.pathsets.PathSet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PathSet</span></code></a> which accepts any number of 
+strings (which can be nested inside lists). Like all PathSet classes, relative paths are automatically resolved 
+relative to the directory of the <code class="docutils literal notranslate"><span class="pre">.xpybuild.py</span></code> build file where the PathSet appears. If you want to add several 
+paths <strong>from the same directory</strong>, <a class="reference internal" href="#xpybuild.pathsets.DirBasedPathSet" title="xpybuild.pathsets.DirBasedPathSet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DirBasedPathSet</span></code></a> is usually the most convenient way to to that.</p>
+<p>Sometimes it’s not practical to specify the sources statically, and for those cases <a class="reference internal" href="#xpybuild.pathsets.FindPaths" title="xpybuild.pathsets.FindPaths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FindPaths</span></code></a> can be used. 
+<code class="docutils literal notranslate"><span class="pre">FindPaths</span></code> <strong>dynamically walks a directory tree</strong>, and can be configured with Ant-style glob <code class="docutils literal notranslate"><span class="pre">**/*</span></code> expressions to indicate 
+what files (and/or empty sub-directories) to include and exclude. Importantly, <code class="docutils literal notranslate"><span class="pre">FindPaths</span></code> delays walking the 
+directory until actually needed, to avoid slowing down the initial parsing of the build files and determining 
+inter-target dependencies. However since somewhat expensive to walk the file system, never use <code class="docutils literal notranslate"><span class="pre">FindPaths</span></code> when 
+a more efficient static <code class="docutils literal notranslate"><span class="pre">DirBasedPathSet</span></code> would be sufficient.</p>
+<p>If you need to use the <strong>output of another target</strong> in a PathSet, it is very important to make sure xpybuild knows the 
+name of the underlying target so that it can calculate the dependencies correctly. Failure to do this can result in 
+unreliable builds. For targets that generate a file this happens automatically, but it’s not possible to 
+(efficiently!) auto-detect when the build file specifies a subdirectory or file from a target that generates a 
+directory - so you need to do that explicitly using <a class="reference internal" href="#xpybuild.pathsets.DirGeneratedByTarget" title="xpybuild.pathsets.DirGeneratedByTarget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DirGeneratedByTarget</span></code></a>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Always use <a class="reference internal" href="#xpybuild.pathsets.DirGeneratedByTarget" title="xpybuild.pathsets.DirGeneratedByTarget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DirGeneratedByTarget()</span></code></a> for any path that was generated by a directory target.</p>
+</div>
+<p>This is shown in the above example.</p>
+<p>There are also other classes such as <a class="reference internal" href="#xpybuild.pathsets.TargetsWithTag" title="xpybuild.pathsets.TargetsWithTag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TargetsWithTag</span></code></a> that can use the output of some targets as the input to another.</p>
+<p>The main PathSet classes are therefore:</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xpybuild.pathsets.PathSet" title="xpybuild.pathsets.PathSet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PathSet</span></code></a>(*items)</p></td>
+<td><p>Factory method that creates a single BasePathSet instance containing  the specified strings and/or other PathSets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xpybuild.pathsets.DirBasedPathSet" title="xpybuild.pathsets.DirBasedPathSet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DirBasedPathSet</span></code></a>(dir, *children)</p></td>
+<td><p>Constructs a pathset using a basedir and a list of (statically defined,  non-globbed) basedir-relative paths within it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xpybuild.pathsets.FindPaths" title="xpybuild.pathsets.FindPaths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FindPaths</span></code></a>(dir[, excludes, includes])</p></td>
+<td><p>A lazily-evaluated PathSet that uses <code class="docutils literal notranslate"><span class="pre">*</span></code> and <code class="docutils literal notranslate"><span class="pre">**</span></code> (ant-style) globbing  to dynamically discover files (and optionally directories) under a common  parent directory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xpybuild.pathsets.DirGeneratedByTarget" title="xpybuild.pathsets.DirGeneratedByTarget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DirGeneratedByTarget</span></code></a>(dirTargetName)</p></td>
+<td><p>This special PathSet must be used for the base dir when specifying a PathSet  for any paths located under a directory that is generated as part of the build process.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xpybuild.pathsets.TargetsWithTag" title="xpybuild.pathsets.TargetsWithTag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TargetsWithTag</span></code></a>(targetTag[, …])</p></td>
+<td><p>A special PathSet that resolves to all build target output paths marked with the specified tag.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xpybuild.pathsets.TargetsWithinDir" title="xpybuild.pathsets.TargetsWithinDir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TargetsWithinDir</span></code></a>(parentDir)</p></td>
+<td><p>A special PathSet that resolves to all build target output paths that are descendents of the specified parent dir (which is not a target itself,  but somewhere under a build output directory).</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">PathSet destinations and filtering</p>
+<p>PathSets have a built-in concept of a <code class="docutils literal notranslate"><span class="pre">destination</span></code> for each source path. This isn’t relevant for every target 
+(e.g. Java source compilation) but is very useful for others such as <a class="reference internal" href="xpybuild.targets.copy.html#xpybuild.targets.copy.Copy" title="xpybuild.targets.copy.Copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.copy.Copy</span></code></a> or 
+<a class="reference internal" href="xpybuild.targets.archive.html#xpybuild.targets.archive.Zip" title="xpybuild.targets.archive.Zip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.archive.Zip</span></code></a> where 
+there’s a natural concept of a destination for each file/directory. The destination for each path is always a relative 
+(not absolute) path, so that the same PathSet can be used in different places. The default destination for each source 
+path is either the basename (without any directory prefix), or for PathSets like <a class="reference internal" href="#xpybuild.pathsets.DirBasedPathSet" title="xpybuild.pathsets.DirBasedPathSet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DirBasedPathSet</span></code></a> and <a class="reference internal" href="#xpybuild.pathsets.FindPaths" title="xpybuild.pathsets.FindPaths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FindPaths</span></code></a> 
+that have a base directory, it’s the path relative to that directory.</p>
+<p>There are a variety of derived PathSets that wrap around another PathSet and add logic to change the the destination 
+paths - for example <a class="reference internal" href="#xpybuild.pathsets.AddDestPrefix" title="xpybuild.pathsets.AddDestPrefix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddDestPrefix</span></code></a> - or filter the results:</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xpybuild.pathsets.AddDestPrefix" title="xpybuild.pathsets.AddDestPrefix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddDestPrefix</span></code></a>(prefix, pathSet)</p></td>
+<td><p>Adds a specified prefix on to the destinations of the specified PathSet.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xpybuild.pathsets.FlattenDest" title="xpybuild.pathsets.FlattenDest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FlattenDest</span></code></a>(pathSet)</p></td>
+<td><p>Removes all prefixes from the destinations of the specified PathSet.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xpybuild.pathsets.RemoveDestParents" title="xpybuild.pathsets.RemoveDestParents"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RemoveDestParents</span></code></a>(dirsToRemove, pathSet)</p></td>
+<td><p>Strips one or more parent directory elements from the start of  the destinations of the specified PathSet.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xpybuild.pathsets.SingletonDestRenameMapper" title="xpybuild.pathsets.SingletonDestRenameMapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SingletonDestRenameMapper</span></code></a>(newDestRelPath, …)</p></td>
+<td><p>Uses the specified hardcoded destination name for the specific file  (and checks only a single input is supplied).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xpybuild.pathsets.MapDest" title="xpybuild.pathsets.MapDest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MapDest</span></code></a>(fn, pathSet)</p></td>
+<td><p>Applies a functor to the destination paths of the enclosed PathSet (the PathSet’s source paths are unaffected)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xpybuild.pathsets.MapDestFromSrc" title="xpybuild.pathsets.MapDestFromSrc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MapDestFromSrc</span></code></a>(fn, pathSet)</p></td>
+<td><p>Applies a functor to the src paths of the enclosed PathSet to get new destinations (the PathSet’s source paths are unaffected)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xpybuild.pathsets.FilteredPathSet" title="xpybuild.pathsets.FilteredPathSet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FilteredPathSet</span></code></a>(includeDecider, pathSet[, …])</p></td>
+<td><p>Filters the contents of another PathSet using a lambda includeDecider  function.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="mapsrc">
+<h2>MapSrc<a class="headerlink" href="#mapsrc" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="xpybuild.pathsets.MapSrc">
+<code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">MapSrc</code><em class="property"> = &lt;class 'xpybuild.pathsets.MapDestFromSrc'&gt;</em><a class="headerlink" href="#xpybuild.pathsets.MapSrc" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Deprecated</dt>
+<dd class="field-odd"><p>Legacy name for <a class="reference internal" href="#xpybuild.pathsets.MapDestFromSrc" title="xpybuild.pathsets.MapDestFromSrc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MapDestFromSrc</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="basepathset">
+<h2>BasePathSet<a class="headerlink" href="#basepathset" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.pathsets.BasePathSet">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">BasePathSet</code><a class="reference internal" href="../_modules/xpybuild/pathsets.html#BasePathSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.BasePathSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for PathSet implementations.</p>
+<p>This is a stub class and should not be used directly.</p>
+<dl class="method">
+<dt id="xpybuild.pathsets.BasePathSet.resolve">
+<code class="sig-name descname">resolve</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#BasePathSet.resolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.BasePathSet.resolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the specified context to resolve the contents of this pathset 
+to a list of normalized absolute paths (using OS-dependent slashes).</p>
+<p>Note that unless you actually need a list it is usually more efficient 
+to iterate over resolveWithDestinations which avoids taking a copy of 
+the data structure.</p>
+<p>All directory paths must end with “/” or “”.</p>
+<p>Some PathSet implementations will cache the results of resolve, if 
+expensive (e.g. file system globbing); in such case it is essential to 
+ensure that the implementation is thread-safe.</p>
+<p>PathSets can contain duplicate entries (with same source and/or 
+destination).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xpybuild.pathsets.BasePathSet.resolveWithDestinations">
+<code class="sig-name descname">resolveWithDestinations</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#BasePathSet.resolveWithDestinations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.BasePathSet.resolveWithDestinations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the specified context to resolve the contents of this pathset 
+to a list of (srcabs, destrel) pairs specifying the absolute and 
+normalized path of each source path, 
+and a relative normalized delimited path indicating the destination of that 
+path (interpreted in a target-specific way by certain targets 
+such as copy and zip).</p>
+<p>All paths use OS-dependent slash characters (os.path.sep), 
+and all directory paths must end with a slash to avoid confusion with 
+file paths.</p>
+<p>Some PathSet implementations will cache the results of resolve, if 
+expensive (e.g. file system globbing); in such case it is essential to 
+ensure that the implementation is thread-safe.</p>
+<p>May raise BuildException if the resolution fails.</p>
+<p>PathSets can contain duplicate entries (with same source and/or 
+destination).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="dirbasedpathset">
+<h2>DirBasedPathSet<a class="headerlink" href="#dirbasedpathset" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.pathsets.DirBasedPathSet">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">DirBasedPathSet</code><span class="sig-paren">(</span><em class="sig-param">dir</em>, <em class="sig-param">*children</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#DirBasedPathSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.DirBasedPathSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#xpybuild.pathsets.BasePathSet" title="xpybuild.pathsets.BasePathSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.pathsets.BasePathSet</span></code></a></p>
+<p>Constructs a pathset using a basedir and a list of (statically defined, 
+non-globbed) basedir-relative paths within it.</p>
+<p>If it is not possible to statically specify the files to be included 
+and globbing is required, use <a class="reference internal" href="#xpybuild.pathsets.FindPaths" title="xpybuild.pathsets.FindPaths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FindPaths</span></code></a> instead to perform a dynamic 
+search; but since FindPaths is a lot slower due to the additional file 
+system operations it is better to use DirBasedPathSet where possible.</p>
+<p>e.g. DirBasedPathSet(‘${MY_DIR}/’, ‘a’, ‘b/’, ‘${MY_JARS[]}’, ‘x, y, ${Z[]}’)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{MY_DIR}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b/c/&#39;</span><span class="p">,</span> <span class="s1">&#39;${MY_JARS[]}&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;MY_DIR&#39;</span><span class="p">:</span><span class="s1">&#39;MY_DIR/&#39;</span><span class="p">,</span> <span class="s1">&#39;MY_JARS[]&#39;</span><span class="p">:</span><span class="s1">&#39;  1 , 2/3, 4/5/&#39;</span><span class="p">})))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[(&#39;BUILD_DIR/MY_DIR/a&#39;, &#39;a&#39;), (&#39;BUILD_DIR/MY_DIR/b/c/&#39;, &#39;b/c/&#39;), (&#39;BUILD_DIR/MY_DIR/1&#39;, &#39;1&#39;), (&#39;BUILD_DIR/MY_DIR/2/3&#39;, &#39;2/3&#39;), (&#39;BUILD_DIR/MY_DIR/4/5/&#39;, &#39;4/5/&#39;), (&#39;BUILD_DIR/MY_DIR/d&#39;, &#39;d&#39;)]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; DirBasedPathSet(&#39;mydir&#39;, &#39;a*b&#39;).resolve(BaseContext({})) 
+Traceback (most recent call last):
+...
+xpybuild.utils.buildexceptions.BuildException:
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">DirBasedPathSet</span><span class="p">(</span><span class="n">DirGeneratedByTarget</span><span class="p">(</span><span class="s1">&#39;4/5/6/&#39;</span><span class="p">),</span> <span class="s1">&#39;7/8&#39;</span><span class="p">)))</span>
+<span class="go">&#39;PathSet(&quot;a&quot;, DirBasedPathSet(DirGeneratedByTarget(&quot;4/5/6/&quot;), [\&#39;7/8\&#39;]))&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">([</span><span class="n">path</span> <span class="k">for</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">pathset</span><span class="p">)</span> <span class="ow">in</span> <span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">DirBasedPathSet</span><span class="p">(</span><span class="n">DirGeneratedByTarget</span><span class="p">(</span><span class="s1">&#39;4/5/6/&#39;</span><span class="p">),</span> <span class="s1">&#39;7/8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">_resolveUnderlyingDependencies</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({}))])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[&#39;BUILD_DIR/a&#39;, &#39;BUILD_DIR/4/5/6/&#39;]&quot;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir</strong> – the base directory, which may include substitution variables.
+When fully expanded, it is essential that dir ends with a ‘/’. 
+May be a string or a DirGeneratedByTarget.</p></li>
+<li><p><strong>children</strong> – strings defining the child files or dirs, which may 
+include ${…} variables but not ‘*’ expansions. Can be specified 
+nested inside tuples or lists if desired. If any of the child 
+strings contains a ${…[]} variable, it will be expanded 
+early and split around the ‘,’ character.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="findpaths">
+<h2>FindPaths<a class="headerlink" href="#findpaths" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.pathsets.FindPaths">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">FindPaths</code><span class="sig-paren">(</span><em class="sig-param">dir</em>, <em class="sig-param">excludes=None</em>, <em class="sig-param">includes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#FindPaths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.FindPaths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#xpybuild.pathsets.BasePathSet" title="xpybuild.pathsets.BasePathSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.pathsets.BasePathSet</span></code></a></p>
+<p>A lazily-evaluated PathSet that uses <code class="docutils literal notranslate"><span class="pre">*</span></code> and <code class="docutils literal notranslate"><span class="pre">**</span></code> (ant-style) globbing 
+to dynamically discover files (and optionally directories) under a common 
+parent directory.</p>
+<p>As FindPaths performs a dynamic search of the file system during the dependency 
+checking phase of each build it is considerably slower than other PathSets, 
+so should only be used for specifying the contents of a directory with lots of entries 
+or a file or directory where it is not possible to statically specify the filenames in the build 
+script - for which cases always use <a class="reference internal" href="#xpybuild.pathsets.PathSet" title="xpybuild.pathsets.PathSet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PathSet</span></code></a> or <a class="reference internal" href="#xpybuild.pathsets.DirBasedPathSet" title="xpybuild.pathsets.DirBasedPathSet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DirBasedPathSet</span></code></a> instead.</p>
+<p>FindPaths matching is always case-sensitive, will give an error if the dir does not exist 
+or any of the includes fail to match anything. Sorts its output to ensure 
+determinism.</p>
+<p>Includes/excludes are specified using <code class="docutils literal notranslate"><span class="pre">*</span></code> and <code class="docutils literal notranslate"><span class="pre">**</span></code> wildcards (similar to ant), 
+where <code class="docutils literal notranslate"><span class="pre">*</span></code> represents any path element and <code class="docutils literal notranslate"><span class="pre">**</span></code> represents zero or more path 
+elements. Path elements may not begin with a slash, or contain any 
+backslash characters. They match paths underneath the base dir.</p>
+<p>Each include/exclude applies either to files OR directories, depending on 
+whether it ends with a <code class="docutils literal notranslate"><span class="pre">/</span></code>. File include/excludes (e.g. <code class="docutils literal notranslate"><span class="pre">foo/**</span></code>) are the 
+most common (and the file <code class="docutils literal notranslate"><span class="pre">**</span></code> pattern is the default include if none is 
+specified). But if used for a target such as a Copy, note that empty 
+directories will NOT be returned by file patterns, so if you wish to 
+copy all empty directories as well as all files, use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FindPaths</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="s1">&#39;**/&#39;</span><span class="p">])</span><span class="o">.</span> 
+</pre></div>
+</div>
+<p>Destination paths (where needed) are generated from the path underneath the
+base dir.</p>
+<p>FindPaths will return file or directory symlinks (with <code class="docutils literal notranslate"><span class="pre">/</span></code> suffix if directory), 
+but will not recurse into directory symlinks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dir</strong> – May be a simple string, or a DirGeneratedByTarget to glob under a 
+directory generated as part of the build. To find paths from a set of 
+targets use dir=TargetsWithinDir (though only use this when that dynamism 
+is required, as this will be slower than statically listing the targets 
+individually or using TargetsWithTag).</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;a/b/c&#39;</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;y/**/z/foo.*&#39;</span><span class="p">],</span> <span class="n">excludes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">,</span> <span class="s1">&#39;**/y&#39;</span><span class="p">]))</span>
+<span class="go">&#39;FindPaths(&quot;a/b/c&quot;, includes=[&quot;*.x&quot;, &quot;y/**/z/foo.*&quot;], excludes=[&quot;xx&quot;, &quot;**/y&quot;])&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">FindPaths</span><span class="p">(</span><span class="n">DirGeneratedByTarget</span><span class="p">(</span><span class="s1">&#39;4/5/6/&#39;</span><span class="p">),</span> <span class="n">includes</span><span class="o">=</span><span class="s1">&#39;*.xml&#39;</span><span class="p">)))</span>
+<span class="go">&#39;PathSet(&quot;a&quot;, FindPaths(DirGeneratedByTarget(&quot;4/5/6/&quot;), includes=[&quot;*.xml&quot;], excludes=[]))&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; FindPaths(&#39;x&#39;, includes=[&#39;*.x&#39;, &#39;c:\d&#39;], excludes=[])
+Traceback (most recent call last):
+...
+xpybuild.utils.buildexceptions.BuildException:
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; FindPaths(&#39;x&#39;, includes=[&#39;*.x&#39;, &#39;${foo}&#39;], excludes=[])
+Traceback (most recent call last):
+...
+xpybuild.utils.buildexceptions.BuildException:
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir</strong> – base directory to search (relative or absolute, may contain ${…} variables). 
+May be a simple string, or a DirGeneratedByTarget to glob under a 
+directory generated as part of the build.</p></li>
+<li><p><strong>includes</strong> – a list of glob patterns for the files to include (excluding all others)</p></li>
+<li><p><strong>excludes</strong> – a list of glob patterns to exclude after processing any includes.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="xpybuild.pathsets.FindPaths.resolveWithDestinations">
+<code class="sig-name descname">resolveWithDestinations</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#FindPaths.resolveWithDestinations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.FindPaths.resolveWithDestinations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the file system to returns a list of relative paths for files 
+matching the specified include/exclude patterns, throwing a 
+BuildException if none can be found.</p>
+<p>This method will cache its result after being called the first time.</p>
+<p>Note that it is possible the destinations may contain “../” elements - 
+targets for which that could be a problem should check for and disallow 
+such destinations (e.g. for copy we would not want to allow copying to 
+destinations outside the specified root directory).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="targetswithtag">
+<h2>TargetsWithTag<a class="headerlink" href="#targetswithtag" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.pathsets.TargetsWithTag">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">TargetsWithTag</code><span class="sig-paren">(</span><em class="sig-param">targetTag</em>, <em class="sig-param">allowDirectories=False</em>, <em class="sig-param">walkDirectories=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#TargetsWithTag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.TargetsWithTag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#xpybuild.pathsets.BasePathSet" title="xpybuild.pathsets.BasePathSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.pathsets.BasePathSet</span></code></a></p>
+<p>A special PathSet that resolves to all build target output paths marked with the specified tag.</p>
+<p>Note that this is intended mostly for files; it can be used for directories, 
+but only to return the target directory name itself (there is no implicit 
+FindPaths directory searching, as would be required to copy the contents 
+of the directory).</p>
+<p>See also <a class="reference internal" href="#xpybuild.pathsets.TargetsWithinDir" title="xpybuild.pathsets.TargetsWithinDir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TargetsWithinDir</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>targetTag</strong> – the tag name</p></li>
+<li><p><strong>allowDirectories</strong> – set this to True to allow directories to be specified 
+(by default this is False to avoid errors where a directory is 
+used in a Copy without FindPaths, and therefore ends up empty)</p></li>
+<li><p><strong>walkDirectories</strong> – implies allowDirectories. Recursively enumerate the 
+contents of the directory at build time.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="targetswithindir">
+<h2>TargetsWithinDir<a class="headerlink" href="#targetswithindir" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.pathsets.TargetsWithinDir">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">TargetsWithinDir</code><span class="sig-paren">(</span><em class="sig-param">parentDir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#TargetsWithinDir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.TargetsWithinDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#xpybuild.pathsets.BasePathSet" title="xpybuild.pathsets.BasePathSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.pathsets.BasePathSet</span></code></a></p>
+<p>A special PathSet that resolves to all build target output paths that are
+descendents of the specified parent dir (which is not a target itself, 
+but somewhere under a build output directory). When resolved, this 
+pathset returns a single source and destination path which is the parent 
+directory itself.</p>
+<p>This PathSet can be wrapped in FindPaths if the contained files and 
+directories are needed.</p>
+<p>See also <a class="reference internal" href="#xpybuild.pathsets.TargetsWithTag" title="xpybuild.pathsets.TargetsWithTag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TargetsWithTag</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parentDir</strong> – a string identifying the parent dir. When resolved, 
+must end in a slash.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="filteredpathset">
+<h2>FilteredPathSet<a class="headerlink" href="#filteredpathset" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.pathsets.FilteredPathSet">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">FilteredPathSet</code><span class="sig-paren">(</span><em class="sig-param">includeDecider</em>, <em class="sig-param">pathSet</em>, <em class="sig-param">delayFiltration=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#FilteredPathSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.FilteredPathSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.pathsets._DerivedPathSet</span></code></p>
+<p>Filters the contents of another PathSet using a lambda includeDecider 
+function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">FilteredPathSet</span><span class="p">(</span><span class="n">isDirPath</span><span class="p">,</span> <span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b/&#39;</span><span class="p">,</span> <span class="s1">&#39;d/e&#39;</span><span class="p">,</span> <span class="s1">&#39;e/f/&#39;</span><span class="p">,</span> <span class="s1">&#39;g$</span><span class="si">{x}</span><span class="s1">&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="s1">&#39;/x/&#39;</span><span class="p">})))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[(&#39;BUILD_DIR/b/&#39;, &#39;b/&#39;), (&#39;BUILD_DIR/e/f/&#39;, &#39;f/&#39;), (&#39;BUILD_DIR/g/x/&#39;, &#39;x/&#39;)]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">FilteredPathSet</span><span class="p">(</span><span class="n">isDirPath</span><span class="p">,</span> <span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b/&#39;</span><span class="p">,</span> <span class="s1">&#39;d/e&#39;</span><span class="p">,</span> <span class="s1">&#39;e/f/&#39;</span><span class="p">,</span> <span class="s1">&#39;g$</span><span class="si">{x}</span><span class="s1">&#39;</span><span class="p">)))</span>
+<span class="go">&#39;FilteredPathSet(isDirPath, PathSet(&quot;a&quot;, &quot;b/&quot;, &quot;d/e&quot;, &quot;e/f/&quot;, &quot;g${x}&quot;))&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">FilteredPathSet</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="n">DirGeneratedByTarget</span><span class="p">(</span><span class="s1">&#39;4/5/6/&#39;</span><span class="p">))))</span>
+<span class="go">&#39;PathSet(&quot;a&quot;, FilteredPathSet(&lt;lambda&gt;, DirGeneratedByTarget(&quot;4/5/6/&quot;)))&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">([</span><span class="n">path</span> <span class="k">for</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">pathset</span><span class="p">)</span> <span class="ow">in</span> <span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">FilteredPathSet</span><span class="p">(</span><span class="n">isDirPath</span><span class="p">,</span> <span class="n">DirGeneratedByTarget</span><span class="p">(</span><span class="s1">&#39;4/5/6/&#39;</span><span class="p">)))</span><span class="o">.</span><span class="n">_resolveUnderlyingDependencies</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({}))])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[&#39;BUILD_DIR/a&#39;, &#39;BUILD_DIR/4/5/6/&#39;]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">([</span><span class="n">path</span> <span class="k">for</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">pathset</span><span class="p">)</span> <span class="ow">in</span> <span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">FilteredPathSet</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span><span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.java&#39;</span><span class="p">),</span> <span class="n">FindPaths</span><span class="p">(</span><span class="n">DirGeneratedByTarget</span><span class="p">(</span><span class="s1">&#39;4/5/6/&#39;</span><span class="p">))))</span><span class="o">.</span><span class="n">_resolveUnderlyingDependencies</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({}))])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[&#39;BUILD_DIR/a&#39;, &#39;BUILD_DIR/4/5/6/&#39;]&quot;</span>
+</pre></div>
+</div>
+<p>Construct a PathSet that filters its input, e.g. allows only 
+directories or only files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>includeDecider</strong> – a function that takes an absolute resolved path and 
+returns True if it should be included</p></li>
+<li><p><strong>delayFiltration</strong> – don’t filter for dependencies, only for the set used
+at build time</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="adddestprefix">
+<h2>AddDestPrefix<a class="headerlink" href="#adddestprefix" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.pathsets.AddDestPrefix">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">AddDestPrefix</code><span class="sig-paren">(</span><em class="sig-param">prefix</em>, <em class="sig-param">pathSet</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#AddDestPrefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.AddDestPrefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.pathsets._DerivedPathSet</span></code></p>
+<p>Adds a specified prefix on to the destinations of the specified PathSet. 
+(the PathSet’s source paths are unaffected)</p>
+<p>See also RemoveDestParents which does the inverse.</p>
+<p>e.g. AddDestPrefix(‘META-INF/’, mypathset)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">AddDestPrefix</span><span class="p">(</span><span class="s1">&#39;lib/bar/&#39;</span><span class="p">,</span> <span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;mydir/&#39;</span><span class="p">,</span> <span class="s1">&#39;b/&#39;</span><span class="p">,</span> <span class="s1">&#39;d/e&#39;</span><span class="p">,</span> <span class="s1">&#39;e/f/&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({})</span> <span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[(&#39;BUILD_DIR/mydir/b/&#39;, &#39;lib/bar/b/&#39;), (&#39;BUILD_DIR/mydir/d/e&#39;, &#39;lib/bar/d/e&#39;), (&#39;BUILD_DIR/mydir/e/f/&#39;, &#39;lib/bar/e/f/&#39;)]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">AddDestPrefix</span><span class="p">(</span><span class="s1">&#39;lib&#39;</span><span class="p">,</span> <span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;mydir/&#39;</span><span class="p">,</span> <span class="s1">&#39;b/&#39;</span><span class="p">,</span> <span class="s1">&#39;d/e&#39;</span><span class="p">,</span> <span class="s1">&#39;e/f/&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({})</span> <span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[(&#39;BUILD_DIR/mydir/b/&#39;, &#39;libb/&#39;), (&#39;BUILD_DIR/mydir/d/e&#39;, &#39;libd/e&#39;), (&#39;BUILD_DIR/mydir/e/f/&#39;, &#39;libe/f/&#39;)]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">AddDestPrefix</span><span class="p">(</span><span class="s1">&#39;/lib&#39;</span><span class="p">,</span> <span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;mydir/&#39;</span><span class="p">,</span> <span class="s1">&#39;b/&#39;</span><span class="p">,</span> <span class="s1">&#39;d/e&#39;</span><span class="p">,</span> <span class="s1">&#39;e/f/&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({})</span> <span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[(&#39;BUILD_DIR/mydir/b/&#39;, &#39;libb/&#39;), (&#39;BUILD_DIR/mydir/d/e&#39;, &#39;libd/e&#39;), (&#39;BUILD_DIR/mydir/e/f/&#39;, &#39;libe/f/&#39;)]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">AddDestPrefix</span><span class="p">(</span><span class="s1">&#39;lib/bar/&#39;</span><span class="p">,</span> <span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b/&#39;</span><span class="p">,</span> <span class="s1">&#39;d/e&#39;</span><span class="p">,</span> <span class="s1">&#39;e/f/&#39;</span><span class="p">)))</span>
+<span class="go">&#39;AddDestPrefix(prefix=&quot;lib/bar/&quot;, PathSet(&quot;a&quot;, &quot;b/&quot;, &quot;d/e&quot;, &quot;e/f/&quot;))&#39;</span>
+</pre></div>
+</div>
+<p>Construct an AddDestPrefix from a PathSet, path or list of paths/path sets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – a string that should be added to the beginning of each dest 
+path. Usually this will end with a slash ‘/’.</p></li>
+<li><p><strong>pathSet</strong> – either a PathSet object of some type or something from which a
+path set can be constructed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="mapdest">
+<h2>MapDest<a class="headerlink" href="#mapdest" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.pathsets.MapDest">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">MapDest</code><span class="sig-paren">(</span><em class="sig-param">fn</em>, <em class="sig-param">pathSet</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#MapDest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.MapDest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.pathsets._DerivedPathSet</span></code></p>
+<p>Applies a functor to the destination paths of the enclosed PathSet
+(the PathSet’s source paths are unaffected)</p>
+<p>Do not use this pathset for adding a prefix to the destinations - for that 
+<a class="reference internal" href="#xpybuild.pathsets.AddDestPrefix" title="xpybuild.pathsets.AddDestPrefix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddDestPrefix</span></code></a> is a better solution.</p>
+<p>Note that paths passed to the functor will always have forward slashes.</p>
+<p>e.g. MapDest(lambda x:x.lower(), mypathset)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">MapDest</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;_foo&#39;</span><span class="p">,</span> <span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b/&#39;</span><span class="p">,</span> <span class="s1">&#39;c$</span><span class="si">{c}</span><span class="s1">&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;c&#39;</span><span class="p">:</span><span class="s1">&#39;C/&#39;</span><span class="p">})))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[(&#39;BUILD_DIR/a&#39;, &#39;a_foo&#39;), (&#39;BUILD_DIR/b/&#39;, &#39;b_foo/&#39;), (&#39;BUILD_DIR/cC/&#39;, &#39;cC_foo/&#39;)]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">MapDest</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">+</span><span class="s1">&#39;_foo&#39;</span><span class="p">,</span> <span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b/&#39;</span><span class="p">,</span> <span class="s1">&#39;c$</span><span class="si">{c}</span><span class="s1">&#39;</span><span class="p">)))</span>
+<span class="go">&#39;MapDest(&lt;lambda&gt;, PathSet(&quot;a&quot;, &quot;b/&quot;, &quot;c${c}&quot;))&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fn</strong> – a function that takes a resolved dest path (using forward slashes 
+not backslashes) as input, and returns a potentially different dest path. 
+If possible, use a named function rather than a lamba.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="mapdestfromsrc">
+<h2>MapDestFromSrc<a class="headerlink" href="#mapdestfromsrc" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.pathsets.MapDestFromSrc">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">MapDestFromSrc</code><span class="sig-paren">(</span><em class="sig-param">fn</em>, <em class="sig-param">pathSet</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#MapDestFromSrc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.MapDestFromSrc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.pathsets._DerivedPathSet</span></code></p>
+<p>Applies a functor to the src paths of the enclosed PathSet to get new destinations
+(the PathSet’s source paths are unaffected)</p>
+<p>Note that paths passed to the functor will always have forward slashes.</p>
+<p>e.g. MapDestFromSrc(lambda x:x.lower(), mypathset)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fn</strong> – a function that takes a resolved dest path (using forward slashes 
+not backslashes) as input, and returns a potentially different dest path</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="flattendest">
+<h2>FlattenDest<a class="headerlink" href="#flattendest" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.pathsets.FlattenDest">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">FlattenDest</code><span class="sig-paren">(</span><em class="sig-param">pathSet</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#FlattenDest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.FlattenDest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.pathsets._DerivedPathSet</span></code></p>
+<p>Removes all prefixes from the destinations of the specified PathSet.</p>
+<p>e.g. FlattenDest(mypathset)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">FlattenDest</span><span class="p">(</span><span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b/&#39;</span><span class="p">,</span> <span class="s1">&#39;d/e&#39;</span><span class="p">,</span> <span class="s1">&#39;e/f/&#39;</span><span class="p">)))</span>
+<span class="go">&#39;FlattenDest(PathSet(&quot;a&quot;, &quot;b/&quot;, &quot;d/e&quot;, &quot;e/f/&quot;))&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pathSet</strong> – The input PathSet, path or list of path/PathSets.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="removedestparents">
+<h2>RemoveDestParents<a class="headerlink" href="#removedestparents" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.pathsets.RemoveDestParents">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">RemoveDestParents</code><span class="sig-paren">(</span><em class="sig-param">dirsToRemove</em>, <em class="sig-param">pathSet</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#RemoveDestParents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.RemoveDestParents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.pathsets._DerivedPathSet</span></code></p>
+<p>Strips one or more parent directory elements from the start of 
+the destinations of the specified PathSet. 
+(the PathSet’s source paths are unaffected)</p>
+<p>e.g. RemoveDestParents(2, mypathset) # strips the leading 2 parent dirs</p>
+<p>See also AddDestPrefix which does the inverse.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">RemoveDestParents</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;mydir/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;d/e&#39;</span><span class="p">,</span> <span class="s1">&#39;e/f/g/&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({})</span> <span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[(&#39;BUILD_DIR/mydir/d/e&#39;, &#39;e&#39;), (&#39;BUILD_DIR/mydir/e/f/g/&#39;, &#39;f/g/&#39;)]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">RemoveDestParents</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;mydir/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;a/b/c&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d&#39;</span><span class="p">,</span> <span class="s1">&#39;d/e/f/&#39;</span><span class="p">,</span> <span class="s1">&#39;d/e/f/g/&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({})</span> <span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[(&#39;BUILD_DIR/mydir/a/b/c&#39;, &#39;c&#39;), (&#39;BUILD_DIR/mydir/a/b/c/d&#39;, &#39;c/d&#39;), (&#39;BUILD_DIR/mydir/d/e/f/&#39;, &#39;f/&#39;), (&#39;BUILD_DIR/mydir/d/e/f/g/&#39;, &#39;f/g/&#39;)]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">RemoveDestParents</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;mydir/&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({})</span> <span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> 
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">xpybuild.utils.buildexceptions.BuildException</span>: <span class="n">Cannot strip 1 parent dir(s) from &quot;a&quot; as it does not have that many parent directories</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">RemoveDestParents</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;mydir/&#39;</span><span class="p">,</span> <span class="s1">&#39;b/&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({})</span> <span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">xpybuild.utils.buildexceptions.BuildException</span>: <span class="n">Cannot strip 1 parent dir(s) from &quot;b/&quot; as it does not have that many parent directories</span>
+</pre></div>
+</div>
+<p>Construct an RemoveDestParents from a PathSet, path or list of paths/path sets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dirsToRemove</strong> – the number of parent directory elements to remove</p></li>
+<li><p><strong>pathSet</strong> – either a PathSet object of some type or something from which a
+path set can be constructed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="singletondestrenamemapper">
+<h2>SingletonDestRenameMapper<a class="headerlink" href="#singletondestrenamemapper" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.pathsets.SingletonDestRenameMapper">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">SingletonDestRenameMapper</code><span class="sig-paren">(</span><em class="sig-param">newDestRelPath</em>, <em class="sig-param">pathSet</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#SingletonDestRenameMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.SingletonDestRenameMapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.pathsets._DerivedPathSet</span></code></p>
+<p>Uses the specified hardcoded destination name for the specific file 
+(and checks only a single input is supplied). 
+Properties in the specified dest prefix string will be expanded</p>
+<p>e.g. (SingletonDestRenameMapper(‘meta-inf/manifest.mf’, ‘foo/mymanifest’).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">SingletonDestRenameMapper</span><span class="p">(</span><span class="s1">&#39;meta-inf/manifest.mf&#39;</span><span class="p">,</span> <span class="s1">&#39;foo/bar&#39;</span><span class="p">))</span>
+<span class="go">&#39;SingletonDestRenameMapper(meta-inf/manifest.mf, PathSet(&quot;foo/bar&quot;))&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">SingletonDestRenameMapper</span><span class="p">(</span><span class="s1">&#39;meta-inf/manifest.mf&#39;</span><span class="p">,</span> <span class="s1">&#39;foo/mymanifest&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({})))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[(&#39;BUILD_DIR/foo/mymanifest&#39;, &#39;meta-inf/manifest.mf&#39;)]&quot;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>newDestRelPath</strong> – Replacement destination path (including file name)</p></li>
+<li><p><strong>pathSet</strong> – The input path or PathSet, which must contain a single file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="dirgeneratedbytarget">
+<h2>DirGeneratedByTarget<a class="headerlink" href="#dirgeneratedbytarget" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="xpybuild.pathsets.DirGeneratedByTarget">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">DirGeneratedByTarget</code><span class="sig-paren">(</span><em class="sig-param">dirTargetName</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#DirGeneratedByTarget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.DirGeneratedByTarget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#xpybuild.pathsets.BasePathSet" title="xpybuild.pathsets.BasePathSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.pathsets.BasePathSet</span></code></a></p>
+<p>This special PathSet must be used for the base dir when specifying a PathSet 
+for any paths located under a directory that is generated as part of the build process.</p>
+<p>This forces the evaluation of any parent PathSet to be delayed 
+until the target dependency has actually been built.</p>
+<p>Often used as the first argument of a DirBasedPathSet or FindPaths.</p>
+<p>As a convenience, the “+” operator can be used to add a string representing 
+a relative path to a DirGeneratedByTarget (which will be converted to the 
+equivalent DirBasedPathSet expression).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">DirGeneratedByTarget</span><span class="p">(</span><span class="s1">&#39;4/5/6/&#39;</span><span class="p">))</span>
+<span class="go">&#39;DirGeneratedByTarget(&quot;4/5/6/&quot;)&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">DirGeneratedByTarget</span><span class="p">(</span><span class="s1">&#39;4/5/6/&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;foo/$</span><span class="si">{MY_VAR}</span><span class="s1">/bar&#39;</span><span class="p">)</span>
+<span class="go">&#39;DirBasedPathSet(DirGeneratedByTarget(&quot;4/5/6/&quot;), [\&#39;foo/${MY_VAR}/bar\&#39;])&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dirTargetName</strong> – The directory that another target will generate.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="pathset">
+<h2>PathSet<a class="headerlink" href="#pathset" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="xpybuild.pathsets.PathSet">
+<code class="sig-prename descclassname">xpybuild.pathsets.</code><code class="sig-name descname">PathSet</code><span class="sig-paren">(</span><em class="sig-param">*items</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#PathSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.PathSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method that creates a single BasePathSet instance containing 
+the specified strings and/or other PathSets.</p>
+<p>An additional composite pathset instance will be constructed to hold them if 
+needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>items</strong> – contains strings, targets and PathSet objects, nested as deeply as 
+you like within lists and tuples. 
+The strings must be absolute paths, or paths relative to the build file 
+where this PathSet is defined, in which case the PathSet must be 
+instantiated during the build file parsing phase (relative paths cannot 
+be used in a PathSet that is instantiated while building or resolving 
+dependencies for a target). 
+Paths may not contain the ‘*’ character, and directory 
+paths must end with an explicit ‘/’.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A BasePathSet instance.</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;b/&#39;</span><span class="p">,</span> <span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;1/2/3/&#39;</span><span class="p">,</span> <span class="s1">&#39;4/5/6/&#39;</span><span class="p">),</span> <span class="p">[</span><span class="s1">&#39;d/e&#39;</span><span class="p">])],</span> <span class="s1">&#39;e/f/$</span><span class="si">{x}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolveWithDestinations</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="s1">&#39;X/&#39;</span><span class="p">})))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[(&#39;BUILD_DIR/a&#39;, &#39;a&#39;), (&#39;BUILD_DIR/b/&#39;, &#39;b/&#39;), (&#39;BUILD_DIR/1/2/3/&#39;, &#39;3/&#39;), (&#39;BUILD_DIR/4/5/6/&#39;, &#39;6/&#39;), (&#39;BUILD_DIR/d/e&#39;, &#39;e&#39;), (&#39;BUILD_DIR/e/f/X/&#39;, &#39;X/&#39;)]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;b/&#39;</span><span class="p">,</span> <span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;1/2/3/&#39;</span><span class="p">,</span> <span class="s1">&#39;4/5/6/&#39;</span><span class="p">),</span> <span class="p">[</span><span class="s1">&#39;d/e&#39;</span><span class="p">])],</span> <span class="s1">&#39;e/f/$</span><span class="si">{x}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="s1">&#39;X/&#39;</span><span class="p">})))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[&#39;BUILD_DIR/a&#39;, &#39;BUILD_DIR/b/&#39;, &#39;BUILD_DIR/1/2/3/&#39;, &#39;BUILD_DIR/4/5/6/&#39;, &#39;BUILD_DIR/d/e&#39;, &#39;BUILD_DIR/e/f/X/&#39;]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;b/&#39;</span><span class="p">,</span> <span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;1/2/3/&#39;</span><span class="p">,</span> <span class="s1">&#39;4/5/6/&#39;</span><span class="p">),</span> <span class="p">[</span><span class="s1">&#39;d/e&#39;</span><span class="p">])],</span> <span class="s1">&#39;e/f/$</span><span class="si">{x}</span><span class="s1">&#39;</span><span class="p">))</span>
+<span class="go">&#39;PathSet(&quot;a&quot;, &quot;b/&quot;, PathSet(&quot;1/2/3/&quot;, &quot;4/5/6/&quot;), &quot;d/e&quot;, &quot;e/f/${x}&quot;)&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">([</span><span class="n">path</span> <span class="k">for</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">pathset</span><span class="p">)</span> <span class="ow">in</span> <span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="p">[[</span><span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;1/2/3/&#39;</span><span class="p">,</span> <span class="n">DirGeneratedByTarget</span><span class="p">(</span><span class="s1">&#39;4/5/6/&#39;</span><span class="p">),</span> <span class="s1">&#39;7/8/&#39;</span><span class="p">)]],</span> <span class="n">DirGeneratedByTarget</span><span class="p">(</span><span class="s1">&#39;9/&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">_resolveUnderlyingDependencies</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({}))])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">&quot;[&#39;BUILD_DIR/a&#39;, &#39;BUILD_DIR/1/2/3/&#39;, &#39;BUILD_DIR/4/5/6/&#39;, &#39;BUILD_DIR/7/8/&#39;, &#39;BUILD_DIR/9/&#39;]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; PathSet(&#39;a/*&#39;).resolve(BaseContext({})) 
+Traceback (most recent call last):
+...
+xpybuild.utils.buildexceptions.BuildException:
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="xpybuild.propertysupport.html" class="btn btn-neutral float-right" title="xpybuild.propertysupport" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="xpybuild.buildcontext.html" class="btn btn-neutral float-left" title="xpybuild.buildcontext" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

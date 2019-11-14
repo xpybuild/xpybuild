@@ -1,0 +1,22 @@
+
+xpybuild.utils.progress
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: xpybuild.utils.progress
+
+.. currentmodule:: xpybuild.utils.progress
+
+
+
+ProgressBarConsoleFormatter
+===========================
+
+.. autoclass:: ProgressBarConsoleFormatter
+   :members:
+
+
+VT100ProgressBarConsoleFormatter
+================================
+
+.. autoclass:: VT100ProgressBarConsoleFormatter
+   :members:
