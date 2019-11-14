@@ -47,7 +47,6 @@ CustomCommand('${OUTPUT_DIR}/docs/',
 		'-M', 'html',
 		PathSet('./docs/'), # source dir
 		'${OUTPUT_DIR}/docs/', # output dir
-		'-j', 'auto',
 	], 
 	dependencies=[
 		FindPaths('docs/', excludes=['autodocgen/**']),
