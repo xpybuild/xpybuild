@@ -104,7 +104,7 @@ deploy:
     project-name: "xpybuild $XPYBUILD_VERSION"
     
     on: 
-       #branch: release
+       branch: release
        condition: $XPYBUILD_DOC_AND_DEPLOY = true
        tags: true
 
