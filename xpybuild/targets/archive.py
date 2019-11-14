@@ -18,7 +18,7 @@
 #
 
 """
-Targets relating to creating and unpacking archives. 
+Targets relating to creating and unpacking archives such as ``.\zip``, ``.tar.gz``. 
 
 
 """
@@ -38,14 +38,14 @@ from xpybuild.utils.buildfilelocation import BuildFileLocation
 from xpybuild.utils.buildexceptions import BuildException
 
 class Tarball(BaseTarget):
-	""" Target that creates a .tar archive from a set of input files.
+	""" Target that creates a ``.tar.gz`` archive from a set of input files.
 	"""
 
 	def __init__(self, archive, inputs):
 		"""
-		archive: the archive to be created
+		@param archive: The archive to be created, which should end with ``.tar.gz``. 
 
-		inputs: the files (usually pathsets) to be included in the archive.
+		@param inputs: The files (usually pathsets) to be included in the archive.
 
 		"""
 		self.inputs = PathSet(inputs)
@@ -70,14 +70,14 @@ class Tarball(BaseTarget):
 		return r
 
 class Zip(BaseTarget):
-	""" Target that creates a zip archive from a set of input files.
+	""" Target that creates a ``.zip`` archive from a set of input files.
 	"""
 
 	def __init__(self, archive, inputs):
 		"""
-		archive: the archive to be created
+		@param archive: The archive to be created, ending with ``.zip``. 
 
-		inputs: the files (usually pathsets) to be included in the archive.
+		@param inputs: The files (usually pathsets) to be included in the archive.
 
 		"""
 		self.inputs = PathSet(inputs)
@@ -148,7 +148,7 @@ def _getfilename(info):
 
 class Unpack(BaseTarget):
 	""" Target that creates a new directory containing the unpacked contents 
-	of one or more archives (e.g. .zip files). 
+	of one or more archives of one of these types: ``.zip .jar .war .tar.gz .tar.bz2 .tar``.
 	
 	The parent directory will be created if it doesn't exist already. 
 	"""
