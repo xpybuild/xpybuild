@@ -1,5 +1,19 @@
-3.0 - current release
-=====================
+3.1 - current DEV release
+=========================
+
+Fixes
+-----
+
+- fix 1
+
+Enhancements
+------------
+
+- enh 1
+
+
+3.0
+===
 
 Breaking changes
 ----------------
