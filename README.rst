@@ -40,7 +40,7 @@ Xpybuild exists because we value:
 	- *clear error messages*, and 'fail-fast' instead of 'silently wrong' behaviour. There's nothing worse than a build script 
 	  that generates different/wrong output to what's expected due to a minor 
 	  typo in a file path or command line argument. Xpybuild is deliberately intolerant of mistakes such as commands 
-	  that actually do nothing due to lack of matching input, and never swallow errors (though you can explicitly 
+	  that actually do nothing due to lack of matching input, and never swallows errors (though you can explicitly 
 	  specify --keep-going when you need to). 
 	  
 	  It also includes a pluggable mechanism for parsing error/warning messages 
@@ -107,7 +107,7 @@ and cleaning without any extra logic in the build script::
 Full documentation is available here: https://xpybuild.github.io/xpybuild/
 
 The above example shows the Jar, FilteredCopy and Zip targets, but explore the `xpybuild.targets` package to see C/C++ and
-C# support, and see what else is available. The `xpybuild.pathsets` module explains more about the powerful "PathSet" 
+C# support, and the other available targets. The `xpybuild.pathsets` module explains more about the powerful "PathSet" 
 concept that powers xpybuild's dependency and up-to-dateness checking. See `xpybuild.propertysupport` for more about 
 properties and options. 
 
