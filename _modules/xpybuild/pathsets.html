@@ -265,13 +265,13 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.utils.antglob</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">flatten</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="k">import</span> <span class="n">BuildFileLocation</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">normLongPath</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
-<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="n">isDirPath</span><span class="p">,</span> <span class="n">normpath</span><span class="p">,</span> <span class="n">IS_WINDOWS</span>
-<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="k">import</span> <span class="n">BaseContext</span><span class="p">,</span> <span class="n">getBuildInitializationContext</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.antglob</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="kn">import</span> <span class="n">flatten</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="kn">import</span> <span class="n">BuildFileLocation</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="kn">import</span> <span class="n">normLongPath</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="kn">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="n">isDirPath</span><span class="p">,</span> <span class="n">normpath</span><span class="p">,</span> <span class="n">IS_WINDOWS</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="kn">import</span> <span class="n">BaseContext</span><span class="p">,</span> <span class="n">getBuildInitializationContext</span>
 
 <span class="c1"># don&#39;t define a &#39;log&#39; variable here or targets will use it by mistake when importing this file</span>
 
@@ -297,10 +297,10 @@
 <span class="sd">	to get the newest file rather than manually calling stat on the dependencies. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">pass</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;TODO: must implement __repr__ for </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
 	
 <div class="viewcode-block" id="BasePathSet.resolve"><a class="viewcode-back" href="../../autodocgen/xpybuild.pathsets.html#xpybuild.pathsets.BasePathSet.resolve">[docs]</a>	<span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
@@ -379,7 +379,7 @@
 	<span class="sd">&quot;&quot;&quot; The most basic PathSet which holds any combination of strings and </span>
 <span class="sd">	other PathSets. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">):</span>
 
 		<span class="nb">super</span><span class="p">(</span><span class="n">BasePathSet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">contents</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
@@ -391,7 +391,7 @@
 		
 		<span class="bp">self</span><span class="o">.</span><span class="n">__location</span> <span class="o">=</span> <span class="n">BuildFileLocation</span><span class="p">()</span>
 		
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Return a string including this class name and the paths from which it was created. &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="s1">&#39;PathSet(</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
 	
@@ -544,7 +544,7 @@
 <span class="sd">	&quot;[&#39;BUILD_DIR/a&#39;, &#39;BUILD_DIR/4/5/6/&#39;]&quot;</span>
 <span class="sd">	</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="o">*</span><span class="n">children</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="o">*</span><span class="n">children</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param dir: the base directory, which may include substitution variables.</span>
 <span class="sd">		When fully expanded, it is essential that dir ends with a &#39;/&#39;. </span>
@@ -561,7 +561,7 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">__children</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">children</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__location</span> <span class="o">=</span> <span class="n">BuildFileLocation</span><span class="p">()</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Return a string including this class name and the basedir and child paths from which it was created. &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="s1">&#39;DirBasedPathSet(</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__children</span><span class="p">)</span>
 
@@ -586,7 +586,7 @@
 			<span class="k">if</span> <span class="s1">&#39;*&#39;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span> 
 				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Cannot specify &quot;*&quot; patterns here (consider using FindPaths instead): &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="p">)</span>
 			<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
-				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Cannot specify absolute path &quot;</span><span class="si">{c}</span><span class="s1">&quot;, as all paths must be relative to the base directory </span><span class="si">{self.__dir}</span><span class="s1">; (hint: consider using the xpybuild.propertysupport.basename(), and check for unintentional leading slashes)&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="p">)</span>
+				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot specify absolute path &quot;</span><span class="si">{c}</span><span class="s1">&quot;, as all paths must be relative to the base directory </span><span class="si">{self.__dir}</span><span class="s1">; (hint: consider using the xpybuild.propertysupport.basename(), and check for unintentional leading slashes)&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="p">)</span>
 
 			<span class="n">isdir</span> <span class="o">=</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
 
@@ -662,7 +662,7 @@
 	
 	<span class="n">_shortcutUptodateCheck</span> <span class="o">=</span> <span class="n">IS_WINDOWS</span> <span class="c1"># on Windows os.scandir can efficiently get the stat results without an extra call</span>
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param dir: base directory to search (relative or absolute, may contain ${...} variables). </span>
 <span class="sd">		May be a simple string, or a DirGeneratedByTarget to glob under a </span>
@@ -698,7 +698,7 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">__lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__cached</span> <span class="o">=</span> <span class="kc">None</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot; Return a string including this class name and the basedir and include/exclude patterns with which it was created. &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="p">(</span><span class="s1">&#39;FindPaths(</span><span class="si">%s</span><span class="s1">, includes=</span><span class="si">%s</span><span class="s1">, excludes=</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">__dir</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dir</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dir</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">includes</span> <span class="ow">or</span> <span class="p">[],</span> <span class="bp">self</span><span class="o">.</span><span class="n">excludes</span> <span class="ow">or</span> <span class="p">[]))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
 	
@@ -879,7 +879,7 @@
 <span class="sd">	</span>
 <span class="sd">	See also L{TargetsWithinDir}.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">targetTag</span><span class="p">,</span> <span class="n">allowDirectories</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">walkDirectories</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">targetTag</span><span class="p">,</span> <span class="n">allowDirectories</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">walkDirectories</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param targetTag: the tag name</span>
 <span class="sd">		</span>
@@ -895,7 +895,7 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">__allowDirectories</span> <span class="o">=</span> <span class="n">allowDirectories</span> <span class="ow">or</span> <span class="n">walkDirectories</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__walkDirectories</span> <span class="o">=</span> <span class="n">walkDirectories</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Return a string including this class name and the tag it&#39;s looking up. &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="s1">&#39;TargetsWithTag(</span><span class="si">%s</span><span class="s1">, allowDirectories=</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__targetTag</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__allowDirectories</span><span class="p">)</span>
 	
@@ -947,7 +947,7 @@
 <span class="sd">	See also L{TargetsWithTag}.</span>
 
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parentDir</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parentDir</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param parentDir: a string identifying the parent dir. When resolved, </span>
 <span class="sd">		must end in a slash. </span>
@@ -956,7 +956,7 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">__parentDir</span> <span class="o">=</span> <span class="n">parentDir</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__location</span> <span class="o">=</span> <span class="n">BuildFileLocation</span><span class="p">()</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="s1">&#39;TargetsWithinDir(</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__parentDir</span><span class="p">)</span>
 	
 	<span class="k">def</span> <span class="nf">__getDir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
@@ -979,7 +979,7 @@
 <span class="c1"># PathSets derived from other PathSets:</span>
 
 <span class="k">class</span> <span class="nc">_DerivedPathSet</span><span class="p">(</span><span class="n">BasePathSet</span><span class="p">):</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_pathSet</span> <span class="o">=</span> <span class="n">pathSet</span>
 		<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pathSet</span><span class="p">,</span> <span class="n">BasePathSet</span><span class="p">)</span>
 	<span class="k">def</span> <span class="nf">_resolveUnderlyingDependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
@@ -1006,7 +1006,7 @@
 
 <span class="sd">	</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">includeDecider</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">,</span> <span class="n">delayFiltration</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">includeDecider</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">,</span> <span class="n">delayFiltration</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Construct a PathSet that filters its input, e.g. allows only </span>
 <span class="sd">		directories or only files. </span>
@@ -1021,7 +1021,7 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">__includeDecider</span> <span class="o">=</span> <span class="n">includeDecider</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__delayFiltration</span> <span class="o">=</span> <span class="n">delayFiltration</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Return a string including this class name, the functor and the included PathSet. &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="s1">&#39;FilteredPathSet(</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__includeDecider</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pathSet</span><span class="p">)</span>
 	
@@ -1059,7 +1059,7 @@
 <span class="sd">	&#39;AddDestPrefix(prefix=&quot;lib/bar/&quot;, PathSet(&quot;a&quot;, &quot;b/&quot;, &quot;d/e&quot;, &quot;e/f/&quot;))&#39;</span>
 
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Construct an AddDestPrefix from a PathSet, path or list of paths/path sets.</span>
 
 <span class="sd">		@param prefix: a string that should be added to the beginning of each dest </span>
@@ -1072,7 +1072,7 @@
 		<span class="n">_DerivedPathSet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">/&#39;</span><span class="p">)</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Return a string including this class name, the prefix to add and the pathset </span>
 <span class="sd">		from which it was created.</span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -1102,7 +1102,7 @@
 <span class="sd">	&#39;MapDest(&lt;lambda&gt;, PathSet(&quot;a&quot;, &quot;b/&quot;, &quot;c${c}&quot;))&#39;</span>
 
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param fn: a function that takes a resolved dest path (using forward slashes </span>
 <span class="sd">		not backslashes) as input, and returns a potentially different dest path. </span>
@@ -1112,7 +1112,7 @@
 		<span class="n">_DerivedPathSet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__fn</span> <span class="o">=</span> <span class="n">fn</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="s1">&#39;MapDest(</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fn</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pathSet</span><span class="p">)</span>
 	
 	<span class="k">def</span> <span class="nf">resolveWithDestinations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
@@ -1128,7 +1128,7 @@
 <span class="sd">	e.g. MapDestFromSrc(lambda x:x.lower(), mypathset)</span>
 <span class="sd">	</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param fn: a function that takes a resolved dest path (using forward slashes </span>
 <span class="sd">		not backslashes) as input, and returns a potentially different dest path</span>
@@ -1137,7 +1137,7 @@
 		<span class="n">_DerivedPathSet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__fn</span> <span class="o">=</span> <span class="n">fn</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="s1">&#39;MapDestFromSrc(</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fn</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pathSet</span><span class="p">)</span>
 	
 	<span class="k">def</span> <span class="nf">resolveWithDestinations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
@@ -1158,13 +1158,13 @@
 <span class="sd">	&#39;FlattenDest(PathSet(&quot;a&quot;, &quot;b/&quot;, &quot;d/e&quot;, &quot;e/f/&quot;))&#39;</span>
 <span class="sd">	</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param pathSet: The input PathSet, path or list of path/PathSets.</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="n">_DerivedPathSet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">)</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Return a string including this class name and the included PathSet. &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="s1">&#39;FlattenDest(</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pathSet</span><span class="p">)</span>
 	
@@ -1198,7 +1198,7 @@
 <span class="sd">	xpybuild.utils.buildexceptions.BuildException: Cannot strip 1 parent dir(s) from &quot;b/&quot; as it does not have that many parent directories</span>
 
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirsToRemove</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirsToRemove</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Construct an RemoveDestParents from a PathSet, path or list of paths/path sets.</span>
 
 <span class="sd">		@param dirsToRemove: the number of parent directory elements to remove</span>
@@ -1211,7 +1211,7 @@
 		<span class="n">_DerivedPathSet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__dirsToRemove</span> <span class="o">=</span> <span class="n">dirsToRemove</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Return a string including this class name, the prefix to add and the pathset </span>
 <span class="sd">		from which it was created.</span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -1245,7 +1245,7 @@
 <span class="sd">	&quot;[(&#39;BUILD_DIR/foo/mymanifest&#39;, &#39;meta-inf/manifest.mf&#39;)]&quot;</span>
 <span class="sd">	</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newDestRelPath</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newDestRelPath</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param newDestRelPath: Replacement destination path (including file name)</span>
 
@@ -1256,7 +1256,7 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">newDestRelPath</span> <span class="o">=</span> <span class="n">newDestRelPath</span>
 		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">newDestRelPath</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span> <span class="k">assert</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">newDestRelPath</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Return a string including this class name, the new destination and the included PathSet. &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="s1">&#39;SingletonDestRenameMapper(</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">newDestRelPath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pathSet</span><span class="p">)</span>
 	
@@ -1285,7 +1285,7 @@
 <span class="sd">	&#39;DirBasedPathSet(DirGeneratedByTarget(&quot;4/5/6/&quot;), [\\&#39;foo/${MY_VAR}/bar\\&#39;])&#39;</span>
 <span class="sd">	</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirTargetName</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirTargetName</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param dirTargetName: The directory that another target will generate.</span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -1298,7 +1298,7 @@
 		<span class="k">if</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">dirTargetName</span><span class="p">:</span> <span class="c1"># avoid silly mistakes, and enforce consistency</span>
 			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Invalid directory target - must not contain </span><span class="se">\\</span><span class="s1"> (always use forward slashes)&#39;</span><span class="p">)</span>
 
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Return a string including this class name and the directory. &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="s1">&#39;DirGeneratedByTarget(&quot;</span><span class="si">%s</span><span class="s1">&quot;)&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__target</span><span class="p">)</span>
 
@@ -1317,11 +1317,11 @@
 		<span class="n">t</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__target</span><span class="p">,</span> <span class="n">defaultDir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="p">)</span>
 		<span class="k">return</span> <span class="p">[(</span><span class="n">t</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;/</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">))</span><span class="o">+</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="p">)]</span>
 
-	<span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
 		<span class="c1"># suffix is probably a string but might be a Composable/callable</span>
 		<span class="k">return</span> <span class="n">DirBasedPathSet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span></div>
 
-<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="k">import</span> <span class="n">BaseTarget</span>
+<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="kn">import</span> <span class="n">BaseTarget</span>
 </pre></div>
 
            </div>

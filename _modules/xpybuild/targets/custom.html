@@ -171,14 +171,14 @@
 
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">subprocess</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="k">import</span> <span class="n">BaseTarget</span><span class="p">,</span> <span class="n">targetNameToUniqueId</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteDir</span><span class="p">,</span> <span class="n">deleteFile</span><span class="p">,</span> <span class="n">normLongPath</span><span class="p">,</span> <span class="n">normPath</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="k">import</span> <span class="n">_wait_with_timeout</span>
-<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
-<span class="kn">from</span> <span class="nn">xpybuild.targets.copy</span> <span class="k">import</span> <span class="n">Copy</span>
-<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="kn">import</span> <span class="n">BaseTarget</span><span class="p">,</span> <span class="n">targetNameToUniqueId</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="kn">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteDir</span><span class="p">,</span> <span class="n">deleteFile</span><span class="p">,</span> <span class="n">normLongPath</span><span class="p">,</span> <span class="n">normPath</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="kn">import</span> <span class="n">_wait_with_timeout</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="kn">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="kn">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.targets.copy</span> <span class="kn">import</span> <span class="n">Copy</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="kn">import</span> <span class="n">defineOption</span>
 
 <div class="viewcode-block" id="Custom"><a class="viewcode-back" href="../../../autodocgen/xpybuild.targets.custom.html#xpybuild.targets.custom.Custom">[docs]</a><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span> <span class="c1"># deprecated because error handling/logging is poor and it promotes bad practices like not using options (e.g process timeout)</span>
 	<span class="sd">&quot;&quot;&quot;</span>
@@ -195,7 +195,7 @@
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="n">fn</span> <span class="o">=</span> <span class="kc">None</span>
 	<span class="n">cleanfn</span> <span class="o">=</span> <span class="kc">None</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">deps</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">cleanfn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">deps</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">cleanfn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param target: The target file/directory that will be built</span>
 
@@ -228,12 +228,12 @@
 <span class="sd">	thrown unless the pathsep argument is specified. </span>
 <span class="sd">	</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param path: The path to expand, which is a string. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot; Returns a string including this class name and the path &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="s1">&#39;ResolvePath&lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span>
 <div class="viewcode-block" id="ResolvePath.resolve"><a class="viewcode-back" href="../../../autodocgen/xpybuild.targets.custom.html#xpybuild.targets.custom.ResolvePath.resolve">[docs]</a>	<span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">baseDir</span><span class="p">):</span>
@@ -249,8 +249,8 @@
 <span class="sd">	&quot;&quot;&quot;</span>
 
 	<span class="k">class</span> <span class="nc">__CustomCommandSentinel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span> 
-		<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-		<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;CustomCommand.&#39;</span><span class="o">+</span><span class="n">name</span>
+		<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+		<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;CustomCommand.&#39;</span><span class="o">+</span><span class="n">name</span>
 	
 	<span class="n">TARGET</span> <span class="o">=</span> <span class="n">__CustomCommandSentinel</span><span class="p">(</span><span class="s1">&#39;TARGET&#39;</span><span class="p">)</span>
 	<span class="sd">&quot;&quot;&quot;</span>
@@ -262,7 +262,7 @@
 <span class="sd">	A special value that can be used in the ``command`` argument and is resolved to a list of this target&#39;s dependencies. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">redirectStdOutToTarget</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">redirectStdOutToTarget</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		The command line *must* not reference any generated paths unless they are </span>
 <span class="sd">		explicitly listed in deps. </span>
@@ -501,7 +501,7 @@
 <span class="sd">	in-place modifications on a directory. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">,</span> <span class="n">copySrc</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">redirectStdOutToTarget</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">,</span> <span class="n">copySrc</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">redirectStdOutToTarget</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param target: the target</span>
 <span class="sd">		@param command: see CustomCommand for details</span>

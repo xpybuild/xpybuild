@@ -174,7 +174,7 @@
 <span class="kn">import</span> <span class="nn">stat</span><span class="o">,</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">io</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">getStringList</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="kn">import</span> <span class="n">getStringList</span>
 
 <span class="kn">import</span> <span class="nn">subprocess</span><span class="o">,</span> <span class="nn">errno</span>
 
@@ -187,14 +187,14 @@
 	<span class="k">try</span><span class="p">:</span>
 		<span class="kn">import</span> <span class="nn">win32file</span>
 		<span class="k">class</span> <span class="nc">_Win32FileWriter</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">RawIOBase</span><span class="p">):</span>
-			<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+			<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 				<span class="nb">super</span><span class="p">(</span><span class="n">_Win32FileWriter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 				<span class="k">assert</span> <span class="s1">&#39;w&#39;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">,</span> <span class="s1">&#39;Currently the Win32FileWriter class only supports writing, not reading&#39;</span>
 				<span class="bp">self</span><span class="o">.</span><span class="n">dest</span> <span class="o">=</span> <span class="n">dest</span>
 				<span class="bp">self</span><span class="o">.</span><span class="n">__textWrapper</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="s1">&#39;b&#39;</span> <span class="ow">in</span> <span class="n">mode</span> <span class="k">else</span> <span class="n">io</span><span class="o">.</span><span class="n">TextIOWrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="n">newline</span><span class="p">)</span>
 				<span class="bp">self</span><span class="o">.</span><span class="n">__alreadyclosed</span> <span class="o">=</span> <span class="kc">False</span>
 				
-			<span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+			<span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 				<span class="bp">self</span><span class="o">.</span><span class="n">Fd</span> <span class="o">=</span> <span class="n">win32file</span><span class="o">.</span><span class="n">CreateFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">win32file</span><span class="o">.</span><span class="n">GENERIC_WRITE</span><span class="p">,</span> 
 					<span class="n">win32file</span><span class="o">.</span><span class="n">FILE_SHARE_READ</span> <span class="o">|</span> <span class="n">win32file</span><span class="o">.</span><span class="n">FILE_SHARE_WRITE</span>  <span class="o">|</span> <span class="n">win32file</span><span class="o">.</span><span class="n">FILE_SHARE_DELETE</span><span class="p">,</span> 
 					<span class="kc">None</span><span class="p">,</span> <span class="n">win32file</span><span class="o">.</span><span class="n">CREATE_ALWAYS</span><span class="p">,</span> <span class="n">win32file</span><span class="o">.</span><span class="n">FILE_ATTRIBUTE_NORMAL</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -216,7 +216,7 @@
 				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__textWrapper</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__textWrapper</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 				<span class="n">win32file</span><span class="o">.</span><span class="n">CloseHandle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fd</span><span class="p">)</span>
 				
-			<span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ex_type</span><span class="p">,</span> <span class="n">ex_val</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
+			<span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ex_type</span><span class="p">,</span> <span class="n">ex_val</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
 				<span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 			
 	<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>

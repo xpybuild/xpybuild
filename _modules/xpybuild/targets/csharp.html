@@ -170,15 +170,15 @@
 
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">inspect</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="k">import</span> <span class="n">BaseTarget</span>
-<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="k">import</span> <span class="n">call</span>
-<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">FilteredPathSet</span>
-<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="k">import</span> <span class="n">getBuildInitializationContext</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="k">import</span> <span class="n">ProcessOutputHandler</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">mkdir</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="kn">import</span> <span class="n">BaseTarget</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="kn">import</span> <span class="n">defineOption</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="kn">import</span> <span class="n">call</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="kn">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">FilteredPathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="kn">import</span> <span class="n">getBuildInitializationContext</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="kn">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="kn">import</span> <span class="n">ProcessOutputHandler</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="kn">import</span> <span class="n">mkdir</span>
 
 <span class="kn">import</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">re</span>
 
@@ -209,7 +209,7 @@
 	<span class="nb">compile</span> <span class="o">=</span> <span class="kc">None</span>
 	<span class="n">main</span> <span class="o">=</span> <span class="kc">None</span>
 	<span class="n">libs</span> <span class="o">=</span> <span class="kc">None</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resources</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resources</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">		@param output: the resulting .exe or .dll</span>
 <span class="sd">		</span>

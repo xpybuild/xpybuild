@@ -172,19 +172,19 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">subprocess</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Lock</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Lock</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="k">import</span> <span class="n">ProcessOutputHandler</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
-<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="kn">import</span> <span class="n">ProcessOutputHandler</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="kn">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="kn">import</span> <span class="n">defineOption</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;process&#39;</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">__ProcessMonitor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_global_process_list</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_global_process_lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
 	
@@ -268,7 +268,7 @@
 		<span class="k">else</span><span class="p">:</span>
 			<span class="k">return</span> <span class="n">rv</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.internal</span> <span class="k">import</span> <span class="n">DEFAULT_PROCESS_ENCODING</span> <span class="k">as</span> <span class="n">__DEFAULT_PROCESS_ENCODING</span>
+<span class="kn">from</span> <span class="nn">xpybuild.internal</span> <span class="kn">import</span> <span class="n">DEFAULT_PROCESS_ENCODING</span> <span class="k">as</span> <span class="n">__DEFAULT_PROCESS_ENCODING</span>
 <div class="viewcode-block" id="defaultProcessOutputEncodingDecider"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.process.html#xpybuild.utils.process.defaultProcessOutputEncodingDecider">[docs]</a><span class="k">def</span> <span class="nf">defaultProcessOutputEncodingDecider</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">executable</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Function providing the default implementation of the ``common.processOutputEncodingDecider``</span>

@@ -172,15 +172,15 @@
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">locale</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="k">import</span> <span class="n">call</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="k">import</span> <span class="n">ProcessOutputHandler</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">getStringList</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">deleteDir</span><span class="p">,</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteFile</span><span class="p">,</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">normLongPath</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.consoleformatter</span> <span class="k">import</span> <span class="n">publishArtifact</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="kn">import</span> <span class="n">defineOption</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="kn">import</span> <span class="n">call</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="kn">import</span> <span class="n">ProcessOutputHandler</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="kn">import</span> <span class="n">getStringList</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="kn">import</span> <span class="n">deleteDir</span><span class="p">,</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteFile</span><span class="p">,</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">normLongPath</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.consoleformatter</span> <span class="kn">import</span> <span class="n">publishArtifact</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="kn">import</span> <span class="n">BuildException</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;utils.java&#39;</span><span class="p">)</span>
@@ -249,7 +249,7 @@
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.warningsAsErrors&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">JavacProcessOutputHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">targetName</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># unusually, we pass in the targetname here, since there are usually so many different &quot;javac&quot;s</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">targetName</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># unusually, we pass in the targetname here, since there are usually so many different &quot;javac&quot;s</span>
 		<span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;javac&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="kc">None</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_chunks</span> <span class="o">=</span> <span class="p">[]</span>

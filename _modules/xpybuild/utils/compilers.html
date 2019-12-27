@@ -170,19 +170,19 @@
 
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">traceback</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="k">import</span> <span class="n">call</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">cached_isdir</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="k">import</span> <span class="n">ProcessOutputHandler</span>
-<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="kn">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="kn">import</span> <span class="n">call</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="kn">import</span> <span class="n">cached_isdir</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="kn">import</span> <span class="n">ProcessOutputHandler</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="kn">import</span> <span class="n">defineOption</span>
 
 <div class="viewcode-block" id="Process"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Process">[docs]</a><span class="k">class</span> <span class="nc">Process</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Parent type for compiler/tool chain process classes,</span>
 <span class="sd">	contain helper method for calling the compiler process</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">environs</span> <span class="o">=</span> <span class="n">environs</span> <span class="ow">or</span> <span class="p">{}</span>
 	
 <div class="viewcode-block" id="Process.getExpandedEnvirons"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Process.getExpandedEnvirons">[docs]</a>	<span class="k">def</span> <span class="nf">getExpandedEnvirons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -224,7 +224,7 @@
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A compiler (of some sort or other)</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
 <div class="viewcode-block" id="Compiler.compile"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Compiler.compile">[docs]</a>	<span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot;</span>
@@ -244,7 +244,7 @@
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	The command to use to generate a list of dependencies from a list of source files</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
 <div class="viewcode-block" id="Depends.depends"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Depends.depends">[docs]</a>	<span class="k">def</span> <span class="nf">depends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot;</span>
@@ -262,7 +262,7 @@
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Link a set of object files into an executable or a shared library</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
 <div class="viewcode-block" id="Linker.link"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Linker.link">[docs]</a>	<span class="k">def</span> <span class="nf">link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">shared</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libdirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
@@ -285,7 +285,7 @@
 <span class="sd">	A tool to put a set of object files into an archive for static linking.</span>
 <span class="sd">	Typically only used on unix.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
 <div class="viewcode-block" id="Archiver.archive"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.Archiver.archive">[docs]</a>	<span class="k">def</span> <span class="nf">archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot;</span>
@@ -301,7 +301,7 @@
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A collection of compilers, linkers and other tools which represents a complete native tool chain</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depends</span><span class="p">,</span> <span class="n">ccompiler</span><span class="p">,</span> <span class="n">cxxcompiler</span><span class="p">,</span> <span class="n">linker</span><span class="p">,</span> <span class="n">archiver</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depends</span><span class="p">,</span> <span class="n">ccompiler</span><span class="p">,</span> <span class="n">cxxcompiler</span><span class="p">,</span> <span class="n">linker</span><span class="p">,</span> <span class="n">archiver</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		depends: A Depends object to get a list of dependencies from a list of source files</span>
 
@@ -324,13 +324,13 @@
 		<span class="k">assert</span> <span class="n">IS_WINDOWS</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">archiver</span><span class="p">,</span> <span class="n">Archiver</span><span class="p">)</span> <span class="ow">or</span> <span class="n">archiver</span> <span class="o">==</span> <span class="kc">None</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">archiver</span> <span class="o">=</span> <span class="n">archiver</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> instance&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="c1"># make sure we get a stable stringification of the instance stored in the native.compilers option</span></div>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> instance&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="c1"># make sure we get a stable stringification of the instance stored in the native.compilers option</span></div>
 
 <div class="viewcode-block" id="UnixCompiler"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.compilers.html#xpybuild.utils.compilers.UnixCompiler">[docs]</a><span class="k">class</span> <span class="nc">UnixCompiler</span><span class="p">(</span><span class="n">Compiler</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A compiler using standard Unix compiler arguments/syntax</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		command: The path to the compiler</span>
 <span class="sd">		</span>
@@ -356,7 +356,7 @@
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A linker using standard Unix linker arguments/syntax</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		command: The path to the linker</span>
 <span class="sd">		</span>
@@ -388,7 +388,7 @@
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A archiver using standard Unix archiver arguments/syntax</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">outputHandler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		command: The path to the archiver</span>
 <span class="sd">		</span>
@@ -397,7 +397,7 @@
 		<span class="n">Archiver</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">ar_command</span> <span class="o">=</span> <span class="n">command</span>
 		<span class="k">class</span> <span class="nc">ArHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
-			<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+			<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 				<span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">ar_handler</span> <span class="o">=</span> <span class="n">outputHandler</span> <span class="ow">or</span> <span class="n">ArHandler</span>
 	<span class="k">def</span> <span class="nf">archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
@@ -448,7 +448,7 @@
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A tool chain based on the GNU Compiler Collection</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
 		<span class="n">ToolChain</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
 			<span class="bp">self</span><span class="p">,</span> 
 			<span class="n">UnixCompiler</span><span class="p">(</span><span class="s1">&#39;gcc&#39;</span><span class="p">,</span> <span class="n">GccProcessOutputHandler</span><span class="p">,</span> <span class="n">environs</span><span class="o">=</span><span class="n">environs</span><span class="p">),</span> 
@@ -475,7 +475,7 @@
 		<span class="n">deplist</span> <span class="o">=</span> <span class="p">[]</span>
 
 		<span class="k">class</span> <span class="nc">GccDependsHandler</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="p">):</span>
-			<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+			<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 				<span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 				<span class="bp">self</span><span class="o">.</span><span class="n">fatalerrors</span> <span class="o">=</span> <span class="p">[]</span>
 			<span class="k">def</span> <span class="nf">handleLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">isstderr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -587,7 +587,7 @@
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	A ToolChain representing using Visual Studio compilers et al</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vsbin</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vsbin</span><span class="p">):</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">vsbin</span> <span class="o">=</span> <span class="n">vsbin</span>
 		<span class="n">ToolChain</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 		<span class="n">Linker</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>

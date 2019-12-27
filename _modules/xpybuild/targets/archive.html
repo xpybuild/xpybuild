@@ -175,20 +175,20 @@
 <span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">import</span> <span class="nn">tarfile</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
-<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="k">import</span> <span class="n">BaseTarget</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteDir</span><span class="p">,</span> <span class="n">normLongPath</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.antglob</span> <span class="k">import</span> <span class="n">antGlobMatch</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">flatten</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="k">import</span> <span class="n">BuildFileLocation</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="kn">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="kn">import</span> <span class="n">BaseTarget</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="kn">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteDir</span><span class="p">,</span> <span class="n">normLongPath</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.antglob</span> <span class="kn">import</span> <span class="n">antGlobMatch</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="kn">import</span> <span class="n">flatten</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="kn">import</span> <span class="n">BuildFileLocation</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="kn">import</span> <span class="n">BuildException</span>
 
 <div class="viewcode-block" id="Tarball"><a class="viewcode-back" href="../../../autodocgen/xpybuild.targets.archive.html#xpybuild.targets.archive.Tarball">[docs]</a><span class="k">class</span> <span class="nc">Tarball</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Target that creates a ``.tar.gz`` archive from a set of input files.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param archive: The archive to be created, which should end with ``.tar.gz``. </span>
 
@@ -220,7 +220,7 @@
 	<span class="sd">&quot;&quot;&quot; Target that creates a ``.zip`` archive from a set of input files.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param archive: The archive to be created, ending with ``.zip``. </span>
 
@@ -300,7 +300,7 @@
 <span class="sd">	The parent directory will be created if it doesn&#39;t exist already. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">archives</span><span class="p">):</span> 
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">archives</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param dest: the output directory (ending with a &quot;/&quot;). Never </span>
 <span class="sd">		specify a dest directory that is also written to by another </span>
@@ -429,7 +429,7 @@
 	<span class="c1"># also the model is a bit different for archive contents, so simplest </span>
 	<span class="c1"># just to keep it separate</span>
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archivePath</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">destMapper</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archivePath</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">destMapper</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param archivePath: The archive to unpack; either a string or a singleton PathSet</span>
 
@@ -502,7 +502,7 @@
 		<span class="k">if</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="n">x</span> <span class="o">+=</span> <span class="s1">&#39;/&#39;</span>
 		<span class="k">return</span> <span class="n">x</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot; Returns a string including this class name, the archive path, the destination prefix </span>
 <span class="sd">		and any includes/excludes.</span>
 <span class="sd">		&quot;&quot;&quot;</span>

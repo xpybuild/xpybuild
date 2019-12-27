@@ -170,7 +170,7 @@
 
 <span class="kn">import</span> <span class="nn">traceback</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="k">import</span> <span class="n">BuildFileLocation</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="kn">import</span> <span class="n">BuildFileLocation</span>
 
 
 <div class="viewcode-block" id="BuildException"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.buildexceptions.html#xpybuild.utils.buildexceptions.BuildException">[docs]</a><span class="k">class</span> <span class="nc">BuildException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -183,7 +183,7 @@
 <span class="sd">	</span>
 <span class="sd">	&quot;&quot;&quot;</span> 
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">		BuildExceptions thrown during loading of the build config files will include the build file location </span>
 <span class="sd">		(from their call stack) in the message. BuildExceptions thrown during operations on a target </span>
@@ -249,11 +249,11 @@
 			<span class="k">return</span> <span class="p">{</span><span class="s1">&#39;xpybuild_filename&#39;</span><span class="p">:</span><span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">buildFile</span><span class="p">,</span> <span class="s1">&#39;xpybuild_line&#39;</span><span class="p">:</span><span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">lineNumber</span> <span class="p">}</span>
 		<span class="k">return</span> <span class="p">{}</span></div>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot; Return the type of the exception and the message on a single line&quot;&quot;&quot;</span>
 		<span class="c1"># don&#39;t know the target, so this isn&#39;t very useful, therefore discourage use by making it look scary</span>
 		<span class="k">return</span> <span class="s1">&#39;BuildException&lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">toSingleLineString</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> 
-	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+	<span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot; Return the execption message on a single line &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">toSingleLineString</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 

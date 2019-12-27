@@ -173,12 +173,12 @@
 <span class="c1"># ##teamcity[progressMessage &#39;(%d/%d) %s&#39;]</span>
 
 <span class="kn">import</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">traceback</span>
-<span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Lock</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Lock</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.utils.consoleformatter</span> <span class="k">import</span> <span class="n">registerConsoleFormatter</span><span class="p">,</span> <span class="n">ConsoleFormatter</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.terminal</span> <span class="k">import</span> <span class="n">getTerminalSize</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.consoleformatter</span> <span class="kn">import</span> <span class="n">registerConsoleFormatter</span><span class="p">,</span> <span class="n">ConsoleFormatter</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.terminal</span> <span class="kn">import</span> <span class="n">getTerminalSize</span>
 
 <div class="viewcode-block" id="ProgressBarConsoleFormatter"><a class="viewcode-back" href="../../../autodocgen/xpybuild.utils.progress.html#xpybuild.utils.progress.ProgressBarConsoleFormatter">[docs]</a><span class="k">class</span> <span class="nc">ProgressBarConsoleFormatter</span><span class="p">(</span><span class="n">ConsoleFormatter</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
@@ -194,7 +194,7 @@
 	<span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
 	<span class="n">timethreshold</span> <span class="o">=</span> <span class="mi">0</span>
 
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">buildOptions</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">buildOptions</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 		<span class="n">ConsoleFormatter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">buildOptions</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 		
 		<span class="bp">self</span><span class="o">.</span><span class="n">bufferingDisabled</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># buffering isn&#39;t helpful in progress mode</span>
@@ -301,7 +301,7 @@
 	<span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
 	<span class="n">timethreshold</span> <span class="o">=</span> <span class="mi">0</span>
 
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">buildOptions</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">buildOptions</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 		
 		<span class="n">ConsoleFormatter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">buildOptions</span><span class="o">=</span><span class="n">buildOptions</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 		

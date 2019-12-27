@@ -174,15 +174,15 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">shutil</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="k">import</span> <span class="n">BaseTarget</span><span class="p">,</span> <span class="n">targetNameToUniqueId</span>
-<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span>
-<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">FilteredPathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteDir</span><span class="p">,</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">normLongPath</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.java</span> <span class="k">import</span> <span class="n">jar</span><span class="p">,</span> <span class="n">javac</span><span class="p">,</span> <span class="n">create_manifest</span><span class="p">,</span> <span class="n">javadoc</span><span class="p">,</span> <span class="n">signjar</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">flatten</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="k">import</span> <span class="n">ProcessOutputHandler</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="kn">import</span> <span class="n">BaseTarget</span><span class="p">,</span> <span class="n">targetNameToUniqueId</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="kn">import</span> <span class="n">defineOption</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="kn">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">FilteredPathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="kn">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteDir</span><span class="p">,</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">normLongPath</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.java</span> <span class="kn">import</span> <span class="n">jar</span><span class="p">,</span> <span class="n">javac</span><span class="p">,</span> <span class="n">create_manifest</span><span class="p">,</span> <span class="n">javadoc</span><span class="p">,</span> <span class="n">signjar</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="kn">import</span> <span class="n">flatten</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="kn">import</span> <span class="n">ProcessOutputHandler</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="kn">import</span> <span class="n">BuildException</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
@@ -200,7 +200,7 @@
 <span class="sd">	Additional command line arguments can be passed to ``signjars`` using the option ``jarsigner.options`` (default ``[]``). </span>
 <span class="sd">	</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">jars</span><span class="p">,</span> <span class="n">keystore</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">storepass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">manifestDefaults</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">jars</span><span class="p">,</span> <span class="n">keystore</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">storepass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">manifestDefaults</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">		@param output: The output directory in which to put the signed jars</span>
 
@@ -348,7 +348,7 @@
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="nb">compile</span> <span class="o">=</span> <span class="kc">None</span>
 	<span class="n">classpath</span> <span class="o">=</span> <span class="kc">None</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">		@param output: output dir for class files</span>
 
@@ -400,7 +400,7 @@
 	<span class="n">classpath</span> <span class="o">=</span> <span class="kc">None</span>
 	<span class="n">package</span> <span class="o">=</span> <span class="kc">None</span>
 	<span class="n">manifest</span> <span class="o">=</span> <span class="kc">None</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jar</span><span class="p">,</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">manifest</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">preserveManifestFormatting</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jar</span><span class="p">,</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">manifest</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">preserveManifestFormatting</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; </span>
 
 <span class="sd">		@param jar: path to jar to create.</span>
@@ -537,7 +537,7 @@
 <span class="sd">		- ``javac.access = &quot;public&quot;`` Identifies which members and classes to include. </span>
 <span class="sd">		</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destdir</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destdir</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param destdir: directory to create docs in</span>
 

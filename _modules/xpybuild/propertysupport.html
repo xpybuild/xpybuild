@@ -240,13 +240,13 @@
 <span class="n">__log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;propertysupport&#39;</span><span class="p">)</span> <span class="c1"># cannot call it log cos this gets imported a lot</span>
 
 <span class="kn">import</span> <span class="nn">xpybuild.buildcontext</span>
-<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="k">import</span> <span class="n">BuildInitializationContext</span><span class="p">,</span> <span class="n">getBuildInitializationContext</span> <span class="c1"># getBuildInitializationContext is here for compatibility only</span>
-<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">parsePropertiesFile</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="k">import</span> <span class="n">BuildFileLocation</span><span class="p">,</span> <span class="n">formatFileLocation</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.functors</span> <span class="k">import</span> <span class="n">Composable</span><span class="p">,</span> <span class="n">ComposableWrapper</span>
-<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="kn">import</span> <span class="n">BuildInitializationContext</span><span class="p">,</span> <span class="n">getBuildInitializationContext</span> <span class="c1"># getBuildInitializationContext is here for compatibility only</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="kn">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="kn">import</span> <span class="n">parsePropertiesFile</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="kn">import</span> <span class="n">BuildFileLocation</span><span class="p">,</span> <span class="n">formatFileLocation</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.functors</span> <span class="kn">import</span> <span class="n">Composable</span><span class="p">,</span> <span class="n">ComposableWrapper</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="kn">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
 
 
 <span class="c1"># All the public methods that build authors are expected to use to interact with properties and options</span>
@@ -535,7 +535,7 @@
 	<span class="sd">&quot;&quot;&quot;This constant should be used with ExtensionBasedFileEncodingDecider to indicate binary files that </span>
 <span class="sd">	should not be opened in text mode. &quot;&quot;&quot;</span>
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extToEncoding</span><span class="o">=</span><span class="p">{},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extToEncoding</span><span class="o">=</span><span class="p">{},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param defaultEncoding: The name of the default encoding to be used, another decider to delegate to, or None to defer to the configured global option. </span>
 <span class="sd">		Recommended values are: &#39;utf-8&#39;, &#39;ascii&#39; or locale.getpreferredencoding().</span>
@@ -547,13 +547,13 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">extToEncodingDict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaultEncoding</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">extToEncoding</span><span class="p">),</span> <span class="n">default</span>
 		<span class="c1"># enforce starts with a . to prevent mistakes and allow us to potentially optimize the implementation in future</span>
 		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">extToEncoding</span><span class="p">:</span> 
-			<span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span> <span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;ExtensionBasedFileEncodingDecider extension does not start with the required &quot;.&quot; character: &quot;</span><span class="si">{k}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span> <span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ExtensionBasedFileEncodingDecider extension does not start with the required &quot;.&quot; character: &quot;</span><span class="si">{k}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__cache</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span><span class="kc">None</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">__stringified</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;ExtensionBasedFileEncodingDecider(</span><span class="si">{self.extToEncodingDict}</span><span class="s1">; default=</span><span class="si">{self.defaultEncoding}</span><span class="s1">)&#39;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__stringified</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;ExtensionBasedFileEncodingDecider(</span><span class="si">{self.extToEncodingDict}</span><span class="s1">; default=</span><span class="si">{self.defaultEncoding}</span><span class="s1">)&#39;</span>
 		
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stringified</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stringified</span>
 
-	<span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">):</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">decide</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ExtensionBasedFileEncodingDecider.decide"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.decide">[docs]</a>	<span class="k">def</span> <span class="nf">decide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -588,7 +588,7 @@
 		
 		<span class="n">fallbackDecider</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getGlobalOption</span><span class="p">(</span><span class="s1">&#39;common.fileEncodingDecider&#39;</span><span class="p">)</span>
 		<span class="k">if</span> <span class="n">fallbackDecider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span> <span class="k">return</span> <span class="n">fallbackDecider</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">)</span>
-		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;File encoding decider cannot handle path </span><span class="se">\&#39;</span><span class="si">{path}</span><span class="se">\&#39;</span><span class="s1">: </span><span class="si">{self}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;File encoding decider cannot handle path </span><span class="se">\&#39;</span><span class="si">{path}</span><span class="se">\&#39;</span><span class="s1">: </span><span class="si">{self}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 	
 <div class="viewcode-block" id="ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider">[docs]</a>	<span class="nd">@staticmethod</span>
 	<span class="k">def</span> <span class="nf">getDefaultFileEncodingDecider</span><span class="p">():</span>
@@ -654,7 +654,7 @@
 	<span class="sd">&quot;&quot;&quot; A late-binding function which performs property expansion on its argument and then</span>
 <span class="sd">	    removes the file parts of the argument.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">		@param path: The input path, possibly containing unreplaced properties.</span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -687,7 +687,7 @@
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg</span><span class="p">,</span> <span class="s2">&quot;$</span><span class="si">{OUTPUT_DIR}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span></div>
 	
-	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="n">arg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">arg</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
 		
 		<span class="c1"># might as well run dirname on it before generating __str__, it </span>
@@ -704,7 +704,7 @@
 	<span class="sd">&quot;&quot;&quot; A late-binding function which performs property expansion on its argument and then</span>
 <span class="sd">	    removes the directory parts of the argument.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">		@param path: The input path, possibly containing unreplaced properties.</span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -737,7 +737,7 @@
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg</span><span class="p">,</span> <span class="s2">&quot;$</span><span class="si">{OUTPUT_DIR}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span></div>
 	
-	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="n">arg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">arg</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
 		
 		<span class="c1"># might as well run basename on it before generating __str__, it </span>
@@ -757,7 +757,7 @@
 
 <span class="sd">	    The pattern/replacement syntax is the same as re.sub</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pat</span><span class="p">,</span> <span class="n">rep</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pat</span><span class="p">,</span> <span class="n">rep</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param pat: the regex pattern to match</span>
 
@@ -787,7 +787,7 @@
 <span class="sd">		&#39;output/dd&#39;</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pat</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rep</span><span class="p">),</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg</span><span class="p">))</span></div>
-	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="s2">&quot;sub(</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rep</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="joinPaths"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.joinPaths">[docs]</a><span class="k">class</span> <span class="nc">joinPaths</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
@@ -795,7 +795,7 @@
 <span class="sd">		then joins its contents together to form a string using os.pathsep or a </span>
 <span class="sd">		specified separator character. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathset</span><span class="p">,</span> <span class="n">pathsep</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathset</span><span class="p">,</span> <span class="n">pathsep</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="p">):</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">pathset</span> <span class="o">=</span> <span class="n">pathset</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pathset</span><span class="p">,</span> <span class="n">BasePathSet</span><span class="p">)</span> <span class="k">else</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">pathset</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">pathsep</span> <span class="o">=</span> <span class="n">pathsep</span>
 <div class="viewcode-block" id="joinPaths.resolveToString"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.joinPaths.resolveToString">[docs]</a>	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
@@ -804,7 +804,7 @@
 <span class="sd">		@param context: a BuildContext</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathsep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pathset</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">))</span></div>
-	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="s2">&quot;joinPaths(</span><span class="si">%s</span><span class="s2"> with </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pathset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathsep</span><span class="p">)</span></div>
 
 </pre></div>

@@ -182,20 +182,20 @@
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="k">import</span> <span class="n">BaseTarget</span>
-<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="n">defineOption</span><span class="p">,</span> <span class="n">Composable</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.functors</span> <span class="k">import</span> <span class="n">makeFunctor</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="k">import</span> <span class="n">call</span>
-<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
-<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="k">import</span> <span class="n">getBuildInitializationContext</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteFile</span><span class="p">,</span> <span class="n">cached_getmtime</span><span class="p">,</span> <span class="n">cached_exists</span><span class="p">,</span> <span class="n">toLongPathSafe</span><span class="p">,</span> <span class="n">cached_stat</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="kn">import</span> <span class="n">BaseTarget</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="kn">import</span> <span class="n">defineOption</span><span class="p">,</span> <span class="n">Composable</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.functors</span> <span class="kn">import</span> <span class="n">makeFunctor</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="kn">import</span> <span class="n">call</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="kn">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="kn">import</span> <span class="n">getBuildInitializationContext</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="kn">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="kn">import</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">deleteFile</span><span class="p">,</span> <span class="n">cached_getmtime</span><span class="p">,</span> <span class="n">cached_exists</span><span class="p">,</span> <span class="n">toLongPathSafe</span><span class="p">,</span> <span class="n">cached_stat</span>
 
 <span class="k">class</span> <span class="nc">__CompilersNotSpecified</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-	<span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
 		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot use native targets until a compiler is configured by setting the native.compilers option&#39;</span><span class="p">)</span>
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;&lt;native.compilers option is not configured&gt;&#39;</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;&lt;native.compilers option is not configured&gt;&#39;</span>
 
 <span class="c1"># these options all need documenting</span>
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;native.compilers&#39;</span><span class="p">,</span> <span class="n">__CompilersNotSpecified</span><span class="p">())</span>
@@ -244,10 +244,10 @@
 <span class="sd">	For use in builds before 1.15 that incorrectly omitted slashes for include </span>
 <span class="sd">	directories. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathSet</span><span class="p">):</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_pathSet</span> <span class="o">=</span> <span class="n">pathSet</span>
 	
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="s1">&#39;AddTrailingSlashPathSet(</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pathSet</span><span class="p">)</span>
 	
 	<span class="k">def</span> <span class="nf">resolveWithDestinations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
@@ -262,7 +262,7 @@
 	
 	<span class="n">__rebuild_makedepend_count</span> <span class="o">=</span> <span class="mi">0</span>
 
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param object: the object file to generate; see L{objectname}.</span>
 <span class="sd">		@param source: a (list of) source files</span>
@@ -504,7 +504,7 @@
 <span class="sd">	executable or library binary. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bin</span><span class="p">,</span> <span class="n">objects</span><span class="p">,</span> <span class="n">libs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shared</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bin</span><span class="p">,</span> <span class="n">objects</span><span class="p">,</span> <span class="n">libs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">libpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shared</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param bin: the output binary. See L{exename}, L{libname}, L{staticlibname}. </span>
 
@@ -560,7 +560,7 @@
 	<span class="sd">&quot;&quot;&quot; Target that compiles .a archive files from collections of object files. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bin</span><span class="p">,</span> <span class="n">objects</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bin</span><span class="p">,</span> <span class="n">objects</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param bin: the output library</span>
 

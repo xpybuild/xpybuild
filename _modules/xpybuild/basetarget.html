@@ -175,14 +175,14 @@
 
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">re</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="k">import</span> <span class="n">getBuildInitializationContext</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="kn">import</span> <span class="n">getBuildInitializationContext</span>
 <span class="kn">import</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">as</span> <span class="nn">fileutils</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">flatten</span><span class="p">,</span> <span class="n">getStringList</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="k">import</span> <span class="n">BuildFileLocation</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.functors</span> <span class="k">import</span> <span class="n">Composable</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">normLongPath</span><span class="p">,</span> <span class="n">mkdir</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="kn">import</span> <span class="n">flatten</span><span class="p">,</span> <span class="n">getStringList</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="kn">import</span> <span class="n">BuildFileLocation</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.functors</span> <span class="kn">import</span> <span class="n">Composable</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="kn">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="kn">import</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">normLongPath</span><span class="p">,</span> <span class="n">mkdir</span>
 <span class="kn">import</span> <span class="nn">xpybuild.utils.stringutils</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -245,14 +245,14 @@
 
 	<span class="c1"># to allow targets to be used in sets, override hash to ensure it&#39;s deterministic;</span>
 	<span class="c1"># no need to override eq/ne, they use object identity which is already correct</span>
-	<span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+	<span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Uses the target name to generate a hash. Targets are required to produce unique outputs.</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">):</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__getAttrImpl</span> <span class="o">=</span> <span class="p">{</span>
 			<span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__returnOrRaiseIfNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="p">,</span> <span class="s1">&#39;Target path has not yet been resolved by this phase of the build process: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="p">),</span>
 			<span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__name</span><span class="p">,</span>
@@ -294,7 +294,7 @@
 
 		<span class="c1"># put the class first, since it results in better ordering (e.g. for errors)</span>
 		<span class="c1"># use a space to delimit these to make it easier to copy to the clipboard by double-clicking</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">__stringvalue</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;&lt;</span><span class="si">{self.type}</span><span class="s1">&gt; </span><span class="si">{self.name}</span><span class="s1">&#39;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__stringvalue</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;</span><span class="si">{self.type}</span><span class="s1">&gt; </span><span class="si">{self.name}</span><span class="s1">&#39;</span>
 		
 		<span class="c1"># aliases for pre-3.0</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">addHashableImplicitInputOption</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registerImplicitInputOption</span>
@@ -305,7 +305,7 @@
 		<span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="n">value</span>
 		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">exceptionMessage</span><span class="p">)</span>
 
-	<span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 		<span class="c1"># this is a hack to retain backwards compat for a few classes that rely on explicitly assigning to self.options</span>
 
 		<span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;options&#39;</span><span class="p">:</span>
@@ -316,7 +316,7 @@
 		<span class="k">else</span><span class="p">:</span>
 			<span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-	<span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Getter for read-only attributes &quot;&quot;&quot;</span>
 		<span class="c1"># nb this is not called for fields that have been set explicitly using self.X = ...</span>
 		<span class="k">try</span><span class="p">:</span>
@@ -324,7 +324,7 @@
 		<span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
 			<span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Unknown attribute </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">name</span><span class="p">)</span>
 
-	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># string display name which is used for log statements etc</span>
+	<span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># string display name which is used for log statements etc</span>
 		<span class="sd">&quot;&quot;&quot; Returns a display name including the target name and the target type (class) &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stringvalue</span>
 
@@ -439,7 +439,7 @@
 			<span class="k">else</span><span class="p">:</span>
 				<span class="n">value</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 			<span class="c1">#assert &#39;0x&#39; not in value</span>
-			<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;option </span><span class="si">{k}</span><span class="s1">=</span><span class="si">{value}</span><span class="s1">&#39;</span><span class="p">)</span>
+			<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;option </span><span class="si">{k}</span><span class="s1">=</span><span class="si">{value}</span><span class="s1">&#39;</span><span class="p">)</span>
 		<span class="k">return</span> <span class="n">result</span>
 
 <div class="viewcode-block" id="BaseTarget.registerImplicitInput"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.registerImplicitInput">[docs]</a>	<span class="k">def</span> <span class="nf">registerImplicitInput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
@@ -640,7 +640,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="kn">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
 </pre></div>
 
            </div>

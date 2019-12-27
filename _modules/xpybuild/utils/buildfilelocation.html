@@ -188,7 +188,7 @@
 	
 	<span class="n">_currentBuildFile</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># for internal use only; last item indicates the file currently being parsed</span>
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raiseOnError</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raiseOnError</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Constructs a new instance by inspecting the stack to find what part </span>
 <span class="sd">		of the build file we&#39;re currently processing. </span>
@@ -221,7 +221,7 @@
 			<span class="k">if</span> <span class="n">raiseOnError</span><span class="p">:</span>
 				<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot find the location in source build file&#39;</span><span class="p">)</span>
 	
-	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buildFile</span><span class="p">:</span> <span class="k">return</span> <span class="n">formatFileLocation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buildFile</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineNumber</span><span class="p">)</span>
 		<span class="k">return</span> <span class="s1">&#39;&lt;unknown build file location&gt;&#39;</span>
 		

@@ -201,8 +201,8 @@
 <span class="sd">	@param file: a path relative to the directory containing this file. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 
-	<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="k">import</span> <span class="n">getBuildInitializationContext</span>
-	<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="k">import</span> <span class="n">BuildFileLocation</span>
+	<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="kn">import</span> <span class="n">getBuildInitializationContext</span>
+	<span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="kn">import</span> <span class="n">BuildFileLocation</span>
 
 	<span class="n">file</span> <span class="o">=</span> <span class="n">getBuildInitializationContext</span><span class="p">()</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 
@@ -245,14 +245,14 @@
 <span class="sd">	Returns the flattened list of targets. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	
-	<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="k">import</span> <span class="n">getBuildInitializationContext</span>
+	<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="kn">import</span> <span class="n">getBuildInitializationContext</span>
 	<span class="n">targets</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
 	<span class="n">getBuildInitializationContext</span><span class="p">()</span><span class="o">.</span><span class="n">defineAtomicTargetGroup</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
 	<span class="k">return</span> <span class="n">targets</span></div>
 
 <div class="viewcode-block" id="requireXpybuildVersion"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.requireXpybuildVersion">[docs]</a><span class="k">def</span> <span class="nf">requireXpybuildVersion</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Checks that this xpybuild is at least a certain version number. &quot;&quot;&quot;</span>
-	<span class="kn">from</span> <span class="nn">xpybuild.utils.stringutils</span> <span class="k">import</span> <span class="n">compareVersions</span>
+	<span class="kn">from</span> <span class="nn">xpybuild.utils.stringutils</span> <span class="kn">import</span> <span class="n">compareVersions</span>
 	<span class="k">if</span> <span class="n">compareVersions</span><span class="p">(</span><span class="n">XPYBUILD_VERSION</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;This build file requires xpyBuild at least version &quot;</span><span class="o">+</span><span class="n">version</span><span class="o">+</span><span class="s2">&quot; but this is xpyBuild &quot;</span><span class="o">+</span><span class="n">XPYBUILD_VERSION</span><span class="p">)</span></div>
 
 <span class="n">requireXpyBuildVersion</span> <span class="o">=</span> <span class="n">requireXpybuildVersion</span>
@@ -265,7 +265,7 @@
 <div class="viewcode-block" id="registerPreBuildCheck"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.registerPreBuildCheck">[docs]</a><span class="k">def</span> <span class="nf">registerPreBuildCheck</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Defines a check which will be called after any clean but before any build actions take place.</span>
 <span class="sd">	    fn should be a functor that takes a context and raises a BuildException if the check fails. &quot;&quot;&quot;</span>
-	<span class="kn">from</span> <span class="nn">buildcontext</span> <span class="k">import</span> <span class="n">getBuildInitializationContext</span>
+	<span class="kn">from</span> <span class="nn">buildcontext</span> <span class="kn">import</span> <span class="n">getBuildInitializationContext</span>
 	<span class="n">getBuildInitializationContext</span><span class="p">()</span><span class="o">.</span><span class="n">registerPreBuildCheck</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StringFormatter"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.StringFormatter">[docs]</a><span class="k">class</span> <span class="nc">StringFormatter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -273,11 +273,11 @@
 <span class="sd">	in situations where a function is needed to add a suffix/prefix for the </span>
 <span class="sd">	value of an option. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatstring</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatstring</span><span class="p">):</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">fmt</span> <span class="o">=</span> <span class="n">formatstring</span>
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="s1">&#39;StringFormatter&lt;&quot;</span><span class="si">%s</span><span class="s1">&quot;&gt;&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span>
-	<span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 		<span class="k">assert</span> <span class="ow">not</span> <span class="n">kwargs</span>
 		<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
@@ -287,11 +287,11 @@
 <span class="sd">		 Formatter is just applied to the basename part of the filename,</span>
 <span class="sd">		 the dirname part is preserved as-is.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatstring</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatstring</span><span class="p">):</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">fmt</span> <span class="o">=</span> <span class="n">formatstring</span>
-	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="s1">&#39;FilenameStringFormatter&lt;&quot;</span><span class="si">%s</span><span class="s1">&quot;&gt;&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span>
-	<span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 		<span class="k">assert</span> <span class="ow">not</span> <span class="n">kwargs</span>
 		<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span>
 		<span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span></div>
@@ -316,28 +316,28 @@
 				<span class="n">path</span><span class="o">=</span><span class="n">parentpackage</span><span class="o">.</span><span class="n">__path__</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="p">(</span><span class="n">parentpackage</span><span class="o">.</span><span class="vm">__name__</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;xpybuild.&#39;</span><span class="p">):]</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)):</span>
 			<span class="n">__log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;enableLegacyXpybuildModuleNames: Importing legacy package name </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">modulename</span><span class="p">)</span>
 			<span class="k">if</span> <span class="n">modulename</span><span class="o">!=</span><span class="s1">&#39;buildcommon&#39;</span><span class="p">:</span> <span class="c1"># first make sure the original one has been imported</span>
-				<span class="n">exec</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;import xpybuild.</span><span class="si">{modulename}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">{})</span>
+				<span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;import xpybuild.</span><span class="si">{modulename}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">{})</span>
 			<span class="c1"># then define an alias</span>
-			<span class="n">exec</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;sys.modules[&quot;</span><span class="si">{modulename}</span><span class="s1">&quot;] = sys.modules[&quot;xpybuild.</span><span class="si">{modulename}</span><span class="s1">&quot;]&#39;</span><span class="p">)</span>
+			<span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sys.modules[&quot;</span><span class="si">{modulename}</span><span class="s1">&quot;] = sys.modules[&quot;xpybuild.</span><span class="si">{modulename}</span><span class="s1">&quot;]&#39;</span><span class="p">)</span>
 	<span class="k">assert</span> <span class="s1">&#39;utils.fileutils&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span> <span class="c1"># sanity check that it worked</span>
 	<span class="k">assert</span> <span class="s1">&#39;targets.copy&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span> <span class="c1"># sanity check that it worked</span>
 
 	<span class="c1"># aliases for modules we folded into other modules in v3.0, or moved</span>
-	<span class="n">exec</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;sys.modules[&quot;propertyfunctors&quot;] = sys.modules[&quot;xpybuild.propertysupport&quot;]&#39;</span><span class="p">)</span>
-	<span class="n">exec</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;sys.modules[&quot;buildexceptions&quot;] = sys.modules[&quot;xpybuild.utils.buildexceptions&quot;]&#39;</span><span class="p">)</span>
+	<span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sys.modules[&quot;propertyfunctors&quot;] = sys.modules[&quot;xpybuild.propertysupport&quot;]&#39;</span><span class="p">)</span>
+	<span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sys.modules[&quot;buildexceptions&quot;] = sys.modules[&quot;xpybuild.utils.buildexceptions&quot;]&#39;</span><span class="p">)</span>
 
 	<span class="n">xpybuild</span><span class="o">.</span><span class="n">targets</span><span class="o">.</span><span class="n">touch</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s2">&quot;xpybuild.targets.writefile&quot;</span><span class="p">]</span>
-	<span class="n">exec</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;sys.modules[&quot;targets.touch&quot;] = sys.modules[&quot;xpybuild.targets.writefile&quot;]&#39;</span><span class="p">)</span>
+	<span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sys.modules[&quot;targets.touch&quot;] = sys.modules[&quot;xpybuild.targets.writefile&quot;]&#39;</span><span class="p">)</span>
 
 	<span class="n">xpybuild</span><span class="o">.</span><span class="n">targets</span><span class="o">.</span><span class="n">unpack</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s2">&quot;xpybuild.targets.archive&quot;</span><span class="p">]</span>
-	<span class="n">exec</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;sys.modules[&quot;targets.unpack&quot;] = sys.modules[&quot;xpybuild.targets.archive&quot;]&#39;</span><span class="p">)</span>
+	<span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sys.modules[&quot;targets.unpack&quot;] = sys.modules[&quot;xpybuild.targets.archive&quot;]&#39;</span><span class="p">)</span>
 	<span class="n">xpybuild</span><span class="o">.</span><span class="n">targets</span><span class="o">.</span><span class="n">zip</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s2">&quot;xpybuild.targets.archive&quot;</span><span class="p">]</span>
-	<span class="n">exec</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;sys.modules[&quot;targets.zip&quot;] = sys.modules[&quot;xpybuild.targets.archive&quot;]&#39;</span><span class="p">)</span>
+	<span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sys.modules[&quot;targets.zip&quot;] = sys.modules[&quot;xpybuild.targets.archive&quot;]&#39;</span><span class="p">)</span>
 	<span class="n">xpybuild</span><span class="o">.</span><span class="n">targets</span><span class="o">.</span><span class="n">tar</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s2">&quot;xpybuild.targets.archive&quot;</span><span class="p">]</span>
-	<span class="n">exec</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;sys.modules[&quot;targets.tar&quot;] = sys.modules[&quot;xpybuild.targets.archive&quot;]&#39;</span><span class="p">)</span></div>
+	<span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sys.modules[&quot;targets.tar&quot;] = sys.modules[&quot;xpybuild.targets.archive&quot;]&#39;</span><span class="p">)</span></div>
 
 <span class="kn">import</span> <span class="nn">xpybuild.utils.fileutils</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="k">import</span> <span class="n">flatten</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="kn">import</span> <span class="n">flatten</span>
 
 <span class="n">isDirPath</span> <span class="o">=</span> <span class="n">xpybuild</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">fileutils</span><span class="o">.</span><span class="n">isDirPath</span>
 <span class="sd">&quot;&quot;&quot;Returns true if the path is a directory (ends with a slash, ``/`` or ``\\\\``). &quot;&quot;&quot;</span>

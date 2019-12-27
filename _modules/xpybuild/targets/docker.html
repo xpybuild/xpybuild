@@ -170,14 +170,14 @@
 
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">inspect</span>
 
-<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="k">import</span> <span class="n">BaseTarget</span>
-<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="k">import</span> <span class="n">PathSet</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">import</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">normLongPath</span><span class="p">,</span> <span class="n">mkdir</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="k">import</span> <span class="n">call</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="k">import</span> <span class="n">BuildException</span>
-<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="k">import</span> <span class="n">ProcessOutputHandler</span>
+<span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">xpybuild.basetarget</span> <span class="kn">import</span> <span class="n">BaseTarget</span>
+<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="kn">import</span> <span class="n">PathSet</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="kn">import</span> <span class="n">openForWrite</span><span class="p">,</span> <span class="n">normLongPath</span><span class="p">,</span> <span class="n">mkdir</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="kn">import</span> <span class="n">call</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="kn">import</span> <span class="n">BuildException</span>
+<span class="kn">from</span> <span class="nn">xpybuild.utils.outputhandler</span> <span class="kn">import</span> <span class="n">ProcessOutputHandler</span>
 
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;docker.path&#39;</span><span class="p">,</span> <span class="s1">&#39;docker&#39;</span><span class="p">)</span>
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;docker.host&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -188,7 +188,7 @@
 	<span class="sd">&quot;&quot;&quot; Target that runs commands in docker, using stamp files for up-to-dateness</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagename</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">depimage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dockerfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">buildArgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dockerArgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagename</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">depimage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dockerfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">buildArgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dockerArgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		imagename: the name/tag of the image to build</span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -218,7 +218,7 @@
 		<span class="n">environs</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;DOCKER_HOST&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.host&#39;</span><span class="p">)</span> <span class="p">}</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOption</span><span class="p">(</span><span class="s1">&#39;docker.host&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span></div>
 
 <span class="k">class</span> <span class="nc">DockerBuild</span><span class="p">(</span><span class="n">DockerBase</span><span class="p">):</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagename</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">depimage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dockerfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">buildArgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dockerArgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagename</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">depimage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dockerfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">buildArgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dockerArgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Build a docker image.</span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -246,7 +246,7 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">updateStampFile</span><span class="p">()</span>
 
 <span class="k">class</span> <span class="nc">DockerPushTag</span><span class="p">(</span><span class="n">DockerBase</span><span class="p">):</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagename</span><span class="p">,</span> <span class="n">fromimage</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagename</span><span class="p">,</span> <span class="n">fromimage</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Push a docker tag from the specified image. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
