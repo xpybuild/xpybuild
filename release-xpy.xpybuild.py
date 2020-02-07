@@ -43,6 +43,7 @@ with open('xpybuild/XPYBUILD_VERSION') as f: defineStringProperty('VERSION', f.r
 CustomCommand('${OUTPUT_DIR}/docs/', 
 	command=[ 
 		sys.executable,
+		'-Wignore', # since we get some FutureWarnings from Sphinx in some versions
 		'-m', 'sphinx',
 		'-M', 'html',
 		PathSet('./docs/'), # source dir
