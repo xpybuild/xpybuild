@@ -129,12 +129,16 @@ class BaseTarget(Composable):
 		self.__priority = 0.0 # default so we can go bigger or smaller
 		self.log = logging.getLogger(self.__class__.__name__)
 		
+		# put the class first, since it results in better ordering (e.g. for errors)
+		# use a space to delimit these to make it easier to copy to the clipboard by double-clicking
+		self.__stringvalue = f'<{self.type}> {self.name}'
+		
 		init = getBuildInitializationContext()
 		if not init: # doc-test mode
 			self.location = BuildFileLocation(raiseOnError=False)
 		else: 
 			self.location = BuildFileLocation(raiseOnError=True)
-			init.registerTarget(self)
+			init.registerTarget(self) # this can throw
 
 		# should ensure changes to the build file cause a rebuild? probs no need
 		# PathSet will perform all necessary flattening etc
@@ -144,10 +148,6 @@ class BaseTarget(Composable):
 		self.__workDir = None
 		
 		self.__registeredImplicitInputs = []
-
-		# put the class first, since it results in better ordering (e.g. for errors)
-		# use a space to delimit these to make it easier to copy to the clipboard by double-clicking
-		self.__stringvalue = f'<{self.type}> {self.name}'
 		
 		# aliases for pre-3.0
 		self.addHashableImplicitInputOption = self.registerImplicitInputOption
