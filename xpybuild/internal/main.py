@@ -421,7 +421,7 @@ def main(args):
 			print(file=stdout)
 
 			if allTargets:
-				print("%d tags(s) are defined: "%(len(init.tags())), file=stdout)
+				print("%d tag(s) are defined: "%(len(init.tags())), file=stdout)
 				for t in sorted(['   %-15s (%d targets)'%(t, len(init.tags()[t])) for t in init.tags()]):
 					print(t, file=stdout)
 
