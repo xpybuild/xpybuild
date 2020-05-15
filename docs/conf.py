@@ -102,6 +102,8 @@ def process_docstring_fixEpydocIndentation(app, what, name, obj, options, lines)
 	
 		i+=1
 
+#autosummary_generate = True
+
 import xpybuild
 autodocgen_config = {
 	'modules':[xpybuild],
