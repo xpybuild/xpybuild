@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -223,9 +223,9 @@ source to destination file contents. Several pre-defined mappers are provided:</
 </table>
 <div class="section" id="copy">
 <h2>Copy<a class="headerlink" href="#copy" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.copy.Copy">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">Copy</code><span class="sig-paren">(</span><em class="sig-param">dest</em>, <em class="sig-param">src</em>, <em class="sig-param">mode=None</em>, <em class="sig-param">implicitDependencies=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#Copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.Copy" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">Copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dest</span></em>, <em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">implicitDependencies</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#Copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.Copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Target that copies input file(s) to an output file or directory.</p>
 <p>The parent directory will be created if it doesn’t exist already.</p>
@@ -275,9 +275,9 @@ use by subclasses, do not set this explicitly.</p></li>
 </div>
 <div class="section" id="filteredcopy">
 <h2>FilteredCopy<a class="headerlink" href="#filteredcopy" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.copy.FilteredCopy">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">FilteredCopy</code><span class="sig-paren">(</span><em class="sig-param">dest</em>, <em class="sig-param">src</em>, <em class="sig-param">*mappers</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FilteredCopy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FilteredCopy" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">FilteredCopy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dest</span></em>, <em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">mappers</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FilteredCopy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FilteredCopy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.targets.copy.Copy" title="xpybuild.targets.copy.Copy"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.targets.copy.Copy</span></code></a></p>
 <p>Target that copies one or more input text file(s) to an output file or directory, 
 filtering each line through the specified line mappers.</p>
@@ -326,9 +326,9 @@ check.</p>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.targets.copy.FilteredCopy.getHashableImplicitInputs">
-<code class="sig-name descname">getHashableImplicitInputs</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FilteredCopy.getHashableImplicitInputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FilteredCopy.getHashableImplicitInputs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getHashableImplicitInputs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FilteredCopy.getHashableImplicitInputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FilteredCopy.getHashableImplicitInputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Include the mapper descriptions in the implicit dependencies.</p>
 </dd></dl>
 
@@ -337,7 +337,7 @@ check.</p>
 </div>
 <div class="section" id="filecontentsmapper">
 <h2>FileContentsMapper<a class="headerlink" href="#filecontentsmapper" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.copy.FileContentsMapper">
 <em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">FileContentsMapper</code><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -346,7 +346,7 @@ check.</p>
 will be dealing directly with platform-specific n and r 
 characters; python’s os.linesep should be used where a 
 platform-netural new line character is required.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.targets.copy.FileContentsMapper.getInstance">
 <code class="sig-name descname">getInstance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.getInstance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.getInstance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when a target begins to use a (potentially shared) line mapper. 
@@ -358,17 +358,17 @@ previously encountered lines), you need to override this and return a new instan
 either by calling your constructor or use Python’s copy.deepcopy() method.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.targets.copy.FileContentsMapper.prepare">
-<code class="sig-name descname">prepare</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.prepare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.prepare" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">prepare</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.prepare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.prepare" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called once the build process has started and before any other method on this mapper 
 (other than getInstance) to allow the mapper to initialize its internal 
 variables using the build context, for example by expanding build properties.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.targets.copy.FileContentsMapper.startFile">
-<code class="sig-name descname">startFile</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">src</em>, <em class="sig-param">dest</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.startFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.startFile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">startFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">dest</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.startFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.startFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when the mapper starts to process a new file.</p>
 <p>Can be used to prevent the mapper handling certain files. 
 For stateful mappers (with an implementation of L(getInstance), this 
@@ -388,9 +388,9 @@ it should be ignored for this file.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.targets.copy.FileContentsMapper.mapLine">
-<code class="sig-name descname">mapLine</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">line</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.mapLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.mapLine" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mapLine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">line</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.mapLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.mapLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called for every line in the file, returning the original line, a changed line, or None if the line should be deleted.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -402,29 +402,29 @@ it should be ignored for this file.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.targets.copy.FileContentsMapper.getHeader">
-<code class="sig-name descname">getHeader</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.getHeader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.getHeader" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getHeader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.getHeader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.getHeader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called at the start of every file. By default returns None but can return 
 a string that will be written to the target file before anything else. 
 Use os.linesep for new lines.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.targets.copy.FileContentsMapper.getFooter">
-<code class="sig-name descname">getFooter</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.getFooter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.getFooter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getFooter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.getFooter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.getFooter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called at the end of every file. By default returns None but can return 
 a string that will be written to the target file after everything else. 
 Use os.linesep for new lines.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.targets.copy.FileContentsMapper.getDescription">
-<code class="sig-name descname">getDescription</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.getDescription"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.getDescription" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getDescription</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.getDescription"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.getDescription" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a string description of the transformation, to be used for up-to-date rebuild checking</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.targets.copy.FileContentsMapper.getDependencies">
 <code class="sig-name descname">getDependencies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#FileContentsMapper.getDependencies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.FileContentsMapper.getDependencies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Advanced option for specifying paths that are required to be read by this line mapper, 
@@ -436,9 +436,9 @@ which therefore should be dependencies of the target that uses it. Returns a lis
 </div>
 <div class="section" id="omitlines">
 <h2>OmitLines<a class="headerlink" href="#omitlines" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.copy.OmitLines">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">OmitLines</code><span class="sig-paren">(</span><em class="sig-param">match</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#OmitLines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.OmitLines" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">OmitLines</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">match</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#OmitLines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.OmitLines" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.targets.copy.FileContentsMapper" title="xpybuild.targets.copy.FileContentsMapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.targets.copy.FileContentsMapper</span></code></a></p>
 <p>Omits lines from the input which contain the specified regular 
 expression. Use re.escape() on the input if a simple substring match is 
@@ -448,9 +448,9 @@ required.</p>
 </div>
 <div class="section" id="stringreplacelinemapper">
 <h2>StringReplaceLineMapper<a class="headerlink" href="#stringreplacelinemapper" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.copy.StringReplaceLineMapper">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">StringReplaceLineMapper</code><span class="sig-paren">(</span><em class="sig-param">old</em>, <em class="sig-param">new</em>, <em class="sig-param">disablePropertyExpansion=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#StringReplaceLineMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.StringReplaceLineMapper" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">StringReplaceLineMapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">old</span></em>, <em class="sig-param"><span class="n">new</span></em>, <em class="sig-param"><span class="n">disablePropertyExpansion</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#StringReplaceLineMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.StringReplaceLineMapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.targets.copy.FileContentsMapper" title="xpybuild.targets.copy.FileContentsMapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.targets.copy.FileContentsMapper</span></code></a></p>
 <p>Performs a simple string replacement for a single key/value.
 Any ${…} xpybuild properties in the old and new strings will be expanded.</p>
@@ -466,9 +466,9 @@ old and new strings.</p>
 </div>
 <div class="section" id="regexlinemapper">
 <h2>RegexLineMapper<a class="headerlink" href="#regexlinemapper" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.copy.RegexLineMapper">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">RegexLineMapper</code><span class="sig-paren">(</span><em class="sig-param">regex</em>, <em class="sig-param">repl</em>, <em class="sig-param">disablePropertyExpansion=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#RegexLineMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.RegexLineMapper" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">RegexLineMapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">regex</span></em>, <em class="sig-param"><span class="n">repl</span></em>, <em class="sig-param"><span class="n">disablePropertyExpansion</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#RegexLineMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.RegexLineMapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.targets.copy.FileContentsMapper" title="xpybuild.targets.copy.FileContentsMapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.targets.copy.FileContentsMapper</span></code></a></p>
 <p>Performs a regex substitution ; any ${…} xpybuild properties in 
 the replacement string will be expanded, but not in the regex string.</p>
@@ -480,9 +480,9 @@ is required.</p>
 </div>
 <div class="section" id="insertfilecontentslinemapper">
 <h2>InsertFileContentsLineMapper<a class="headerlink" href="#insertfilecontentslinemapper" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.copy.InsertFileContentsLineMapper">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">InsertFileContentsLineMapper</code><span class="sig-paren">(</span><em class="sig-param">replacementToken</em>, <em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#InsertFileContentsLineMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.InsertFileContentsLineMapper" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">InsertFileContentsLineMapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">replacementToken</span></em>, <em class="sig-param"><span class="n">filepath</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#InsertFileContentsLineMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.InsertFileContentsLineMapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.targets.copy.FileContentsMapper" title="xpybuild.targets.copy.FileContentsMapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.targets.copy.FileContentsMapper</span></code></a></p>
 <p>Replace instances of the specified token with the entire contents of the specified file.</p>
 <p>filepath must be an absolute path, not a build dir relative path.</p>
@@ -491,9 +491,9 @@ is required.</p>
 </div>
 <div class="section" id="addfileheader">
 <h2>AddFileHeader<a class="headerlink" href="#addfileheader" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.copy.AddFileHeader">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">AddFileHeader</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">disablePropertyExpansion=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#AddFileHeader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.AddFileHeader" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">AddFileHeader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">disablePropertyExpansion</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#AddFileHeader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.AddFileHeader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.targets.copy.FileContentsMapper" title="xpybuild.targets.copy.FileContentsMapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.targets.copy.FileContentsMapper</span></code></a></p>
 <p>Add the specified string as a header at the 
 start of the file. Note that if a trailing newline is required before 
@@ -513,9 +513,9 @@ old and new strings.</p>
 </div>
 <div class="section" id="addfilefooter">
 <h2>AddFileFooter<a class="headerlink" href="#addfilefooter" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.copy.AddFileFooter">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">AddFileFooter</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">disablePropertyExpansion=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#AddFileFooter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.AddFileFooter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">AddFileFooter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">disablePropertyExpansion</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#AddFileFooter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.AddFileFooter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.targets.copy.FileContentsMapper" title="xpybuild.targets.copy.FileContentsMapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.targets.copy.FileContentsMapper</span></code></a></p>
 <p>Add the specified string as a footer at the 
 end of the file. Note that if a trailing newline is required at the end 
@@ -535,9 +535,9 @@ old and new strings.</p>
 </div>
 <div class="section" id="createreplacedictlinemappers">
 <h2>createReplaceDictLineMappers<a class="headerlink" href="#createreplacedictlinemappers" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.targets.copy.createReplaceDictLineMappers">
-<code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">createReplaceDictLineMappers</code><span class="sig-paren">(</span><em class="sig-param">replaceDict</em>, <em class="sig-param">replaceMarker='&#64;'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#createReplaceDictLineMappers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.createReplaceDictLineMappers" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">createReplaceDictLineMappers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">replaceDict</span></em>, <em class="sig-param"><span class="n">replaceMarker</span><span class="o">=</span><span class="default_value">'&#64;'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#createReplaceDictLineMappers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.createReplaceDictLineMappers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a list of line mappers based on the contents of the specified replaceDict, where 
 values containing ${…} properties will be expanded out.</p>
 <dl class="field-list simple">

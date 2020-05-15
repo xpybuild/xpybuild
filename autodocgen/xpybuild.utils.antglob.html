@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -187,9 +187,9 @@
 <p>Ant-style <code class="docutils literal notranslate"><span class="pre">**/*</span></code> globbing functionality, as used by <a class="reference internal" href="xpybuild.pathsets.html#xpybuild.pathsets.FindPaths" title="xpybuild.pathsets.FindPaths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.pathsets.FindPaths</span></code></a>.</p>
 <div class="section" id="globpatternset">
 <h2>GlobPatternSet<a class="headerlink" href="#globpatternset" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.antglob.GlobPatternSet">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.antglob.</code><code class="sig-name descname">GlobPatternSet</code><span class="sig-paren">(</span><em class="sig-param">patterns</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.antglob.</code><code class="sig-name descname">GlobPatternSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">patterns</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Holds a set of one or more ant-style glob patterns, which can be used to 
 filter a set of paths based on whether each path matches any of the 
@@ -201,9 +201,9 @@ excludes.</p>
 characters) or ‘**’ (indicating zero or more characters including slashes). 
 The ‘?’ character is not supported.</p>
 <p>Do not call the <code class="docutils literal notranslate"><span class="pre">GlobPatternSet()</span></code> constructor - use <a class="reference internal" href="#xpybuild.utils.antglob.GlobPatternSet.create" title="xpybuild.utils.antglob.GlobPatternSet.create"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create</span></code></a> instead of constructing directly.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.antglob.GlobPatternSet.create">
-<em class="property">static </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param">patterns</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet.create" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">patterns</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new GlobPatternSet for matching any of the specified patterns.</p>
 <p>Patterns ending with a ‘/’ can only match directories, and patterns without 
 can only match files.</p>
@@ -217,9 +217,9 @@ Backslashes are not permitted. Empty pattern strings are ignored.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.antglob.GlobPatternSet.getPathMatches">
-<code class="sig-name descname">getPathMatches</code><span class="sig-paren">(</span><em class="sig-param">rootdir</em>, <em class="sig-param">filenames=None</em>, <em class="sig-param">dirnames=None</em>, <em class="sig-param">unusedPatternsTracker=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet.getPathMatches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet.getPathMatches" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getPathMatches</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rootdir</span></em>, <em class="sig-param"><span class="n">filenames</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dirnames</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">unusedPatternsTracker</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet.getPathMatches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet.getPathMatches" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check these patterns against one or more basenames (dir names and filenames) 
 within a single root directory and return the list which match at least 
 one pattern.</p>
@@ -258,9 +258,9 @@ dirnames list.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.antglob.GlobPatternSet.removeUnmatchableDirectories">
-<code class="sig-name descname">removeUnmatchableDirectories</code><span class="sig-paren">(</span><em class="sig-param">rootdir</em>, <em class="sig-param">dirnames</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet.removeUnmatchableDirectories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet.removeUnmatchableDirectories" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">removeUnmatchableDirectories</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rootdir</span></em>, <em class="sig-param"><span class="n">dirnames</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet.removeUnmatchableDirectories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet.removeUnmatchableDirectories" title="Permalink to this definition">¶</a></dt>
 <dd><p>Modifies the specifies list of dirnames, removing any which cannot possibly 
 match this include pattern. This is a useful optimization for os.walk.</p>
 <p>As this function is intended as a quick optimization it may leave in some 
@@ -278,35 +278,35 @@ Can be empty but not None.</p></li>
 <dd class="field-even"><p>the same dirnames instance passed in (with any modifications made).</p>
 </dd>
 </dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;**&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;**&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
 <span class="go">[&#39;dir1&#39;, &#39;dir2&#39;]</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;**/&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;**/&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
 <span class="go">[&#39;dir1&#39;, &#39;dir2&#39;]</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;**/foo&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;**/foo&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
 <span class="go">[&#39;dir1&#39;, &#39;dir2&#39;]</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;a/b/c/d/**&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;a/b/c/d/**&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
 <span class="go">[]</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;abc/def/dir1/d/**&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;abc/def/dir1/d/**&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
 <span class="go">[&#39;dir1&#39;]</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;abc/def/dir1/d/**/&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">GlobPatternSet</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="s1">&#39;abc/def/dir1/d/**/&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="s1">&#39;abc/def/&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;dir1&#39;</span><span class="p">,</span> <span class="s1">&#39;dir2&#39;</span><span class="p">])</span>
 <span class="go">[&#39;dir1&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.antglob.GlobPatternSet.matches">
-<code class="sig-name descname">matches</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet.matches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet.matches" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">matches</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobPatternSet.matches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobPatternSet.matches" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if the specified path matches any of the patterns in this set 
 or False if not.</p>
 <p>Note that <a class="reference internal" href="#xpybuild.utils.antglob.GlobPatternSet.getPathMatches" title="xpybuild.utils.antglob.GlobPatternSet.getPathMatches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getPathMatches</span></code></a> is considerably more efficient than this method 
@@ -324,14 +324,14 @@ backslashes, and must end with a slash if it is a directory.</p>
 </div>
 <div class="section" id="globunusedpatterntracker">
 <h2>GlobUnusedPatternTracker<a class="headerlink" href="#globunusedpatterntracker" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.antglob.GlobUnusedPatternTracker">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.antglob.</code><code class="sig-name descname">GlobUnusedPatternTracker</code><span class="sig-paren">(</span><em class="sig-param">patternSet</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobUnusedPatternTracker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobUnusedPatternTracker" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.antglob.</code><code class="sig-name descname">GlobUnusedPatternTracker</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">patternSet</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobUnusedPatternTracker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobUnusedPatternTracker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for recording which patterns have successfully been used in a match, 
 in order to provide error messages or warnings listing unused patterns.</p>
 <p>This object should not be shared between threads.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.antglob.GlobUnusedPatternTracker.getUnusedPatterns">
 <code class="sig-name descname">getUnusedPatterns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#GlobUnusedPatternTracker.getUnusedPatterns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.GlobUnusedPatternTracker.getUnusedPatterns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of the patterns that have not been used.</p>
@@ -342,211 +342,211 @@ in order to provide error messages or warnings listing unused patterns.</p>
 </div>
 <div class="section" id="antglobmatch">
 <h2>antGlobMatch<a class="headerlink" href="#antglobmatch" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.antglob.antGlobMatch">
-<code class="sig-prename descclassname">xpybuild.utils.antglob.</code><code class="sig-name descname">antGlobMatch</code><span class="sig-paren">(</span><em class="sig-param">pattern</em>, <em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#antGlobMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.antGlobMatch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.antglob.</code><code class="sig-name descname">antGlobMatch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pattern</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/antglob.html#antGlobMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.antglob.antGlobMatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Matches a path against an ant-style glob pattern which may contain 
 <code class="docutils literal notranslate"><span class="pre">*</span></code> or <code class="docutils literal notranslate"><span class="pre">**</span></code>.</p>
 <p>If the path is a directory, it must end with a slash. 
 Patterns ending with a <code class="docutils literal notranslate"><span class="pre">/</span></code> can only match directories, and patterns without 
 can only match files.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*.b&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*.b&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*.b&#39;</span><span class="p">,</span> <span class="s1">&#39;a.b&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*.b&#39;</span><span class="p">,</span> <span class="s1">&#39;a.b&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;b.*&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;b.*&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;b.*&#39;</span><span class="p">,</span> <span class="s1">&#39;b.a&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;b.*&#39;</span><span class="p">,</span> <span class="s1">&#39;b.a&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;ab&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;ab&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;axxxb&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;axxxb&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;axxx&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;axxx&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;xxxb&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a*b&#39;</span><span class="p">,</span> <span class="s1">&#39;xxxb&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b.*/c&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b.x/c&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b.*/c&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b.x/c&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b.*/c&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b.*/c&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/c&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/c&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*c&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*c&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/b/c&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/b/c&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/d&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/d&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/**/b&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/**/b&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b/**&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b/**&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b/**/*&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b/**/*&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/**/b&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/**/b&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b/**&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b/**&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/**/d/e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d/e&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/**/d/e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d/e&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*x/**/&#39;</span><span class="p">,</span> <span class="s1">&#39;x/a/b/&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*x/**/&#39;</span><span class="p">,</span> <span class="s1">&#39;x/a/b/&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*x/**&#39;</span><span class="p">,</span> <span class="s1">&#39;x/a/b&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*x/**&#39;</span><span class="p">,</span> <span class="s1">&#39;x/a/b&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*x/**/&#39;</span><span class="p">,</span> <span class="s1">&#39;x/a/b&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*x/**/&#39;</span><span class="p">,</span> <span class="s1">&#39;x/a/b&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*x/**&#39;</span><span class="p">,</span> <span class="s1">&#39;x/a/b/&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*x/**&#39;</span><span class="p">,</span> <span class="s1">&#39;x/a/b/&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*[[*&#39;</span><span class="p">,</span> <span class="s1">&#39;[[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*[[*&#39;</span><span class="p">,</span> <span class="s1">&#39;xx[[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*ab*&#39;</span><span class="p">,</span> <span class="s1">&#39;abxx&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*[[*&#39;</span><span class="p">,</span> <span class="s1">&#39;[[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*[[*&#39;</span><span class="p">,</span> <span class="s1">&#39;xx[[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*ab*&#39;</span><span class="p">,</span> <span class="s1">&#39;abxx&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*[]*&#39;</span><span class="p">,</span> <span class="s1">&#39;[&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*[]*&#39;</span><span class="p">,</span> <span class="s1">&#39;[&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;aa*.b*c*/&#39;</span><span class="p">,</span> <span class="s1">&#39;aa.bc/&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;aa*.b*c*/&#39;</span><span class="p">,</span> <span class="s1">&#39;aaxxx.bxcxx/&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;aa*.b*c*/&#39;</span><span class="p">,</span> <span class="s1">&#39;aa.bc/&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;aa*.b*c*/&#39;</span><span class="p">,</span> <span class="s1">&#39;aaxxx.bxcxx/&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;aa*b*c*&#39;</span><span class="p">,</span> <span class="s1">&#39;xaabc&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;aa*b*c*&#39;</span><span class="p">,</span> <span class="s1">&#39;xaabc&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;aa*.*c*&#39;</span><span class="p">,</span> <span class="s1">&#39;aaYc&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;aa*.*c*&#39;</span><span class="p">,</span> <span class="s1">&#39;aaYc&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b.x/c.x&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b.x/c.x&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b.x/c.x/d.x&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b.x/c.x/d.x&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/c.x/y/d.x&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/c.x/y/d.x&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/y/c.x/d.x&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/y/c.x/d.x&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/y/c.x/d.x&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/**/*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;a/y/c.x/d.x&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x/&#39;</span><span class="p">,</span> <span class="s1">&#39;a/y/c.x/d.x/&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/*.x/&#39;</span><span class="p">,</span> <span class="s1">&#39;a/y/c.x/d.x/&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b/c/d/e/**&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;a/b/c/d/e/**&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d/e/f/PPP/g/h/i/foo.e&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d/e/f/PPP/g/h/i/foo.e&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;PPP/g/h/i/foo.e&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;PPP/g/h/i/foo.e&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d/e/f/PPP/foo.e&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d/e/f/PPP/foo.e&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/PPP/g/h/i/j/k/l/m/n/o/foo.e&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/PPP/g/h/i/j/k/l/m/n/o/foo.e&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d/e/f/g/h/i/foo.e&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;a/b/c/d/e/f/g/h/i/foo.e&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/**/**/PPP/**/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;f/PPP/x/PPP/foo.e&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/**/**/**/PPP/**/**/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;f/PPP/x/PPP/foo.e&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/f/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;f/PPP/a/b/c/d/e/PPP/f/foo.e&#39;</span><span class="p">)</span> <span class="c1"># this one is debatable (could decide not to match first PPP to allow second to match, but in general hard to reliably detect that condition given any later **s would invalidate any attempt to do it by counting); this behaviour is simpler to describe and more efficient to implement</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;**/PPP/f/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;f/PPP/a/b/c/d/e/PPP/f/foo.e&#39;</span><span class="p">)</span> <span class="c1"># this one is debatable (could decide not to match first PPP to allow second to match, but in general hard to reliably detect that condition given any later **s would invalidate any attempt to do it by counting); this behaviour is simpler to describe and more efficient to implement</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*/**/f/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;f/PPP/a/b/c/d/e/PPP/f/foo.e&#39;</span><span class="p">)</span> 
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antGlobMatch</span><span class="p">(</span><span class="s1">&#39;*/**/f/*.e&#39;</span><span class="p">,</span> <span class="s1">&#39;f/PPP/a/b/c/d/e/PPP/f/foo.e&#39;</span><span class="p">)</span> 
 <span class="go">True</span>
 </pre></div>
 </div>

@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -186,9 +186,9 @@
 <p>Support for identifying the location of the <code class="docutils literal notranslate"><span class="pre">XXX.xpybuild.py</span></code> file currently being parsed.</p>
 <div class="section" id="buildfilelocation">
 <h2>BuildFileLocation<a class="headerlink" href="#buildfilelocation" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.buildfilelocation.BuildFileLocation">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.buildfilelocation.</code><code class="sig-name descname">BuildFileLocation</code><span class="sig-paren">(</span><em class="sig-param">raiseOnError=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildfilelocation.html#BuildFileLocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildfilelocation.BuildFileLocation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.buildfilelocation.</code><code class="sig-name descname">BuildFileLocation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raiseOnError</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildfilelocation.html#BuildFileLocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildfilelocation.BuildFileLocation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents information about a location in the user’s build file.</p>
 <p>Constructs a new instance by inspecting the stack to find what part 
@@ -208,9 +208,9 @@ build files.</p>
 </div>
 <div class="section" id="formatfilelocation">
 <h2>formatFileLocation<a class="headerlink" href="#formatfilelocation" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.buildfilelocation.formatFileLocation">
-<code class="sig-prename descclassname">xpybuild.utils.buildfilelocation.</code><code class="sig-name descname">formatFileLocation</code><span class="sig-paren">(</span><em class="sig-param">path: str</em>, <em class="sig-param">lineNumber: int</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/xpybuild/utils/buildfilelocation.html#formatFileLocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildfilelocation.formatFileLocation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.buildfilelocation.</code><code class="sig-name descname">formatFileLocation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">lineNumber</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/xpybuild/utils/buildfilelocation.html#formatFileLocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildfilelocation.formatFileLocation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Formats a file and a line number for output.</p>
 <p>Uses a format that works in vim and is easy to adapt for other editors.</p>
 </dd></dl>

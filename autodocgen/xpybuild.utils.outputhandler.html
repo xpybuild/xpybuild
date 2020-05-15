@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -187,9 +187,9 @@
 and decide whether warnings, errors or fatal build failures should be raised as a result.</p>
 <div class="section" id="processoutputhandler">
 <h2>ProcessOutputHandler<a class="headerlink" href="#processoutputhandler" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.outputhandler.ProcessOutputHandler">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.outputhandler.</code><code class="sig-name descname">ProcessOutputHandler</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">treatStdErrAsErrors=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.outputhandler.</code><code class="sig-name descname">ProcessOutputHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>An extensible class for handling the stdout/stderr output lines and return code 
 from a process, accumulating error and warnings, and converting into 
@@ -219,27 +219,27 @@ the final error message if the only error is that there are warnings
 </div></blockquote>
 <p>This class is not thread-safe, so locking should be provided by the caller 
 if multiple threads are in use (e.g. for reading stdout and stderr in parallel).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">ProcessOutputHandler</span><span class="p">(</span><span class="s1">&#39;myhandler&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">ProcessOutputHandler</span><span class="p">(</span><span class="s1">&#39;myhandler&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handleLine</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;error: My error&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handleLine</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;error: My error 2&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">getErrors</span><span class="p">())</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">getErrors</span><span class="p">())</span>
 <span class="go">2</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handleEnd</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handleEnd</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
 <span class="gr">xpybuild.utils.buildexceptions.BuildException</span>: <span class="n">2 errors, first is: error: My error</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">ProcessOutputHandler</span><span class="p">(</span><span class="s1">&#39;myhandler&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">ProcessOutputHandler</span><span class="p">(</span><span class="s1">&#39;myhandler&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handleLine</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;some message&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handleLine</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;later message&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handleEnd</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handleEnd</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
 <span class="gr">xpybuild.utils.buildexceptions.BuildException</span>: <span class="n">myhandler failed with return code 5; no errors reported, last line was: later message</span>
@@ -262,29 +262,29 @@ dictionary)</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.outputhandler.ProcessOutputHandler.Options">
 <em class="property">class </em><code class="sig-name descname">Options</code><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler.Options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler.Options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class may be renamed or removed, please do not use it directly.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="xpybuild.utils.outputhandler.ProcessOutputHandler.Options.ignoreReturnCode">
 <code class="sig-name descname">ignoreReturnCode</code><em class="property"> = 'ProcessOutputHandler.ignoreReturnCode'</em><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler.Options.ignoreReturnCode" title="Permalink to this definition">¶</a></dt>
 <dd><p>If True, non-zero return codes 
 are not treated as errors.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;myhandler&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">ignoreReturnCode</span><span class="p">:</span><span class="kc">True</span><span class="p">})</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;myhandler&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">ignoreReturnCode</span><span class="p">:</span><span class="kc">True</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handleLine</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;some message&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handleEnd</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="xpybuild.utils.outputhandler.ProcessOutputHandler.Options.regexIgnore">
 <code class="sig-name descname">regexIgnore</code><em class="property"> = 'ProcessOutputHandler.regexIgnore'</em><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler.Options.regexIgnore" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optional regular expression; any 
 lines matching this will not be treated as errors, or warnings, or logged.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;myhandler&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">regexIgnore</span><span class="p">:</span><span class="s1">&#39;(.*ignorable.*|foobar)&#39;</span><span class="p">})</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;myhandler&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">regexIgnore</span><span class="p">:</span><span class="s1">&#39;(.*ignorable.*|foobar)&#39;</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handleLine</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;error: an ignorable error&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handleLine</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;error: another error&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handleLine</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;warning: an ignorable warning&#39;</span><span class="p">)</span>
@@ -294,13 +294,13 @@ lines matching this will not be treated as errors, or warnings, or logged.</p>
 <span class="go">1</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">getWarnings</span><span class="p">())</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">getWarnings</span><span class="p">())</span>
 <span class="go">2</span>
 </pre></div>
 </div>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="xpybuild.utils.outputhandler.ProcessOutputHandler.Options.factory">
 <code class="sig-name descname">factory</code><em class="property"> = 'ProcessOutputHandler.factory'</em><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler.Options.factory" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ProcessOutputHandler class or subclass 
@@ -314,27 +314,27 @@ See <a class="reference internal" href="#xpybuild.utils.outputhandler.ProcessOut
 
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.outputhandler.ProcessOutputHandler.create">
-<em class="property">static </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">options=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler.create" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new ProcessOutputHandler using the specified target options.</p>
 <p>This is preferred over calling the ProcessOutputHandler constructor as 
 it permits overriding the ProcessOutputHandler subclass using the 
 <a class="reference internal" href="#xpybuild.utils.outputhandler.ProcessOutputHandler.Options.factory" title="xpybuild.utils.outputhandler.ProcessOutputHandler.Options.factory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessOutputHandler.Options.factory</span></code></a> option.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;mine&#39;</span><span class="p">))</span><span class="o">.</span><span class="vm">__name__</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;mine&#39;</span><span class="p">))</span><span class="o">.</span><span class="vm">__name__</span>
 <span class="go">&#39;ProcessOutputHandler&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">myfactory</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;called factory </span><span class="si">%s</span><span class="s1">, kwarg keys: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">myfactory</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;called factory </span><span class="si">%s</span><span class="s1">, kwarg keys: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;mine&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="n">ProcessOutputHandler</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">factory</span><span class="p">:</span> <span class="n">myfactory</span><span class="p">})</span>
 <span class="go">called factory (&#39;mine&#39;,), kwarg keys: [&#39;options&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.outputhandler.ProcessOutputHandler.handleLine">
-<code class="sig-name descname">handleLine</code><span class="sig-paren">(</span><em class="sig-param">line: str</em>, <em class="sig-param">isstderr=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler.handleLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler.handleLine" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">handleLine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">line</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">isstderr</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler.handleLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler.handleLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called once for every line in the stdout and stderr 
 (stderr after, if not during stdout).</p>
 <p>Line must be a unicode str (not bytes).</p>
@@ -350,9 +350,9 @@ hint to indicate the source of the line.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.outputhandler.ProcessOutputHandler.handleEnd">
-<code class="sig-name descname">handleEnd</code><span class="sig-paren">(</span><em class="sig-param">returnCode=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler.handleEnd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler.handleEnd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">handleEnd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">returnCode</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler.handleEnd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler.handleEnd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when the process has terminated, to collate any warnings, errors and other messages, 
 and in conjunction with the <code class="docutils literal notranslate"><span class="pre">returnCode</span></code> optionally raise an <a class="reference internal" href="xpybuild.utils.buildexceptions.html#xpybuild.utils.buildexceptions.BuildException" title="xpybuild.utils.buildexceptions.BuildException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.buildexceptions.BuildException</span></code></a> 
 with a suitable message.</p>
@@ -362,9 +362,9 @@ non-zero. The exception message will contain the first error, or if none the fir
 the last line of the output.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.outputhandler.ProcessOutputHandler._decideLogLevel">
-<code class="sig-name descname">_decideLogLevel</code><span class="sig-paren">(</span><em class="sig-param">line: str</em>, <em class="sig-param">isstderr: bool</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler._decideLogLevel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler._decideLogLevel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_decideLogLevel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">line</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">isstderr</span><span class="p">:</span> <span class="n">bool</span></em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler._decideLogLevel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler._decideLogLevel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <a class="reference internal" href="#xpybuild.utils.outputhandler.ProcessOutputHandler.handleLine" title="xpybuild.utils.outputhandler.ProcessOutputHandler.handleLine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handleLine</span></code></a> implementation to 
 decide whether the specified (raw, not yet pre-processed) line is a 
 warning, an error, or else whether it should be logged at INFO/DEBUG 
@@ -377,9 +377,9 @@ and also treats all stderr output as error lines.</p>
 <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.outputhandler.ProcessOutputHandler._parseLocationFromLine">
-<code class="sig-name descname">_parseLocationFromLine</code><span class="sig-paren">(</span><em class="sig-param">line</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler._parseLocationFromLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler._parseLocationFromLine" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_parseLocationFromLine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">line</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler._parseLocationFromLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler._parseLocationFromLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by <a class="reference internal" href="#xpybuild.utils.outputhandler.ProcessOutputHandler.handleLine" title="xpybuild.utils.outputhandler.ProcessOutputHandler.handleLine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handleLine</span></code></a> to attempt to extract a location from the specified line, which will be included in 
 any associated WARN or ERROR messages, reformatted as needed for whatever <a class="reference internal" href="xpybuild.utils.consoleformatter.html#module-xpybuild.utils.consoleformatter" title="xpybuild.utils.consoleformatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.consoleformatter</span></code></a> 
 formatter is in use.</p>
@@ -389,17 +389,17 @@ formatter is in use.</p>
 <p>linenumber is a string and may be a simple line number or may be a “lineno,col” string.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.outputhandler.ProcessOutputHandler._log">
-<code class="sig-name descname">_log</code><span class="sig-paren">(</span><em class="sig-param">level: int</em>, <em class="sig-param">msg: str</em>, <em class="sig-param">filename=None</em>, <em class="sig-param">fileline=None</em>, <em class="sig-param">filecol=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler._log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler._log" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">level</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">msg</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fileline</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filecol</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler._log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler._log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the specified msg to the logger.</p>
 <p>If filename and fileline are specified, they are passed to the logrecord, 
 which allows output formatting customizations.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.outputhandler.ProcessOutputHandler._preprocessLine">
-<code class="sig-name descname">_preprocessLine</code><span class="sig-paren">(</span><em class="sig-param">line: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler._preprocessLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler._preprocessLine" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_preprocessLine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">line</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#ProcessOutputHandler._preprocessLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.ProcessOutputHandler._preprocessLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs any necessary transformations on the line before it is 
 logged or stored. By default it strips() whitespace.</p>
 <p>This can be overridden to add support for stripping 
@@ -411,9 +411,9 @@ timestamps, thread ids, unwanted indentation, etc.</p>
 </div>
 <div class="section" id="stdoutredirector">
 <h2>StdoutRedirector<a class="headerlink" href="#stdoutredirector" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.outputhandler.StdoutRedirector">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.outputhandler.</code><code class="sig-name descname">StdoutRedirector</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">fd</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#StdoutRedirector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.StdoutRedirector" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.outputhandler.</code><code class="sig-name descname">StdoutRedirector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">fd</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/outputhandler.html#StdoutRedirector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.outputhandler.StdoutRedirector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.outputhandler.ProcessOutputHandler" title="xpybuild.utils.outputhandler.ProcessOutputHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.outputhandler.ProcessOutputHandler</span></code></a></p>
 <p>Redirects stdout to a file verbatim and reports errors on stderr</p>
 <p>fd is a binary-mode writable file descriptor</p>

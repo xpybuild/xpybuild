@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -186,15 +186,15 @@
 <p>Utility functions for normalizing and flattening deeply nested lists.</p>
 <div class="section" id="flatten">
 <h2>flatten<a class="headerlink" href="#flatten" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.flatten.flatten">
-<code class="sig-prename descclassname">xpybuild.utils.flatten.</code><code class="sig-name descname">flatten</code><span class="sig-paren">(</span><em class="sig-param">input</em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="../_modules/xpybuild/utils/flatten.html#flatten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.flatten.flatten" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.flatten.</code><code class="sig-name descname">flatten</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input</span></em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="../_modules/xpybuild/utils/flatten.html#flatten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.flatten.flatten" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the input flattened to an array.</p>
 <p>input: any variable composed of lists/generators/tuples, strings, lambda functions or other 
 objects, nested arbitrarily.</p>
 <p>Empty strings and None items are removed.</p>
 <p>Returns a list of strings or other objects depth 1.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">flatten</span><span class="p">(</span><span class="s1">&#39;hi&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">flatten</span><span class="p">(</span><span class="s1">&#39;hi&#39;</span><span class="p">)</span>
 <span class="go">[&#39;hi&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">flatten</span><span class="p">([</span><span class="s1">&#39;hi&#39;</span><span class="p">,</span> <span class="s1">&#39;ho&#39;</span><span class="p">,</span> <span class="s1">&#39;hum&#39;</span><span class="p">])</span>
 <span class="go">[&#39;hi&#39;, &#39;ho&#39;, &#39;hum&#39;]</span>
@@ -219,36 +219,36 @@ objects, nested arbitrarily.</p>
 </div>
 <div class="section" id="getstringlist">
 <h2>getStringList<a class="headerlink" href="#getstringlist" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.flatten.getStringList">
-<code class="sig-prename descclassname">xpybuild.utils.flatten.</code><code class="sig-name descname">getStringList</code><span class="sig-paren">(</span><em class="sig-param">stringOrListOfStrings</em><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="../_modules/xpybuild/utils/flatten.html#getStringList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.flatten.getStringList" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.flatten.</code><code class="sig-name descname">getStringList</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stringOrListOfStrings</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="reference internal" href="../_modules/xpybuild/utils/flatten.html#getStringList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.flatten.getStringList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of strings, either identical to the input (if it’s already a list), or with the input wrapped in 
 a new sequence (if it’s a string), or an empty sequence (if its None).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">)</span>
 <span class="go">[&#39;abc&#39;]</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">([</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">([</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">])</span>
 <span class="go">[&#39;abc&#39;, &#39;def&#39;]</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">((</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">((</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">))</span>
 <span class="go">[&#39;abc&#39;, &#39;def&#39;]</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">(</span><span class="nb">tuple</span><span class="p">([</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">]))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">(</span><span class="nb">tuple</span><span class="p">([</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">]))</span>
 <span class="go">[&#39;abc&#39;, &#39;def&#39;]</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">([[</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">]])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">([[</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">]])</span>
 <span class="go">[&#39;abc&#39;, &#39;def&#39;]</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 <span class="go">[]</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getStringList</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
 <span class="gr">ValueError</span>: <span class="n">The specified value must be a list of strings: &quot;5&quot;</span>

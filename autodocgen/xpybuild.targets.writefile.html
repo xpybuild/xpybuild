@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -182,9 +182,9 @@
 <p>Contains targets for writing a single file containing dynamically generated contents.</p>
 <div class="section" id="writefile">
 <h2>WriteFile<a class="headerlink" href="#writefile" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.writefile.WriteFile">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.writefile.</code><code class="sig-name descname">WriteFile</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">getContents</em>, <em class="sig-param">dependencies=None</em>, <em class="sig-param">mode=None</em>, <em class="sig-param">executable=False</em>, <em class="sig-param">encoding=None</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/writefile.html#WriteFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.writefile.WriteFile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.writefile.</code><code class="sig-name descname">WriteFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">getContents</span></em>, <em class="sig-param"><span class="n">dependencies</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">executable</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/writefile.html#WriteFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.writefile.WriteFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Target for writing out a text or binary file with the specifiwed dynamically generated (or hardcoded) contents.</p>
 <p>The file will only be updated if its contents have changed.</p>
@@ -229,9 +229,9 @@ target.</p></li>
 </div>
 <div class="section" id="touch">
 <h2>Touch<a class="headerlink" href="#touch" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.writefile.Touch">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.writefile.</code><code class="sig-name descname">Touch</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/writefile.html#Touch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.writefile.Touch" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.writefile.</code><code class="sig-name descname">Touch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/writefile.html#Touch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.writefile.Touch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Target that creates an empty file.</p>
 <dl class="field-list simple">

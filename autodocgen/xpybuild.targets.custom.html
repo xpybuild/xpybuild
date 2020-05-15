@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -185,9 +185,9 @@
 produce a file or directory of output.</p>
 <div class="section" id="custom">
 <h2>Custom<a class="headerlink" href="#custom" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.custom.Custom">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.custom.</code><code class="sig-name descname">Custom</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">deps</em>, <em class="sig-param">fn</em>, <em class="sig-param">cleanfn=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#Custom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.Custom" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.custom.</code><code class="sig-name descname">Custom</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">deps</span></em>, <em class="sig-param"><span class="n">fn</span></em>, <em class="sig-param"><span class="n">cleanfn</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#Custom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.Custom" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Deprecated</dt>
@@ -216,9 +216,9 @@ the target file/dir)</p></li>
 </div>
 <div class="section" id="resolvepath">
 <h2>ResolvePath<a class="headerlink" href="#resolvepath" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.custom.ResolvePath">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.custom.</code><code class="sig-name descname">ResolvePath</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#ResolvePath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.ResolvePath" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.custom.</code><code class="sig-name descname">ResolvePath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#ResolvePath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.ResolvePath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Deprecated</dt>
@@ -236,9 +236,9 @@ thrown unless the pathsep argument is specified.</p>
 <dd class="field-odd"><p><strong>path</strong> – The path to expand, which is a string.</p>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.targets.custom.ResolvePath.resolve">
-<code class="sig-name descname">resolve</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">baseDir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#ResolvePath.resolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.ResolvePath.resolve" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">resolve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">baseDir</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#ResolvePath.resolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.ResolvePath.resolve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resolves the path using the specified context and baseDir</p>
 </dd></dl>
 
@@ -247,9 +247,9 @@ thrown unless the pathsep argument is specified.</p>
 </div>
 <div class="section" id="customcommand">
 <h2>CustomCommand<a class="headerlink" href="#customcommand" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.custom.CustomCommand">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.custom.</code><code class="sig-name descname">CustomCommand</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">command</em>, <em class="sig-param">dependencies</em>, <em class="sig-param">cwd=None</em>, <em class="sig-param">redirectStdOutToTarget=False</em>, <em class="sig-param">env=None</em>, <em class="sig-param">stdout=None</em>, <em class="sig-param">stderr=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#CustomCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.CustomCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.custom.</code><code class="sig-name descname">CustomCommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">command</span></em>, <em class="sig-param"><span class="n">dependencies</span></em>, <em class="sig-param"><span class="n">cwd</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">redirectStdOutToTarget</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">env</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stdout</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stderr</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#CustomCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.CustomCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>A custom target that builds a single file or directory of content by running a 
 specified command line process.</p>
@@ -324,13 +324,13 @@ use this if required to send output to a specific location.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="xpybuild.targets.custom.CustomCommand.TARGET">
 <code class="sig-name descname">TARGET</code><a class="headerlink" href="#xpybuild.targets.custom.CustomCommand.TARGET" title="Permalink to this definition">¶</a></dt>
 <dd><p>A special value that can be used in the <code class="docutils literal notranslate"><span class="pre">command</span></code> argument and is resolved to the output path of this target.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="xpybuild.targets.custom.CustomCommand.DEPENDENCIES">
 <code class="sig-name descname">DEPENDENCIES</code><a class="headerlink" href="#xpybuild.targets.custom.CustomCommand.DEPENDENCIES" title="Permalink to this definition">¶</a></dt>
 <dd><p>A special value that can be used in the <code class="docutils literal notranslate"><span class="pre">command</span></code> argument and is resolved to a list of this target’s dependencies.</p>
@@ -341,9 +341,9 @@ use this if required to send output to a specific location.</p></li>
 </div>
 <div class="section" id="customcommandwithcopy">
 <h2>CustomCommandWithCopy<a class="headerlink" href="#customcommandwithcopy" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.custom.CustomCommandWithCopy">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.custom.</code><code class="sig-name descname">CustomCommandWithCopy</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">command</em>, <em class="sig-param">dependencies</em>, <em class="sig-param">copySrc</em>, <em class="sig-param">cwd=None</em>, <em class="sig-param">redirectStdOutToTarget=False</em>, <em class="sig-param">env=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#CustomCommandWithCopy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.CustomCommandWithCopy" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.custom.</code><code class="sig-name descname">CustomCommandWithCopy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">command</span></em>, <em class="sig-param"><span class="n">dependencies</span></em>, <em class="sig-param"><span class="n">copySrc</span></em>, <em class="sig-param"><span class="n">cwd</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">redirectStdOutToTarget</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">env</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#CustomCommandWithCopy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.CustomCommandWithCopy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.targets.custom.CustomCommand" title="xpybuild.targets.custom.CustomCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.targets.custom.CustomCommand</span></code></a>, <a class="reference internal" href="xpybuild.targets.copy.html#xpybuild.targets.copy.Copy" title="xpybuild.targets.copy.Copy"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.targets.copy.Copy</span></code></a></p>
 <p>A custom target that builds a directory of content by running a 
 specified command line process, but unlike the normal CustomCommand 

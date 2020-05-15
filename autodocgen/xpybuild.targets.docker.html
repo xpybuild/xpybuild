@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -181,9 +181,9 @@
 <p>Contains targets for building docker images and pushing tags.</p>
 <div class="section" id="dockerbase">
 <h2>DockerBase<a class="headerlink" href="#dockerbase" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.docker.DockerBase">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.docker.</code><code class="sig-name descname">DockerBase</code><span class="sig-paren">(</span><em class="sig-param">imagename</em>, <em class="sig-param">inputs</em>, <em class="sig-param">depimage=None</em>, <em class="sig-param">dockerfile=None</em>, <em class="sig-param">buildArgs=None</em>, <em class="sig-param">dockerArgs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/docker.html#DockerBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.docker.DockerBase" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.docker.</code><code class="sig-name descname">DockerBase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">imagename</span></em>, <em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">depimage</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dockerfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">buildArgs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dockerArgs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/docker.html#DockerBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.docker.DockerBase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Target that runs commands in docker, using stamp files for up-to-dateness</p>
 <p>imagename: the name/tag of the image to build</p>

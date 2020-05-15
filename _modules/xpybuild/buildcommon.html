@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -316,9 +316,9 @@
 				<span class="n">path</span><span class="o">=</span><span class="n">parentpackage</span><span class="o">.</span><span class="n">__path__</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="p">(</span><span class="n">parentpackage</span><span class="o">.</span><span class="vm">__name__</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;xpybuild.&#39;</span><span class="p">):]</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)):</span>
 			<span class="n">__log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;enableLegacyXpybuildModuleNames: Importing legacy package name </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">modulename</span><span class="p">)</span>
 			<span class="k">if</span> <span class="n">modulename</span><span class="o">!=</span><span class="s1">&#39;buildcommon&#39;</span><span class="p">:</span> <span class="c1"># first make sure the original one has been imported</span>
-				<span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;import xpybuild.</span><span class="si">{modulename}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">{})</span>
+				<span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;import xpybuild.</span><span class="si">{</span><span class="n">modulename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">{})</span>
 			<span class="c1"># then define an alias</span>
-			<span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sys.modules[&quot;</span><span class="si">{modulename}</span><span class="s1">&quot;] = sys.modules[&quot;xpybuild.</span><span class="si">{modulename}</span><span class="s1">&quot;]&#39;</span><span class="p">)</span>
+			<span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sys.modules[&quot;</span><span class="si">{</span><span class="n">modulename</span><span class="si">}</span><span class="s1">&quot;] = sys.modules[&quot;xpybuild.</span><span class="si">{</span><span class="n">modulename</span><span class="si">}</span><span class="s1">&quot;]&#39;</span><span class="p">)</span>
 	<span class="k">assert</span> <span class="s1">&#39;utils.fileutils&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span> <span class="c1"># sanity check that it worked</span>
 	<span class="k">assert</span> <span class="s1">&#39;targets.copy&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span> <span class="c1"># sanity check that it worked</span>
 

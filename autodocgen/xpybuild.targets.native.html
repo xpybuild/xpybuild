@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -211,7 +211,7 @@ on the current platform:</p>
 </table>
 <div class="section" id="exename">
 <h2>exename<a class="headerlink" href="#exename" title="Permalink to this headline">¶</a></h2>
-<dl class="data">
+<dl class="py data">
 <dt id="xpybuild.targets.native.exename">
 <code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">exename</code><em class="property"> = &lt;xpybuild.utils.functors.ComposableWrapper object&gt;</em><a class="headerlink" href="#xpybuild.targets.native.exename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Functor that adds the suffix/prefix for an executable to a path (using the <code class="xref py py-obj docutils literal notranslate"><span class="pre">native.cxx.exenamefn</span></code> option for this platform), for example: 
@@ -221,7 +221,7 @@ on the current platform:</p>
 </div>
 <div class="section" id="objectname">
 <h2>objectname<a class="headerlink" href="#objectname" title="Permalink to this headline">¶</a></h2>
-<dl class="data">
+<dl class="py data">
 <dt id="xpybuild.targets.native.objectname">
 <code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">objectname</code><em class="property"> = &lt;xpybuild.utils.functors.ComposableWrapper object&gt;</em><a class="headerlink" href="#xpybuild.targets.native.objectname" title="Permalink to this definition">¶</a></dt>
 <dd><p>Functor that adds the suffix/prefix for a C/C++ object file to a path (using the <code class="xref py py-obj docutils literal notranslate"><span class="pre">native.cxx.objnamefn</span></code> option for this platform), for example: 
@@ -231,7 +231,7 @@ on the current platform:</p>
 </div>
 <div class="section" id="libname">
 <h2>libname<a class="headerlink" href="#libname" title="Permalink to this headline">¶</a></h2>
-<dl class="data">
+<dl class="py data">
 <dt id="xpybuild.targets.native.libname">
 <code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">libname</code><em class="property"> = &lt;xpybuild.utils.functors.ComposableWrapper object&gt;</em><a class="headerlink" href="#xpybuild.targets.native.libname" title="Permalink to this definition">¶</a></dt>
 <dd><p>Functor that adds the suffix/prefix for a dynamic library to a path (using the <code class="xref py py-obj docutils literal notranslate"><span class="pre">native.cxx.libnamefn</span></code> option for this platform), for example: 
@@ -241,7 +241,7 @@ on the current platform:</p>
 </div>
 <div class="section" id="staticlibname">
 <h2>staticlibname<a class="headerlink" href="#staticlibname" title="Permalink to this headline">¶</a></h2>
-<dl class="data">
+<dl class="py data">
 <dt id="xpybuild.targets.native.staticlibname">
 <code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">staticlibname</code><em class="property"> = &lt;xpybuild.utils.functors.ComposableWrapper object&gt;</em><a class="headerlink" href="#xpybuild.targets.native.staticlibname" title="Permalink to this definition">¶</a></dt>
 <dd><p>Functor that adds the suffix/prefix for a static library to a path (using the <code class="xref py py-obj docutils literal notranslate"><span class="pre">native.cxx.staticlibnamefn</span></code> option for this platform), for example: 
@@ -251,9 +251,9 @@ on the current platform:</p>
 </div>
 <div class="section" id="cpp">
 <h2>Cpp<a class="headerlink" href="#cpp" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.native.Cpp">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">Cpp</code><span class="sig-paren">(</span><em class="sig-param">object</em>, <em class="sig-param">source</em>, <em class="sig-param">includes=None</em>, <em class="sig-param">flags=None</em>, <em class="sig-param">dependencies=None</em>, <em class="sig-param">options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/native.html#Cpp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.native.Cpp" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">Cpp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">object</span></em>, <em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">includes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dependencies</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/native.html#Cpp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.native.Cpp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Target that compiles a C++ source file to a single object file.</p>
 <dl class="field-list simple">
@@ -286,9 +286,9 @@ before this target. Usually this is not needed.</p></li>
 </div>
 <div class="section" id="c">
 <h2>C<a class="headerlink" href="#c" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.native.C">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">C</code><span class="sig-paren">(</span><em class="sig-param">object</em>, <em class="sig-param">source</em>, <em class="sig-param">includes=None</em>, <em class="sig-param">flags=None</em>, <em class="sig-param">dependencies=None</em>, <em class="sig-param">options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/native.html#C"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.native.C" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">C</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">object</span></em>, <em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">includes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dependencies</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/native.html#C"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.native.C" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.targets.native.Cpp" title="xpybuild.targets.native.Cpp"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.targets.native.Cpp</span></code></a></p>
 <p>Target that compiles a C source file to a single object file.</p>
 <dl class="field-list simple">
@@ -321,9 +321,9 @@ before this target. Usually this is not needed.</p></li>
 </div>
 <div class="section" id="link">
 <h2>Link<a class="headerlink" href="#link" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.native.Link">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">Link</code><span class="sig-paren">(</span><em class="sig-param">bin</em>, <em class="sig-param">objects</em>, <em class="sig-param">libs=None</em>, <em class="sig-param">libpaths=None</em>, <em class="sig-param">shared=False</em>, <em class="sig-param">options=None</em>, <em class="sig-param">flags=None</em>, <em class="sig-param">dependencies=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/native.html#Link"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.native.Link" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">Link</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bin</span></em>, <em class="sig-param"><span class="n">objects</span></em>, <em class="sig-param"><span class="n">libs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">libpaths</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">shared</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dependencies</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/native.html#Link"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.native.Link" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Target that links object files (typically generated by <a class="reference internal" href="#xpybuild.targets.native.Cpp" title="xpybuild.targets.native.Cpp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Cpp</span></code></a> or <a class="reference internal" href="#xpybuild.targets.native.C" title="xpybuild.targets.native.C"><code class="xref py py-obj docutils literal notranslate"><span class="pre">C</span></code></a>) to an 
 executable or library binary.</p>
@@ -347,9 +347,9 @@ Can include list properties like ‘${FOO_LIB_NAMES[]}’.</p></li>
 </div>
 <div class="section" id="ar">
 <h2>Ar<a class="headerlink" href="#ar" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.native.Ar">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">Ar</code><span class="sig-paren">(</span><em class="sig-param">bin</em>, <em class="sig-param">objects</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/native.html#Ar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.native.Ar" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.native.</code><code class="sig-name descname">Ar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bin</span></em>, <em class="sig-param"><span class="n">objects</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/native.html#Ar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.native.Ar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Target that compiles .a archive files from collections of object files.</p>
 <dl class="field-list simple">

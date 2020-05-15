@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -197,15 +197,15 @@
 <p>Support classes for the C/C++ native compiler chain, used by the <a class="reference internal" href="xpybuild.targets.native.html#module-xpybuild.targets.native" title="xpybuild.targets.native"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.native</span></code></a> module.</p>
 <div class="section" id="process">
 <h2>Process<a class="headerlink" href="#process" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.compilers.Process">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">Process</code><span class="sig-paren">(</span><em class="sig-param">environs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Process" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">Process</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">environs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Process" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Parent type for compiler/tool chain process classes,
 contain helper method for calling the compiler process</p>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.compilers.Process.getExpandedEnvirons">
-<code class="sig-name descname">getExpandedEnvirons</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">environs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Process.getExpandedEnvirons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Process.getExpandedEnvirons" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getExpandedEnvirons</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">environs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Process.getExpandedEnvirons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Process.getExpandedEnvirons" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the environment variables to be used for this process, 
 either passed explicitly into this method, or passed into 
 the constructor, or else empty.</p>
@@ -217,14 +217,14 @@ the constructor, or else empty.</p>
 </div>
 <div class="section" id="compiler">
 <h2>Compiler<a class="headerlink" href="#compiler" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.compilers.Compiler">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">Compiler</code><span class="sig-paren">(</span><em class="sig-param">environs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Compiler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Compiler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">Compiler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">environs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Compiler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Compiler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.compilers.Process" title="xpybuild.utils.compilers.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.Process</span></code></a></p>
 <p>A compiler (of some sort or other)</p>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.compilers.Compiler.compile">
-<code class="sig-name descname">compile</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">output</em>, <em class="sig-param">src</em>, <em class="sig-param">options</em>, <em class="sig-param">flags=None</em>, <em class="sig-param">includes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Compiler.compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Compiler.compile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">compile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">options</span></em>, <em class="sig-param"><span class="n">flags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">includes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Compiler.compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Compiler.compile" title="Permalink to this definition">¶</a></dt>
 <dd><p>output: The object file to create</p>
 <p>src: A list of source file paths</p>
 <p>options: an options dictionary to override global options</p>
@@ -237,14 +237,14 @@ the constructor, or else empty.</p>
 </div>
 <div class="section" id="depends">
 <h2>Depends<a class="headerlink" href="#depends" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.compilers.Depends">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">Depends</code><span class="sig-paren">(</span><em class="sig-param">environs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Depends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Depends" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">Depends</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">environs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Depends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Depends" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.compilers.Process" title="xpybuild.utils.compilers.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.Process</span></code></a></p>
 <p>The command to use to generate a list of dependencies from a list of source files</p>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.compilers.Depends.depends">
-<code class="sig-name descname">depends</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">src</em>, <em class="sig-param">options</em>, <em class="sig-param">flags=None</em>, <em class="sig-param">includes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Depends.depends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Depends.depends" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">depends</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">options</span></em>, <em class="sig-param"><span class="n">flags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">includes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Depends.depends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Depends.depends" title="Permalink to this definition">¶</a></dt>
 <dd><p>src: A list of source file paths</p>
 <p>options: an options dictionary to override global options</p>
 <p>flags: additional flags to pass to the compiler</p>
@@ -256,14 +256,14 @@ the constructor, or else empty.</p>
 </div>
 <div class="section" id="linker">
 <h2>Linker<a class="headerlink" href="#linker" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.compilers.Linker">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">Linker</code><span class="sig-paren">(</span><em class="sig-param">environs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Linker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Linker" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">Linker</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">environs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Linker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Linker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.compilers.Process" title="xpybuild.utils.compilers.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.Process</span></code></a></p>
 <p>Link a set of object files into an executable or a shared library</p>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.compilers.Linker.link">
-<code class="sig-name descname">link</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">output</em>, <em class="sig-param">src</em>, <em class="sig-param">options</em>, <em class="sig-param">shared=False</em>, <em class="sig-param">flags=None</em>, <em class="sig-param">libs=None</em>, <em class="sig-param">libdirs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Linker.link"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Linker.link" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">link</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">options</span></em>, <em class="sig-param"><span class="n">shared</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">flags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">libs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">libdirs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Linker.link"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Linker.link" title="Permalink to this definition">¶</a></dt>
 <dd><p>output: The library/executable to create</p>
 <p>src: A list of object file paths</p>
 <p>options: an options dictionary to override global options</p>
@@ -277,15 +277,15 @@ the constructor, or else empty.</p>
 </div>
 <div class="section" id="archiver">
 <h2>Archiver<a class="headerlink" href="#archiver" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.compilers.Archiver">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">Archiver</code><span class="sig-paren">(</span><em class="sig-param">environs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Archiver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Archiver" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">Archiver</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">environs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Archiver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Archiver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.compilers.Process" title="xpybuild.utils.compilers.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.Process</span></code></a></p>
 <p>A tool to put a set of object files into an archive for static linking.
 Typically only used on unix.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.compilers.Archiver.archive">
-<code class="sig-name descname">archive</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">output</em>, <em class="sig-param">src</em>, <em class="sig-param">options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Archiver.archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Archiver.archive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">archive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">options</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#Archiver.archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.Archiver.archive" title="Permalink to this definition">¶</a></dt>
 <dd><p>output: The archive file path to create</p>
 <p>src: A list of source object file paths</p>
 <p>options: an options dictionary to override global options</p>
@@ -296,9 +296,9 @@ Typically only used on unix.</p>
 </div>
 <div class="section" id="toolchain">
 <h2>ToolChain<a class="headerlink" href="#toolchain" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.compilers.ToolChain">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">ToolChain</code><span class="sig-paren">(</span><em class="sig-param">depends</em>, <em class="sig-param">ccompiler</em>, <em class="sig-param">cxxcompiler</em>, <em class="sig-param">linker</em>, <em class="sig-param">archiver</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#ToolChain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.ToolChain" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">ToolChain</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">depends</span></em>, <em class="sig-param"><span class="n">ccompiler</span></em>, <em class="sig-param"><span class="n">cxxcompiler</span></em>, <em class="sig-param"><span class="n">linker</span></em>, <em class="sig-param"><span class="n">archiver</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#ToolChain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.ToolChain" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A collection of compilers, linkers and other tools which represents a complete native tool chain</p>
 <p>depends: A Depends object to get a list of dependencies from a list of source files</p>
@@ -311,9 +311,9 @@ Typically only used on unix.</p>
 </div>
 <div class="section" id="unixcompiler">
 <h2>UnixCompiler<a class="headerlink" href="#unixcompiler" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.compilers.UnixCompiler">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">UnixCompiler</code><span class="sig-paren">(</span><em class="sig-param">command</em>, <em class="sig-param">outputHandler=None</em>, <em class="sig-param">environs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#UnixCompiler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.UnixCompiler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">UnixCompiler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">command</span></em>, <em class="sig-param"><span class="n">outputHandler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">environs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#UnixCompiler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.UnixCompiler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.compilers.Compiler" title="xpybuild.utils.compilers.Compiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.Compiler</span></code></a></p>
 <p>A compiler using standard Unix compiler arguments/syntax</p>
 <p>command: The path to the compiler</p>
@@ -323,9 +323,9 @@ Typically only used on unix.</p>
 </div>
 <div class="section" id="unixlinker">
 <h2>UnixLinker<a class="headerlink" href="#unixlinker" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.compilers.UnixLinker">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">UnixLinker</code><span class="sig-paren">(</span><em class="sig-param">command</em>, <em class="sig-param">outputHandler=None</em>, <em class="sig-param">environs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#UnixLinker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.UnixLinker" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">UnixLinker</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">command</span></em>, <em class="sig-param"><span class="n">outputHandler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">environs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#UnixLinker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.UnixLinker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.compilers.Linker" title="xpybuild.utils.compilers.Linker"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.Linker</span></code></a></p>
 <p>A linker using standard Unix linker arguments/syntax</p>
 <p>command: The path to the linker</p>
@@ -335,9 +335,9 @@ Typically only used on unix.</p>
 </div>
 <div class="section" id="unixarchiver">
 <h2>UnixArchiver<a class="headerlink" href="#unixarchiver" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.compilers.UnixArchiver">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">UnixArchiver</code><span class="sig-paren">(</span><em class="sig-param">command</em>, <em class="sig-param">outputHandler=None</em>, <em class="sig-param">environs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#UnixArchiver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.UnixArchiver" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">UnixArchiver</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">command</span></em>, <em class="sig-param"><span class="n">outputHandler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">environs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#UnixArchiver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.UnixArchiver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.compilers.Archiver" title="xpybuild.utils.compilers.Archiver"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.Archiver</span></code></a></p>
 <p>A archiver using standard Unix archiver arguments/syntax</p>
 <p>command: The path to the archiver</p>
@@ -347,9 +347,9 @@ Typically only used on unix.</p>
 </div>
 <div class="section" id="gccprocessoutputhandler">
 <h2>GccProcessOutputHandler<a class="headerlink" href="#gccprocessoutputhandler" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.compilers.GccProcessOutputHandler">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">GccProcessOutputHandler</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">treatStdErrAsErrors=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#GccProcessOutputHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.GccProcessOutputHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">GccProcessOutputHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#GccProcessOutputHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.GccProcessOutputHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler" title="xpybuild.utils.outputhandler.ProcessOutputHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.outputhandler.ProcessOutputHandler</span></code></a></p>
 <p>A ProcessOutputHandler than can parse the output of GCC tools</p>
 <p>Subclasses must pass any <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> down to the super() constructor 
@@ -374,9 +374,9 @@ dictionary)</p></li>
 </div>
 <div class="section" id="gcc">
 <h2>GCC<a class="headerlink" href="#gcc" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.compilers.GCC">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">GCC</code><span class="sig-paren">(</span><em class="sig-param">environs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#GCC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.GCC" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">GCC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">environs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#GCC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.GCC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.compilers.ToolChain" title="xpybuild.utils.compilers.ToolChain"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.ToolChain</span></code></a>, <a class="reference internal" href="#xpybuild.utils.compilers.UnixCompiler" title="xpybuild.utils.compilers.UnixCompiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.UnixCompiler</span></code></a>, <a class="reference internal" href="#xpybuild.utils.compilers.UnixLinker" title="xpybuild.utils.compilers.UnixLinker"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.UnixLinker</span></code></a>, <a class="reference internal" href="#xpybuild.utils.compilers.Depends" title="xpybuild.utils.compilers.Depends"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.Depends</span></code></a></p>
 <p>A tool chain based on the GNU Compiler Collection</p>
 </dd></dl>
@@ -384,9 +384,9 @@ dictionary)</p></li>
 </div>
 <div class="section" id="visualstudioprocessoutputhandler">
 <h2>VisualStudioProcessOutputHandler<a class="headerlink" href="#visualstudioprocessoutputhandler" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.compilers.VisualStudioProcessOutputHandler">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">VisualStudioProcessOutputHandler</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">treatStdErrAsErrors=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#VisualStudioProcessOutputHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.VisualStudioProcessOutputHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">VisualStudioProcessOutputHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">treatStdErrAsErrors</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#VisualStudioProcessOutputHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.VisualStudioProcessOutputHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler" title="xpybuild.utils.outputhandler.ProcessOutputHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.outputhandler.ProcessOutputHandler</span></code></a></p>
 <p>A ProcessOutputHandler that can parse the output of Visual Studio tools</p>
 <p>Subclasses must pass any <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> down to the super() constructor 
@@ -411,9 +411,9 @@ dictionary)</p></li>
 </div>
 <div class="section" id="visualstudio">
 <h2>VisualStudio<a class="headerlink" href="#visualstudio" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.compilers.VisualStudio">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">VisualStudio</code><span class="sig-paren">(</span><em class="sig-param">vsbin</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#VisualStudio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.VisualStudio" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.compilers.</code><code class="sig-name descname">VisualStudio</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vsbin</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/compilers.html#VisualStudio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.compilers.VisualStudio" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.compilers.Compiler" title="xpybuild.utils.compilers.Compiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.Compiler</span></code></a>, <a class="reference internal" href="#xpybuild.utils.compilers.Linker" title="xpybuild.utils.compilers.Linker"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.Linker</span></code></a>, <a class="reference internal" href="#xpybuild.utils.compilers.Depends" title="xpybuild.utils.compilers.Depends"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.Depends</span></code></a>, <a class="reference internal" href="#xpybuild.utils.compilers.Archiver" title="xpybuild.utils.compilers.Archiver"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.Archiver</span></code></a>, <a class="reference internal" href="#xpybuild.utils.compilers.ToolChain" title="xpybuild.utils.compilers.ToolChain"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.compilers.ToolChain</span></code></a></p>
 <p>A ToolChain representing using Visual Studio compilers et al</p>
 </dd></dl>

@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -189,7 +189,7 @@
 <p>Contains <a class="reference internal" href="#xpybuild.utils.functors.Composable" title="xpybuild.utils.functors.Composable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.functors.Composable</span></code></a> and associated classes for creating late-binding functions/functors.</p>
 <div class="section" id="composable">
 <h2>Composable<a class="headerlink" href="#composable" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.functors.Composable">
 <em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.functors.</code><code class="sig-name descname">Composable</code><a class="reference internal" href="../_modules/xpybuild/utils/functors.html#Composable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.functors.Composable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -201,9 +201,9 @@ produce the output string.</p>
 </div>
 <div class="section" id="compose">
 <h2>Compose<a class="headerlink" href="#compose" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.functors.Compose">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.functors.</code><code class="sig-name descname">Compose</code><span class="sig-paren">(</span><em class="sig-param">left</em>, <em class="sig-param">right</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/functors.html#Compose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.functors.Compose" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.functors.</code><code class="sig-name descname">Compose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">left</span></em>, <em class="sig-param"><span class="n">right</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/functors.html#Compose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.functors.Compose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.functors.Composable" title="xpybuild.utils.functors.Composable"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.functors.Composable</span></code></a></p>
 <p>A functor that composes other functors or strings</p>
 <dl class="field-list simple">
@@ -214,16 +214,16 @@ produce the output string.</p>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.functors.Compose.resolveToString">
-<code class="sig-name descname">resolveToString</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/functors.html#Compose.resolveToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.functors.Compose.resolveToString" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">resolveToString</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/functors.html#Compose.resolveToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.functors.Compose.resolveToString" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compose the two objects. Strings as literals, other objects are invoked with context argument.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>context</strong> – a BuildContext</p>
 </dd>
 </dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xpybuild.buildcontext</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xpybuild.buildcontext</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Compose</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 <span class="go">&#39;ab&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Compose</span><span class="p">(</span><span class="n">Compose</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">),</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
@@ -249,9 +249,9 @@ produce the output string.</p>
 </div>
 <div class="section" id="composablefn">
 <h2>ComposableFn<a class="headerlink" href="#composablefn" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.functors.ComposableFn">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.functors.</code><code class="sig-name descname">ComposableFn</code><span class="sig-paren">(</span><em class="sig-param">fn</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/functors.html#ComposableFn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.functors.ComposableFn" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.functors.</code><code class="sig-name descname">ComposableFn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/functors.html#ComposableFn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.functors.ComposableFn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.functors.Composable" title="xpybuild.utils.functors.Composable"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.functors.Composable</span></code></a></p>
 <p>A functor wrapping an arbitrary function and arguments that can be composed.</p>
 <dl class="field-list simple">
@@ -263,16 +263,16 @@ produce the output string.</p>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.functors.ComposableFn.resolveToString">
-<code class="sig-name descname">resolveToString</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/functors.html#ComposableFn.resolveToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.functors.ComposableFn.resolveToString" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">resolveToString</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/functors.html#ComposableFn.resolveToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.functors.ComposableFn.resolveToString" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute the function with the context and arguments as arguments,</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>context</strong> – a BuildContext</p>
 </dd>
 </dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xpybuild.buildcontext</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xpybuild.buildcontext</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ComposableFn</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 <span class="go">&#39;ab&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="o">+</span><span class="n">ComposableFn</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">))</span>
@@ -288,9 +288,9 @@ produce the output string.</p>
 </div>
 <div class="section" id="composablewrapper">
 <h2>ComposableWrapper<a class="headerlink" href="#composablewrapper" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.functors.ComposableWrapper">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.functors.</code><code class="sig-name descname">ComposableWrapper</code><span class="sig-paren">(</span><em class="sig-param">fn</em>, <em class="sig-param">name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/functors.html#ComposableWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.functors.ComposableWrapper" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.functors.</code><code class="sig-name descname">ComposableWrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/functors.html#ComposableWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.functors.ComposableWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A functor which wraps a function and can be curried into a ComposableFunction.</p>
 <dl class="field-list simple">
@@ -303,9 +303,9 @@ produce the output string.</p>
 </div>
 <div class="section" id="makefunctor">
 <h2>makeFunctor<a class="headerlink" href="#makefunctor" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.functors.makeFunctor">
-<code class="sig-prename descclassname">xpybuild.utils.functors.</code><code class="sig-name descname">makeFunctor</code><span class="sig-paren">(</span><em class="sig-param">fn</em>, <em class="sig-param">name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/functors.html#makeFunctor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.functors.makeFunctor" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.functors.</code><code class="sig-name descname">makeFunctor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/functors.html#makeFunctor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.functors.makeFunctor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take an arbitrary function and return a functor that can take arbitrary 
 arguments and that can in turn be curried into
 a composable object for use in property contexts.</p>
@@ -326,24 +326,24 @@ prepend the expanded <code class="docutils literal notranslate"><span class="pre
 <dd class="field-odd"><p><strong>fn</strong> – a function of the form <code class="docutils literal notranslate"><span class="pre">fn(context,</span> <span class="pre">*args)</span></code>.</p>
 </dd>
 </dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xpybuild.buildcontext</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xpybuild.buildcontext</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">makeFunctor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">))(</span><span class="s1">&#39;$</span><span class="si">{INPUT}</span><span class="s1">&#39;</span><span class="p">))</span>
 <span class="go">&#39;&lt;lambda&gt;(${INPUT})&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">makeFunctor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;foobar&#39;</span><span class="p">)(</span><span class="s1">&#39;$</span><span class="si">{INPUT}</span><span class="s1">&#39;</span><span class="p">))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">makeFunctor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;foobar&#39;</span><span class="p">)(</span><span class="s1">&#39;$</span><span class="si">{INPUT}</span><span class="s1">&#39;</span><span class="p">))</span>
 <span class="go">&#39;foobar(${INPUT})&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">makeFunctor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">))(</span><span class="s1">&#39;$</span><span class="si">{INPUT}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;INPUT&#39;</span><span class="p">:</span><span class="s1">&#39;foo&#39;</span><span class="p">}))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">makeFunctor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">))(</span><span class="s1">&#39;$</span><span class="si">{INPUT}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;INPUT&#39;</span><span class="p">:</span><span class="s1">&#39;foo&#39;</span><span class="p">}))</span>
 <span class="go">&#39;foo&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;output/&quot;</span><span class="o">+</span><span class="n">makeFunctor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">))(</span><span class="s1">&#39;$</span><span class="si">{INPUT}</span><span class="s1">&#39;</span><span class="p">))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;output/&quot;</span><span class="o">+</span><span class="n">makeFunctor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">))(</span><span class="s1">&#39;$</span><span class="si">{INPUT}</span><span class="s1">&#39;</span><span class="p">))</span>
 <span class="go">&#39;output/+&lt;lambda&gt;(${INPUT})&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="s2">&quot;output/&quot;</span><span class="o">+</span><span class="n">makeFunctor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">))(</span><span class="s1">&#39;$</span><span class="si">{INPUT}</span><span class="s1">&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;INPUT&#39;</span><span class="p">:</span><span class="s1">&#39;foo&#39;</span><span class="p">}))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="s2">&quot;output/&quot;</span><span class="o">+</span><span class="n">makeFunctor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">context</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">))(</span><span class="s1">&#39;$</span><span class="si">{INPUT}</span><span class="s1">&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;INPUT&#39;</span><span class="p">:</span><span class="s1">&#39;foo&#39;</span><span class="p">}))</span>
 <span class="go">&#39;output/foo&#39;</span>
 </pre></div>
 </div>

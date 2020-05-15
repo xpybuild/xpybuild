@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -187,9 +187,9 @@
 <a class="reference internal" href="#xpybuild.utils.stringutils.compareVersions" title="xpybuild.utils.stringutils.compareVersions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.stringutils.compareVersions</span></code></a>.</p>
 <div class="section" id="compareversions">
 <h2>compareVersions<a class="headerlink" href="#compareversions" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.stringutils.compareVersions">
-<code class="sig-prename descclassname">xpybuild.utils.stringutils.</code><code class="sig-name descname">compareVersions</code><span class="sig-paren">(</span><em class="sig-param">v1: str</em>, <em class="sig-param">v2: str</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/xpybuild/utils/stringutils.html#compareVersions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.stringutils.compareVersions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.stringutils.</code><code class="sig-name descname">compareVersions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v1</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">v2</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/xpybuild/utils/stringutils.html#compareVersions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.stringutils.compareVersions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compares two alphanumeric dotted version strings to see which is more recent.</p>
 <p>Example usage:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">compareVersions</span><span class="p">(</span><span class="n">thisversion</span><span class="p">,</span> <span class="s1">&#39;1.2.alpha-3&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -213,51 +213,51 @@ an integer &lt; 0 if v1&lt;v2,
 or 0 if they are semantically the same.</p>
 </dd>
 </dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;10-alpha5.dev10&#39;</span><span class="p">,</span> <span class="s1">&#39;10alpha-5-dEv_10&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="c1"># normalization of case and separators</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;10-alpha5.dev10&#39;</span><span class="p">,</span> <span class="s1">&#39;10alpha-5-dEv_10&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="c1"># normalization of case and separators</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2.0&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2.0&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span>
 <span class="go">0</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.02&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.02&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span>
 <span class="go">0</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2.3&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2.3&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2.3&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2.3&#39;</span><span class="p">)</span>
 <span class="go">-1</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;10.2&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;10.2&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span>
 <span class="go">1</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2.text&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2.0&#39;</span><span class="p">)</span> <span class="c1"># letters are &gt; numbers</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2.text&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2.0&#39;</span><span class="p">)</span> <span class="c1"># letters are &gt; numbers</span>
 <span class="go">1</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2.text&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span> <span class="c1"># letters are &gt; numbers </span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1.2.text&#39;</span><span class="p">,</span> <span class="s1">&#39;1.2&#39;</span><span class="p">)</span> <span class="c1"># letters are &gt; numbers </span>
 <span class="go">1</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;10.2alpha1&#39;</span><span class="p">,</span> <span class="s1">&#39;10.2alpha&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;10.2alpha1&#39;</span><span class="p">,</span> <span class="s1">&#39;10.2alpha&#39;</span><span class="p">)</span>
 <span class="go">1</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;10.2dev&#39;</span><span class="p">,</span> <span class="s1">&#39;10.2alpha&#39;</span><span class="p">)</span> <span class="c1"># letters are compared lexicographically</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;10.2dev&#39;</span><span class="p">,</span> <span class="s1">&#39;10.2alpha&#39;</span><span class="p">)</span> <span class="c1"># letters are compared lexicographically</span>
 <span class="go">1</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 <span class="go">0</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compareVersions</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 <span class="go">1</span>
 </pre></div>
 </div>
@@ -266,9 +266,9 @@ or 0 if they are semantically the same.</p>
 </div>
 <div class="section" id="formattimeperiod">
 <h2>formatTimePeriod<a class="headerlink" href="#formattimeperiod" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.stringutils.formatTimePeriod">
-<code class="sig-prename descclassname">xpybuild.utils.stringutils.</code><code class="sig-name descname">formatTimePeriod</code><span class="sig-paren">(</span><em class="sig-param">secs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/stringutils.html#formatTimePeriod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.stringutils.formatTimePeriod" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.stringutils.</code><code class="sig-name descname">formatTimePeriod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">secs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/stringutils.html#formatTimePeriod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.stringutils.formatTimePeriod" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format a time period to a short display string.</p>
 </dd></dl>
 

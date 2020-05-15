@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -276,12 +276,16 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">__priority</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="c1"># default so we can go bigger or smaller</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 		
+		<span class="c1"># put the class first, since it results in better ordering (e.g. for errors)</span>
+		<span class="c1"># use a space to delimit these to make it easier to copy to the clipboard by double-clicking</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__stringvalue</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s1">&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+		
 		<span class="n">init</span> <span class="o">=</span> <span class="n">getBuildInitializationContext</span><span class="p">()</span>
 		<span class="k">if</span> <span class="ow">not</span> <span class="n">init</span><span class="p">:</span> <span class="c1"># doc-test mode</span>
 			<span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">BuildFileLocation</span><span class="p">(</span><span class="n">raiseOnError</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 		<span class="k">else</span><span class="p">:</span> 
 			<span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">BuildFileLocation</span><span class="p">(</span><span class="n">raiseOnError</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-			<span class="n">init</span><span class="o">.</span><span class="n">registerTarget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+			<span class="n">init</span><span class="o">.</span><span class="n">registerTarget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="c1"># this can throw</span>
 
 		<span class="c1"># should ensure changes to the build file cause a rebuild? probs no need</span>
 		<span class="c1"># PathSet will perform all necessary flattening etc</span>
@@ -291,10 +295,6 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">__workDir</span> <span class="o">=</span> <span class="kc">None</span>
 		
 		<span class="bp">self</span><span class="o">.</span><span class="n">__registeredImplicitInputs</span> <span class="o">=</span> <span class="p">[]</span>
-
-		<span class="c1"># put the class first, since it results in better ordering (e.g. for errors)</span>
-		<span class="c1"># use a space to delimit these to make it easier to copy to the clipboard by double-clicking</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">__stringvalue</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;</span><span class="si">{self.type}</span><span class="s1">&gt; </span><span class="si">{self.name}</span><span class="s1">&#39;</span>
 		
 		<span class="c1"># aliases for pre-3.0</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">addHashableImplicitInputOption</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registerImplicitInputOption</span>
@@ -439,7 +439,7 @@
 			<span class="k">else</span><span class="p">:</span>
 				<span class="n">value</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 			<span class="c1">#assert &#39;0x&#39; not in value</span>
-			<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;option </span><span class="si">{k}</span><span class="s1">=</span><span class="si">{value}</span><span class="s1">&#39;</span><span class="p">)</span>
+			<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;option </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 		<span class="k">return</span> <span class="n">result</span>
 
 <div class="viewcode-block" id="BaseTarget.registerImplicitInput"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.registerImplicitInput">[docs]</a>	<span class="k">def</span> <span class="nf">registerImplicitInput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>

@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -178,25 +178,25 @@
 functionality for adding prefixes/suffixes to paths such as <a class="reference internal" href="#xpybuild.buildcommon.FilenameStringFormatter" title="xpybuild.buildcommon.FilenameStringFormatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcommon.FilenameStringFormatter</span></code></a>.</p>
 <div class="section" id="xpybuild-version">
 <h2>XPYBUILD_VERSION<a class="headerlink" href="#xpybuild-version" title="Permalink to this headline">¶</a></h2>
-<dl class="data">
+<dl class="py data">
 <dt id="xpybuild.buildcommon.XPYBUILD_VERSION">
-<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">XPYBUILD_VERSION</code><em class="property"> = '3.1.dev1'</em><a class="headerlink" href="#xpybuild.buildcommon.XPYBUILD_VERSION" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">XPYBUILD_VERSION</code><em class="property">: str</em><em class="property"> = '3.1.dev1'</em><a class="headerlink" href="#xpybuild.buildcommon.XPYBUILD_VERSION" title="Permalink to this definition">¶</a></dt>
 <dd><p>The current xpybuild version.</p>
 </dd></dl>
 
 </div>
 <div class="section" id="is-windows">
 <h2>IS_WINDOWS<a class="headerlink" href="#is-windows" title="Permalink to this headline">¶</a></h2>
-<dl class="data">
+<dl class="py data">
 <dt id="xpybuild.buildcommon.IS_WINDOWS">
-<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">IS_WINDOWS</code><em class="property"> = False</em><a class="headerlink" href="#xpybuild.buildcommon.IS_WINDOWS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">IS_WINDOWS</code><em class="property">: bool</em><em class="property"> = False</em><a class="headerlink" href="#xpybuild.buildcommon.IS_WINDOWS" title="Permalink to this definition">¶</a></dt>
 <dd><p>A boolean that specifies whether this is Windows or some other operating system.</p>
 </dd></dl>
 
 </div>
 <div class="section" id="isdirpath">
 <h2>isDirPath<a class="headerlink" href="#isdirpath" title="Permalink to this headline">¶</a></h2>
-<dl class="data">
+<dl class="py data">
 <dt id="xpybuild.buildcommon.isDirPath">
 <code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">isDirPath</code><em class="property"> = &lt;function isDirPath&gt;</em><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#isDirPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.isDirPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if the path is a directory (ends with a slash, <code class="docutils literal notranslate"><span class="pre">/</span></code> or <code class="docutils literal notranslate"><span class="pre">\\</span></code>).</p>
@@ -205,9 +205,9 @@ functionality for adding prefixes/suffixes to paths such as <a class="reference 
 </div>
 <div class="section" id="stringformatter">
 <h2>StringFormatter<a class="headerlink" href="#stringformatter" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.buildcommon.StringFormatter">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">StringFormatter</code><span class="sig-paren">(</span><em class="sig-param">formatstring</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#StringFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.StringFormatter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">StringFormatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">formatstring</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#StringFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.StringFormatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A simple named functor for applying a <code class="docutils literal notranslate"><span class="pre">%s</span></code>-style string format, useful 
 in situations where a function is needed to add a suffix/prefix for the 
@@ -217,9 +217,9 @@ value of an option.</p>
 </div>
 <div class="section" id="filenamestringformatter">
 <h2>FilenameStringFormatter<a class="headerlink" href="#filenamestringformatter" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.buildcommon.FilenameStringFormatter">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">FilenameStringFormatter</code><span class="sig-paren">(</span><em class="sig-param">formatstring</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#FilenameStringFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.FilenameStringFormatter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">FilenameStringFormatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">formatstring</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#FilenameStringFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.FilenameStringFormatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A simple named functor for applying a <code class="docutils literal notranslate"><span class="pre">%s</span></code>-style string format. 
 Formatter is just applied to the basename part of the filename,
@@ -229,9 +229,9 @@ the dirname part is preserved as-is.</p>
 </div>
 <div class="section" id="include">
 <h2>include<a class="headerlink" href="#include" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.buildcommon.include">
-<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">include</code><span class="sig-paren">(</span><em class="sig-param">file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#include"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.include" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">include</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#include"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.include" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse and register the targets and properties in in the specified 
 <code class="docutils literal notranslate"><span class="pre">XXX.xpybuild.py</span></code> file.</p>
 <p>Targets should only be defined in files included using this method, 
@@ -246,7 +246,7 @@ not using python import statements.</p>
 </div>
 <div class="section" id="iswindows">
 <h2>isWindows<a class="headerlink" href="#iswindows" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.buildcommon.isWindows">
 <code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">isWindows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#isWindows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.isWindows" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if this is a windows platform.</p>
@@ -260,9 +260,9 @@ not using python import statements.</p>
 </div>
 <div class="section" id="defineatomictargetgroup">
 <h2>defineAtomicTargetGroup<a class="headerlink" href="#defineatomictargetgroup" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.buildcommon.defineAtomicTargetGroup">
-<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">defineAtomicTargetGroup</code><span class="sig-paren">(</span><em class="sig-param">*targets</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#defineAtomicTargetGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.defineAtomicTargetGroup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">defineAtomicTargetGroup</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">targets</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#defineAtomicTargetGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.defineAtomicTargetGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>The given targets must all be built before anything which depends on any of those targets.</p>
 <p>Returns the flattened list of targets.</p>
 </dd></dl>
@@ -270,18 +270,18 @@ not using python import statements.</p>
 </div>
 <div class="section" id="requirexpybuildversion">
 <h2>requireXpybuildVersion<a class="headerlink" href="#requirexpybuildversion" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.buildcommon.requireXpybuildVersion">
-<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">requireXpybuildVersion</code><span class="sig-paren">(</span><em class="sig-param">version: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#requireXpybuildVersion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.requireXpybuildVersion" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">requireXpybuildVersion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">version</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#requireXpybuildVersion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.requireXpybuildVersion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks that this xpybuild is at least a certain version number.</p>
 </dd></dl>
 
 </div>
 <div class="section" id="registerprebuildcheck">
 <h2>registerPreBuildCheck<a class="headerlink" href="#registerprebuildcheck" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.buildcommon.registerPreBuildCheck">
-<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">registerPreBuildCheck</code><span class="sig-paren">(</span><em class="sig-param">fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#registerPreBuildCheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.registerPreBuildCheck" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">registerPreBuildCheck</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#registerPreBuildCheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.registerPreBuildCheck" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a check which will be called after any clean but before any build actions take place.
 fn should be a functor that takes a context and raises a BuildException if the check fails.</p>
 </dd></dl>
@@ -289,7 +289,7 @@ fn should be a functor that takes a context and raises a BuildException if the c
 </div>
 <div class="section" id="enablelegacyxpybuildmodulenames">
 <h2>enableLegacyXpybuildModuleNames<a class="headerlink" href="#enablelegacyxpybuildmodulenames" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.buildcommon.enableLegacyXpybuildModuleNames">
 <code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">enableLegacyXpybuildModuleNames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#enableLegacyXpybuildModuleNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.enableLegacyXpybuildModuleNames" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds aliases for pre-3.0 module names e.g. <code class="xref py py-obj docutils literal notranslate"><span class="pre">buildcommon</span></code> instead of <a class="reference internal" href="#module-xpybuild.buildcommon" title="xpybuild.buildcommon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcommon</span></code></a>, etc.</p>

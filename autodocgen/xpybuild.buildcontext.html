@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -195,9 +195,9 @@ being parsed.</p>
 </table>
 <div class="section" id="basecontext">
 <h2>BaseContext<a class="headerlink" href="#basecontext" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.buildcontext.BaseContext">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcontext.</code><code class="sig-name descname">BaseContext</code><span class="sig-paren">(</span><em class="sig-param">initialProperties=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcontext.</code><code class="sig-name descname">BaseContext</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initialProperties</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Common functionality needed during initialization and build phases.</p>
 <p>Initializes a BaseContext object.</p>
@@ -207,9 +207,9 @@ being parsed.</p>
 used by doc tests.</p>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BaseContext.publishArtifact">
-<code class="sig-name descname">publishArtifact</code><span class="sig-paren">(</span><em class="sig-param">displayName</em>, <em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.publishArtifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.publishArtifact" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">publishArtifact</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">displayName</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.publishArtifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.publishArtifact" title="Permalink to this definition">¶</a></dt>
 <dd><p>Publishes the specified local path as an artifact, 
 if supported by the configured output format.</p>
 <p>For example this can be used to publish log and error output if a target 
@@ -217,9 +217,9 @@ fails.</p>
 <p>Equivalent to calling <code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.consoleformatter.publishArtifact</span></code></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BaseContext.getPropertyValue">
-<code class="sig-name descname">getPropertyValue</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.getPropertyValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.getPropertyValue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getPropertyValue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.getPropertyValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.getPropertyValue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the value of the specified property or raise a BuildException if it doesn’t exist.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -229,7 +229,7 @@ fails.</p>
 <dd class="field-even"><p>For Boolean properties this will be a python Boolean, for everything else it will be a string.</p>
 </dd>
 </dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;BUILD_MODE&#39;</span><span class="p">:</span><span class="s1">&#39;release&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s1">&#39;BUILD_MODE&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;BUILD_MODE&#39;</span><span class="p">:</span><span class="s1">&#39;release&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s1">&#39;BUILD_MODE&#39;</span><span class="p">)</span>
 <span class="go">&#39;release&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">})</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">)</span>
 <span class="go">False</span>
@@ -251,9 +251,9 @@ fails.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BaseContext.expandPropertyValues">
-<code class="sig-name descname">expandPropertyValues</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">expandList=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.expandPropertyValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.expandPropertyValues" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">expandPropertyValues</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">expandList</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.expandPropertyValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.expandPropertyValues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expand all <code class="docutils literal notranslate"><span class="pre">${PROP_NAME}</span></code> properties in the specified string.</p>
 <p>Use a double dollar to escape if needed, e.g. <code class="docutils literal notranslate"><span class="pre">$${foo}</span></code> will end up as 
 <code class="docutils literal notranslate"><span class="pre">${foo}</span></code> unescaped. This assumes expandPropertyValues is not called 
@@ -271,7 +271,7 @@ a single argument containing the context.</p></li>
 </ul>
 </dd>
 </dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 <span class="go">&#39;&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;BUILD_MODE&#39;</span><span class="p">:</span><span class="s1">&#39;release&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39; $</span><span class="si">{BUILD_MODE}</span><span class="s1"> x $</span><span class="si">{BUILD_MODE}</span><span class="s1"> &#39;</span><span class="p">)</span>
@@ -310,9 +310,9 @@ a single argument containing the context.</p></li>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BaseContext.expandListPropertyValue">
-<code class="sig-name descname">expandListPropertyValue</code><span class="sig-paren">(</span><em class="sig-param">propertyName</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.expandListPropertyValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.expandListPropertyValue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">expandListPropertyValue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propertyName</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.expandListPropertyValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.expandListPropertyValue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the list represented by the specified property or raise a 
 BuildException if it doesn’t exist.</p>
 <dl class="field-list simple">
@@ -323,22 +323,22 @@ and end with “[]”.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BaseContext.getProperties">
 <code class="sig-name descname">getProperties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.getProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.getProperties" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a new copy of the properties dictionary (values may be of any type).</p>
 <p>Do not use this method unless 
 really necessary (e.g. for keyword substitution) - in almost all cases it is better to simply specify the 
 required properties explicitly to <a class="reference internal" href="#xpybuild.buildcontext.BaseContext.getPropertyValue" title="xpybuild.buildcontext.BaseContext.getPropertyValue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getPropertyValue</span></code></a> or <a class="reference internal" href="#xpybuild.buildcontext.BaseContext.expandPropertyValues" title="xpybuild.buildcontext.BaseContext.expandPropertyValues"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expandPropertyValues</span></code></a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getProperties</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getProperties</span><span class="p">()</span>
 <span class="go">{&#39;A&#39;: &#39;b&#39;}</span>
 </pre></div>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BaseContext.mergeOptions">
-<code class="sig-name descname">mergeOptions</code><span class="sig-paren">(</span><em class="sig-param">target=None</em>, <em class="sig-param">options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.mergeOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.mergeOptions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mergeOptions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.mergeOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.mergeOptions" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Deprecated</dt>
 <dd class="field-odd"><p>Instead, use the target’s <code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget.options</span></code> to get the resolved dictionary of options instead of this method, or 
@@ -362,18 +362,18 @@ from the option defaults.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BaseContext.getGlobalOption">
-<code class="sig-name descname">getGlobalOption</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.getGlobalOption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.getGlobalOption" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getGlobalOption</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.getGlobalOption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.getGlobalOption" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the value of the specified global option for this build.</p>
 <p>This can be useful for PathSets and functors, however in any situation 
 where there is a target, use <code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget.options</span></code> instead, so that per-target 
 option overrides are respected.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BaseContext.getFullPath">
-<code class="sig-name descname">getFullPath</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">defaultDir</em>, <em class="sig-param">expandList=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.getFullPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.getFullPath" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getFullPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">defaultDir</span></em>, <em class="sig-param"><span class="n">expandList</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BaseContext.getFullPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BaseContext.getFullPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expands any properties in the specified path, then removes trailing path separators, normalizes it for this 
 platform and then makes it an absolute path if necessary, using the specified default directory.</p>
 <dl class="field-list simple">
@@ -392,7 +392,7 @@ paths instead of a single path.</p></li>
 </ul>
 </dd>
 </dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;DEF&#39;</span><span class="p">:</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;EL&#39;</span><span class="p">:</span><span class="s1">&#39;element&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="s1">&#39;path/$</span><span class="si">{EL}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{DEF}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;DEF&#39;</span><span class="p">:</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;EL&#39;</span><span class="p">:</span><span class="s1">&#39;element&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="s1">&#39;path/$</span><span class="si">{EL}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{DEF}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
 <span class="go">&#39;output/path/element&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">BaseContext</span><span class="p">({</span><span class="s1">&#39;DEF&#39;</span><span class="p">:</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;EL&#39;</span><span class="p">:</span><span class="s1">&#39;element&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="s1">&#39;/path/$</span><span class="si">{EL}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{DEF}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
 <span class="go">&#39;/path/element&#39;</span>
@@ -409,9 +409,9 @@ paths instead of a single path.</p></li>
 </div>
 <div class="section" id="buildinitializationcontext">
 <h2>BuildInitializationContext<a class="headerlink" href="#buildinitializationcontext" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.buildcontext.BuildInitializationContext">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcontext.</code><code class="sig-name descname">BuildInitializationContext</code><span class="sig-paren">(</span><em class="sig-param">propertyOverrides</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcontext.</code><code class="sig-name descname">BuildInitializationContext</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propertyOverrides</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.buildcontext.BaseContext" title="xpybuild.buildcontext.BaseContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.buildcontext.BaseContext</span></code></a></p>
 <p>Provides context used only during the initialization phase of the build.</p>
 <p>Once initialization is complete, this object can no longer be used.</p>
@@ -427,7 +427,7 @@ it has been defined.</p>
 of type string.</p>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext">
 <em class="property">static </em><code class="sig-name descname">getBuildInitializationContext</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.getBuildInitializationContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the singleton <a class="reference internal" href="#xpybuild.buildcontext.BuildInitializationContext" title="xpybuild.buildcontext.BuildInitializationContext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BuildInitializationContext</span></code></a> instance during parsing of build files, 
@@ -439,7 +439,7 @@ it has been defined.</p>
 since a <a class="reference internal" href="#xpybuild.buildcontext.BuildContext" title="xpybuild.buildcontext.BuildContext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BuildContext</span></code></a> is used for that phase of the build instead.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BuildInitializationContext.isRealBuild">
 <code class="sig-name descname">isRealBuild</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.isRealBuild"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.isRealBuild" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if a real build is going to take place, or False if 
@@ -450,26 +450,26 @@ initialization-phase operations if they’re not really going to be
 needed.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BuildInitializationContext.getTargetsWithTag">
-<code class="sig-name descname">getTargetsWithTag</code><span class="sig-paren">(</span><em class="sig-param">tag</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.getTargetsWithTag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.getTargetsWithTag" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getTargetsWithTag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.getTargetsWithTag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.getTargetsWithTag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the list of target objects with the specified tag name 
 (throws BuildException if not defined).</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BuildInitializationContext.tags">
 <code class="sig-name descname">tags</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.tags" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the map of tag names to lists of target objects</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BuildInitializationContext.targets">
 <code class="sig-name descname">targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.targets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a map of targetName:target</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BuildInitializationContext.getOutputDirs">
 <code class="sig-name descname">getOutputDirs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildInitializationContext.getOutputDirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildInitializationContext.getOutputDirs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the list of registered output dirs.</p>
@@ -481,17 +481,17 @@ needed.</p>
 </div>
 <div class="section" id="buildcontext">
 <h2>BuildContext<a class="headerlink" href="#buildcontext" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.buildcontext.BuildContext">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcontext.</code><code class="sig-name descname">BuildContext</code><span class="sig-paren">(</span><em class="sig-param">initializationContext</em>, <em class="sig-param">targetPaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildContext" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.buildcontext.</code><code class="sig-name descname">BuildContext</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initializationContext</span></em>, <em class="sig-param"><span class="n">targetPaths</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildContext" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.buildcontext.BaseContext" title="xpybuild.buildcontext.BaseContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.buildcontext.BaseContext</span></code></a></p>
 <p>Provides context used only during the build phase of the build (after initialization is complete), 
 i.e. the ability to expand variables (but not to change their value).</p>
 <p>Create a BuildContext from a <a class="reference internal" href="#xpybuild.buildcontext.BuildInitializationContext" title="xpybuild.buildcontext.BuildInitializationContext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BuildInitializationContext</span></code></a>.</p>
 <p>Should not be used directly, will be passed into each target’s run method.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BuildContext.isPathWithinOutputDir">
-<code class="sig-name descname">isPathWithinOutputDir</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildContext.isPathWithinOutputDir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildContext.isPathWithinOutputDir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">isPathWithinOutputDir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildContext.isPathWithinOutputDir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildContext.isPathWithinOutputDir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if the specified path is a descendent of any of 
 this build’s output directories.</p>
 <dl class="field-list simple">
@@ -501,9 +501,9 @@ this build’s output directories.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.buildcontext.BuildContext.getTargetsWithTag">
-<code class="sig-name descname">getTargetsWithTag</code><span class="sig-paren">(</span><em class="sig-param">tag</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildContext.getTargetsWithTag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildContext.getTargetsWithTag" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getTargetsWithTag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcontext.html#BuildContext.getTargetsWithTag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcontext.BuildContext.getTargetsWithTag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the list of target objects with the specified tag name.</p>
 <p>Throws BuildException if not defined.</p>
 </dd></dl>

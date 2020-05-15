@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -189,9 +189,9 @@
 <p>Support classes for the Java targets in <a class="reference internal" href="xpybuild.targets.java.html#module-xpybuild.targets.java" title="xpybuild.targets.java"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.java</span></code></a>.</p>
 <div class="section" id="create-manifest">
 <h2>create_manifest<a class="headerlink" href="#create-manifest" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.java.create_manifest">
-<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">create_manifest</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">properties</em>, <em class="sig-param">options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#create_manifest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.create_manifest" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">create_manifest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">properties</span></em>, <em class="sig-param"><span class="n">options</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#create_manifest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.create_manifest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a manifest file in path from the map properties.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -209,9 +209,9 @@ Must follow java jar file format specification, e.g. headers cannot contain spac
 </div>
 <div class="section" id="javac">
 <h2>javac<a class="headerlink" href="#javac" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.java.javac">
-<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">javac</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">inputs</em>, <em class="sig-param">classpath</em>, <em class="sig-param">options</em>, <em class="sig-param">logbasename</em>, <em class="sig-param">targetname</em>, <em class="sig-param">workDir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#javac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.javac" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">javac</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">classpath</span></em>, <em class="sig-param"><span class="n">options</span></em>, <em class="sig-param"><span class="n">logbasename</span></em>, <em class="sig-param"><span class="n">targetname</span></em>, <em class="sig-param"><span class="n">workDir</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#javac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.javac" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compile some java files to class files.</p>
 <p>Will raise BuildException if compilation fails.</p>
 <dl class="field-list simple">
@@ -234,9 +234,9 @@ to use for files such as .err, .out, etc files</p></li>
 </div>
 <div class="section" id="jar">
 <h2>jar<a class="headerlink" href="#jar" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.java.jar">
-<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">jar</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">manifest</em>, <em class="sig-param">sourcedir</em>, <em class="sig-param">options</em>, <em class="sig-param">preserveManifestFormatting=False</em>, <em class="sig-param">update=False</em>, <em class="sig-param">outputHandler=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#jar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.jar" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">jar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">manifest</span></em>, <em class="sig-param"><span class="n">sourcedir</span></em>, <em class="sig-param"><span class="n">options</span></em>, <em class="sig-param"><span class="n">preserveManifestFormatting</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">update</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">outputHandler</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#jar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.jar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a jar file containing a manifest and some other files</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -257,9 +257,9 @@ reformatting the specified manifest file to comply with Java conventions
 </div>
 <div class="section" id="signjar">
 <h2>signjar<a class="headerlink" href="#signjar" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.java.signjar">
-<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">signjar</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">keystore</em>, <em class="sig-param">options</em>, <em class="sig-param">alias=None</em>, <em class="sig-param">storepass=None</em>, <em class="sig-param">outputHandler=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#signjar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.signjar" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">signjar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">keystore</span></em>, <em class="sig-param"><span class="n">options</span></em>, <em class="sig-param"><span class="n">alias</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">storepass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">outputHandler</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#signjar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.signjar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Signs an existing jar.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -278,9 +278,9 @@ reformatting the specified manifest file to comply with Java conventions
 </div>
 <div class="section" id="javadoc">
 <h2>javadoc<a class="headerlink" href="#javadoc" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.java.javadoc">
-<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">javadoc</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">sources</em>, <em class="sig-param">classpath</em>, <em class="sig-param">options</em>, <em class="sig-param">workDir</em>, <em class="sig-param">outputHandler</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#javadoc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.javadoc" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.java.</code><code class="sig-name descname">javadoc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">sources</span></em>, <em class="sig-param"><span class="n">classpath</span></em>, <em class="sig-param"><span class="n">options</span></em>, <em class="sig-param"><span class="n">workDir</span></em>, <em class="sig-param"><span class="n">outputHandler</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/java.html#javadoc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.java.javadoc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create javadoc from sources and a set of options</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

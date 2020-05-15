@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -547,9 +547,9 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">extToEncodingDict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaultEncoding</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">extToEncoding</span><span class="p">),</span> <span class="n">default</span>
 		<span class="c1"># enforce starts with a . to prevent mistakes and allow us to potentially optimize the implementation in future</span>
 		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">extToEncoding</span><span class="p">:</span> 
-			<span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span> <span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ExtensionBasedFileEncodingDecider extension does not start with the required &quot;.&quot; character: &quot;</span><span class="si">{k}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span> <span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ExtensionBasedFileEncodingDecider extension does not start with the required &quot;.&quot; character: &quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__cache</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span><span class="kc">None</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">__stringified</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;ExtensionBasedFileEncodingDecider(</span><span class="si">{self.extToEncodingDict}</span><span class="s1">; default=</span><span class="si">{self.defaultEncoding}</span><span class="s1">)&#39;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__stringified</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;ExtensionBasedFileEncodingDecider(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">extToEncodingDict</span><span class="si">}</span><span class="s1">; default=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">defaultEncoding</span><span class="si">}</span><span class="s1">)&#39;</span>
 		
 	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stringified</span>
 
@@ -588,7 +588,7 @@
 		
 		<span class="n">fallbackDecider</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getGlobalOption</span><span class="p">(</span><span class="s1">&#39;common.fileEncodingDecider&#39;</span><span class="p">)</span>
 		<span class="k">if</span> <span class="n">fallbackDecider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span> <span class="k">return</span> <span class="n">fallbackDecider</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">)</span>
-		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;File encoding decider cannot handle path </span><span class="se">\&#39;</span><span class="si">{path}</span><span class="se">\&#39;</span><span class="s1">: </span><span class="si">{self}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;File encoding decider cannot handle path </span><span class="se">\&#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="se">\&#39;</span><span class="s1">: </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 	
 <div class="viewcode-block" id="ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider">[docs]</a>	<span class="nd">@staticmethod</span>
 	<span class="k">def</span> <span class="nf">getDefaultFileEncodingDecider</span><span class="p">():</span>

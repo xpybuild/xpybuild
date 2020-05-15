@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -192,9 +192,9 @@
 for Teamcity, make, Visual Studio, etc).</p>
 <div class="section" id="consoleformatter">
 <h2>ConsoleFormatter<a class="headerlink" href="#consoleformatter" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.consoleformatter.ConsoleFormatter">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">ConsoleFormatter</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">buildOptions</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#ConsoleFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.ConsoleFormatter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">ConsoleFormatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">buildOptions</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#ConsoleFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.ConsoleFormatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class for customizing the format used 
 for handling log records when displaying to the command console/stdout.</p>
@@ -212,9 +212,9 @@ to write messages to the on-disk xpybuild log file.</p>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.consoleformatter.ConsoleFormatter.publishArtifact">
-<code class="sig-name descname">publishArtifact</code><span class="sig-paren">(</span><em class="sig-param">logger</em>, <em class="sig-param">displayName</em>, <em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#ConsoleFormatter.publishArtifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.ConsoleFormatter.publishArtifact" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">publishArtifact</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger</span></em>, <em class="sig-param"><span class="n">displayName</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#ConsoleFormatter.publishArtifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.ConsoleFormatter.publishArtifact" title="Permalink to this definition">¶</a></dt>
 <dd><p>Publishes the specified local path (e.g. a log file) as an artifact, 
 if supported by this formatter.</p>
 <p>The default implementation used by most formatters is a no-op.</p>
@@ -238,9 +238,9 @@ be published. Never equal to empty or None.</p></li>
 </div>
 <div class="section" id="defaultconsoleformatter">
 <h2>DefaultConsoleFormatter<a class="headerlink" href="#defaultconsoleformatter" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.consoleformatter.DefaultConsoleFormatter">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">DefaultConsoleFormatter</code><span class="sig-paren">(</span><em class="sig-param">stream</em>, <em class="sig-param">buildOptions</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#DefaultConsoleFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.DefaultConsoleFormatter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">DefaultConsoleFormatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stream</span></em>, <em class="sig-param"><span class="n">buildOptions</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#DefaultConsoleFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.DefaultConsoleFormatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.consoleformatter.ConsoleFormatter" title="xpybuild.utils.consoleformatter.ConsoleFormatter"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.consoleformatter.ConsoleFormatter</span></code></a></p>
 <p>The default text output formatter for xpybuild.</p>
 </dd></dl>
@@ -248,9 +248,9 @@ be published. Never equal to empty or None.</p></li>
 </div>
 <div class="section" id="teamcityhandler">
 <h2>TeamcityHandler<a class="headerlink" href="#teamcityhandler" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.consoleformatter.TeamcityHandler">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">TeamcityHandler</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">buildOptions</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#TeamcityHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.TeamcityHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">TeamcityHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">buildOptions</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#TeamcityHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.TeamcityHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.consoleformatter.ConsoleFormatter" title="xpybuild.utils.consoleformatter.ConsoleFormatter"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.consoleformatter.ConsoleFormatter</span></code></a></p>
 <p>ConsoleFormatter that writes progress and error messages in a format suitable 
 for Teamcity CI, and can publish artifacts such as build logs to Teamcity.</p>
@@ -259,9 +259,9 @@ for Teamcity CI, and can publish artifacts such as build logs to Teamcity.</p>
 </div>
 <div class="section" id="makeconsoleformatter">
 <h2>MakeConsoleFormatter<a class="headerlink" href="#makeconsoleformatter" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.consoleformatter.MakeConsoleFormatter">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">MakeConsoleFormatter</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">buildOptions</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#MakeConsoleFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.MakeConsoleFormatter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">MakeConsoleFormatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">buildOptions</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#MakeConsoleFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.MakeConsoleFormatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.consoleformatter.ConsoleFormatter" title="xpybuild.utils.consoleformatter.ConsoleFormatter"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.consoleformatter.ConsoleFormatter</span></code></a></p>
 <p>ConsoleFormatter that logs in a format that matches GNU Make.</p>
 <p>Output format:</p>
@@ -281,9 +281,9 @@ for Teamcity CI, and can publish artifacts such as build logs to Teamcity.</p>
 </div>
 <div class="section" id="visualstudioconsoleformatter">
 <h2>VisualStudioConsoleFormatter<a class="headerlink" href="#visualstudioconsoleformatter" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.consoleformatter.VisualStudioConsoleFormatter">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">VisualStudioConsoleFormatter</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#VisualStudioConsoleFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.VisualStudioConsoleFormatter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">VisualStudioConsoleFormatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#VisualStudioConsoleFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.VisualStudioConsoleFormatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.utils.consoleformatter.ConsoleFormatter" title="xpybuild.utils.consoleformatter.ConsoleFormatter"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.utils.consoleformatter.ConsoleFormatter</span></code></a></p>
 <p>ConsoleFormatter than writes warnings, errors and file locations in a format 
 that Visual Studio can parse.</p>
@@ -305,18 +305,18 @@ that Visual Studio can parse.</p>
 </div>
 <div class="section" id="registerconsoleformatter">
 <h2>registerConsoleFormatter<a class="headerlink" href="#registerconsoleformatter" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.consoleformatter.registerConsoleFormatter">
-<code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">registerConsoleFormatter</code><span class="sig-paren">(</span><em class="sig-param">name: str</em>, <em class="sig-param">handler: xpybuild.utils.consoleformatter.ConsoleFormatter</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#registerConsoleFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.registerConsoleFormatter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">registerConsoleFormatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">handler</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#xpybuild.utils.consoleformatter.ConsoleFormatter" title="xpybuild.utils.consoleformatter.ConsoleFormatter">xpybuild.utils.consoleformatter.ConsoleFormatter</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#registerConsoleFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.registerConsoleFormatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make a custom console formatter class available for use by xpybuild.</p>
 </dd></dl>
 
 </div>
 <div class="section" id="publishartifact">
 <h2>publishArtifact<a class="headerlink" href="#publishartifact" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.consoleformatter.publishArtifact">
-<code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">publishArtifact</code><span class="sig-paren">(</span><em class="sig-param">displayName</em>, <em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#publishArtifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.publishArtifact" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.consoleformatter.</code><code class="sig-name descname">publishArtifact</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">displayName</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/consoleformatter.html#publishArtifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.consoleformatter.publishArtifact" title="Permalink to this definition">¶</a></dt>
 <dd><p>Publishes the specified local path as an artifact, 
 if supported by the configured output format.</p>
 <p>For example this can be used to publish log and error output if a target 

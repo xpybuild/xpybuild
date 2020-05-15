@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -187,9 +187,9 @@
 <p>Build file authors should use <a class="reference internal" href="xpybuild.targets.custom.html#xpybuild.targets.custom.CustomCommand" title="xpybuild.targets.custom.CustomCommand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.targets.custom.CustomCommand</span></code></a> instead of this module.</p>
 <div class="section" id="defaultprocessoutputencodingdecider">
 <h2>defaultProcessOutputEncodingDecider<a class="headerlink" href="#defaultprocessoutputencodingdecider" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.process.defaultProcessOutputEncodingDecider">
-<code class="sig-prename descclassname">xpybuild.utils.process.</code><code class="sig-name descname">defaultProcessOutputEncodingDecider</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">executable</em>, <em class="sig-param">**forfutureuse</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/process.html#defaultProcessOutputEncodingDecider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.process.defaultProcessOutputEncodingDecider" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.process.</code><code class="sig-name descname">defaultProcessOutputEncodingDecider</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">executable</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">forfutureuse</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/process.html#defaultProcessOutputEncodingDecider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.process.defaultProcessOutputEncodingDecider" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function providing the default implementation of the <code class="docutils literal notranslate"><span class="pre">common.processOutputEncodingDecider</span></code>
 option, which determines what encoding to use for parsing output from subprocesses.</p>
 <p>The default implementation ignores the executable argument and returns the same 
@@ -210,9 +210,9 @@ For some targets this may not be set (i.e. None).</p></li>
 </div>
 <div class="section" id="call">
 <h2>call<a class="headerlink" href="#call" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.process.call">
-<code class="sig-prename descclassname">xpybuild.utils.process.</code><code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param">args</em>, <em class="sig-param">env=None</em>, <em class="sig-param">cwd=None</em>, <em class="sig-param">outputHandler=None</em>, <em class="sig-param">outputEncoding=None</em>, <em class="sig-param">timeout=None</em>, <em class="sig-param">displayName=None</em>, <em class="sig-param">options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/process.html#call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.process.call" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.process.</code><code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">env</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cwd</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">outputHandler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">outputEncoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">displayName</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/process.html#call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.process.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call a process with the specified args, logging stderr and stdout to the specified 
 output handler which will throw an exception if the exit code or output 
 of the process indicates an error.</p>

@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -200,7 +200,7 @@
 <a class="reference internal" href="#xpybuild.utils.fileutils.mkdir" title="xpybuild.utils.fileutils.mkdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.fileutils.mkdir</span></code></a>, <a class="reference internal" href="#xpybuild.utils.fileutils.toLongPathSafe" title="xpybuild.utils.fileutils.toLongPathSafe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.fileutils.toLongPathSafe</span></code></a> and <a class="reference internal" href="#xpybuild.utils.fileutils.parsePropertiesFile" title="xpybuild.utils.fileutils.parsePropertiesFile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.fileutils.parsePropertiesFile</span></code></a>.</p>
 <div class="section" id="openforwrite">
 <h2>openForWrite<a class="headerlink" href="#openforwrite" title="Permalink to this headline">¶</a></h2>
-<dl class="data">
+<dl class="py data">
 <dt id="xpybuild.utils.fileutils.openForWrite">
 <code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">openForWrite</code><em class="property"> = &lt;built-in function open&gt;</em><a class="headerlink" href="#xpybuild.utils.fileutils.openForWrite" title="Permalink to this definition">¶</a></dt>
 <dd><p>Open a file for writing and return a corresponding text or binary stream file object.</p>
@@ -212,9 +212,9 @@ to avoid file system race conditions on Windows. This class must be used from a
 </div>
 <div class="section" id="mkdir">
 <h2>mkdir<a class="headerlink" href="#mkdir" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.mkdir">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">mkdir</code><span class="sig-paren">(</span><em class="sig-param">newdir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#mkdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.mkdir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">mkdir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#mkdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.mkdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Recursively create the specified directory if it doesn’t already exist.</p>
 <p>If it does, exit without error.</p>
 <dl class="field-list simple">
@@ -230,9 +230,9 @@ to avoid file system race conditions on Windows. This class must be used from a
 </div>
 <div class="section" id="deletedir">
 <h2>deleteDir<a class="headerlink" href="#deletedir" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.deleteDir">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">deleteDir</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">allowRetry=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#deleteDir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.deleteDir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">deleteDir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">allowRetry</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#deleteDir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.deleteDir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Recursively delete the contents of a directory.</p>
 <p>Contains magic hacks so it works even on paths that exceed the Windows MAX_PATH 260 character length.</p>
 <dl class="field-list simple">
@@ -249,9 +249,9 @@ transient)</p></li>
 </div>
 <div class="section" id="deletefile">
 <h2>deleteFile<a class="headerlink" href="#deletefile" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.deleteFile">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">deleteFile</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">allowRetry=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#deleteFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.deleteFile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">deleteFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">allowRetry</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#deleteFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.deleteFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete the specified file, with the option of automatically retrying a few times if the first attempt fails 
 (to get around Windows weirdness), throwing an exception if the file still exists at the end of retrying.</p>
 <p>Use this instead of os.remove for improved robustness.</p>
@@ -270,9 +270,9 @@ transient)</p></li>
 </div>
 <div class="section" id="parsepropertiesfile">
 <h2>parsePropertiesFile<a class="headerlink" href="#parsepropertiesfile" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.parsePropertiesFile">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">parsePropertiesFile</code><span class="sig-paren">(</span><em class="sig-param">lines</em>, <em class="sig-param">excludeLines=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#parsePropertiesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.parsePropertiesFile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">parsePropertiesFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lines</span></em>, <em class="sig-param"><span class="n">excludeLines</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#parsePropertiesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.parsePropertiesFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse the contents of the specified properties file or line list, and return an ordered list 
 of (key,value,lineno) pairs.</p>
 <dl class="field-list simple">
@@ -283,7 +283,7 @@ of (key,value,lineno) pairs.</p>
 </ul>
 </dd>
 </dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parsePropertiesFile</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b=c&#39;</span><span class="p">,</span><span class="s1">&#39; z  =  x&#39;</span><span class="p">,</span> <span class="s1">&#39;a=d #foo&#39;</span><span class="p">,</span> <span class="s1">&#39;#g=h&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parsePropertiesFile</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b=c&#39;</span><span class="p">,</span><span class="s1">&#39; z  =  x&#39;</span><span class="p">,</span> <span class="s1">&#39;a=d #foo&#39;</span><span class="p">,</span> <span class="s1">&#39;#g=h&#39;</span><span class="p">])</span>
 <span class="go">[(&#39;b&#39;, &#39;c&#39;, 2), (&#39;z&#39;, &#39;x&#39;, 3), (&#39;a&#39;, &#39;d&#39;, 4)]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parsePropertiesFile</span><span class="p">([</span><span class="s1">&#39;a=b&#39;</span><span class="p">,</span><span class="s1">&#39;c=d#foo&#39;</span><span class="p">,</span><span class="s1">&#39;XfooX=e&#39;</span><span class="p">,</span> <span class="s1">&#39;f=h&#39;</span><span class="p">],</span> <span class="n">excludeLines</span><span class="o">=</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
 <span class="go">[(&#39;a&#39;, &#39;b&#39;, 1), (&#39;c&#39;, &#39;d&#39;, 2), (&#39;f&#39;, &#39;h&#39;, 4)]</span>
@@ -296,23 +296,23 @@ of (key,value,lineno) pairs.</p>
 </div>
 <div class="section" id="isdirpath">
 <h2>isDirPath<a class="headerlink" href="#isdirpath" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.isDirPath">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">isDirPath</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#isDirPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.isDirPath" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">isDirPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#isDirPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.isDirPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if the path is a directory (ends with / or ).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">isDirPath</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">isDirPath</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">isDirPath</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">isDirPath</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">isDirPath</span><span class="p">(</span><span class="s1">&#39;a/&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">isDirPath</span><span class="p">(</span><span class="s1">&#39;a/&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">isDirPath</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">isDirPath</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -321,9 +321,9 @@ of (key,value,lineno) pairs.</p>
 </div>
 <div class="section" id="tolongpathsafe">
 <h2>toLongPathSafe<a class="headerlink" href="#tolongpathsafe" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.toLongPathSafe">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">toLongPathSafe</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">force=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#toLongPathSafe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.toLongPathSafe" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">toLongPathSafe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">force</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#toLongPathSafe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.toLongPathSafe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts the specified path string to a form suitable for passing to API 
 calls if it exceeds the maximum path length on this OS.</p>
 <p>Currently, this is necessary only on Windows, where a string 
@@ -355,9 +355,9 @@ is preserved by this function (though will be converted to a backslash).</p>
 </div>
 <div class="section" id="normpath">
 <h2>normPath<a class="headerlink" href="#normpath" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.normPath">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">normPath</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#normPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.normPath" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">normPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#normPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.normPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Normalizes but does NOT absolutize a path (os.path.normpath). This converts an absolute or relative path to a 
 canonical form (e.g. normalizing the case of the drive letter on Windows), but unlike <a class="reference internal" href="#xpybuild.utils.fileutils.normLongPath" title="xpybuild.utils.fileutils.normLongPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normLongPath</span></code></a> does not 
 add the <code class="docutils literal notranslate"><span class="pre">\\?\</span></code> prefix needed to permit long paths or absolutize.</p>
@@ -372,9 +372,9 @@ string will not work if the path contains non-ascii characters.</p>
 </div>
 <div class="section" id="normlongpath">
 <h2>normLongPath<a class="headerlink" href="#normlongpath" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.normLongPath">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">normLongPath</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#normLongPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.normLongPath" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">normLongPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#normLongPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.normLongPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Normalizes and absolutizes a path (os.path.abspath), converts to a canonical 
 form (e.g. normalizing the case of the drive letter on Windows), and on 
 windows adds the <code class="docutils literal notranslate"><span class="pre">\\?\</span></code> prefix needed to force correct handling of long 
@@ -390,9 +390,9 @@ string will not work if the path contains non-ascii characters.</p>
 </div>
 <div class="section" id="cached-stat">
 <h2>cached_stat<a class="headerlink" href="#cached-stat" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.cached_stat">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">cached_stat</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">errorIfMissing=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#cached_stat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.cached_stat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">cached_stat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">errorIfMissing</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#cached_stat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.cached_stat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cached-once os.stat (DO NOT USE if you expect it to change after startup). 
 Returns False if missing.</p>
 </dd></dl>
@@ -400,45 +400,45 @@ Returns False if missing.</p>
 </div>
 <div class="section" id="cached-getmtime">
 <h2>cached_getmtime<a class="headerlink" href="#cached-getmtime" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.cached_getmtime">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">cached_getmtime</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#cached_getmtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.cached_getmtime" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">cached_getmtime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#cached_getmtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.cached_getmtime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cached-once os.getmtime (DO NOT USE if you expect it to change after startup)</p>
 </dd></dl>
 
 </div>
 <div class="section" id="cached-getsize">
 <h2>cached_getsize<a class="headerlink" href="#cached-getsize" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.cached_getsize">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">cached_getsize</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#cached_getsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.cached_getsize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">cached_getsize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#cached_getsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.cached_getsize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cached-once os.path.getsize (DO NOT USE if you expect it to change after startup)</p>
 </dd></dl>
 
 </div>
 <div class="section" id="cached-exists">
 <h2>cached_exists<a class="headerlink" href="#cached-exists" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.cached_exists">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">cached_exists</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#cached_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.cached_exists" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">cached_exists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#cached_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.cached_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cached-once os.path.exists (DO NOT USE if you expect it to change after startup)</p>
 </dd></dl>
 
 </div>
 <div class="section" id="cached-isfile">
 <h2>cached_isfile<a class="headerlink" href="#cached-isfile" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.cached_isfile">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">cached_isfile</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#cached_isfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.cached_isfile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">cached_isfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#cached_isfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.cached_isfile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cached-once os.path.isfile (DO NOT USE if you expect it to change after startup)</p>
 </dd></dl>
 
 </div>
 <div class="section" id="cached-isdir">
 <h2>cached_isdir<a class="headerlink" href="#cached-isdir" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="xpybuild.utils.fileutils.cached_isdir">
-<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">cached_isdir</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#cached_isdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.cached_isdir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.utils.fileutils.</code><code class="sig-name descname">cached_isdir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/fileutils.html#cached_isdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.fileutils.cached_isdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cached-once os.path.isdir (DO NOT USE if you expect it to change after startup)</p>
 </dd></dl>
 

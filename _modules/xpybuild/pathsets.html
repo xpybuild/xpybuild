@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -586,7 +586,7 @@
 			<span class="k">if</span> <span class="s1">&#39;*&#39;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span> 
 				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Cannot specify &quot;*&quot; patterns here (consider using FindPaths instead): &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="p">)</span>
 			<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
-				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot specify absolute path &quot;</span><span class="si">{c}</span><span class="s1">&quot;, as all paths must be relative to the base directory </span><span class="si">{self.__dir}</span><span class="s1">; (hint: consider using the xpybuild.propertysupport.basename(), and check for unintentional leading slashes)&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="p">)</span>
+				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot specify absolute path &quot;</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s1">&quot;, as all paths must be relative to the base directory </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__dir</span><span class="si">}</span><span class="s1">; (hint: consider using the xpybuild.propertysupport.basename(), and check for unintentional leading slashes)&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__location</span><span class="p">)</span>
 
 			<span class="n">isdir</span> <span class="o">=</span> <span class="n">isDirPath</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
 

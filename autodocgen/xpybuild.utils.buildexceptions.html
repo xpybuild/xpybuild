@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -185,9 +185,9 @@
 <p>The <a class="reference internal" href="#xpybuild.utils.buildexceptions.BuildException" title="xpybuild.utils.buildexceptions.BuildException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.buildexceptions.BuildException</span></code></a> class used for (non-internal) problems encountered while building.</p>
 <div class="section" id="buildexception">
 <h2>BuildException<a class="headerlink" href="#buildexception" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.utils.buildexceptions.BuildException">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.buildexceptions.</code><code class="sig-name descname">BuildException</code><span class="sig-paren">(</span><em class="sig-param">message</em>, <em class="sig-param">location=None</em>, <em class="sig-param">causedBy=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildexceptions.html#BuildException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildexceptions.BuildException" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.utils.buildexceptions.</code><code class="sig-name descname">BuildException</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">causedBy</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildexceptions.html#BuildException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildexceptions.BuildException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>A BuildException represents an error caused by an incorrect build or a runtime build problem. i.e. anything 
 that isn’t an internal xpybuild error.</p>
@@ -214,9 +214,9 @@ trace will be captured if this is True.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.buildexceptions.BuildException.getLoggerExtraArgDict">
-<code class="sig-name descname">getLoggerExtraArgDict</code><span class="sig-paren">(</span><em class="sig-param">target=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildexceptions.html#BuildException.getLoggerExtraArgDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildexceptions.BuildException.getLoggerExtraArgDict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getLoggerExtraArgDict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildexceptions.html#BuildException.getLoggerExtraArgDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildexceptions.BuildException.getLoggerExtraArgDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a dict suitable for passing as extra= in a logger call, to set 
 filename/lineno location information if available.</p>
 <dl class="field-list simple">
@@ -226,9 +226,9 @@ filename/lineno location information if available.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.buildexceptions.BuildException.toSingleLineString">
-<code class="sig-name descname">toSingleLineString</code><span class="sig-paren">(</span><em class="sig-param">target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildexceptions.html#BuildException.toSingleLineString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildexceptions.BuildException.toSingleLineString" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">toSingleLineString</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildexceptions.html#BuildException.toSingleLineString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildexceptions.BuildException.toSingleLineString" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the exception message formatted to be a single line.</p>
 <p>Includes the name of the failed target if called with a target.</p>
 <dl class="field-list simple">
@@ -238,9 +238,9 @@ filename/lineno location information if available.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.utils.buildexceptions.BuildException.toMultiLineString">
-<code class="sig-name descname">toMultiLineString</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">includeStack=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildexceptions.html#BuildException.toMultiLineString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildexceptions.BuildException.toMultiLineString" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">toMultiLineString</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">includeStack</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/utils/buildexceptions.html#BuildException.toMultiLineString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.utils.buildexceptions.BuildException.toMultiLineString" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the exception message, on multiple lines if necessary, possibly including the stack trace.</p>
 <p>If possible, includes the build file location associated with the 
 exception or with the failed target.</p>

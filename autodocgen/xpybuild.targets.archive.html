@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -184,9 +184,9 @@
 <p>Targets relating to creating and unpacking archives such as <code class="docutils literal notranslate"><span class="pre">.\zip</span></code>, <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code>.</p>
 <div class="section" id="tarball">
 <h2>Tarball<a class="headerlink" href="#tarball" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.archive.Tarball">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.archive.</code><code class="sig-name descname">Tarball</code><span class="sig-paren">(</span><em class="sig-param">archive</em>, <em class="sig-param">inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#Tarball"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.Tarball" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.archive.</code><code class="sig-name descname">Tarball</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">archive</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#Tarball"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.Tarball" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Target that creates a <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> archive from a set of input files.</p>
 <dl class="field-list simple">
@@ -202,9 +202,9 @@
 </div>
 <div class="section" id="zip">
 <h2>Zip<a class="headerlink" href="#zip" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.archive.Zip">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.archive.</code><code class="sig-name descname">Zip</code><span class="sig-paren">(</span><em class="sig-param">archive</em>, <em class="sig-param">inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#Zip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.Zip" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.archive.</code><code class="sig-name descname">Zip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">archive</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#Zip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.Zip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Target that creates a <code class="docutils literal notranslate"><span class="pre">.zip</span></code> archive from a set of input files.</p>
 <dl class="field-list simple">
@@ -220,9 +220,9 @@
 </div>
 <div class="section" id="unpack">
 <h2>Unpack<a class="headerlink" href="#unpack" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.archive.Unpack">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.archive.</code><code class="sig-name descname">Unpack</code><span class="sig-paren">(</span><em class="sig-param">dest</em>, <em class="sig-param">archives</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#Unpack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.Unpack" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.archive.</code><code class="sig-name descname">Unpack</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dest</span></em>, <em class="sig-param"><span class="n">archives</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#Unpack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.Unpack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Target that creates a new directory containing the unpacked contents 
 of one or more archives of one of these types: <code class="docutils literal notranslate"><span class="pre">.zip</span> <span class="pre">.jar</span> <span class="pre">.war</span> <span class="pre">.tar.gz</span> <span class="pre">.tar.bz2</span> <span class="pre">.tar</span></code>.</p>
@@ -251,9 +251,9 @@ archive itself.</p>
 </div>
 <div class="section" id="filteredarchivecontents">
 <h2>FilteredArchiveContents<a class="headerlink" href="#filteredarchivecontents" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="xpybuild.targets.archive.FilteredArchiveContents">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.archive.</code><code class="sig-name descname">FilteredArchiveContents</code><span class="sig-paren">(</span><em class="sig-param">archivePath</em>, <em class="sig-param">includes=None</em>, <em class="sig-param">excludes=None</em>, <em class="sig-param">destMapper=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#FilteredArchiveContents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.FilteredArchiveContents" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.archive.</code><code class="sig-name descname">FilteredArchiveContents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">archivePath</span></em>, <em class="sig-param"><span class="n">includes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">excludes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">destMapper</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#FilteredArchiveContents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.FilteredArchiveContents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Object representing an archive to be passed to the Unpack target, with 
 support for filtering which files are included/excluded, and per-item 
@@ -272,21 +272,21 @@ user-friendly __str__ implementation.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.targets.archive.FilteredArchiveContents.getDependency">
 <code class="sig-name descname">getDependency</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#FilteredArchiveContents.getDependency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.FilteredArchiveContents.getDependency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the dependency representing this archive (unexpanded and unresolved string, or PathSet).</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.targets.archive.FilteredArchiveContents.getResolvedPath">
-<code class="sig-name descname">getResolvedPath</code><span class="sig-paren">(</span><em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#FilteredArchiveContents.getResolvedPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.FilteredArchiveContents.getResolvedPath" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getResolvedPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#FilteredArchiveContents.getResolvedPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.FilteredArchiveContents.getResolvedPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the fully resolved archive path.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="xpybuild.targets.archive.FilteredArchiveContents.isIncluded">
-<code class="sig-name descname">isIncluded</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#FilteredArchiveContents.isIncluded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.FilteredArchiveContents.isIncluded" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">isIncluded</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/archive.html#FilteredArchiveContents.isIncluded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.archive.FilteredArchiveContents.isIncluded" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decides whether the specified path within the archive should be 
 unpacked, based on the include/exclude filters</p>
 <dl class="field-list simple">
