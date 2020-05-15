@@ -515,7 +515,7 @@ class BuildInitializationContext(BaseContext):
 		except Exception as e:
 			log.exception('Failed to load build file: ')
 			# wrap in buildexception to avoid printing same stack trace twice
-			raise BuildException('Failed to load build file', causedBy=True)
+			raise BuildException('Failed to load build file due to unexpected error', causedBy=True)
 			
 		if time.time()-startTime > 1: # make sure it doesn't go undetected if this is taking a while
 			log.critical('Loaded build files in %0.1f seconds', (time.time()-startTime))
