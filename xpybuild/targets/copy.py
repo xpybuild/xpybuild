@@ -58,7 +58,7 @@ class Copy(BaseTarget):
 	in the source should result in the creation of symbolic links 
 	in the destination. 
 	"""
-	def __init__(self, dest, src, mode=None, implicitDependencies=None):
+	def __init__(self, dest, src, implicitDependencies=None):
 		"""
 		@param dest: the output directory (ending with a "/") or file. Never 
 		specify a dest directory that is also written to by another 
@@ -83,19 +83,15 @@ class Copy(BaseTarget):
 		dependency resolution then such errors can be easily detected 
 		before they cause a problem). 
 		
-		@param mode: unix permissions to set with chmod on the destination files. 
-		If not specified, mode is simply copied from source file. 
-		
 		@param implicitDependencies: provides a way to add additional implicit 
 		dependencies that will not be part of src but may affect the 
 		copy process (e.g. filtering in); this is intended for 
 		use by subclasses, do not set this explicitly. 
 		"""
-		if mode: raise Exception(dest)
 		src = PathSet(src)
 		BaseTarget.__init__(self, dest, [src, implicitDependencies])
 		self.src = src
-		self.mode = mode
+		self.mode = None # not yet supported, but may be if it turns out to be useful
 		self.addHashableImplicitInputOption('Copy.symlinks')
 			
 	def run(self, context):
