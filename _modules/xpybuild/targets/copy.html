@@ -205,7 +205,7 @@
 <span class="sd">	in the source should result in the creation of symbolic links </span>
 <span class="sd">	in the destination. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">implicitDependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">implicitDependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		@param dest: the output directory (ending with a &quot;/&quot;) or file. Never </span>
 <span class="sd">		specify a dest directory that is also written to by another </span>
@@ -230,19 +230,15 @@
 <span class="sd">		dependency resolution then such errors can be easily detected </span>
 <span class="sd">		before they cause a problem). </span>
 <span class="sd">		</span>
-<span class="sd">		@param mode: unix permissions to set with chmod on the destination files. </span>
-<span class="sd">		If not specified, mode is simply copied from source file. </span>
-<span class="sd">		</span>
 <span class="sd">		@param implicitDependencies: provides a way to add additional implicit </span>
 <span class="sd">		dependencies that will not be part of src but may affect the </span>
 <span class="sd">		copy process (e.g. filtering in); this is intended for </span>
 <span class="sd">		use by subclasses, do not set this explicitly. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
-		<span class="k">if</span> <span class="n">mode</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
 		<span class="n">src</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
 		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="p">[</span><span class="n">src</span><span class="p">,</span> <span class="n">implicitDependencies</span><span class="p">])</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="o">=</span> <span class="n">src</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># not yet supported, but may be if it turns out to be useful</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">addHashableImplicitInputOption</span><span class="p">(</span><span class="s1">&#39;Copy.symlinks&#39;</span><span class="p">)</span>
 			
 	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>

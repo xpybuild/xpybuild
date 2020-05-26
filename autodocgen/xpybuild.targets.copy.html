@@ -225,7 +225,7 @@ source to destination file contents. Several pre-defined mappers are provided:</
 <h2>Copy<a class="headerlink" href="#copy" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="xpybuild.targets.copy.Copy">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">Copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dest</span></em>, <em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">implicitDependencies</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#Copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.Copy" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.copy.</code><code class="sig-name descname">Copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dest</span></em>, <em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">implicitDependencies</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/copy.html#Copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.copy.Copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Target that copies input file(s) to an output file or directory.</p>
 <p>The parent directory will be created if it doesn’t exist already.</p>
@@ -260,14 +260,10 @@ dependency resolution then such errors can be easily detected
 before they cause a problem).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mode</strong> – unix permissions to set with chmod on the destination files. 
-If not specified, mode is simply copied from source file.</p></li>
-<li><p><strong>implicitDependencies</strong> – provides a way to add additional implicit 
+<dd class="field-odd"><p><strong>implicitDependencies</strong> – provides a way to add additional implicit 
 dependencies that will not be part of src but may affect the 
 copy process (e.g. filtering in); this is intended for 
-use by subclasses, do not set this explicitly.</p></li>
-</ul>
+use by subclasses, do not set this explicitly.</p>
 </dd>
 </dl>
 </dd></dl>
