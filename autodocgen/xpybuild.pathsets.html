@@ -359,10 +359,10 @@ system operations it is better to use DirBasedPathSet where possible.</p>
 <span class="go">&quot;[(&#39;BUILD_DIR/MY_DIR/a&#39;, &#39;a&#39;), (&#39;BUILD_DIR/MY_DIR/b/c/&#39;, &#39;b/c/&#39;), (&#39;BUILD_DIR/MY_DIR/1&#39;, &#39;1&#39;), (&#39;BUILD_DIR/MY_DIR/2/3&#39;, &#39;2/3&#39;), (&#39;BUILD_DIR/MY_DIR/4/5/&#39;, &#39;4/5/&#39;), (&#39;BUILD_DIR/MY_DIR/d&#39;, &#39;d&#39;)]&quot;</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; DirBasedPathSet(&#39;mydir&#39;, &#39;a*b&#39;).resolve(BaseContext({})) 
-Traceback (most recent call last):
-...
-xpybuild.utils.buildexceptions.BuildException:
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;mydir&#39;</span><span class="p">,</span> <span class="s1">&#39;a*b&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({}))</span> 
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">xpybuild.utils.buildexceptions.BuildException</span>:
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">DirBasedPathSet</span><span class="p">(</span><span class="n">DirGeneratedByTarget</span><span class="p">(</span><span class="s1">&#39;4/5/6/&#39;</span><span class="p">),</span> <span class="s1">&#39;7/8&#39;</span><span class="p">)))</span>
@@ -441,16 +441,16 @@ individually or using TargetsWithTag).</p>
 <span class="go">&#39;PathSet(&quot;a&quot;, FindPaths(DirGeneratedByTarget(&quot;4/5/6/&quot;), includes=[&quot;*.xml&quot;], excludes=[]))&#39;</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; FindPaths(&#39;x&#39;, includes=[&#39;*.x&#39;, &#39;c:\d&#39;], excludes=[])
-Traceback (most recent call last):
-...
-xpybuild.utils.buildexceptions.BuildException:
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;c:\d&#39;</span><span class="p">],</span> <span class="n">excludes</span><span class="o">=</span><span class="p">[])</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">xpybuild.utils.buildexceptions.BuildException</span>:
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; FindPaths(&#39;x&#39;, includes=[&#39;*.x&#39;, &#39;${foo}&#39;], excludes=[])
-Traceback (most recent call last):
-...
-xpybuild.utils.buildexceptions.BuildException:
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;$</span><span class="si">{foo}</span><span class="s1">&#39;</span><span class="p">],</span> <span class="n">excludes</span><span class="o">=</span><span class="p">[])</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">xpybuild.utils.buildexceptions.BuildException</span>:
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -826,10 +826,10 @@ paths must end with an explicit ‘/’.</p>
 <span class="go">&quot;[&#39;BUILD_DIR/a&#39;, &#39;BUILD_DIR/1/2/3/&#39;, &#39;BUILD_DIR/4/5/6/&#39;, &#39;BUILD_DIR/7/8/&#39;, &#39;BUILD_DIR/9/&#39;]&quot;</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; PathSet(&#39;a/*&#39;).resolve(BaseContext({})) 
-Traceback (most recent call last):
-...
-xpybuild.utils.buildexceptions.BuildException:
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">PathSet</span><span class="p">(</span><span class="s1">&#39;a/*&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">({}))</span> 
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">xpybuild.utils.buildexceptions.BuildException</span>:
 </pre></div>
 </div>
 </dd></dl>
