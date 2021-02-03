@@ -111,7 +111,7 @@ def main(args):
 '                             number of CPUs and the XPYBUILD_WORKERS_PER_CPU ',
 '                             environment varable (default is currently 1.0), ',
 '                             with an upper limit for this machine from the ',
-'                             XPYBUILD_WORKERS_PER_CPU variable. ',
+'                             XPYBUILD_MAX_WORKERS variable. ',
 '   -j --workers <number>     Override the number of worker threads to use for ',
 '                             building. Use -j1 for single-threaded. ',
 '                             (ignores any environment variables)',
