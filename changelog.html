@@ -197,7 +197,8 @@
 <div class="section" id="fixes">
 <h3>Fixes<a class="headerlink" href="#fixes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>fix 1</p></li>
+<li><p>Fixed a possible AssertionError race condition when executing a <code class="docutils literal notranslate"><span class="pre">--rebuild</span></code> with targets whose path changes
+between the clean and build phases (for example, due to containing a timestamp or random number).</p></li>
 </ul>
 </div>
 <div class="section" id="enhancements">
