@@ -4,7 +4,8 @@
 Fixes
 -----
 
-- fix 1
+- Fixed a possible AssertionError race condition when executing a ``--rebuild`` with targets whose path changes 
+  between the clean and build phases (for example, due to containing a timestamp or random number). 
 
 Enhancements
 ------------
