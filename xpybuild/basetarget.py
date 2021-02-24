@@ -80,7 +80,7 @@ class BaseTarget(Composable):
 	
 	:ivar str workDir: A unique dedicated directory where this target can write temporary/working files.
 
-	.. rubric:: Arguments for the BaseTest __init__ constructor
+	.. rubric:: Arguments for the BaseTarget __init__ constructor
 
 	@param name: This target instance's unique name, which is the file or 
 		directory path which is created as a result of running this target. 
@@ -93,7 +93,7 @@ class BaseTarget(Composable):
 		strings, `xpybuild.pathsets`` and lists, and may also contain 
 		unexpanded variables.
 		
-	.. rubric:: BaseTest methods
+	.. rubric:: BaseTarget methods
 	"""
 
 	# to allow targets to be used in sets, override hash to ensure it's deterministic;
