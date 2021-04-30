@@ -14,7 +14,7 @@ if getPropertyValue('CUSTOM_GLOBAL_EXCLUDES'):
 		assert name, name
 		assert '\\' not in name, name
 		assert '/' not in name.rstrip('/'), name
-		return name in ['exclude-file', 'exclude-dir/']
+		return name in ['exclude-file', 'exclude-dir']
 		
 	setGlobalOption('FindPaths.globalExcludesFunction', customExcludesFunction)
 
