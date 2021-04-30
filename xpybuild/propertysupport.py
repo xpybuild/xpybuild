@@ -99,7 +99,6 @@ from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.fileutils import parsePropertiesFile
 from xpybuild.utils.buildfilelocation import BuildFileLocation, formatFileLocation
 from xpybuild.utils.functors import Composable, ComposableWrapper
-from xpybuild.pathsets import PathSet, BasePathSet
 
 
 # All the public methods that build authors are expected to use to interact with properties and options
@@ -660,3 +659,6 @@ class joinPaths(Composable):
 	def __str__(self):
 		return "joinPaths(%s with %s)"%(self.pathset, self.pathsep)
 
+
+# Defined at bottom of file since not needed in APIs and to avoid circular dependency
+from xpybuild.pathsets import PathSet, BasePathSet

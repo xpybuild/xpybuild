@@ -125,6 +125,7 @@ from xpybuild.utils.fileutils import normLongPath
 from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.buildcommon import isDirPath, normpath, IS_WINDOWS
 from xpybuild.buildcontext import BaseContext, getBuildInitializationContext
+from xpybuild.propertysupport import defineOption
 
 # don't define a 'log' variable here or targets will use it by mistake when importing this file
 
@@ -451,7 +452,6 @@ class DirBasedPathSet(BasePathSet):
 			result.append( ( c, c[len(dir):] ) )
 		return result
 		
-
 class FindPaths(BasePathSet):
 	""" A lazily-evaluated PathSet that uses ``*`` and ``**`` (ant-style) globbing 
 	to dynamically discover files (and optionally directories) under a common 
@@ -480,6 +480,9 @@ class FindPaths(BasePathSet):
 	copy all empty directories as well as all files, use:: 
 
 		FindPaths(..., includes=['**', '**/']). 
+	
+	In addition, global (non-overridable) excludes may be specified by setting the 
+	``FindPaths.globalExcludesFunction`` option. The default implementation is `FindPaths.defaultGlobalExcludesFunction`. 
 
 	Destination paths (where needed) are generated from the path underneath the
 	base dir.
@@ -514,7 +517,23 @@ class FindPaths(BasePathSet):
 	_skipDependenciesExistenceCheck = True # since we only return items we've found on disk, no need to check them again
 	
 	_shortcutUptodateCheck = IS_WINDOWS # on Windows os.scandir can efficiently get the stat results without an extra call
-	
+
+	@staticmethod
+	def defaultGlobalExcludesFunction(name): 
+		"""
+		The default function used for the 'FindPaths.globalExcludesFunction' option. 
+		
+		The current implementation excludes temporary NFS (Network File System) files matching the pattern ".nfs[0-9]". 
+		
+		This function must be very fast to execute as it's highly performance-critical for the dependency checking and 
+		build process, so simple string operations should be used instead of regular expressions. 
+		
+		:param str name: A base file/directory name (without path). 
+		:return: True if this file or directory should be excluded. 
+		"""
+		return name.startswith(('.nfs', )) and re.match(r'[.]nfs[0-9]', name)
+
+
 	def __init__(self, dir, excludes=None, includes=None):
 		"""
 		@param dir: base directory to search (relative or absolute, may contain ${...} variables). 
@@ -590,6 +609,8 @@ class FindPaths(BasePathSet):
 		destinations outside the specified root directory). 
 		
 		"""
+		globalExcludesFunction = context.getGlobalOption('FindPaths.globalExcludesFunction')
+		
 		log = logging.getLogger('FindPaths')
 		log.debug('FindPaths resolve starting for: %s', self)
 		with self.__lock:
@@ -649,18 +670,22 @@ class FindPaths(BasePathSet):
 						if self.includes is not None:
 							self.includes.removeUnmatchableDirectories(root, dirs)
 						
-						# optimization: if there's an exclude starting with this dir and ending with '/**' or '/*', don't navigate to it
-						# we deliberately match only against filename patterns (not dir patterns) since 
-						# empty dirs are handled in the later loop not through this mechanism, so it's just files that matter
-						if self.excludes is not None and dirs != []:
-							# nb: both dirs and the result of getPathMatches will have no trailing slashes
-							self.__removeNamesFromList(dirs, self.excludes.getPathMatches(root, filenames=dirs))
+						if len(dirs) > 0:
+							# optimization: if there's an exclude starting with this dir and ending with '/**' or '/*', don't navigate to it
+							# we deliberately match only against filename patterns (not dir patterns) since 
+							# empty dirs are handled in the later loop not through this mechanism, so it's just files that matter
+							if self.excludes is not None:
+								# nb: both dirs and the result of getPathMatches will have no trailing slashes
+								self.__removeNamesFromList(dirs, self.excludes.getPathMatches(root, filenames=dirs))
 
-						# any other subdirs will need to be walked to
-						for dir in dirs:
-							if symlinks is not None and dir in symlinks: continue # don't recursive into symlinks (messes up copying)
-							pathsToWalk.append(longdir+os.sep+dir)
-						dir = None
+							# any other subdirs will need to be walked to
+							for dir in dirs:
+								if symlinks is not None and dir in symlinks: continue # don't recursive into symlinks (messes up copying)
+								
+								if globalExcludesFunction(dir): continue
+								
+								pathsToWalk.append(longdir+os.sep+dir)
+							del dir
 						
 						# now find which files and empty dirs match
 						matchedemptydirs = dirs
@@ -676,6 +701,7 @@ class FindPaths(BasePathSet):
 							self.__removeNamesFromList(matchedemptydirs, exdirs)
 							
 						for p in files:
+							if globalExcludesFunction(p): continue
 							matches.append(root+p)
 						if _shortcutUptodateCheck:
 							for p in files:
@@ -686,6 +712,7 @@ class FindPaths(BasePathSet):
 									newestTimestamp, newestFile = thisTimestamp, str(self.__dir)+root+p
 							
 						for p in matchedemptydirs:
+							if globalExcludesFunction(p): continue
 							matches.append(root+p+'/')					
 				
 				#end while
@@ -720,6 +747,9 @@ class FindPaths(BasePathSet):
 			self.__cached = result
 			return result
 
+defineOption('FindPaths.globalExcludesFunction', FindPaths.defaultGlobalExcludesFunction) 
+# A function that accepts a full path and returns True if it should be ignored. Needs to be as fast as possible. 
+# (this is why it's implemented as a simple function rather than a list of glob expressions). 
 
 class TargetsWithTag(BasePathSet):
 	"""

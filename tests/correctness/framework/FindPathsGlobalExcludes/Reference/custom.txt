@@ -1,0 +1,5 @@
+CopyOutput/
+CopyOutput/mydir/
+CopyOutput/mydir/.nfs1234
+CopyOutput/mydir/included/
+CopyOutput/mydir/included/file.txt

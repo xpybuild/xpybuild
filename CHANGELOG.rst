@@ -10,7 +10,9 @@ Fixes
 Enhancements
 ------------
 
-- enh 1
+- Added a new `pathsets.FindPaths` option ``FindPaths.globalExcludesFunction`` which can be used to globally exclude 
+  certain file patterns throughout the build. By default this excludes files matching ``.nfs*`` (i.e. temporary NFS 
+  files).
 
 
 3.0
