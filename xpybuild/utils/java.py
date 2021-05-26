@@ -285,7 +285,7 @@ def javac(output, inputs, classpath, options, logbasename, targetname, workDir):
 	# build up the arguments
 	args = ["-d", output]
 	if options["javac.source"]: args.extend(["-source", options["javac.source"]])
-	if options["javac.target"]: args.extend(["-source", options["javac.target"]])
+	if options["javac.target"]: args.extend(["-target", options["javac.target"]])
 	if options["javac.encoding"]: args.extend(["-encoding", options["javac.encoding"]])
 	if options["javac.debug"]:
 		args.append('-g')
