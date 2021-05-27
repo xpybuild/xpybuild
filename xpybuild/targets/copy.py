@@ -83,6 +83,14 @@ class Copy(BaseTarget):
 		dependency resolution then such errors can be easily detected 
 		before they cause a problem). 
 		
+		To create new empty directories that are not present in the source (mkdir), 
+		you can use this simple trick which utilizes the fact that the current 
+		directory ``.`` definitely exists. It doesn't copy anything from inside 
+		(just copies only its 'existence') and uses a SingletonDestRenameMapper PathSet 
+		to provide the destination::
+		
+			SingletonDestRenameMapper('my-new-dest-directory/', './'),
+		
 		@param implicitDependencies: provides a way to add additional implicit 
 		dependencies that will not be part of src but may affect the 
 		copy process (e.g. filtering in); this is intended for 
