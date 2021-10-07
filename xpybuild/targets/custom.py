@@ -338,8 +338,11 @@ class CustomCommand(BaseTarget):
 		# final sanity check
 		if not os.path.exists(self.path): 
 			raise BuildException('%s command failed to create the target files (but returned no error code); see output at "%s"'%(os.path.basename(cmd[0]), mainlog), location=self.location)
-		if (not os.listdir(self.path)) if isDirPath(self.path) else (not os.path.isfile(self.path)): 
-			raise BuildException('%s created the wrong type of output on the file system (please check that trailing "/" is used if and only if a directory output is intended)'%self, location=self.location)
+			
+		if (not isDirPath(self.path)) and (not os.path.isfile(self.path)): 
+			raise BuildException('%s did not create a file as expected (please check that trailing "/" is used if and only if a directory output is intended)'%self, location=self.location)
+		if isDirPath(self.path) and not os.listdir(self.path): 
+			raise BuildException('%s created an empty directory'%self, location=self.location)
 		
 class CustomCommandWithCopy(CustomCommand, Copy):
 	"""
