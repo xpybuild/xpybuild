@@ -26,7 +26,7 @@ import difflib
 from stat import S_ISREG, S_ISDIR # fast access for these is useful
 from threading import Lock
 
-from xpybuild.basetarget import BaseTarget
+from xpybuild.basetarget import BaseTarget, FailureRetriesOption
 from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.fileutils import deleteFile, mkdir, openForWrite, cached_getmtime, toLongPathSafe, cached_stat, isDirPath
 
@@ -456,12 +456,40 @@ class TargetWrapper(object):
 		"""
 			Calls the wrapped run method
 		"""
-		implicitInputs = self.__getImplicitInputs(context)
-		if implicitInputs or self.isDirPath:
-			deleteFile(self.__implicitInputsFile)
-
-		self.target.run(context)
+		retries = None
 		
+		retryNumber = 0 # 1=first retry, etc
+		self.target.retriesRemaining = self.target.options[FailureRetriesOption] # default is 0
+		backoffSecs = self.target.options['Target.failureRetriesInitialBackoffSecs']
+		
+		while True:
+			try:
+				implicitInputs = self.__getImplicitInputs(context)
+				if implicitInputs or self.isDirPath:
+					deleteFile(self.__implicitInputsFile)
+
+				self.target.run(context)
+				if retryNumber > 0: self.target.log.warning('Target %s succeeded on retry #%d', self, retryNumber)
+				break
+			except Exception as ex:
+				if self.target.retriesRemaining == 0: 
+					if retryNumber > 0: 
+						self.target.log.warning('Target %s failed after %d retries', self, retryNumber)
+					raise
+
+				self.target.retriesRemaining -= 1
+				retryNumber += 1
+				
+				self.target.log.warning('Target %s failed on retry #%d, will retry after %d seconds backoff', self, retryNumber, backoffSecs)
+				time.sleep(backoffSecs)
+				# hopefully after the backoff time enough file handles will have been removed for the clean to succeed 
+				try:
+					self.clean(context)
+				except Exception as ex:
+					self.target.log.error('Failed to cleanup during retry, after initial failure of %s', self)
+					raise
+				backoffSecs *= 2
+				
 		# we expect self.path to NOT be in the fileutils stat cache at this point; 
 		# it's too costly to check this explictly, but unwanted incremental rebuilds 
 		# can be caused if the path does get into the stat cache since it'll have a stale value

@@ -385,7 +385,7 @@ class BaseTarget(Composable):
 		""" Target classes can call this during `run` or `clean` to get the resolved value of a specified option for 
 		this target, with optional checking to give a friendly error message if the value is an empty string or None. 
 		
-		This is a high-levetl alternative to reading directly from `self.options`. 
+		This is a high-level alternative to reading directly from `self.options`. 
 		"""
 		if key not in self.options: raise Exception('Target tried to access an option key that does not exist: %s'%key)
 		v = self.options[key]
@@ -485,6 +485,22 @@ class BaseTarget(Composable):
 		if len(x) < 256: x = x.replace('/','.') # avoid deeply nested directories in general
 		return x
 
+FailureRetriesOption = "Target.failureRetries"
+"""
+The "Target.failureRetries" option can be set on any target, and specifies how many times to retry the target's build 
+if it fails. The default is 0, which is recommended for normal developer builds. 
+
+There is an exponentially increasing backoff pause between each attempt - first 15s, then 30s, then 60s etc. 
+
+To globally set a default for all targets set a global option::
+
+	setGlobalOption(FailureRetriesOption, 2)
+
+"""
+
+from xpybuild.propertysupport import defineOption
+defineOption(FailureRetriesOption, 0)
+defineOption('Target.failureRetriesInitialBackoffSecs', 15) # undocumented as there should be no reason to change this
 
 targetNameToUniqueId = BaseTarget.targetNameToUniqueId # alias for pre-3.0 projects
 """.. private:: See static method instead.
