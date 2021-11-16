@@ -1,9 +1,9 @@
 name: Tests
 
 on:
-  push
+  push:
   
-  pull_request
+  pull_request:
 
 jobs:
   test:

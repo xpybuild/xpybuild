@@ -8,8 +8,9 @@ on:
       - created
 
   # Also, on every commit to the main branch, build the HTML documentation using Sphinx to make sure it's not broken
-  push#:
+  push:
     #branches: [ master, release ]
+  
   pull_request:
     branches: [ master ]
 
