@@ -71,11 +71,13 @@ jobs:
         shell: bash
         id: pysys
         run: |
-          if [[ x${{ matrix.perf-test }} -eq xtrue ]]; then (
-            echo Will execute all tests including performance
+					TEST_DIR = `pwd`
+          if [[ x${{ matrix.perf-test }} -eq xtrue ]]; then 
+            TEST_DIR=$TEST_DIR/..
             cd ..
-          )
           fi
+          pwd
+          cd $TEST_DIR
           pwd
           
           python -m pysys run --ci --outdir=${{matrix.test-run-id}} --exclude skip_ci
