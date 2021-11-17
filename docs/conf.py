@@ -21,7 +21,7 @@ sys.path.append(XPYBUILD_ROOT_DIR)
 
 # -- Project information -----------------------------------------------------
 
-copyright = '2019, Ben Spiller and Matthew Johnson'
+copyright = '2019-2021, Ben Spiller and Matthew Johnson'
 author = 'Ben Spiller and Matthew Johnson'
 
 # The full version, including alpha/beta/rc tags
@@ -38,9 +38,9 @@ sys.path.append(DOC_SOURCE_DIR+'/ext') # temporary measure to get sphinx_autodoc
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.viewcode',
+	'sphinx.ext.autodoc',
+	'sphinx.ext.autosummary',
+	'sphinx.ext.viewcode',
 	'sphinx_epytext',
 	'sphinx_autodocgen',
 ]
