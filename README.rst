@@ -1,7 +1,7 @@
 xpybuild
 ========
-.. image:: https://travis-ci.com/xpybuild/xpybuild.svg?branch=master
-	:target: https://travis-ci.com/xpybuild/xpybuild
+.. image:: ../../workflows/PySys/badge.svg
+	:target: ../../actions
 
 .. image:: https://codecov.io/gh/xpybuild/xpybuild/branch/master/graph/badge.svg
 	:target: https://codecov.io/gh/xpybuild/xpybuild
@@ -115,9 +115,9 @@ We hope you love using xpybuild!
 
 License
 -------
-Copyright (c) 2013-2019 Ben Spiller and Matthew Johnson
+Copyright (c) 2013-2021 Ben Spiller and Matthew Johnson
 
-Copyright (c) 2013-2019 Software AG, Darmstadt, Germany and/or its licensors
+Copyright (c) 2013-2021 Software AG, Darmstadt, Germany and/or its licensors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

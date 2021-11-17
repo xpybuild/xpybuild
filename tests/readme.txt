@@ -11,4 +11,4 @@ set PYSYS_PERFORMANCE_BASELINES=v1.12=c:\dev\xpybuild\tests\performance_output\v
 set XPYBUILD_PPROFILE=<path to pprofile>\pprofile.py
 
 - to enable coverage reporting:
-pysys run -XpythonCoverage=true
+pysys run -XcodeCoverage

@@ -57,7 +57,7 @@ jobs:
         shell: bash
         id: pysys
         run: |
-          if [[ -n ${{ matrix.perf-test }} ]]; then (
+          if [[ x${{ matrix.perf-test }} -eq xtrue ]]; then (
             echo Will execute all tests including performance
             cd ..
           )
