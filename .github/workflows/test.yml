@@ -21,6 +21,7 @@ jobs:
           - test-run-id: win-py3.9
             os: windows-latest
             python-version: 3.9
+            perf-test: false
 
     runs-on: ${{matrix.os}}
     
@@ -68,7 +69,7 @@ jobs:
           echo $TEST_DIR
           if [[ x${{ matrix.perf-test }} -eq xtrue ]]; then 
             cd ..
-            echo Changed directory due to {{ matrix.perf-test }}
+            echo Changed directory due to ${{ matrix.perf-test }}
           fi
           pwd
           #cd $TEST_DIR
