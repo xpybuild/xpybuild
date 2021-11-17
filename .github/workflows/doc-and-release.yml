@@ -9,7 +9,7 @@ on:
 
   # Also, on every commit to the main branch, build the HTML documentation using Sphinx to make sure it's not broken
   push:
-    branches: [ master, release ]
+    branches: [ master, release, GHA ]
   
   pull_request:
     branches: [ master ]
@@ -54,7 +54,7 @@ jobs:
           path: _build_output/docs/html/*
 
       - name: Upload to gh-pages
-        if: github.event_name == 'release'
+        #if: github.event_name == 'release'
         uses: JamesIves/github-pages-deploy-action@3.5.9
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
