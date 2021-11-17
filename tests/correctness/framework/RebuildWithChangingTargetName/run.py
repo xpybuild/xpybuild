@@ -8,4 +8,4 @@ class PySysTest(XpybuildBaseTest):
 		self.xpybuild(args=['--rebuild'], stdouterr='xpybuild')
 
 	def validate(self):
-		pass
+		self.addOutcome(PASSED) 

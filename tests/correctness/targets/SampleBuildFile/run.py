@@ -7,4 +7,4 @@ class PySysTest(XpybuildBaseTest):
 		self.xpybuild(buildfile=self.input+'/root.xpybuild.py')
 
 	def validate(self):
-		pass # just check for successful compilation
+		self.addOutcome(PASSED) # just check for successful compilation

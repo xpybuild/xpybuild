@@ -62,6 +62,7 @@ class PySysTest(XpybuildBaseTest):
 				self.addOutcome(FAILED, 'doctest %s failed'%moduleName, abortOnError=False)
 				bad += 1
 			else:
+				self.addOutcome(PASSED)
 				good += 1
 			#return # TODO - remove
 		assert good+bad > 0, 'some tests should have run'

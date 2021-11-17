@@ -648,7 +648,7 @@ class joinPaths(Composable):
 		specified separator character. 
 	"""
 	def __init__(self, pathset, pathsep=os.pathsep):
-		self.pathset = pathset if isinstance(pathset, BasePathSet) else PathSet(pathset)
+		self.pathset = pathset if isinstance(pathset, xpybuild.pathsets.BasePathSet) else xpybuild.pathsets.PathSet(pathset)
 		self.pathsep = pathsep
 	def resolveToString(self, context):
 		""" Do property expansion on the inputs and then perform the regex 
@@ -661,4 +661,4 @@ class joinPaths(Composable):
 
 
 # Defined at bottom of file since not needed in APIs and to avoid circular dependency
-from xpybuild.pathsets import PathSet, BasePathSet
+import xpybuild.pathsets

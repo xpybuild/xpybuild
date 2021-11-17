@@ -125,7 +125,7 @@ from xpybuild.utils.fileutils import normLongPath
 from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.buildcommon import isDirPath, normpath, IS_WINDOWS
 from xpybuild.buildcontext import BaseContext, getBuildInitializationContext
-from xpybuild.propertysupport import defineOption
+import xpybuild.propertysupport as propertysupport
 
 # don't define a 'log' variable here or targets will use it by mistake when importing this file
 
@@ -747,7 +747,7 @@ class FindPaths(BasePathSet):
 			self.__cached = result
 			return result
 
-defineOption('FindPaths.globalExcludesFunction', FindPaths.defaultGlobalExcludesFunction) 
+propertysupport.defineOption('FindPaths.globalExcludesFunction', FindPaths.defaultGlobalExcludesFunction) 
 # A function that accepts a full path and returns True if it should be ignored. Needs to be as fast as possible. 
 # (this is why it's implemented as a simple function rather than a list of glob expressions). 
 

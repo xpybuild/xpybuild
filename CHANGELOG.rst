@@ -6,6 +6,7 @@ Fixes
 
 - Fixed a possible AssertionError race condition when executing a ``--rebuild`` with targets whose path changes 
   between the clean and build phases (for example, due to containing a timestamp or random number). 
+- Fixed the ``javac.target`` option to do the correct thing (was previously setting ``-source`` not ``-target`` (GH-6). 
 
 Enhancements
 ------------
