@@ -55,11 +55,11 @@ jobs:
 
       - name: Upload to gh-pages
         #if: github.event_name == 'release'
-        uses: JamesIves/github-pages-deploy-action@3.5.9
+        uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages-tmp
-          FOLDER: _build_output/docs/html
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages-tmp
+          folder: _build_output/docs/html
 
       - name: Upload to GitHub Release
         if: github.event_name == 'release'

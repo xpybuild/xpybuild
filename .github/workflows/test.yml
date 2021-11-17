@@ -65,14 +65,10 @@ jobs:
         shell: bash
         id: pysys
         run: |
-          #TEST_DIR = `pwd`
-          echo $TEST_DIR
-          if [[ x${{ matrix.perf-test }} -eq xtrue ]]; then 
+          if [[ "${{ matrix.perf-test }}" = "true" ]]; then 
             cd ..
             echo Changed directory due to ${{ matrix.perf-test }}
           fi
-          pwd
-          #cd $TEST_DIR
           pwd
           
           python -m pysys run --ci --outdir=${{matrix.test-run-id}} --exclude skip_ci
