@@ -75,6 +75,8 @@ jobs:
             cd ..
           )
           fi
+          pwd
+          
           python -m pysys run --ci --outdir=${{matrix.test-run-id}} --exclude skip_ci
 
       - name: Upload Python code coverage
