@@ -28,15 +28,15 @@ Xpybuild exists because we value:
   whether any incremental rebuilding is required in 2-4 seconds on a typical desktop machine. Many build systems 
   just don't scale once you get into the 100s and 1000s of targets, 
   leaving busy developers twiddling their thumbs throughout the day. 
-	
+
 - *simple* build files that don't overcomplicate basic tasks. Building a basic Java .jar or C++ executable should 
   be just a few simple lines of build script, and not require the build file author to burn time 
   re-implementing potentially error-prone logic for standard operations like cleaning or up-to-dateness checking. 
-	
+
 - *cross-platform* builds without the headaches. Any build system that relies on shell commands (e.g. Make) is always 
   going to be prone to subtle behaviour differences between Unix-style systems and Windows; using Python abstracts 
   away almost all such differences making it easy to create scripts that work everywhere.
-	  
+
 - *clear error messages*, and 'fail-fast' instead of 'silently wrong' behaviour. There's nothing worse than a build script 
   that generates different/wrong output to what's expected due to a minor 
   typo in a file path or command line argument. Xpybuild is deliberately intolerant of mistakes such as commands 
@@ -48,7 +48,7 @@ Xpybuild exists because we value:
   Teamcity, and includes the build script location in all errors. The icing on the cake is that since everything 
   is written in Python all stack traces are in user-editable Python text files (not hidden away in a Java class) 
   so it's easy to add debugging code if you ever need to. 
-	  
+
 Sample build script
 -------------------
 
