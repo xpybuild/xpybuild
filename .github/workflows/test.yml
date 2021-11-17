@@ -52,6 +52,19 @@ jobs:
           # Use older version of coverage as 5.0 requires an SQLite version that doesn't work on this macos image currently
           pip install coverage==4.5.4
 
+      - name: Install Windows 8.1 SDK (C++)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/p/?LinkId=323507 -OutFile sdksetup.exe -UseBasicParsing
+          Get-Date
+          Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"
+      - name: Setup Visual Studio
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v1.0.2
+        with:
+          vs-version: '[14,17]'
+
       - name: Test with PySys
         working-directory: tests/correctness
         shell: bash
