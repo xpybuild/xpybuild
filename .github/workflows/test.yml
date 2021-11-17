@@ -79,6 +79,7 @@ jobs:
           pwd
           cd $TEST_DIR
           pwd
+          env | sort
           
           python -m pysys run --ci --outdir=${{matrix.test-run-id}} --exclude skip_ci
 
