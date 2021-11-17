@@ -18,12 +18,13 @@ class XpybuildBaseTest(BaseTest):
 		
 		if 'performance' in self.descriptor.groups: self.disableCoverage = True
 		
-		stdout,stderr=self.allocateUniqueStdOutErr(stdouterr)
+		unique_stdouterr = self.allocateUniqueStdOutErr(stdouterr)
+		stdouterr = os.path.basename(unique_stdouterr.key)
+		stdout,stderr= unique_stdouterr
 		args = args or []
 		try:
 			try:
 				environs = self.createEnvirons(env, command=sys.executable)
-				environs['COVERAGE_FILE'] = '.coverage.%s'%stdouterr # use unique names to avoid overwriting
 				environs['PYSYS_TEST_ROOT_DIR'] = self.project.testRootDir
 				environs['PYTHONPATH'] = self.project.testRootDir
 				
@@ -39,11 +40,7 @@ class XpybuildBaseTest(BaseTest):
 					]
 				if setOutputDir: newargs.append('OUTPUT_DIR=%s'%self.output+'/build-output')
 				args = newargs+args
-				pythoncoverage =  getattr(self, 'pythonCoverage', False)
-				if pythoncoverage:
-					self.log.info('Enabling Python code coverage')
-					args = ['-m', 'coverage', 'run', '--source=%s'%PROJECT.XPYBUILD_ROOT, '--omit=*tests/*']+args
-				elif os.getenv('XPYBUILD_PPROFILE',None):
+				if os.getenv('XPYBUILD_PPROFILE',None):
 					# unfortunately CProfile isn't much use in a multithreaded application, so use pprofile
 					self.log.info('Enabling Python per-line pprofile')
 					
@@ -66,10 +63,11 @@ class XpybuildBaseTest(BaseTest):
 						]+args
 					self.log.info('   see %s', os.path.normpath(self.output+'/'+pprof_output))
 
-				result = self.startProcess(sys.executable, args, 
+				result = self.startPython(args, 
 					environs=environs, 
-					stdout=stdout, stderr=stderr, displayName=('xpybuild %s'%' '.join(args)).strip(), 
+					stdouterr=stdouterr, displayName=('xpybuild %s'%' '.join(args)).strip(), 
 					abortOnError=True, ignoreExitStatus=shouldFail, **kwargs)
+					
 				if shouldFail and result != 0: raise Exception('Build failed as expected')
 				if getattr(self, 'PYTHON_COVERAGE_REPORT', '')=='true':
 					self.startProcess(sys.executable, ['-m', 'coverage', 'html'], 
