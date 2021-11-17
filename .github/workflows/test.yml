@@ -75,7 +75,7 @@ jobs:
             cd ..
           )
           fi
-          python -m pysys run --ci --outdir=${{matrix.test-run-id}} --exclude skip_ci -vDEBUG
+          python -m pysys run --ci --outdir=${{matrix.test-run-id}} --exclude skip_ci
 
       - name: Upload Python code coverage
         uses: codecov/codecov-action@v1
