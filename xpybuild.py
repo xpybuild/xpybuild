@@ -26,5 +26,7 @@ import sys, os
 if __name__ == "__main__":
 	xpybuild_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'xpybuild'))
 	if not os.path.exists(xpybuild_dir): sys.exit('xpybuild not found in: '+xpybuild_dir)
+	xpybuild_dir = os.path.dirname(xpybuild_dir)
+	if xpybuild_dir not in sys.path: sys.path.append(xpybuild_dir)
 	from xpybuild.__main__ import main
 	sys.exit(main(sys.argv[1:]))
