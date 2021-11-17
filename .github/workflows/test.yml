@@ -71,15 +71,16 @@ jobs:
         shell: bash
         id: pysys
         run: |
+          env | sort
           TEST_DIR = `pwd`
+          echo $TEST_DIR
           if [[ x${{ matrix.perf-test }} -eq xtrue ]]; then 
-            TEST_DIR=$TEST_DIR/..
+            #TEST_DIR=$TEST_DIR/..
             cd ..
           fi
           pwd
-          cd $TEST_DIR
+          #cd $TEST_DIR
           pwd
-          env | sort
           
           python -m pysys run --ci --outdir=${{matrix.test-run-id}} --exclude skip_ci
 
