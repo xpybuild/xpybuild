@@ -71,7 +71,7 @@ jobs:
         shell: bash
         id: pysys
         run: |
-					TEST_DIR = `pwd`
+          TEST_DIR = `pwd`
           if [[ x${{ matrix.perf-test }} -eq xtrue ]]; then 
             TEST_DIR=$TEST_DIR/..
             cd ..
