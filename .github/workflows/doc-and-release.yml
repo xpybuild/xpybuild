@@ -1,7 +1,7 @@
 name: Doc-Release
 
 on:
-  # When a new (empty) release is created via the GitHub UI, uploads the files to that release, upload it to PyPi 
+  # When a new (empty) release is created via the GitHub UI, uploads the files to that release
   # and upload the doc to GitHub pages. Only do this when all the tests are passing. 
   release:
     types:
@@ -9,7 +9,7 @@ on:
 
   # Also, on every commit to the main branch, build the HTML documentation using Sphinx to make sure it's not broken
   push:
-    branches: [ master, release, GHA ]
+    branches: [ master, release ]
   
   pull_request:
     branches: [ master ]
@@ -54,11 +54,11 @@ jobs:
           path: _build_output/docs/html/*
 
       - name: Upload to gh-pages
-        #if: github.event_name == 'release'
+        if: github.event_name == 'release'
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages-tmp2
+          branch: gh-pages
           folder: _build_output/docs/html
 
       - name: Upload to GitHub Release
