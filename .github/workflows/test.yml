@@ -72,7 +72,20 @@ jobs:
         id: pysys
         run: |
           env | sort
-          TEST_DIR = `pwd`
+          
+          echo FOO:::::
+          ls "/c/Program Files (x86)/Windows Kits" || echo failed
+          ls "/c/Program Files (x86)/Windows Kits/10" || echo failed
+          ls "/c/Program Files (x86)/Windows Kits/10/Include" || echo failed
+          ls "/c/Windows/Microsoft.NET/Framework" || echo failed
+          ls "/c/Program Files (x86)" || echo failed
+
+          ls "c:\Program Files (x86)" || echo failed
+          ls "C:\Program Files (x86)\Windows Kits"  || echo failed
+          ls "C:\Program Files (x86)\Windows Kits\10\Include"  || echo failed
+          ls "c:\Windows\Microsoft.NET\Framework"  || echo failed
+          
+          #TEST_DIR = `pwd`
           echo $TEST_DIR
           if [[ x${{ matrix.perf-test }} -eq xtrue ]]; then 
             #TEST_DIR=$TEST_DIR/..
