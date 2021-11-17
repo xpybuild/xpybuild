@@ -67,9 +67,8 @@ jobs:
         run: |
           if [[ "${{ matrix.perf-test }}" = "true" ]]; then 
             cd ..
-            echo Changed directory due to ${{ matrix.perf-test }}
+            echo Running ALL tests from `pwd`
           fi
-          pwd
           
           python -m pysys run --ci --outdir=${{matrix.test-run-id}} --exclude skip_ci
 

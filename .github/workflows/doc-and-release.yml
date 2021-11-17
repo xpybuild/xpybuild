@@ -58,7 +58,7 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages-tmp
+          branch: gh-pages-tmp2
           folder: _build_output/docs/html
 
       - name: Upload to GitHub Release
