@@ -42,12 +42,12 @@ Xpybuild exists because we value:
   typo in a file path or command line argument. Xpybuild is deliberately intolerant of mistakes such as commands 
   that actually do nothing due to lack of matching input, and never swallows errors (though you can explicitly 
   specify --keep-going when you need to).  
-  
-  It also includes a pluggable mechanism for parsing error/warning messages 
-  from different compilers and reformatting them for common IDEs and CI providers such as Visual Studio and 
-  Teamcity, and includes the build script location in all errors. The icing on the cake is that since everything 
-  is written in Python all stack traces are in user-editable Python text files (not hidden away in a Java class) 
-  so it's easy to add debugging code if you ever need to. 
+
+It also includes a pluggable mechanism for parsing error/warning messages 
+from different compilers and reformatting them for common IDEs and CI providers such as Visual Studio and 
+Teamcity, and includes the build script location in all errors. The icing on the cake is that since everything 
+is written in Python all stack traces are in user-editable Python text files (not hidden away in a Java class) 
+so it's easy to add debugging code if you ever need to. 
 
 Sample build script
 -------------------
