@@ -47,6 +47,14 @@
 		<default-file-encoding pattern="*.json" encoding="utf-8"/>
 		<default-file-encoding pattern="*.yaml" encoding="utf-8"/>
 	</default-file-encodings>
+
+
+	<pysysdirconfig>
+		
+		<maker-template name="xpybuild" description="a test that runs xpybuild" 
+			copy="./_pysys_templates/xpybuild/*" />
+
+	</pysysdirconfig>
 	
 	<!-- Add project-specific text to be appended to the "pysys run -h". -->
 	<project-help>
