@@ -9,4 +9,4 @@ class PySysTest(XpybuildBaseTest):
 		self.xpybuild(stdouterr='mytest', args=[])
 
 	def validate(self):
-		self.assertGrep('mytest.out', expr=r"XXX")
+		self.assertGrep('mytest.out', expr=r"XXX") # if no extra verifications are needed, instead use: self.addOutcome(PASSED)

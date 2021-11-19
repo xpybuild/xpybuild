@@ -54,6 +54,8 @@
 		<maker-template name="xpybuild" description="a test that runs xpybuild" 
 			copy="./_pysys_templates/xpybuild/*" />
 
+			<!-- Special option that auto-detects based on presence of an Input/ dir -->
+			<input-dir>!Input_dir_if_present_else_testDir!</input-dir>
 	</pysysdirconfig>
 	
 	<!-- Add project-specific text to be appended to the "pysys run -h". -->
