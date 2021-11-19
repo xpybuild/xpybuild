@@ -1,6 +1,8 @@
 3.1 - current DEV release
 =========================
 
+.. py:currentmodule:: xpybuild
+
 Fixes
 -----
 
@@ -14,6 +16,9 @@ Enhancements
 - Added a new `pathsets.FindPaths` option ``FindPaths.globalExcludesFunction`` which can be used to globally exclude 
   certain file patterns throughout the build. By default this excludes files matching ``.nfs*`` (i.e. temporary NFS 
   files).
+- Added more powerful "conditions" to `propertysupport.definePropertiesFromFile`, allowing for complex Python 
+  expressions that check multiple conditions and properties to be used for dynamically selecting which lines are read 
+  from ``.properties`` files. 
 
 
 3.0
