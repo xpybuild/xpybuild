@@ -472,7 +472,10 @@ class ExtensionBasedFileEncodingDecider:
 # Options
 
 def defineOption(name, default):
-	""" Define an option with a default (can be overridden globally using setGlobalOption() or on individual targets).
+	""" Define an option controlling some behaviour of the build. 
+	
+	A default value is provided, which can be overridden on individual targets, or globally throughout the build 
+	using `setGlobalOption`.
 	
 	This method is typically used only when implementing a new kind of target. 
 	
@@ -486,8 +489,11 @@ def defineOption(name, default):
 	matching the target name, e.g. ``Javac.compilerArgs``. 
 
 	@param default: The default value of the option.
+	
+	:returns: The option name.
 	"""
 	BuildInitializationContext._defineOption(name, default)
+	return name
 
 def setGlobalOption(key, value):
 	"""
