@@ -750,7 +750,7 @@ class BuildInitializationContext(BaseContext):
 		Called internally from L{propertysupport.defineOption} and does not 
 		need to be called directly
 		"""
-		if name in BuildInitializationContext._definedOptions and BuildInitializationContext._definedOptions[name] != default:
+		if name in BuildInitializationContext._definedOptions and BuildInitializationContext._definedOptions[name] != default and 'doctest' not in sys.argv[0]:
 			raise BuildException('Cannot define option "%s" more than once'%name)
 
 		BuildInitializationContext._definedOptions[name] = default

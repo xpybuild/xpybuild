@@ -8,4 +8,4 @@ class PySysTest(XpybuildBaseTest):
 		self.xpybuild()
 
 	def validate(self):
-		pass # absence of a build failure is sufficient here
+		self.addOutcome(PASSED) # absence of a build failure is sufficient here
