@@ -89,6 +89,7 @@ import re
 import logging
 import mimetypes
 import typing
+import importlib
 
 __log = logging.getLogger('propertysupport') # cannot call it log cos this gets imported a lot
 
@@ -233,17 +234,31 @@ def defineBooleanProperty(name, default=False):
 
 def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, conditions=None):
 	"""
-	Defines a set of string properties from a .properties file
+	Defines a set of string properties by reading a .properties file. 
 	
-	@param propertiesFile: The file to include properties from (can include ${...} variables)
+	:param str propertiesFile: The file to include properties from (can include ${...} variables)
 
-	@param prefix: if specified, this prefix will be added to the start of all property names from this file
+	:param str prefix: if specified, this prefix will be added to the start of all property names from this file
 
-	@param excludeLines: a string of list of strings to search for, any KEY containing these strings will be ignored
+	:param list(str) excludeLines: a string of list of strings to search for, any KEY containing these strings will be ignored
 	
-	@param conditions: an optional list of string conditions that can appear in property 
-	keys e.g. "FOO<condition>=bar" where lines with no condition in this list 
-	are ignored. Conditions are typically lowercase. 
+	:param set(str) conditions: 
+	
+		An optional set or list of lower_case string conditions that can appear in property 
+		keys to dyamically filter based on the platform and what kind of build is being performed. 
+		
+		For example ``MY_PROPERTY<windows>=bar``. Each line is only *included* if the condition matches one of the condition 
+		strings passed to this function.
+		
+		For more advanced cases, a Python eval string can be specified, evaluated in a scope that includes the 
+		``conditions`` set, a reference to the ``context`` (for property lookups), the ``IS_WINDOWS`` constant, and the 
+		Python ``import_module`` function for accessing anything else. You cannot use the ``=`` character anywhere in the 
+		eval string (since this is a properties file, after all!), but in most cases using the ``in`` operator is more 
+		useful anyway. For example:: 
+		
+			MY_PROPERTY<      IS_WINDOWS and 'debug' not in conditions  > = windows-release.dll
+			MY_PROPERTY< not (IS_WINDOWS and 'debug' not in conditions) > = everything-else.dll
+			
 	"""
 	if conditions: assert not isinstance(conditions,str), 'conditions parameter must be a list'
 	__log.info('Defining properties from file: %s', propertiesFile)
@@ -260,15 +275,32 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 		for key,value,lineNo in parsePropertiesFile(f, excludeLines=excludeLines):
 			__log.debug('definePropertiesFromFile: expanding %s=%s', key, value)
 			
-			if '<' in key:
-				c = re.search('<([^.]+)>', key)
+			if '<' in key and conditions is not None:
+				c = re.search('<([^>]+)>', key)
 				if not c:
 					raise BuildException('Error processing properties file, malformed <condition> line at %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
 				key = key.replace('<'+c.group(1)+'>', '')
 				if '<' in key: raise BuildException('Error processing properties file, malformed line with multiple <condition> items at %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
-				matches = True if conditions else False
-				if matches:
-					for cond in c.group(1).split(','):
+				
+				condfilters = c.group(1)
+				if '(' in condfilters or any([(' ' in x.strip()) for x in condfilters.split(',')]): # spaces (other than as "," delimiters are a clue this is more than a condition list
+					# treat it as an eval string
+					env = {
+						'importlib':importlib, # in case they want to import anything else
+						'import_module':importlib.import_module,
+						'conditions':set(conditions),
+						'context':context, # allows accessing properties and anything else that's needed
+						'IS_WINDOWS':IS_WINDOWS,
+					}
+					try:
+						matches = bool(eval(condfilters, env))
+					except Exception as e:
+						raise BuildException('Error processing properties file, malformed Python eval string in <condition> line at %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
+					__log.critical('Got: %s, %r', condfilters, eval(condfilters, env))
+					
+				else: # fall back to the quicker and simpler common case
+					matches = True
+					for cond in condfilters.split(','): # the ability to have a comma-separated list with "AND" semantics is undocumented (but is used in at least one place)
 						if cond.strip() not in conditions:
 							matches = False
 							break
