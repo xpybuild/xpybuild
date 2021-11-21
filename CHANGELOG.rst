@@ -19,6 +19,12 @@ Enhancements
 - Added more powerful "conditions" to `propertysupport.definePropertiesFromFile`, allowing for complex Python 
   expressions that check multiple conditions and properties to be used for dynamically selecting which lines are read 
   from ``.properties`` files. 
+- Added `basetarget.BaseTarget.Options.failureRetries` option for easily retrying (with backoff) targets which can fail 
+  transiently, e.g. due to flaky servers or interactions with anti-virus software that are outside your control. Like 
+  any option, this can be set either per-target or globally (perhaps through a property) to increase the reliability of 
+  automated build jobs. 
+- `propertysupport.defineOption` not returns a `propertysupport.Option` instance which provides a convenient way to 
+  document your target options. See `basetarget.BaseTarget.Options` for an example of how this looks. 
 
 
 3.0

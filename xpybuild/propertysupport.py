@@ -53,11 +53,11 @@ To see a list of the property names and values for the current build and machine
 .. rubric:: Target options
 
 Options provide a way to customize the behaviour of targets either globally throughout the build or for specific 
-targets. For example, the location of the JDK used for compiling Java program is specified by an option (``java.home``), 
-which also other other Java-related targets such as Javadoc generation. 
+targets. For example, location of the JDK used for compiling Java programs, or the default class used for handling 
+output from a custom command (e.g. ``CustomCommand.outputHandlerFactory``). 
 
-Often an option will be set to the value of a property, so that the property setting, reuse and overriding mechanisms 
-can be used. 
+Often an option will be set to the value of a ``${...}`` property, so that the property setting, reuse and overriding 
+mechanisms can be used. 
 
 Information about the defined option names and their value type and default is available in the documentation for the 
 associated targets. To specify the default value for an option globally for all targetsin your build, call 
@@ -503,29 +503,53 @@ class ExtensionBasedFileEncodingDecider:
 ################################################################################
 # Options
 
+class Option:
+	""" Represents an option definition. Options customize the behaviour of one or more targets, for example by 
+	providing default compiler arguments, timeouts, or paths to locally installed tools.  
+	
+	An instance of this class is returned by `defineOption`. To set the value of options in your build, call 
+	`xpybuild.basetarget.BaseTarget.option` or `setGlobalOption`. 
+	
+	""" # this class exists just to make the pydoc look nice via the __repr__
+	def __init__(self, name, default):
+		self.optionName = name # do not rename this - it's used in BaseTarget.option
+		self.default = default
+	def __repr__(self): return f'Option "{self.optionName}" (default: %s)' % ('<lambda>' if "<lambda> at 0x" in repr(self.default) else repr(self.default)) # this string appears in pydoc
+
 def defineOption(name, default):
-	""" Define an option controlling some behaviour of the build. 
+	''' Define an option controlling some behaviour of the build. 
 	
 	A default value is provided, which can be overridden on individual targets, or globally throughout the build 
 	using `setGlobalOption`.
 	
-	This method is typically used only when implementing a new kind of target. 
+	This method is typically used only when implementing a new kind of target, and often nested in an ``Options`` class 
+	under the target, e.g.::
 	
-	Options are not available for ``${...}`` expansion (like properties), but 
-	rather as used for (optionally inheritably) settings that affect the 
-	behaviour of one or more targets. They are accessed using self.options 
-	in any target instance. 
+		class MyTarget(BaseTarget):
+			class Options:
+				""" Options for customizing the behaviour of this target. To set an option on a specific target call 
+				`xpybuild.basetarget.BaseTarget.option` or to se a global default use `xpybuild.propertysupport.setGlobalOption`. 
+				"""
+			
+				myOption = defineOption("MyTarget.myOption", 123)
+				"""
+				Configures the XXX. 
+				"""
+	
+	Unlike properties, option values are not accessed by ``${...}`` expansion, but rather using ``self.options`` 
+	from any `xpybuild.basetarget.BaseTarget` subclass implementation. 
 	
 	@param name: The option name, which should usually be in lowerCamelCase, with 
 	a TitleCase prefix specific to this target or group of targets, often 
 	matching the target name, e.g. ``Javac.compilerArgs``. 
 
-	@param default: The default value of the option.
+	@param default: The default value of the option. If you need a callable, try to use named functions rather than 
+	lambdas so that the string representation is human-friendly. 
 	
-	:returns: The option name.
-	"""
+	:returns: A new instance of `Option`. 
+	'''
 	BuildInitializationContext._defineOption(name, default)
-	return name
+	return Option(name, default)
 
 def setGlobalOption(key, value):
 	"""

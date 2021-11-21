@@ -21,5 +21,5 @@ class MyTarget(BaseTarget):
 		
 		raise Exception('Simulated target failure')
 
-MyTarget('${OUTPUT_DIR}/mytarget/', []).option(FailureRetriesOption, 2)
+MyTarget('${OUTPUT_DIR}/mytarget/', []).option(BaseTarget.Options.failureRetries, 2)
 setGlobalOption('Target.failureRetriesInitialBackoffSecs', 1.0)

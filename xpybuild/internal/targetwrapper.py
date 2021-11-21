@@ -26,7 +26,7 @@ import difflib
 from stat import S_ISREG, S_ISDIR # fast access for these is useful
 from threading import Lock
 
-from xpybuild.basetarget import BaseTarget, FailureRetriesOption
+from xpybuild.basetarget import BaseTarget
 from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.fileutils import deleteFile, mkdir, openForWrite, cached_getmtime, toLongPathSafe, cached_stat, isDirPath
 
@@ -459,7 +459,7 @@ class TargetWrapper(object):
 		retries = None
 		
 		retryNumber = 0 # 1=first retry, etc
-		self.target.retriesRemaining = self.target.options[FailureRetriesOption] # default is 0
+		self.target.retriesRemaining = self.target.options['Target.failureRetries'] # default is 0
 		backoffSecs = self.target.options['Target.failureRetriesInitialBackoffSecs']
 		
 		while True:
