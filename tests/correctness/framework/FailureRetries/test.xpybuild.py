@@ -19,6 +19,7 @@ class MyTarget(BaseTarget):
 		
 		open(self.path+'/touchfile.txt', 'w').close()
 		
+		self.log.error('Error logged by target')
 		raise Exception('Simulated target failure')
 
 MyTarget('${OUTPUT_DIR}/mytarget/', []).option(BaseTarget.Options.failureRetries, 2)

@@ -29,6 +29,7 @@ from threading import Lock
 from xpybuild.basetarget import BaseTarget
 from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.fileutils import deleteFile, mkdir, openForWrite, cached_getmtime, toLongPathSafe, cached_stat, isDirPath
+from xpybuild.internal.outputbuffering import outputBufferingManager
 
 import logging
 log = logging.getLogger('scheduler.targetwrapper')
@@ -474,13 +475,19 @@ class TargetWrapper(object):
 			except Exception as ex:
 				if self.target.retriesRemaining == 0: 
 					if retryNumber > 0: 
-						self.target.log.warning('Target %s failed after %d retries', self, retryNumber)
+						self.target.log.warning('Target %s failed even after %d retries', self, retryNumber)
 					raise
 
 				self.target.retriesRemaining -= 1
 				retryNumber += 1
 				
-				self.target.log.warning('Target %s failed on retry #%d, will retry after %d seconds backoff', self, retryNumber, backoffSecs)
+				# this logic is to prevent CI (e.g. TeamCity) error messages from one retry from causing the whole job to be flagged as a 
+				# failure even if a subsequent retry succeeds
+				buf = outputBufferingManager.resetStdoutBufferForCurrentThread()
+				self.target.log.warning('Target %s failed on attempt #%d, will retry after %d seconds backoff (see .log file for details).', self, retryNumber, backoffSecs)
+				# for now let's just throw away buf - user can look at the .log file to see what happened before the failure if they care 
+				# (can't just re-log it here as that would result in duplication with the .log output)
+
 				time.sleep(backoffSecs)
 				# hopefully after the backoff time enough file handles will have been removed for the clean to succeed 
 				try:
