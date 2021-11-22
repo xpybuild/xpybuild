@@ -269,7 +269,9 @@ def main(args):
 	hdlr = hdlr(
 		wrapper, 
 		buildOptions=buildOptions) 
+	# Handler can override wrapper with a preference in either direction
 	if hdlr.bufferingDisabled: wrapper.bufferingDisabled = True
+	if hdlr.bufferingRequired: wrapper.bufferingDisabled = False
 		
 	hdlr.setLevel(logLevel or logging.WARNING)
 	logging.getLogger().addHandler(hdlr)

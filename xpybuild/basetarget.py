@@ -40,6 +40,8 @@ import xpybuild.utils.stringutils
 
 import logging
 
+from xpybuild.propertysupport import defineOption
+
 class BaseTarget(Composable):
 	""" The base class for all targets. 
 	
@@ -385,27 +387,33 @@ class BaseTarget(Composable):
 		""" Target classes can call this during `run` or `clean` to get the resolved value of a specified option for 
 		this target, with optional checking to give a friendly error message if the value is an empty string or None. 
 		
-		This is a high-levetl alternative to reading directly from `self.options`. 
+		This is a high-level alternative to reading directly from `self.options`. 
 		"""
+		if hasattr(key, 'optionName'): key = key.optionName # it's an Option instance
+
 		if key not in self.options: raise Exception('Target tried to access an option key that does not exist: %s'%key)
 		v = self.options[key]
 		if (errorIfNone and v == None) or (errorIfEmptyString and v == ''):
 			raise BuildException('This target requires a value to be specified for option "%s" (see basetarget.option or setGlobalOption)'%key)
 		return v
 
-	def option(self, key: str, value):
+	def option(self, key, value):
 		"""Called by build file authors to configure this target instance with an override for an option value. 
 		
 		This allows target-specific overriding of options. If no override is provided, the value set in 
-		`propertysupport.setGlobalOption` for the whole build is used, or if that was not set then the default 
+		`xpybuild.propertysupport.setGlobalOption` for the whole build is used, or if that was not set then the default 
 		when the option was defined. 
 		
 		Use `self.options` or `getOption` to get resolved option values when implementing a target class. 
 		
-		@param key: The name of a previously-defined option.
+		@param str|xpybuild.propertysupport.Option key: The name of a previously-defined option. Usually this is a string 
+		literal, but you cna also use the `xpybuild.propertysupport.Option` instance if you prefer. 
+		
 		@param value: The value. If the value is a string and contains any property values these will be expanded 
 		before the option value is passed to the target. 
 		"""
+		if hasattr(key, 'optionName'): key = key.optionName # it's an Option instance
+		
 		self.__optionsTargetOverridesUnresolved[key] = value
 		return self
 	
@@ -485,6 +493,20 @@ class BaseTarget(Composable):
 		if len(x) < 256: x = x.replace('/','.') # avoid deeply nested directories in general
 		return x
 
+	class Options:
+		""" Options for customizing the behaviour of all targets. To set an option on a specific target call 
+		`xpybuild.basetarget.BaseTarget.option` or to se a global default use `xpybuild.propertysupport.setGlobalOption`. 
+		"""
+	
+		failureRetries = defineOption("Target.failureRetries", 0)
+		"""
+		The "Target.failureRetries" option can be set on any target (or globally), and specifies how many times to retry 
+		the target's build if it fails. The default is 0, which is recommended for normal developer builds. 
+
+		There is an exponentially increasing backoff pause between each attempt - first 15s, then 30s, then 60s etc. 
+		"""
+
+		failureRetriesInitialBackoffSecs = defineOption('Target.failureRetriesInitialBackoffSecs', 15) # undocumented as there should be no reason to change this
 
 targetNameToUniqueId = BaseTarget.targetNameToUniqueId # alias for pre-3.0 projects
 """.. private:: See static method instead.

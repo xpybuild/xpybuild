@@ -22,6 +22,7 @@
 
 
 import threading, re, os, time
+import sys
 import locale
 from threading import Lock
 
@@ -33,6 +34,9 @@ class OutputBufferingManager(object):
 	Singleton class that manages whether buffering is currently enabled for 
 	the current thread and makes the buffering wrappers dump their buffered 
 	content at the end. 
+	
+	Buffering is used to keep related log lines from the same target together, especially in the stdout output 
+	where it could otherwise be quite confusing. 
 	"""
 	def __init__(self):
 		self.__tlocal = threading.local()
@@ -52,14 +56,26 @@ class OutputBufferingManager(object):
 		"""
 		self.__tlocal.enabled = True
 		
-	def endBufferingForCurrentThread(self):
-		""" End buffering. This is idempotent and can be safely called 
-		even if it was not started. """
+	def endBufferingForCurrentThread(self, mapper=None):
+		""" End buffering and write buffered messages. This is idempotent and can be safely called 
+		even if it was not started. 
+		
+		:param mapper: A callable that can be used to mutate the contents of the buffer before 
+		"""
 		if not self.isBufferingEnabledForCurrentThread(): return
 		
 		self.__tlocal.enabled = False
 		for w in self.__wrappers:
 			w.writeBufferedMessages()
+
+	def resetStdoutBufferForCurrentThread(self):
+		""" Return the buffered string for the current thread (if any) for the stdout stream. 
+		
+		:param mapper: A callable that can be used to mutate the contents of the buffer before 
+		"""
+		for w in self.__wrappers:
+			if w.name == 'stdout':
+				return w.resetBufferedMessages()
 	
 	def registerStreamWrapper(self, w):
 		self.__wrappers.append(w)
@@ -69,8 +85,10 @@ outputBufferingManager = OutputBufferingManager()
 class OutputBufferingStreamWrapper(object):
 	"""
 	Thread-safe class that adds buffering for current thread (if currently 
-	enabled). Buffered messages will be written when 
+	enabled). Buffered messages will be written to the underlying stream when 
 	outputBufferingManager.endBufferingForCurrentThread() is called.
+	
+	There is currently one instance of this, for stdout. 
 	
 	Writes characters not bytes. 
 	"""
@@ -79,6 +97,7 @@ class OutputBufferingStreamWrapper(object):
 		self.tlocal = threading.local()
 		outputBufferingManager.registerStreamWrapper(self)
 		self.bufferingDisabled = bufferingDisabled # can be set by formatter if doesn't support it, e.g. progress
+		self.name = 'stdout' if underlying == sys.stdout else repr(underlying)
 	
 	def __writeUnderlying(self, s):
 		try:
@@ -99,9 +118,15 @@ class OutputBufferingStreamWrapper(object):
 		self.__underlying.flush()
 
 	def writeBufferedMessages(self):
-		buf = getattr(self.tlocal, 'buffer', '')
+		buf = self.resetBufferedMessages()
 		if buf:
 			self.__writeUnderlying(buf)
-			self.tlocal.buffer = ''
 			self.flush() # probably overdue a flush by now
+	
+	def resetBufferedMessages(self):
+		buf = getattr(self.tlocal, 'buffer', '')
+		if buf:
+			self.tlocal.buffer = ''
+			return buf
+		return ''
 	

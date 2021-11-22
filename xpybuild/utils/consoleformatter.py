@@ -60,6 +60,7 @@ class ConsoleFormatter(object):
 		self.output = output
 		self.fmt = logging.Formatter()
 		self.bufferingDisabled = False # can be set to True to prevent it for handlers for which it's not appropriate
+		self.bufferingRequired = False # can be set to True to require it for handlers where it's essential for correctness (when a target is retried) e.g. TeamCity CI
 		_outputFormattersInUse.append(self)
 		
 	def setLevel(self, level):
@@ -164,7 +165,7 @@ class TeamcityHandler(ConsoleFormatter):
 	def __init__(self, output, buildOptions, **kwargs):
 		ConsoleFormatter.__init__(self, output, buildOptions, **kwargs)
 		
-		self.bufferingDisabled = True # useful to let teamcity know as soon as there is an error
+		self.bufferingRequired = True # need buffering so that we can stop errors being written out if the target subsequently succeeds on retry
 		
 	@staticmethod
 	def teamcityEscape(s):
