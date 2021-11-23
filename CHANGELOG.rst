@@ -13,7 +13,7 @@ Fixes
 Enhancements
 ------------
 
-- Added a new `pathsets.FindPaths` option ``FindPaths.globalExcludesFunction`` which can be used to globally exclude 
+- Added a new ``FindPaths`` option `pathsets.FindPaths.Options.globalExcludesFunction` which can be used to globally exclude 
   certain file patterns throughout the build. By default this excludes files matching ``.nfs*`` (i.e. temporary NFS 
   files).
 - Added more powerful "conditions" to `propertysupport.definePropertiesFromFile`, allowing for complex Python 

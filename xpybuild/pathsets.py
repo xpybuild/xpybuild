@@ -482,7 +482,7 @@ class FindPaths(BasePathSet):
 		FindPaths(..., includes=['**', '**/']). 
 	
 	In addition, global (non-overridable) excludes may be specified by setting the 
-	``FindPaths.globalExcludesFunction`` option. The default implementation is `FindPaths.defaultGlobalExcludesFunction`. 
+	`FindPaths.Options.globalExcludesFunction` option. 
 
 	Destination paths (where needed) are generated from the path underneath the
 	base dir.
@@ -490,11 +490,16 @@ class FindPaths(BasePathSet):
 	FindPaths will return file or directory symlinks (with ``/`` suffix if directory), 
 	but will not recurse into directory symlinks. 
 	
-	@param dir: May be a simple string, or a DirGeneratedByTarget to glob under a 
+	@param dir: The base directory to search (relative or absolute, may contain ${...} variables). 
+	May be a simple string, or a `DirGeneratedByTarget` to glob under a 
 	directory generated as part of the build. To find paths from a set of 
-	targets use dir=TargetsWithinDir (though only use this when that dynamism 
-	is required, as this will be slower than statically listing the targets 
+	targets use `TargetsWithinDir` (though only use this when that dynamism 
+	is truly required, as this will be slower than statically listing the targets 
 	individually or using TargetsWithTag). 
+
+	@param includes: a list of glob patterns for the files to include (excluding all others)
+
+	@param excludes: a list of glob patterns to exclude after processing any includes.
 
 	>>> str(FindPaths('a/b/c', includes=['*.x', 'y/**/z/foo.*'], excludes=['xx', '**/y']))
 	'FindPaths("a/b/c", includes=["*.x", "y/**/z/foo.*"], excludes=["xx", "**/y"])'
@@ -518,32 +523,7 @@ class FindPaths(BasePathSet):
 	
 	_shortcutUptodateCheck = IS_WINDOWS # on Windows os.scandir can efficiently get the stat results without an extra call
 
-	@staticmethod
-	def defaultGlobalExcludesFunction(name): 
-		"""
-		The default function used for the 'FindPaths.globalExcludesFunction' option. 
-		
-		The current implementation excludes temporary NFS (Network File System) files matching the pattern ".nfs[0-9]". 
-		
-		This function must be very fast to execute as it's highly performance-critical for the dependency checking and 
-		build process, so simple string operations should be used instead of regular expressions. 
-		
-		:param str name: A base file/directory name (without path). 
-		:return: True if this file or directory should be excluded. 
-		"""
-		return name.startswith(('.nfs', )) and re.match(r'[.]nfs[0-9]', name)
-
-
 	def __init__(self, dir, excludes=None, includes=None):
-		"""
-		@param dir: base directory to search (relative or absolute, may contain ${...} variables). 
-		May be a simple string, or a DirGeneratedByTarget to glob under a 
-		directory generated as part of the build. 
-
-		@param includes: a list of glob patterns for the files to include (excluding all others)
-
-		@param excludes: a list of glob patterns to exclude after processing any includes.
-		"""
 		self.__dir = dir
 		self.includes = flatten(includes)
 		self.excludes = flatten(excludes)
@@ -573,6 +553,34 @@ class FindPaths(BasePathSet):
 	def __repr__(self): 
 		""" Return a string including this class name and the basedir and include/exclude patterns with which it was created. """
 		return ('FindPaths(%s, includes=%s, excludes=%s)'%('"%s"'%self.__dir if isinstance(self.__dir, str) else str(self.__dir), self.includes or [], self.excludes or [])).replace('\'','"')
+	
+	class Options:
+		""" Options for customizing the behaviour of this type of PathSet. Can be configured with 
+		`xpybuild.propertysupport.setGlobalOption`. 
+		"""
+
+		@staticmethod
+		def defaultGlobalExcludesFunction(name): 
+			"""
+			The default function used for the `FindPaths.Options.globalExcludesFunction` option. 
+			
+			The current implementation excludes temporary NFS (Network File System) files matching the pattern ".nfs[0-9]". 
+			
+			This function must be very fast to execute as it's highly performance-critical for the dependency checking and 
+			build process, so simple string operations should be used instead of regular expressions. 
+			
+			:param str name: A base file/directory name (without path). 
+			:return: True if this file or directory should be excluded. 
+			"""
+			return name.startswith(('.nfs', )) and re.match(r'[.]nfs[0-9]', name)
+
+		globalExcludesFunction = propertysupport.defineOption('FindPaths.globalExcludesFunction', defaultGlobalExcludesFunction.__func__) 
+		"""
+		Global (non-overridable) excludes may be specified by setting this option to a
+		function that accepts a full path and returns True if it should be ignored. 
+		
+		Needs to be as fast as possible. 
+		"""
 	
 	def _resolveUnderlyingDependencies(self, context):
 		if isinstance(self.__dir, BaseTarget):
@@ -746,10 +754,6 @@ class FindPaths(BasePathSet):
 			
 			self.__cached = result
 			return result
-
-propertysupport.defineOption('FindPaths.globalExcludesFunction', FindPaths.defaultGlobalExcludesFunction) 
-# A function that accepts a full path and returns True if it should be ignored. Needs to be as fast as possible. 
-# (this is why it's implemented as a simple function rather than a list of glob expressions). 
 
 class TargetsWithTag(BasePathSet):
 	"""
