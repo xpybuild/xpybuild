@@ -1,7 +1,8 @@
 __pysys_title__   = r""" Properties - experimental {...} instead of ${...} property setting  """ 
 #                        ================================================================================
 
-__pysys_purpose__ = r""" The purpose of this test is ... TODO.
+__pysys_purpose__ = r""" The purpose of this test is to check the (currently experimental) option to use {...} instead of 
+	${...} syntax. It also checks escaping of $${ and {{}. 
 	
 	""" 
 	
@@ -34,5 +35,3 @@ class PySysTest(XpybuildBaseTest):
 		self.assertPathExists('build-output/output-foobar.txt')
 		self.assertPathExists('build-output/escaping1-${literal1}.txt')
 		self.assertPathExists('build-output/escaping2-{literal2}.txt')
-
-		#self.assertGrep('xpybuild.out', expr=r"XXX") # if no extra verifications are needed, instead use: self.addOutcome(PASSED)
