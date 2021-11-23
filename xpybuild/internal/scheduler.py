@@ -208,7 +208,10 @@ class BuildScheduler(object):
 					if not errors:
 						# if it's enabled, this is the point we want log statements 
 						# to get buffered for writing to the output at the end of 
-						# this target's execution
+						# this target's execution 
+						# (nb: this is after the initial "*** Building XXXX " log message... but that's 
+						# actually useful in case of hanging targets, and anyway would be non-trivial to fix... the target end 
+						# message is however included atomically with the target)
 						outputBufferingManager.startBufferingForCurrentThread()
 	
 						log.debug('%s: executing run method for target', target.name)

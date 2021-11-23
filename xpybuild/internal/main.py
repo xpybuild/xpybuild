@@ -258,7 +258,8 @@ def main(args):
 
 	if buildOptions["workers"] < 0: buildOptions["workers"] = 0 # means there's no override
 	
-	outputBufferingDisabled = buildOptions['workers']==1 
+	outputBufferingDisabled = buildOptions['workers']==1 # nb: this also affects the .log handler below
+	
 	# nb: it's possible workers=0 (auto) and will later be set to 1 but doesn't really matter much
 
 	# initialize logging to stdout - minimal output to avoid clutter, but indicate progress
@@ -454,13 +455,17 @@ def main(args):
 			if logdir and not os.path.exists(logdir): mkdir(logdir)
 			log.critical('Writing build log to: %s', os.path.abspath(logFile))
 
-			hdlr = logging.FileHandler(logFile, mode='w', encoding='UTF-8')
+			# also buffer the .log file, since it's just a lot harder to read when multiple target lines are all jumbled up; 
+			# we have an undocumented env var for disabling this in case of debugging
+			if os.getenv('XPYBUILD_LOGFILE_OUTPUT_BUFFERING_DISABLED','')=='true': outputBufferingDisabled = True
+			logFileStream = OutputBufferingStreamWrapper(open(logFile, 'w', encoding='UTF-8'), bufferingDisabled=outputBufferingDisabled)
+			hdlr = logging.StreamHandler(logFileStream)
 			hdlr.setFormatter(logging.Formatter('%(asctime)s %(relativeCreated)05d %(levelname)-8s [%(threadName)s %(thread)5d] %(name)-10s - %(message)s', None))
 			hdlr.setLevel(logLevel or logging.INFO)
 			logging.getLogger().addHandler(hdlr)
 			
 			log.info('Using xpybuild %s from %s on Python %s.%s.%s', XPYBUILD_VERSION, os.path.normpath(os.path.dirname(__file__)), sys.version_info[0], sys.version_info[1], sys.version_info[2])
-			log.info('Using build options: %s', buildOptions)
+			log.info('Using build options: %s (logfile target outputBuffering=%s)', buildOptions, not outputBufferingDisabled)
 
 			try:
 				# sometimes useful to have this info available

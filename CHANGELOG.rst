@@ -25,7 +25,10 @@ Enhancements
   automated build jobs. 
 - `propertysupport.defineOption` not returns a `propertysupport.Option` instance which provides a convenient way to 
   document your target options. See `basetarget.BaseTarget.Options` for an example of how this looks. 
-
+- The log lines for each target are now buffered so they can be displayed consecutively in the ``.log`` file 
+  (just as they already are on stdout) in a multi-threaded build. Note that this does not include the initial 
+  ```*** Building targetname``` line (which is emitted as soon as the target begins) but does include the final 
+  ```***``` line that indicates whether the target was successful and all intermediate log lines. 
 
 3.0
 ===
