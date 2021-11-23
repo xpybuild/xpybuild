@@ -30,6 +30,7 @@ import os, inspect, shutil, re
 
 from xpybuild.buildcommon import *
 from xpybuild.buildcontext import getBuildInitializationContext
+import xpybuild.buildcontext
 import xpybuild.utils.fileutils as fileutils
 from xpybuild.utils.flatten import flatten, getStringList
 from xpybuild.utils.buildfilelocation import BuildFileLocation
@@ -108,6 +109,10 @@ class BaseTarget(Composable):
 
 	
 	def __init__(self, name, dependencies):
+		# normalize specifiers in target names, so that when they're logged we can copy+paste them to a unix shell
+		if xpybuild.buildcontext._EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX: 
+			name = name.replace('$${', '<__xpybuild_dollar_placeholder>').replace('${', '{').replace('<__xpybuild_dollar_placeholder>', '$${')
+		
 		self.__getAttrImpl = {
 			'path': lambda: self.__returnOrRaiseIfNone(self.__path, 'Target path has not yet been resolved by this phase of the build process: %s'%self),
 			'name': lambda: self.__name,

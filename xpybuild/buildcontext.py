@@ -43,6 +43,8 @@ import re
 import logging
 log = logging.getLogger('xpybuild')
 
+_EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX = os.getenv('XPYBUILD_EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX','')=='true' # undocumented/unsupported for now
+
 class BaseContext(object):
 	""" Common functionality needed during initialization and build phases. 
 	
@@ -183,9 +185,16 @@ class BaseContext(object):
 		if callable(string): string = string(self)
 		assert isinstance(string, str), 'Error in expandPropertyValues: expecting string but argument was of type "%s"'%(string.__class__.__name__)
 		
-		if '$${' in string:
+		if '$${' in string: # tbd whether this kind of escaping is even needed once we have the {{} escaping
 			assert '<escaped_xpybuild_placeholder>' not in string
 			string = string.replace('$${', '<escaped_xpybuild_placeholder>')
+
+		if '{{}' in string: # in case we want a literal "{"
+			assert '<escaped_xpybuild_placeholder2>' not in string
+			string = string.replace('{{}', '<escaped_xpybuild_placeholder2>')
+
+		if _EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX:
+			string = string.replace('${', '{').replace('{', '${') # treat "{" and "${" as the same (probably more efficient doing this replace() call than using regexes)
 
 		isListExpansion = False
 		prefix=""
@@ -205,7 +214,7 @@ class BaseContext(object):
 				raise
 			except Exception:
 				raise BuildException('Incorrectly formatted property string "%s"'%string)
-			v = self.getPropertyValue(propName)
+			v = '{' if propName=='{' else self.getPropertyValue(propName)
 			# every language except python doesn't use Initialcaps for their booleans so this is much more useful behaviour
 			if isinstance(v, bool): v = 'true' if v else 'false' 
 			string = string.replace('${%s}' % propName, v)
@@ -215,10 +224,10 @@ class BaseContext(object):
 			for x in self.expandListPropertyValue(listPropName):
 				x = self.expandPropertyValues(x, expandList=True)
 				for y in x:
-					rv.append((prefix+y+string).replace('<escaped_xpybuild_placeholder>', '${'))
+					rv.append((prefix+y+string).replace('<escaped_xpybuild_placeholder>', '${').replace('<escaped_xpybuild_placeholder2>', '{'))
 			return rv
 		else:
-			string = string.replace('<escaped_xpybuild_placeholder>', '${')
+			string = string.replace('<escaped_xpybuild_placeholder>', '${').replace('<escaped_xpybuild_placeholder2>', '{')
 			if expandList:
 				return [string] if string else []
 			else:
