@@ -114,9 +114,11 @@ def defineStringProperty(name, default):
 
 	@param default: The default value of the propert (can contain other ${...} variables)
 	If set to None, the property must be set on the command line each time
+
+	@returns: The resolved property value. 
 	"""
 	init = BuildInitializationContext.getBuildInitializationContext()
-	if init: init.defineProperty(name, default, lambda v: BuildInitializationContext.getBuildInitializationContext().expandPropertyValues(v))
+	if init: return init.defineProperty(name, default, lambda v: BuildInitializationContext.getBuildInitializationContext().expandPropertyValues(v))
 
 def definePathProperty(name, default, mustExist=False):
 	""" Define a string property that will be converted to an absolute path.
@@ -139,6 +141,8 @@ def definePathProperty(name, default, mustExist=False):
 	@param mustExist: True if it's an error to specify a directory that doesn't
 	exist (will raise a BuildException)
 	
+	@returns: The resolved property value. 
+	
 	"""
 
 	# Expands properties, makes the path absolute, checks that it looks sensible and (if needed) whether the path exists
@@ -157,7 +161,7 @@ def definePathProperty(name, default, mustExist=False):
 		return value
 		
 	init = BuildInitializationContext.getBuildInitializationContext()
-	if init: init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
+	if init: return init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
 
 
 def defineOutputDirProperty(name, default):
@@ -166,8 +170,9 @@ def defineOutputDirProperty(name, default):
 	
 	Equivalent to calling `definePathProperty` then `registerOutputDirProperties`.
 	"""
-	definePathProperty(name, default)
+	x = definePathProperty(name, default)
 	registerOutputDirProperties(name)
+	return x
 
 def registerOutputDirProperties(*propertyNames):
 	""" Registers the specified path property name(s) as being an output directory 
@@ -192,6 +197,8 @@ def defineEnumerationProperty(name, default, enumValues):
 	If set to None, the property must be set on the command line each time
 
 	@param enumValues: A list of valid values for this property (can contain other ${...} variables)
+
+	@returns: The resolved property value. 
 	"""
 
 	# Expands properties, then checks that it's one of the acceptible values
@@ -208,7 +215,7 @@ def defineEnumerationProperty(name, default, enumValues):
 		
 	init = BuildInitializationContext.getBuildInitializationContext()
 	if init:
-		init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
+		return init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
 	
 def defineBooleanProperty(name, default=False):
 	""" Defines a boolean property that will have a True or False value. 
@@ -217,6 +224,8 @@ def defineBooleanProperty(name, default=False):
 
 	@param default: The default value (default = False)
 	If set to None, the property must be set on the command line each time
+
+	@returns: The resolved property value. 
 	"""
 
 	# Expands property values, then converts to a boolean
@@ -230,7 +239,7 @@ def defineBooleanProperty(name, default=False):
 	
 	init = BuildInitializationContext.getBuildInitializationContext()
 	if init:
-		init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
+		return init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
 
 def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, conditions=None):
 	"""

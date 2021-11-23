@@ -29,6 +29,8 @@ Enhancements
   (just as they already are on stdout) in a multi-threaded build. Note that this does not include the initial 
   ```*** Building targetname``` line (which is emitted as soon as the target begins) but does include the final 
   ```***``` line that indicates whether the target was successful and all intermediate log lines. 
+- Property definition methods such as `propertysupport.definePathProperty` now return the (resolved) property value, 
+  to avoid the need to call ``getPropertyValue`` when the value is directly needed in the build file. 
 
 3.0
 ===

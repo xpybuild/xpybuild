@@ -587,6 +587,8 @@ class BuildInitializationContext(BaseContext):
 		@param coerceToValidValue: None, or a function to validate and/or convert the input string to a value of the right 
 		type
 		@param debug: if True log at DEBUG else log at INFO
+		@returns: The resolved property value. 
+
 		"""
 		self._initializationCheck()
 		
