@@ -36,7 +36,6 @@ Breaking changes
 ----------------
 
 - On all OSes, target paths can no longer contain filename characters which are prohibited on Windows such as ``<>:"|?*``. 
-- 
   
 
 3.0

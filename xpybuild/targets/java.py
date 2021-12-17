@@ -167,7 +167,7 @@ class Javac(BaseTarget):
 	
 	Example usage::
 	
-		Jar('${OUTPUT_DIR}/myapp.jar', 
+		Javac('${OUTPUT_DIR}/myclasses/', 
 			# FindPaths walks a directory tree, supporting complex ant-style globbing patterns for include/exclude
 			compile=[
 				FindPaths('./src/', excludes=['**/VersionConstants.java']), 
@@ -176,16 +176,8 @@ class Javac(BaseTarget):
 			
 			# DirBasedPathSet statically lists dependent paths under a directory
 			classpath=[DirBasedPathSet('${MY_DEPENDENT_LIBRARY_DIR}/', 'mydep-api.jar', 'mydep-core.jar')],
-			
-			# Specify Jar-specific key/values for the MANIFEST.MF (in addition to any set globally via options)
-			manifest={'Implementation-Title':'My Amazing Java Application'}, 
-			
-			package=FindPaths('resources/', includes='**/*.properties'),
 		)
 
-		setGlobalOption('jar.manifest.defaults', {'Implementation-Version': '${APP_VERSION}', 'Implementation-Vendor': 'My Company'})
-
-	
 	The following options can be set with ``Javac(...).option(key, value)`` 
 	or `xpybuild.propertysupport.setGlobalOption()` to customize the compilation process:
 		
@@ -242,45 +234,63 @@ class Javac(BaseTarget):
 class Jar(BaseTarget):
 	""" Create a jar, first compiling some Java classes, then packing it all up as a ``.jar``. 
 	
+	Example usage::
+	
+		Javac('${OUTPUT_DIR}/myapp.jar', 
+			# FindPaths walks a directory tree, supporting complex ant-style globbing patterns for include/exclude
+			compile=[
+				FindPaths('./src/', excludes=['**/VersionConstants.java']), 
+				'${BUILD_WORK_DIR}/filtered-java-src/VersionConstants.java',
+			],
+			
+			# DirBasedPathSet statically lists dependent paths under a directory
+			classpath=[DirBasedPathSet('${MY_DEPENDENT_LIBRARY_DIR}/', 'mydep-api.jar', 'mydep-core.jar')],
+			
+			# Specify Jar-specific key/values for the MANIFEST.MF (in addition to any set globally via options)
+			manifest={'Implementation-Title':'My Amazing Java Application'}, 
+			
+			package=FindPaths('resources/', includes='**/*.properties'),
+		)
+
+		setGlobalOption('jar.manifest.defaults', {'Implementation-Version': '${APP_VERSION}', 'Implementation-Vendor': 'My Company'})
+
+		
 	In addition to the options listed on the `Javac` target, the following options can be set when 
 	creating a Jar, using ``Jar(...).option(key, value)`` or `xpybuild.propertysupport.setGlobalOption()`:
 		
 		- ``jar.manifest.defaults = {}`` Default key/value pairs (e.g. version number) to include in the ``MANIFEST.MF`` of every jar. 
 		- ``jar.manifest.classpathAppend = []`` Add additional classpath entries to the ``MANIFEST.MF`` which are needed at runtime but not during compilation. 
 		- ``jar.options = []`` A list of extra options to pass to ``jar``. 
+
+	@param jar: path to jar to create.
+
+	@param compile: PathSet (or list)  of things to compile.
+
+	@param classpath: PathSet (or list) of things to be on the classpath; 
+		destination mapping indicates how they will appear in the manifest.
+
+	@param manifest: Typically a map of ``MANIFEST.MF`` entries (can be empty) such as::
+	
+			manifest={'Implementation-Title':'My Amazing Java Application'}, 
+		
+		Alternative, specify a string to get the manifest from a file, or ``None`` 
+		to disable manifest generation and just produce a normal zip. 
+
+	@param options: (deprecated - use ``.option()`` instead). 
+
+	@param package: PathSet (or list) of other files to include in the jar; 
+		destination mapping indicates where they will appear in the jar.
+	
+	@param preserveManifestFormatting: an advanced option that prevents the jar tool from 
+		reformatting the specified manifest file to comply with Java conventions 
+		(also prevents manifest merging if jar already exists).
+
 	"""
 	compile = None
 	classpath = None
 	package = None
 	manifest = None
 	def __init__(self, jar, compile, classpath, manifest, options=None, package=None, preserveManifestFormatting=False):
-		""" 
-
-		@param jar: path to jar to create.
-
-		@param compile: PathSet (or list)  of things to compile.
-
-		@param classpath: PathSet (or list) of things to be on the classpath; 
-			destination mapping indicates how they will appear in the manifest.
-
-		@param manifest: Typically a map of ``MANIFEST.MF`` entries (can be empty) such as::
-		
-				manifest={'Implementation-Title':'My Amazing Java Application'}, 
-			
-			Alternative, specify a string to get the manifest from a file, or ``None`` 
-			to disable manifest generation and just produce a normal zip. 
-
-		@param options: (deprecated - use ``.option()`` instead). 
-
-		@param package: PathSet (or list) of other files to include in the jar; 
-			destination mapping indicates where they will appear in the jar.
-		
-		@param preserveManifestFormatting: an advanced option that prevents the jar tool from 
-			reformatting the specified manifest file to comply with Java conventions 
-			(also prevents manifest merging if jar already exists).
-
-		
-		"""
 		self.compile = FilteredPathSet(_isJavaFile, PathSet(compile)) if compile else None
 			
 		self.classpath = PathSet(classpath)
