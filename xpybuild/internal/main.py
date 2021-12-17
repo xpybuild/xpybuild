@@ -454,7 +454,7 @@ def main(args):
 			logdir = os.path.dirname(logFile)
 			if logdir and not os.path.exists(logdir): mkdir(logdir)
 			log.critical('Writing build log to: %s', os.path.abspath(logFile))
-
+			
 			# also buffer the .log file, since it's just a lot harder to read when multiple target lines are all jumbled up; 
 			# we have an undocumented env var for disabling this in case of debugging
 			if os.getenv('XPYBUILD_LOGFILE_OUTPUT_BUFFERING_DISABLED','')=='true': outputBufferingDisabled = True
@@ -463,9 +463,9 @@ def main(args):
 			hdlr.setFormatter(logging.Formatter('%(asctime)s %(relativeCreated)05d %(levelname)-8s [%(threadName)s %(thread)5d] %(name)-10s - %(message)s', None))
 			hdlr.setLevel(logLevel or logging.INFO)
 			logging.getLogger().addHandler(hdlr)
-			
+
 			log.info('Using xpybuild %s from %s on Python %s.%s.%s', XPYBUILD_VERSION, os.path.normpath(os.path.dirname(__file__)), sys.version_info[0], sys.version_info[1], sys.version_info[2])
-			log.info('Using build options: %s (logfile target outputBuffering=%s)', buildOptions, not outputBufferingDisabled)
+			log.info('Using build options: %s (logfile target outputBuffering=%s, stdout target outputBuffering=%s)', buildOptions, not outputBufferingDisabled, not wrapper.bufferingDisabled)
 
 			try:
 				# sometimes useful to have this info available
