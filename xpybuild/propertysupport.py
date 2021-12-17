@@ -325,7 +325,7 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 			
 			try:
 				value = context.expandPropertyValues(value)
-				context.defineProperty(key, value, debug=True)
+				context.defineProperty(key, value, debug=True, location=formatFileLocation(propertiesFile, lineNo))
 			except BuildException as e:
 				raise BuildException('Error processing properties file %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
 	finally:

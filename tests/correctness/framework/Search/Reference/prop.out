@@ -1,0 +1,6 @@
+
+2 matching properties:
+PROP1 = prop value1
+        (defined: "C:\dev\xpybuild\tests\correctness\framework\Search\test.xpybuild.py" +12)
+PROP2 = prop value2
+        (defined: "C:\dev\xpybuild\tests\correctness\framework\Search\test.xpybuild.py" +13)

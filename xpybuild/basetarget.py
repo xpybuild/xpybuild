@@ -217,7 +217,7 @@ class BaseTarget(Composable):
 		""".. private:: Internal method for resolving path from name, performing any 
 		required expansion etc. 
 		
-		Do not override this method.
+		Do not override or call this method.
 		
 		@param context: The initialization context, with all properties and options fully defined. 
 		"""

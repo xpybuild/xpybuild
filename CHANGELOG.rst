@@ -13,6 +13,10 @@ Fixes
 Enhancements
 ------------
 
+- Added a ``--search`` / ``-s`` command line option for locating targets/tags/properties/options. The search string 
+  can be a substring match or a regular expression. This is a very convenient way to find out where in the build 
+  something is defined. It is recommended to use this instead of the less powerful ``--target-info`` and 
+  ``--find-target`` options in previous xpybuild releases. 
 - Added a new ``FindPaths`` option `pathsets.FindPaths.Options.globalExcludesFunction` which can be used to globally exclude 
   certain file patterns throughout the build. By default this excludes files matching ``.nfs*`` (i.e. temporary NFS 
   files).

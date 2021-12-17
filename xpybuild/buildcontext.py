@@ -455,6 +455,8 @@ class BuildInitializationContext(BaseContext):
 
 		self._propertyOverrides = dict(propertyOverrides)
 		
+		self._propertyLocations = {}
+		
 		self._targetGroups = []
 		self._targetsMap = {} # name:target object
 		self._targetsList = [] # target objects
@@ -579,7 +581,7 @@ class BuildInitializationContext(BaseContext):
 				self._envPropertyOverrides[k] = v
 
 	
-	def defineProperty(self, name, default, coerceToValidValue=None, debug=False):
+	def defineProperty(self, name, default, coerceToValidValue=None, debug=False, location=None):
 		"""
 		.. private:: For internal use only. 
 
@@ -596,10 +598,15 @@ class BuildInitializationContext(BaseContext):
 		@param coerceToValidValue: None, or a function to validate and/or convert the input string to a value of the right 
 		type
 		@param debug: if True log at DEBUG else log at INFO
+		@param location: A formatFileLocation string identifying the location in the .py or properties file where this was defined
 		@returns: The resolved property value. 
 
 		"""
 		self._initializationCheck()
+		
+		if not location: 
+			location = BuildFileLocation()
+			location = location.getLineString() if location.buildFile else None
 		
 		# enforce naming convention
 		if name.upper() != name:
@@ -624,6 +631,7 @@ class BuildInitializationContext(BaseContext):
 			value = coerceToValidValue(value)
 			
 		self._properties[name] = value
+		self._propertyLocations[name] = location
 		
 		# remove if still present, so we can tell if user tries to set any undef'd properties
 		self._propertyOverrides.pop(name, None) 
