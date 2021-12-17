@@ -1,4 +1,4 @@
-3.1 - current DEV release
+4.0 - current DEV release
 =========================
 
 .. py:currentmodule:: xpybuild
@@ -31,6 +31,13 @@ Enhancements
   ```***``` line that indicates whether the target was successful and all intermediate log lines. 
 - Property definition methods such as `propertysupport.definePathProperty` now return the (resolved) property value, 
   to avoid the need to call ``getPropertyValue`` when the value is directly needed in the build file. 
+
+Breaking changes
+----------------
+
+- On all OSes, target paths can no longer contain filename characters which are prohibited on Windows such as ``<>:"|?*``. 
+- 
+  
 
 3.0
 ===

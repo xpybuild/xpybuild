@@ -204,6 +204,12 @@ class BaseTarget(Composable):
 		# people accidentally writing to their source directories
 		if self.__path is not None: return self.__path # cache it for consistency
 		self.__path = context.getFullPath(self.__path_src, "${OUTPUT_DIR}")
+		
+		badchars = '<>:"|?*' # Windows bad characters; it's helpful to stop people using such characters on all OSes too since almost certainly not intended
+		foundbadchars = [c for c in self.__path[2:] if c in badchars] # (nb: ignore first 2 chars of absolute path which will necessarily contain a colon on Windows)
+		if foundbadchars: raise BuildException('Invalid character(s) "%s" found in target name %s'%(''.join(set(foundbadchars)), self.__path))
+		if self.__path.endswith(('.', ' ')): raise BuildException('Target name must not end in a "." or " "') # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
+		
 		self.log.debug('Resolved target name %s to canonical path %s', self.name, self.path)
 		return self.__path
 
