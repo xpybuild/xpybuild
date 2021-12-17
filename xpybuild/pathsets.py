@@ -693,7 +693,7 @@ class FindPaths(BasePathSet):
 								if globalExcludesFunction(dir): continue
 								
 								pathsToWalk.append(longdir+os.sep+dir)
-							del dir
+							dir = None
 						
 						# now find which files and empty dirs match
 						matchedemptydirs = dirs
