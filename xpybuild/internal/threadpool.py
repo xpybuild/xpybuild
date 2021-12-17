@@ -150,7 +150,7 @@ class ThreadPool(object):
 		self.oldhandler = signal.getsignal(signal.SIGINT)
 		signal.signal(signal.SIGINT, lambda num, frame: self.stop())
 		for i in range(0, self.workers):
-			t = threading.Thread(target=lambda: self._worker_main(), name="B-%03d"%(i+1))
+			t = threading.Thread(target=lambda: self._worker_main(), name='%-5s'%("B-%d"%(i+1)))
 			t.start()
 			self.__threads.append(t)
 	def wait(self):
