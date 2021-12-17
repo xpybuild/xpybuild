@@ -638,8 +638,7 @@ class BuildInitializationContext(BaseContext):
 		
 		if debug:
 			log.debug('Setting property %s=%s', name, value)
-		else:
-			log.info('Setting property %s=%s', name, value)
+		# nb: the full property list gets logged later, once the .log file is initialized, by main.py
 		
 		return value
 	

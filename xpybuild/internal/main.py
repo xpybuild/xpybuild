@@ -520,7 +520,7 @@ def main(args):
 
 			log.info('Using xpybuild %s from %s on Python %s.%s.%s', XPYBUILD_VERSION, os.path.normpath(os.path.dirname(__file__)), sys.version_info[0], sys.version_info[1], sys.version_info[2])
 			log.info('Using build options: %s (logfile target outputBuffering=%s, stdout target outputBuffering=%s)', buildOptions, not outputBufferingDisabled, not wrapper.bufferingDisabled)
-
+			
 			try:
 				# sometimes useful to have this info available
 				import socket, getpass
@@ -555,6 +555,9 @@ def main(args):
 			if buildOptions['ignore-deps']:
 				log.warning('The ignore-deps option is enabled: dependency graph will be ignored for all targets that already exist on disk, so correctness is not guaranteed')
 			
+			for (k,v) in sorted(init.getProperties().items()):
+				log.info('Setting property %s=%s', k, v)
+
 			try:
 				DATE_TIME_FORMAT = "%a %Y-%m-%d %H:%M:%S %Z"
 				
