@@ -472,7 +472,7 @@ def main(args):
 			if targetMatches: 
 				print ('%d matching targets:'%len(targetMatches), file=stdout)
 				for t in sorted(targetMatches, key=lambda t:(t.type+' '+t.name)):
-					print('- %s priority: %s, tags: [%s]\n   output:  %s\n   defined:  %s'%(t, t.getPriority(), ' '.join(t.getTags()) or 'none', os.path.relpath(t.path), t.location), file=stdout)
+					print('- %s priority: %s, tags: [%s]\n   output:  %s\n   defined:  %s'%(t, t.getPriority(), ' '.join(sorted(t.getTags())) or 'none', os.path.relpath(t.path), t.location), file=stdout)
 				print('', file=stdout)
 
 			propMatches = {key:value for (key,value) in init.getProperties().items() if showPatternMatches(key)}

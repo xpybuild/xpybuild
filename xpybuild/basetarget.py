@@ -399,6 +399,8 @@ class BaseTarget(Composable):
 		this target, with optional checking to give a friendly error message if the value is an empty string or None. 
 		
 		This is a high-level alternative to reading directly from `self.options`. 
+		
+		This method cannot be used while the build files are still being loaded, only during the execution of the targets. 
 		"""
 		if hasattr(key, 'optionName'): key = key.optionName # it's an Option instance
 
@@ -515,6 +517,9 @@ class BaseTarget(Composable):
 		the target's build if it fails. The default is 0, which is recommended for normal developer builds. 
 
 		There is an exponentially increasing backoff pause between each attempt - first 15s, then 30s, then 60s etc. 
+		
+		See `xpybuild.buildcommon.registerBuildLoadPostProcessor` which can be used to customize this option for targets based on 
+		user-defined criteria such as target type. 
 		"""
 
 		failureRetriesInitialBackoffSecs = defineOption('Target.failureRetriesInitialBackoffSecs', 15) # undocumented as there should be no reason to change this

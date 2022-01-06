@@ -27,6 +27,9 @@ Enhancements
   transiently, e.g. due to flaky servers or interactions with anti-virus software that are outside your control. Like 
   any option, this can be set either per-target or globally (perhaps through a property) to increase the reliability of 
   automated build jobs. 
+- Added `buildcommon.registerBuildLoadPostProcessor` to allow adding tags and options across all targets matching a 
+  user defined criteria (e.g. targets of a particular Python class or containing a substring) just after all build 
+  files have been loaded. 
 - `propertysupport.defineOption` not returns a `propertysupport.Option` instance which provides a convenient way to 
   document your target options. See `basetarget.BaseTarget.Options` for an example of how this looks. 
 - The log lines for each target are now buffered so they can be displayed consecutively in the ``.log`` file 

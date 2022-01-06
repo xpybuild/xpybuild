@@ -465,6 +465,7 @@ class BuildInitializationContext(BaseContext):
 		self._initializationCompleted = False
 		self._envPropertyOverrides = {}
 		self._preBuildCallbacks = []
+		self._buildParsePostProcessors = []
 		self._globalOptions = {}
 
 	@staticmethod
@@ -511,6 +512,16 @@ class BuildInitializationContext(BaseContext):
 		BuildInitializationContext.__buildInitializationContext = self
 		self._rootDir = os.path.abspath(os.path.dirname(buildFile))
 
+		# Definitions for common options used by multiple targets; only define first time round
+		from xpybuild.propertysupport import ExtensionBasedFileEncodingDecider
+		from xpybuild.utils.process import defaultProcessOutputEncodingDecider
+		if 'common.fileEncodingDecider' not in self._definedOptions:
+			BuildInitializationContext._defineOption('common.fileEncodingDecider', ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider())
+			BuildInitializationContext._defineOption('common.processOutputEncodingDecider', defaultProcessOutputEncodingDecider)
+		# make sure this has been imported, since it's used for implementing many targets and defines some options of its own
+		# which must happen before the build phase begins
+		import xpybuild.utils.outputhandler
+
 		try:
 			BuildFileLocation._currentBuildFile = [buildFile]
 			exec(compile(open(buildFile, "rb").read(), buildFile, 'exec'), {})
@@ -538,20 +549,11 @@ class BuildInitializationContext(BaseContext):
 		for p in ['OUTPUT_DIR', 'BUILD_MODE', 'BUILD_NUMBER', 'BUILD_WORK_DIR', 'LOG_FILE']:
 			self.getPropertyValue(p) 
 
-		# make sure this has been imported, since it's used for implementing many targets and defines some options of its own
-		# which must happen before hte build phase begins
-		import xpybuild.utils.outputhandler
+		for cb in self._buildParsePostProcessors:
+			cb(self)
 
 		BuildInitializationContext.__buildInitializationContext = 'build phase'
 		self._initializationCompleted = True
-		
-		# Definitions for common options used by multiple targets; only define first time round
-		from xpybuild.propertysupport import ExtensionBasedFileEncodingDecider
-		from xpybuild.utils.process import defaultProcessOutputEncodingDecider
-		if 'common.fileEncodingDecider' not in self._definedOptions:
-			BuildInitializationContext._defineOption('common.fileEncodingDecider', ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider())
-			BuildInitializationContext._defineOption('common.processOutputEncodingDecider', defaultProcessOutputEncodingDecider)
-
 		
 		# all the valid ones will have been popped already
 		if self._propertyOverrides:
