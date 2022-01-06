@@ -41,6 +41,7 @@ Enhancements
 - Added a ``commands=`` argument to `xpybuild.targets.custom.CustomCommand` 
   (and `xpybuild.targets.custom.CustomCommandWithCopy`) which allows a single output directory to be created by 
   executing a sequence of commands rather than needing separate targets for each one. 
+- Improved target failure logging for `xpybuild.targets.custom.CustomCommand`. 
 
 Breaking changes
 ----------------

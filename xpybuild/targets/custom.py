@@ -23,6 +23,7 @@ produce a file or directory of output.
 """
 
 import os, os.path, subprocess
+import shlex
 
 from xpybuild.buildcommon import *
 from xpybuild.basetarget import BaseTarget, targetNameToUniqueId
@@ -361,12 +362,19 @@ class CustomCommand(BaseTarget):
 			if handler:
 				handler.handleEnd(returnCode=rc)
 			elif rc != None and rc != 0 and not handler:
-				self.log.info('Full command line is: %s', ' '.join('"%s"'%x for x in cmd)) # having it in this format makes it easier for people to re-run the command manually
-				raise BuildException('%s command%s failed with error code %s; see output at "%s"'%(os.path.basename(cmd[0]), cmdDisplaySuffix, rc, mainlog), location=self.location)
+			
+				if IS_WINDOWS:
+					quotearg = lambda c: '"%s"'%c if ' ' in c else c
+				else:
+					quotearg = shlex.quote
+				# having it in this format makes it easier for people to re-run the command manually
+				self.log.info('    full command line is: %s', ' '.join(quotearg(c) for c in cmd))
+				
+				raise BuildException('%s command%s failed with error code %s; see output at "%s" or look under %s'%(os.path.basename(cmd[0]), cmdDisplaySuffix, rc, mainlog, cwd), location=self.location)
 		
 		# final sanity check
 		if not os.path.exists(self.path): 
-			raise BuildException('%s returned no error code but did not create the output file/dir; see output at "%s" or look under %s'%(self, mainlog, self.cwd), location=self.location)
+			raise BuildException('%s returned no error code but did not create the output file/dir; see output at "%s" or look under %s'%(self, mainlog, cwd), location=self.location)
 			
 		if (not isDirPath(self.path)) and (not os.path.isfile(self.path)): 
 			raise BuildException('%s did not create a file as expected (please check that trailing "/" is used if and only if a directory output is intended)'%self, location=self.location)
