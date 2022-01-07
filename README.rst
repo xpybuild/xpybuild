@@ -115,9 +115,9 @@ We hope you love using xpybuild!
 
 License
 -------
-Copyright (c) 2013-2021 Ben Spiller and Matthew Johnson
+Copyright (c) 2013-2022 Ben Spiller and Matthew Johnson
 
-Copyright (c) 2013-2021 Software AG, Darmstadt, Germany and/or its licensors
+Copyright (c) 2013-2022 Software AG, Darmstadt, Germany and/or its licensors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
