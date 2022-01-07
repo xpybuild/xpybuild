@@ -27,4 +27,5 @@ CustomCommand('${OUTPUT_DIR}/output.txt', [
 	], 
 	dependencies=[],
 	redirectStdOutToTarget=True,
+	env=lambda ctx:{'FooBar':ctx.expandPropertyValues('${OUTPUT_DIR}')},
 	)

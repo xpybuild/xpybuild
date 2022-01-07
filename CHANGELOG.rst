@@ -38,6 +38,10 @@ Enhancements
   ```***``` line that indicates whether the target was successful and all intermediate log lines. 
 - Property definition methods such as `propertysupport.definePathProperty` now return the (resolved) property value, 
   to avoid the need to call ``getPropertyValue`` when the value is directly needed in the build file. 
+- Added a ``commands=`` argument to `xpybuild.targets.custom.CustomCommand` 
+  (and `xpybuild.targets.custom.CustomCommandWithCopy`) which allows a single output directory to be created by 
+  executing a sequence of commands rather than needing separate targets for each one. 
+- Improved target failure logging for `xpybuild.targets.custom.CustomCommand`. 
 
 Breaking changes
 ----------------
