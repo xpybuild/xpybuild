@@ -17,6 +17,6 @@ class PySysTest(XpybuildBaseTest):
 		self.xpybuild(stdouterr='build', args=[], shouldFail=True)
 
 	def validate(self):
-		self.assertGrep('build.log', 'full command line is: .*"echo Oh dear') # appropriate (but different) shell escaping on both windows and unix
+		self.assertGrep('build.log', r'full command line is: .*["\']echo Oh dear') # appropriate (but different) shell escaping on both windows and unix
 
 		self.assertGrep('build.log', 'Target FAILED: <CustomCommand> .*cmd-output/ : .* command #2 failed with error code [0-9]+; see output at ".*._OUTPUT_DIR_.cmd-output.2.out" or look under .*cmd-output')

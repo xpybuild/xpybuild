@@ -23,7 +23,7 @@ class PySysTest(XpybuildBaseTest):
 		self.assertGrep('build-output/cmd-output/output.txt', 'world')
 
 		self.assertGrep('build-output/BUILD_WORK/CustomCommandOutput/%s._OUTPUT_DIR_.cmd-output.4.out'%
-			'cmd.exe' if IS_WINDOWS else 'bash', 'All done now!')
+			('cmd.exe' if IS_WINDOWS else 'bash'), 'All done now!')
 
 		self.assertLineCount('build.log', 'environment overrides for', condition='==1') # should not be repeated for each command
 		self.assertGrep('build.log', 'Building .*cmd-output/ by executing command #1:')
@@ -31,8 +31,8 @@ class PySysTest(XpybuildBaseTest):
 		self.assertGrep('build.log', 'Building .*cmd-output/ by executing command #3:')
 		self.assertGrep('build.log', 'Building .*cmd-output/ by executing command #4:')
 
-		self.assertGrep('build.log', 'output from .*cmd-output/ #1 will be written to.*cmd.exe._OUTPUT_DIR_.cmd-output.err')
-		self.assertGrep('build.log', 'output from .*cmd-output/ #2 will be written to.*cmd.exe._OUTPUT_DIR_.cmd-output.2.err')
+		self.assertGrep('build.log', 'output from .*cmd-output/ #1 will be written to.*_OUTPUT_DIR_.cmd-output.err')
+		self.assertGrep('build.log', 'output from .*cmd-output/ #2 will be written to.*_OUTPUT_DIR_.cmd-output.2.err')
 
 		self.assertGrep('build.log', 'stdout from .*cmd-output/ #3 is: ')
 		self.assertGrep('build.log', 'Stdout rocks')
