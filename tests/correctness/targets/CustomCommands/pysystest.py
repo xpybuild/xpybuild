@@ -22,7 +22,8 @@ class PySysTest(XpybuildBaseTest):
 		self.assertGrep('build-output/cmd-output/output.txt', 'Hello')
 		self.assertGrep('build-output/cmd-output/output.txt', 'world')
 
-		self.assertGrep('build-output/BUILD_WORK/CustomCommandOutput/cmd.exe._OUTPUT_DIR_.cmd-output.4.out', 'All done now!')
+		self.assertGrep('build-output/BUILD_WORK/CustomCommandOutput/%s._OUTPUT_DIR_.cmd-output.4.out'%
+			'cmd.exe' if IS_WINDOWS else 'bash', 'All done now!')
 
 		self.assertLineCount('build.log', 'environment overrides for', condition='==1') # should not be repeated for each command
 		self.assertGrep('build.log', 'Building .*cmd-output/ by executing command #1:')
