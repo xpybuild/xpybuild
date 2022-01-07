@@ -17,6 +17,13 @@ class PySysTest(XpybuildBaseTest):
 		self.xpybuild(stdouterr='build', args=[], shouldFail=True)
 
 	def validate(self):
-		self.assertGrep('build.log', 'full command line is: .*"echo Oh dear') # appropriate (but different) shell escaping on both windows and unix
+		self.assertGrep('build.log', 'full command line is: .*"echo Writing to') # appropriate (but different) shell escaping on both windows and unix
 
-		self.assertGrep('build.log', 'Target FAILED: <CustomCommand> .*cmd-output/ : .* command #2 failed with error code [0-9]+; see output at ".*._OUTPUT_DIR_.cmd-output.2.out" or look under .*cmd-output')
+		self.assertGrep('build.log', 'Target FAILED: <CustomCommand> .*cmd-output/ : .* command #2 failed with error code [0-9]+; see output at ".*._OUTPUT_DIR_.cmd-output.2.err" or look under .*cmd-output')
+		
+		self.assertOrderedGrep('build.log', [
+			'stdout from .*#1 is:',
+			'Writing to stdout here',
+			'stderr from .*#2 is:',
+			'Writing to stderr here'
+			])

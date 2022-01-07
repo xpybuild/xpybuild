@@ -17,7 +17,7 @@ def makeShellCommand(cmd):
 CustomCommand('${OUTPUT_DIR}/cmd-output/', commands=[
 		makeShellCommand('echo Hello > output.txt'),
 		makeShellCommand('echo world >> output.txt'),
-		makeShellCommand('echo Stdout rocks'),
+		lambda path, deps, context: makeShellCommand('echo Stdout rocks'),
 		makeShellCommand('echo All done now!'),
 	],
 	env=os.environ,

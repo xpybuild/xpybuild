@@ -15,8 +15,8 @@ def makeShellCommand(cmd):
 		'/usr/bin/bash', '-c', cmd]
 		
 CustomCommand('${OUTPUT_DIR}/cmd-output/', commands=[
-		makeShellCommand('echo First command is fine'),
-		makeShellCommand('echo Oh dear && exit 123'),
+		makeShellCommand('echo Writing to stdout here'), 
+		makeShellCommand('echo Writing to stderr here 1>&2 && exit 123'), # write to stderr
 	],
 	)
 
