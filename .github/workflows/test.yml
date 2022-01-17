@@ -20,9 +20,9 @@ jobs:
             python-version: 3.7
             perf-test: true
 
-          - test-run-id: win-py3.9
+          - test-run-id: win-py3.10
             os: windows-latest
-            python-version: 3.9
+            python-version: 3.10
             perf-test: false
 
     runs-on: ${{matrix.os}}

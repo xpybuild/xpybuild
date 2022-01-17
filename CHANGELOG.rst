@@ -13,6 +13,7 @@ Fixes
 Enhancements
 ------------
 
+- Added support for Python 3.10. 
 - Added a ``--search`` / ``-s`` command line option for locating targets/tags/properties/options. The search string 
   can be a substring match or a regular expression. This is a very convenient way to find out where in the build 
   something is defined. It is recommended to use this instead of the less powerful ``--target-info`` and 
