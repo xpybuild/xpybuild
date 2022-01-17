@@ -31,25 +31,18 @@ jobs:
       # Install the desired version of Python and PySys
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v2
+      # Setup Python (v2.3.1)
+      - uses: actions/setup-python@f382193
         with:
           python-version: ${{matrix.python-version}}
-          
-      - name: Cache Python deps (get location)
-        id: pip-cache
-        run: |
-            python -m pip install -U "pip>=20.1"
-            echo "::set-output name=dir::$(pip cache dir)"
-      - name: Cache Python deps
-        uses: actions/cache@v2
-        with:
-            path: ${{ steps.pip-cache.outputs.dir }}
-            key: ${{ matrix.test-run-id }}-pip
+          # Enabled caching of dependencies
+          cache: pip
 
       - name: Python dependencies - install
         id: deps
         shell: bash
         run: |
+				  python -m pip install -U "pip>=20.1"
           pip install pysys==2.0 wheel
           
           # Use older version of coverage as 5.0 requires an SQLite version that doesn't work on this macos image currently
