@@ -6,7 +6,8 @@
 Breaking changes
 ----------------
 
-Only one, small breaking change:
+Only one, small, breaking change:
+
 - Target paths can no longer contain filename characters which are prohibited on Windows such as ``<>:"|?*``. 
   This applies on all operating systems. 
 
@@ -43,7 +44,8 @@ Enhancements
 - Added a ``commands=`` argument to `xpybuild.targets.custom.CustomCommand` 
   (and `xpybuild.targets.custom.CustomCommandWithCopy`) which allows an output directory to be created by 
   executing a sequence of multiple commands rather than needing separate targets for each command. 
-- Improved target failure logging for `xpybuild.targets.custom.CustomCommand`. 
+- Improved log messages when `xpybuild.targets.custom.CustomCommand` fails, to provide more information about 
+  the output of the failed process. 
 
 Fixes
 -----
