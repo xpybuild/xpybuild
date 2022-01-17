@@ -3,12 +3,12 @@
 
 .. py:currentmodule:: xpybuild
 
-Fixes
------
+Breaking changes
+----------------
 
-- Fixed a possible AssertionError race condition when executing a ``--rebuild`` with targets whose path changes 
-  between the clean and build phases (for example, due to containing a timestamp or random number). 
-- Fixed the ``javac.target`` option to do the correct thing (was previously setting ``-source`` not ``-target`` (GH-6). 
+Only one, small breaking change:
+- Target paths can no longer contain filename characters which are prohibited on Windows such as ``<>:"|?*``. 
+  This applies on all operating systems. 
 
 Enhancements
 ------------
@@ -31,24 +31,26 @@ Enhancements
 - Added `buildcommon.registerBuildLoadPostProcessor` to allow adding tags and options across all targets matching a 
   user defined criteria (e.g. targets of a particular Python class or containing a substring) just after all build 
   files have been loaded. 
-- `propertysupport.defineOption` not returns a `propertysupport.Option` instance which provides a convenient way to 
+- `propertysupport.defineOption` now returns a `propertysupport.Option` instance which provides a convenient way to 
   document your target options. See `basetarget.BaseTarget.Options` for an example of how this looks. 
 - The log lines for each target are now buffered so they can be displayed consecutively in the ``.log`` file 
   (just as they already are on stdout) in a multi-threaded build. Note that this does not include the initial 
-  ```*** Building targetname``` line (which is emitted as soon as the target begins) but does include the final 
-  ```***``` line that indicates whether the target was successful and all intermediate log lines. 
+  ```*** Building targetname``` line (which is emitted as soon as the target begins, to help with debugging hanging 
+  builds) but does include the final ```***``` line that indicates whether the target was successful, as well as all 
+  intermediate log lines. 
 - Property definition methods such as `propertysupport.definePathProperty` now return the (resolved) property value, 
   to avoid the need to call ``getPropertyValue`` when the value is directly needed in the build file. 
 - Added a ``commands=`` argument to `xpybuild.targets.custom.CustomCommand` 
-  (and `xpybuild.targets.custom.CustomCommandWithCopy`) which allows a single output directory to be created by 
-  executing a sequence of commands rather than needing separate targets for each one. 
+  (and `xpybuild.targets.custom.CustomCommandWithCopy`) which allows an output directory to be created by 
+  executing a sequence of multiple commands rather than needing separate targets for each command. 
 - Improved target failure logging for `xpybuild.targets.custom.CustomCommand`. 
 
-Breaking changes
-----------------
+Fixes
+-----
 
-- On all OSes, target paths can no longer contain filename characters which are prohibited on Windows such as ``<>:"|?*``. 
-  
+- Fixed a possible AssertionError race condition when executing a ``--rebuild`` with targets whose path changes 
+  between the clean and build phases (for example, due to containing a timestamp or random number). 
+- Fixed the ``javac.target`` option to do the correct thing (was previously setting ``-source`` not ``-target`` (GH-6). 
 
 3.0
 ===
