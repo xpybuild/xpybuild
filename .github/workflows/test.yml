@@ -37,20 +37,12 @@ jobs:
           python-version: ${{matrix.python-version}}
           # Enabled caching of dependencies
           cache: pip
+          cache-dependency-path: test/pysys-requirements.txt
+      - run: pip install -r test/pysys-requirements.txt
 
-      - name: Python dependencies - install
-        id: deps
-        shell: bash
-        run: |
-          python -m pip install -U "pip>=20.1"
-          pip install pysys==2.0 wheel
-          
-          # Use older version of coverage as 5.0 requires an SQLite version that doesn't work on this macos image currently
-          pip install coverage==4.5.4
-
-      - name: Setup Visual Studio
+      - name: Setup Visual Studio v1.1.1
         if: runner.os == 'Windows'
-        uses: microsoft/setup-msbuild@v1.0.2
+        uses: microsoft/setup-msbuild@ab534842b4bdf384b8aaf93765dc6f721d9f5fab
         with:
           # 16 = 2019
           vs-version: '[16,17)'
@@ -67,8 +59,9 @@ jobs:
           
           python -m pysys run --ci --outdir=${{matrix.test-run-id}} --exclude skip_ci
 
-      - name: Upload Python code coverage
-        uses: codecov/codecov-action@v1
+      - name: Upload Python code coverage 
+        # v2.1.0
+        uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b
         if: steps.pysys.outputs.artifact_PythonCoverageDir
         with:
           file: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/coverage.xml
@@ -76,7 +69,8 @@ jobs:
       # If any tests fail, PySys will return an error code, so we need "if: always()" so the following steps will run
       
       - name: Upload performance CSV artifacts
-        uses: actions/upload-artifact@v2
+        # v2.3.1
+        uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2
         # Only do this if some performance results were generated
         if: always() && steps.pysys.outputs.artifact_CSVPerformanceReport
 
@@ -85,7 +79,7 @@ jobs:
           path: ${{ steps.pysys.outputs.artifact_CSVPerformanceReport }}
 
       - name: Upload archive artifacts for any test failures
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2
         if: always() && steps.pysys.outputs.artifact_TestOutputArchiveDir
 
         with:
