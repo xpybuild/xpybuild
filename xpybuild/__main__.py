@@ -20,7 +20,7 @@
 import sys, os
 
 # this is deliberately a valid Python v2 AND v3 script so we can warn the user if they mess this up
-if sys.version_info[:2] < (3, 6): sys.exit('xpybuild.py requires at least Python 3.6 - unsupported Python version %s'%sys.version[:3])
+if sys.version_info[:2] < (3, 7): sys.exit('xpybuild.py requires at least Python 3.7 - unsupported Python version %s'%sys.version[:3])
 
 # add the path containing the xpybuild package
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
