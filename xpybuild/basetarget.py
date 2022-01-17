@@ -132,7 +132,7 @@ class BaseTarget(Composable):
 				raise BuildException('Invalid target name: backslashes are not permitted: %s'%name)
 		self.__name = str(name)
 		self.__path_src = name
-		self.__tags = ['all']
+		self.__tags = ['full']
 		self.__priority = 0.0 # default so we can go bigger or smaller
 		self.log = logging.getLogger(self.__class__.__name__)
 		
@@ -378,9 +378,9 @@ class BaseTarget(Composable):
 		
 		See also `tag`. 
 		"""
-		self.__tags = list(set(self.__tags) - {'all'})
+		self.__tags = list(set(self.__tags) - {'full'})
 		init = getBuildInitializationContext()
-		init.removeFromTags(self, ['all'])
+		init.removeFromTags(self, ['full'])
 		return self
 	
 	def clearTags(self):
@@ -390,7 +390,7 @@ class BaseTarget(Composable):
 		"""
 		init = getBuildInitializationContext()
 		init.removeFromTags(self, self.__tags)
-		self.__tags = ['all'] if 'all' in self.__tags else []
+		self.__tags = ['full'] if 'full' in self.__tags else []
 		init.registerTags(self, self.__tags)
 		return self
 
@@ -449,11 +449,11 @@ class BaseTarget(Composable):
 		@param tags: The tag, tags or list of tags to add to the target.
 		
 		>>> BaseTarget('a',[]).tags('abc').getTags()
-		<using test initialization context> <using test initialization context> ['abc', 'all']
+		<using test initialization context> <using test initialization context> ['abc', 'full']
 		>>> BaseTarget('a',[]).tags(['abc', 'def']).getTags()
-		<using test initialization context> <using test initialization context> ['abc', 'def', 'all']
+		<using test initialization context> <using test initialization context> ['abc', 'def', 'full']
 		>>> BaseTarget('a',[]).tags('abc', 'def').tags('ghi').getTags()
-		<using test initialization context> <using test initialization context> <using test initialization context> ['ghi', 'abc', 'def', 'all']
+		<using test initialization context> <using test initialization context> <using test initialization context> ['ghi', 'abc', 'def', 'full']
 		"""
 		taglist = getStringList(list(tags))
 		self.__tags = taglist + self.__tags

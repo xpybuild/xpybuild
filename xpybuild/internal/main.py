@@ -76,7 +76,7 @@ def main(args):
 'identifies a single target. ',
 '',
 'Special pseudo-tags:',
-'  all                        Include all targets (default if none are provided)',
+'  full                       Include all targets for a full build (the default)',
 '',
 'Special properties:',
 '  OUTPUT_DIR=output          The main directory output will be written to',
@@ -87,7 +87,7 @@ def main(args):
 ###############################################################################
 
 '  (if none is specified, the default operation is a normal build)',
-'      --clean                Clean specified targets incl all deps (default=all)',
+'      --clean                Clean specified targets incl all deps',
 '      --rebuild              Clean specified targets incl all deps then build',
 '      --rebuild-ignore-deps  Clean only the specified targets (not deps) then ',
 '        (or --rid)           build those targets and any missing dependencies, ',
@@ -251,12 +251,14 @@ def main(args):
 			if arg:
 				if '=' in arg:
 					properties[arg.split('=')[0].upper()] = arg.split('=')[1]
+				elif arg=='all': # pre-4.0 alias for all
+					includedTargets.append('full')
 				else:
 					includedTargets.append(arg)
 			
 		# default is all
 		if (not includedTargets) or includedTargets==['']:
-			includedTargets = ['all']
+			includedTargets = ['full']
 		
 	except getopt.error as msg:
 		print(msg)
@@ -295,7 +297,7 @@ def main(args):
 
 	listen_for_stack_signal() # make USR1 print a python stack trace
 
-	allTargets = ('all' in includedTargets) and not excludedTargets
+	allTargets = ('full' in includedTargets) and not excludedTargets
 
 	try:
 		def loadBuildFile():
@@ -396,7 +398,7 @@ def main(args):
 		if findTargetsPattern:
 			findTargetsPattern = findTargetsPattern.lower()
 			# sort matches at start of path first, then anywhere in name, finally anywhere in type
-			# make 'all' into a special case that maps to all *selected* targets 
+			# make 'all'/'full' into a special case that maps to all *selected* targets 
 			# (could be different to 'all' tag if extra args were specified, but this is unlikely and kindof useful)
 			findTargetsList = [t for t in sorted(
 				 init.targets().values() if allTargets else selectedTargets, key=lambda t:(
@@ -404,7 +406,8 @@ def main(args):
 					findTargetsPattern.lower() not in t.name.lower(), 
 					findTargetsPattern.lower() not in t.type.lower(), 
 					t.name
-					)) if findTargetsPattern in t.name.lower() or findTargetsPattern in t.type.lower() or findTargetsPattern == 'all']
+					)) if findTargetsPattern in t.name.lower() or findTargetsPattern in t.type.lower() 
+						or findTargetsPattern == 'full' or findTargetsPattern == 'all']
 
 		if task == _TASK_LIST_PROPERTIES:
 			p = init.getProperties()
@@ -496,7 +499,7 @@ def main(args):
 		elif task in [_TASK_BUILD, _TASK_CLEAN, _TASK_REBUILD]:
 			
 			if not logFile:
-				if includedTargets == ['all'] and not excludedTargets:
+				if allTargets:
 					buildtag = None
 				else:
 					buildtag = 'custom'
@@ -599,7 +602,7 @@ def main(args):
 							log.error("Pre-build check failed: %s", be)
 							return 7
 
-					buildtype = 'incremental' if any(os.path.exists(dir) for dir in init.getOutputDirs()) else 'full'
+					buildtype = 'incremental' if any(os.path.exists(dir) for dir in init.getOutputDirs()) else 'fresh'
 					if not buildOptions['dry-run']:
 						for dir in init.getOutputDirs():
 							log.info('Creating output directory: %s', dir)

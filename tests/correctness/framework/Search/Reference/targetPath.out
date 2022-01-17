@@ -1,6 +1,6 @@
 
 1 matching targets:
-- <WriteFile> ${OUTPUT_DIR}/target1${DOT}txt priority: 0.0, tags: [all mytag1]
-   output:  build-output/target1.txt
-   defined:  "XXXXXXXC:\dev\xpybuild\tests\correctness\framework\Search\test.xpybuild.py" +18
+- <WriteFile> ${OUTPUT_DIR}/target1${DOT}txt priority: 0.0, tags: [full mytag1]
+   output:  build-output\target1.txt
+   defined:  "C:\dev\xpybuild\tests\correctness\framework\Search\test.xpybuild.py" +18
 

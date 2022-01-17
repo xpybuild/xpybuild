@@ -6,10 +6,13 @@
 Breaking changes
 ----------------
 
-Only one, small, breaking change:
+Minor breaking changes in this release:
 
 - Target paths can no longer contain filename characters which are prohibited on Windows such as ``<>:"|?*``. 
   This applies on all operating systems. 
+- The special name ``full`` is now used instead of ``all`` to indicate the default set of targets (minus any 
+  excluded using ``disableInFullBuild``). On the command line it is still permitted to specify ``all`` for 
+  compatibility purposes. 
 
 Enhancements
 ------------
