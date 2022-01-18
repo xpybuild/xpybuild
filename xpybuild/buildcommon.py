@@ -92,6 +92,21 @@ else:
 		"""
 		return False
 
+PREFERRED_ENCODING = locale.getpreferredencoding()
+"""
+The operating system's preferred/default encoding for reading/writing the contents of text data in files and 
+process stdout/stderr for the current environment (or machine). 
+
+This returns the same value as Python's ``locale.getpreferredencoding()`` method, but as that method is not thread-safe, 
+this constant must always be used in test cases to avoid race conditions when running tests in parallel. 
+
+The OS preferred encoding should not be confused with Python's 'default' encoding (``sys.getdefaultencoding()``) which 
+is usually not relevant for testing purposes. 
+
+.. versionadded:: 4.0
+"""
+
+
 def defineAtomicTargetGroup(*targets):
 	""" The given targets must all be built before anything which depends on any of those targets.
 	

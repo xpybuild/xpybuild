@@ -302,6 +302,7 @@ class FilteredCopy(Copy):
 			exceptionsuffix = ''
 			if isinstance(ex, UnicodeDecodeError):
 				exceptionsuffix = ' due to encoding problem; consider setting the "common.fileEncodingDecider" option'
+				exceptionsuffix += '; first bad character is: %r'%ex.object[ex.start:ex.start+10]
 			raise BuildException(f'Failed to perform filtered copy of {src}{exceptionsuffix}',causedBy=True)
 		shutil.copymode(src, dest)
 		assert os.path.exists(dest)

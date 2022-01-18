@@ -412,16 +412,35 @@ def enableEnvironmentPropertyOverrides(prefix):
 		init.enableEnvironmentPropertyOverrides(prefix)
 
 class ExtensionBasedFileEncodingDecider:
-	"""Can be used for the `common.fileEncodingDecider` option which decides what file encoding to use for 
+	"""Can be used for the ``common.fileEncodingDecider`` option which decides what file encoding to use for 
 	reading/writing a text file given its path. 
 	
-	The decider option is called with arguments: (context, path), and returns the name of the encoding to be used for this path. 
+	For example::
+	
+		setGlobalOption("common.fileEncodingDecider", 
+			ExtensionBasedFileEncodingDecider(
+				{'.foo': 'utf-8', '.bar': ExtensionBasedFileEncodingDecider.BINARY}, 
+				default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()))
+	
+	The decider class/function is called with arguments ``(context, path)``, and returns the name of the encoding to be 
+	used for this path. 
 	Additional keyword arguments may be passed to the decider in future. 
 	
 	This extension-based decider uses the specified dictionary of extensions to determine which 
 	extension to use, including the special value L{ExtensionBasedFileEncodingDecider.BINARY} 
 	which indicates non-text files. 
 
+	@param default: Specifies what to do if none of the specified extensions match. 
+	
+	Can be: the name of the default encoding to be used as a string (e.g. ``"utf-8"``), 
+	a decider function to delegate to (such as `ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()`), or ``None`` to defer to the 
+	configured global option (or throw an exception if this is itself the global option). 
+	
+	Recommended values are: 'utf-8', 'ascii' or `xpybuild.buildcommon.PREFERRED_ENCODING`.
+	
+	@param extToEncoding: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one, 
+	or the constant L{ExtensionBasedFileEncodingDecider.BINARY} which indicates a non-text file (not all targets support binary). 
+	The extensions can contain ${...} properties. 
 	"""
 	
 	BINARY = '<binary>'
@@ -429,14 +448,6 @@ class ExtensionBasedFileEncodingDecider:
 	should not be opened in text mode. """
 	
 	def __init__(self, extToEncoding={}, default=None): 
-		"""
-		@param defaultEncoding: The name of the default encoding to be used, another decider to delegate to, or None to defer to the configured global option. 
-		Recommended values are: 'utf-8', 'ascii' or locale.getpreferredencoding().
-		
-		@param extToEncoding: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one, 
-		or the constant L{ExtensionBasedFileEncodingDecider.BINARY} which indicates a non-text file (not all targets support binary). 
-		The extensions can contain ${...} properties. 
-		"""
 		self.extToEncodingDict, self.defaultEncoding = dict(extToEncoding), default
 		# enforce starts with a . to prevent mistakes and allow us to potentially optimize the implementation in future
 		for k in extToEncoding: 
@@ -486,7 +497,7 @@ class ExtensionBasedFileEncodingDecider:
 	@staticmethod
 	def getDefaultFileEncodingDecider():
 		""" Creates the file encoding decider that is used by default if per-target 
-		or global option is specified. 
+		or global option is not specified. 
 		
 		Currently this supports utf-8 encoding of json/xml/yaml/yml files, 
 		and binary for common non-application/text mime types such as image files 

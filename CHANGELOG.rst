@@ -69,9 +69,17 @@ Breaking changes
    `ConsoleFormatter` base class constructor.
 - `xpybuild.targets.copy.FilteredCopy` and `xpybuild.targets.writefile.WriteFile` now use the option 
   ``common.fileEncodingDecider`` to select which encoding to use for character transformations instead of defaulting 
-  to whatever the local default encoding is. You may need to provide a custom ``fileEncodingDecider`` if you are 
-  filtering text files with unusual extensions. Also note that FilteredCopy mappers and the WriteFile targets now 
-  handle only unicode character ``str`` objects and not ``bytes``.
+  to whatever the local default encoding is. You may need to provide a custom 
+  `xpybuild.propertysupport.ExtensionBasedFileEncodingDecider` instance if you are 
+  filtering text files with unusual extensions::
+  
+		setGlobalOption("common.fileEncodingDecider", 
+			ExtensionBasedFileEncodingDecider(
+				{'.foo': 'utf-8', '.bar': ExtensionBasedFileEncodingDecider.BINARY}, 
+				default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()))
+				
+-  Also note that FilteredCopy mappers and the WriteFile targets now 
+  only map with unicode character ``str`` objects and not ``bytes``.
 -  BuildContext.defaultOptions() was removed, as there is no legitimate
    use case for it.
 -  ``tmpdir`` has been removed from the target's ``self.options``;
@@ -163,7 +171,8 @@ Enhancements
    option ``common.fileEncodingDecider``
    which is used by FilteredCopy and WriteFile to decide what encoding
    to use for reading/writing text files. The default is an
-   ExtensionBasedFileEncodingDecider instance which specifies UTF-8 for
+   `xpybuild.propertysupport.ExtensionBasedFileEncodingDecider` instance 
+   which specifies UTF-8 for
    yaml/json/xml files, binary for some common binary types such as
    images, and 'ascii' for everything else - which means an exception
    will be thrown if any files containing characters outside the 7-bit
