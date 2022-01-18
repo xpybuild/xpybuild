@@ -73,10 +73,10 @@ Breaking changes
   `xpybuild.propertysupport.ExtensionBasedFileEncodingDecider` instance if you are 
   filtering text files with unusual extensions::
   
-		setGlobalOption("common.fileEncodingDecider", 
-			ExtensionBasedFileEncodingDecider(
-				{'.foo': 'utf-8', '.bar': ExtensionBasedFileEncodingDecider.BINARY}, 
-				default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()))
+		setGlobalOption("common.fileEncodingDecider", ExtensionBasedFileEncodingDecider({
+			'.foo': 'utf-8', 
+			'.bar': ExtensionBasedFileEncodingDecider.BINARY,
+			}, default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()))
 				
 -  Also note that FilteredCopy mappers and the WriteFile targets now 
   only map with unicode character ``str`` objects and not ``bytes``.

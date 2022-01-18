@@ -417,10 +417,10 @@ class ExtensionBasedFileEncodingDecider:
 	
 	For example::
 	
-		setGlobalOption("common.fileEncodingDecider", 
-			ExtensionBasedFileEncodingDecider(
-				{'.foo': 'utf-8', '.bar': ExtensionBasedFileEncodingDecider.BINARY}, 
-				default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()))
+		setGlobalOption("common.fileEncodingDecider", ExtensionBasedFileEncodingDecider({
+			'.foo': 'utf-8', 
+			'.bar': ExtensionBasedFileEncodingDecider.BINARY
+			}, default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()))
 	
 	The decider class/function is called with arguments ``(context, path)``, and returns the name of the encoding to be 
 	used for this path. 

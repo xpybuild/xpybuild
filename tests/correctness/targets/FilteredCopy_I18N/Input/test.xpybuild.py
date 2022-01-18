@@ -40,8 +40,8 @@ FilteredCopy('${OUTPUT_DIR}/copy-customized.json', '${OUTPUT_DIR}/writefile-cust
 	ExtensionBasedFileEncodingDecider({'.${Y}aml':'iso-8859-1','.json':'iso-8859-1'}, None))
 
 FilteredCopy('${OUTPUT_DIR}/copy-compressed.jpg', '${OUTPUT_DIR}/writefile-compressed.jpg' # rely on mime types in the default decider to detect this as binary
-	).option('common.fileEncodingDecider',
-		ExtensionBasedFileEncodingDecider(
-				{'.foo': 'utf-8', '.bar': ExtensionBasedFileEncodingDecider.BINARY}, 
-				default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider())
+	).option('common.fileEncodingDecider', ExtensionBasedFileEncodingDecider({
+			'.foo': 'utf-8', 
+			'.bar': ExtensionBasedFileEncodingDecider.BINARY,
+			}, default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider())
 	)
