@@ -348,7 +348,11 @@ class BaseContext(object):
 		This can be useful for PathSets and functors, however in any situation 
 		where there is a target, use `xpybuild.basetarget.BaseTarget.options` instead, so that per-target 
 		option overrides are respected. """
-		return self._globalOptions[key]
+		try:
+			return self._globalOptions[key]
+		except KeyError: # purely for the benefit of build initialization context where not all options have been defined yet
+			log.debug('No global value found for option "%s" - falling back to default value from the definition"', key)
+			return self._definedOptions[key]
 
 	def getFullPath(self, path, defaultDir, expandList=False):
 		""" Expands any properties in the specified path, then removes trailing path separators, normalizes it for this 
