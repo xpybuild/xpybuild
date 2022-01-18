@@ -6,6 +6,8 @@
 Breaking changes
 ----------------
 
+Removed support for Python 3.6, now the minimum version is Python 3.7+. 
+
 Minor breaking changes in this release:
 
 - Target paths can no longer contain filename characters which are prohibited on Windows such as ``<>:"|?*``. 
@@ -13,7 +15,7 @@ Minor breaking changes in this release:
 - The special name ``full`` is now used instead of ``all`` to indicate the default set of targets (minus any 
   excluded using ``disableInFullBuild``). On the command line it is still permitted to specify ``all`` for 
   compatibility purposes but it is recommended to switch to ``full`` when possible. 
-- Removed support for Python 3.6, now the minimum version is Python 3.7+. 
+- Fixed `xpybuild.propertysupport.ExtensionBasedFileEncodingDecider` to match extensions case insensitively. 
 
 Enhancements
 ------------
@@ -50,6 +52,8 @@ Enhancements
   executing a sequence of multiple commands rather than needing separate targets for each command. 
 - Improved log messages when `xpybuild.targets.custom.CustomCommand` fails, to provide more information about 
   the output of the failed process. 
+- Added common archive formats such as ``.zip`` and ``.jar`` to the default 
+  `xpybuild.propertysupport.ExtensionBasedFileEncodingDecider`. 
 
 Fixes
 -----

@@ -29,7 +29,7 @@ defineStringProperty('Y', 'y')
 
 WriteFile('${OUTPUT_DIR}/writefile-default.${Y}aml', f'Text is: {I18N}') # utf-8 is the default for .yaml files
 WriteFile('${OUTPUT_DIR}/writefile-customized.foo.yaml', f'Text is: {I18N}').option('common.fileEncodingDecider', 
-	ExtensionBasedFileEncodingDecider({'.foo.yaml':'iso-8859-1'}, 'ascii'))
+	ExtensionBasedFileEncodingDecider({'.foo.yaML':'iso-8859-1'}, 'ascii'))
 WriteFile('${OUTPUT_DIR}/writefile-binary.bin', f'Text is: {I18N}'.encode('utf-8'))
 WriteFile('${OUTPUT_DIR}/writefile-compressed.jpg', codecs.encode(f'Text is: {I18N}'.encode('utf-8'), 'bz2_codec'))
 

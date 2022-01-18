@@ -422,13 +422,19 @@ class ExtensionBasedFileEncodingDecider:
 			'.bar': ExtensionBasedFileEncodingDecider.BINARY
 			}, default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()))
 	
-	The decider class/function is called with arguments ``(context, path)``, and returns the name of the encoding to be 
-	used for this path. 
-	Additional keyword arguments may be passed to the decider in future. 
+	This decider is called with arguments ``(context, path)``, and returns the name of the encoding to be 
+	used for this path. Additional keyword arguments may be passed to the decider function in future, so accept additional 
+	``**kwargs`` in the method signature if overriding. 
 	
 	This extension-based decider uses the specified dictionary of extensions to determine which 
 	extension to use, including the special value L{ExtensionBasedFileEncodingDecider.BINARY} 
 	which indicates non-text files. 
+
+	@param extToEncoding: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one, 
+	or the constant L{ExtensionBasedFileEncodingDecider.BINARY} which indicates a non-text file (not all targets support binary). 
+	The extensions can contain ${...} properties. 
+	
+	Extensions are match case insensitively. 
 
 	@param default: Specifies what to do if none of the specified extensions match. 
 	
@@ -437,10 +443,6 @@ class ExtensionBasedFileEncodingDecider:
 	configured global option (or throw an exception if this is itself the global option). 
 	
 	Recommended values are: 'utf-8', 'ascii' or `xpybuild.buildcommon.PREFERRED_ENCODING`.
-	
-	@param extToEncoding: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one, 
-	or the constant L{ExtensionBasedFileEncodingDecider.BINARY} which indicates a non-text file (not all targets support binary). 
-	The extensions can contain ${...} properties. 
 	"""
 	
 	BINARY = '<binary>'
@@ -476,10 +478,10 @@ class ExtensionBasedFileEncodingDecider:
 			# (re)build the cache if it doesn't already exist, or if for some unexpected reason the context has changed
 			cache = {}
 			for ext, enc in self.extToEncodingDict.items():
-				cache[context.expandPropertyValues(ext)] = enc or self.defaultEncoding
+				cache[context.expandPropertyValues(ext).lower()] = enc or self.defaultEncoding
 			self.cache = (context, cache)
 		
-		p = os.path.basename(path).split('.')
+		p = os.path.basename(path).lower().split('.')
 		for i in range(1, len(p)): # in case it has an .x.y multi-part extension
 			result = cache.get('.' + '.'.join(p[i:]), None)
 			if result is not None: return result
@@ -512,6 +514,15 @@ class ExtensionBasedFileEncodingDecider:
 			'.json':'utf-8',
 			'.xml':'utf-8',
 			'.yaml':'utf-8', '.yml':'utf-8',
+			
+			# Some of these are probably in the mime types too, but worth adding them explicitly to be sure
+			'.zip':ExtensionBasedFileEncodingDecider.BINARY,
+			'.gz':ExtensionBasedFileEncodingDecider.BINARY,
+			'.bz':ExtensionBasedFileEncodingDecider.BINARY,
+			'.bz2':ExtensionBasedFileEncodingDecider.BINARY,
+			'.xz':ExtensionBasedFileEncodingDecider.BINARY,
+			'.jar':ExtensionBasedFileEncodingDecider.BINARY,
+			'.class':ExtensionBasedFileEncodingDecider.BINARY,
 		}
 		# add binary for known non-text types such as images. Don't do it for application/ as that includes 
 		# text formats such as js and json
