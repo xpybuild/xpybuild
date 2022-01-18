@@ -419,7 +419,7 @@ class ExtensionBasedFileEncodingDecider:
 	
 		setGlobalOption("common.fileEncodingDecider", ExtensionBasedFileEncodingDecider({
 			'.foo': 'utf-8', 
-			'.bar': ExtensionBasedFileEncodingDecider.BINARY
+			'.bar': ExtensionBasedFileEncodingDecider.BINARY,
 			}, default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()))
 	
 	This decider is called with arguments ``(context, path)``, and returns the name of the encoding to be 
@@ -430,19 +430,20 @@ class ExtensionBasedFileEncodingDecider:
 	extension to use, including the special value L{ExtensionBasedFileEncodingDecider.BINARY} 
 	which indicates non-text files. 
 
-	@param extToEncoding: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one, 
-	or the constant L{ExtensionBasedFileEncodingDecider.BINARY} which indicates a non-text file (not all targets support binary). 
-	The extensions can contain ${...} properties. 
-	
-	Extensions are match case insensitively. 
+	@param extToEncoding: 
+		A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one, 
+		or the constant L{ExtensionBasedFileEncodingDecider.BINARY} which indicates a non-text file (not all targets support binary). 
+		The extensions can contain ${...} properties. 
+		
+		Extensions are matched case insensitively. 
 
 	@param default: Specifies what to do if none of the specified extensions match. 
-	
-	Can be: the name of the default encoding to be used as a string (e.g. ``"utf-8"``), 
-	a decider function to delegate to (such as `ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()`), or ``None`` to defer to the 
-	configured global option (or throw an exception if this is itself the global option). 
-	
-	Recommended values are: 'utf-8', 'ascii' or `xpybuild.buildcommon.PREFERRED_ENCODING`.
+		
+		Can be: the name of the default encoding to be used as a string (e.g. ``"utf-8"``), 
+		a decider function to delegate to (such as `ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()`), or ``None`` to defer to the 
+		configured global option (or throw an exception if this is itself the global option). 
+		
+		Recommended values are: 'utf-8', 'ascii' or `xpybuild.buildcommon.PREFERRED_ENCODING`.
 	"""
 	
 	BINARY = '<binary>'
@@ -530,6 +531,7 @@ class ExtensionBasedFileEncodingDecider:
 			if not contenttype.startswith(('text/', 'application/')):
 				d[ext] = ExtensionBasedFileEncodingDecider.BINARY
 		return ExtensionBasedFileEncodingDecider(d, default='ascii')
+
 
 ################################################################################
 # Options
