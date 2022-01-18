@@ -83,7 +83,7 @@ Breaking changes
 			}, default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()))
 				
 -  Also note that FilteredCopy mappers and the WriteFile targets now 
-  only map with unicode character ``str`` objects and not ``bytes``.
+   only map with unicode character ``str`` objects and not ``bytes``.
 -  BuildContext.defaultOptions() was removed, as there is no legitimate
    use case for it.
 -  ``tmpdir`` has been removed from the target's ``self.options``;
