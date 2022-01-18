@@ -12,7 +12,8 @@ Minor breaking changes in this release:
   This applies on all operating systems. 
 - The special name ``full`` is now used instead of ``all`` to indicate the default set of targets (minus any 
   excluded using ``disableInFullBuild``). On the command line it is still permitted to specify ``all`` for 
-  compatibility purposes. 
+  compatibility purposes but it is recommended to switch to ``full`` when possible. 
+- Removed support for Python 3.6, now the minimum version is Python 3.7+. 
 
 Enhancements
 ------------
@@ -66,8 +67,11 @@ Breaking changes
 -  Now requires Python 3.6+ instead of Python 2
 -  Added ``output`` and ``buildOptions`` required arguments to the 
    `ConsoleFormatter` base class constructor.
--  FilteredCopy mappers and the WriteFilter target now handle only
-   unicode str objects and not bytes.
+- `xpybuild.targets.copy.FilteredCopy` and `xpybuild.targets.writefile.WriteFile` now use the option 
+  ``common.fileEncodingDecider`` to select which encoding to use for character transformations instead of defaulting 
+  to whatever the local default encoding is. You may need to provide a custom ``fileEncodingDecider`` if you are 
+  filtering text files with unusual extensions. Also note that FilteredCopy mappers and the WriteFile targets now 
+  handle only unicode character ``str`` objects and not ``bytes``.
 -  BuildContext.defaultOptions() was removed, as there is no legitimate
    use case for it.
 -  ``tmpdir`` has been removed from the target's ``self.options``;
@@ -155,7 +159,8 @@ Enhancements
 -  Command line now accepts a new option ``--rebuild-ignore-deps`` or ``--rid`` which is equivalent to 
    ``--rebuild --ignore-deps`` and produces a quick way to force a rebuild of a few targets/tags without any of their 
    dependencies getting rebuilt. 
--  `xpybuild.targets.copy.FilteredCopy`, `xpybuild.targets.writefile.WriteFile`: Added option ``common.fileEncodingDecider``
+-  `xpybuild.targets.copy.FilteredCopy`, `xpybuild.targets.writefile.WriteFile`: Added 
+   option ``common.fileEncodingDecider``
    which is used by FilteredCopy and WriteFile to decide what encoding
    to use for reading/writing text files. The default is an
    ExtensionBasedFileEncodingDecider instance which specifies UTF-8 for
