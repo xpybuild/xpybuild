@@ -98,7 +98,7 @@ The operating system's preferred/default encoding for reading/writing the conten
 process stdout/stderr for the current environment (or machine). 
 
 This returns the same value as Python's ``locale.getpreferredencoding()`` method, but as that method is not thread-safe, 
-this constant must always be used in test cases to avoid race conditions when running tests in parallel. 
+this constant must always be used in builds to avoid race conditions when running in parallel. 
 
 The OS preferred encoding should not be confused with Python's 'default' encoding (``sys.getdefaultencoding()``) which 
 is usually not relevant in a build. 
