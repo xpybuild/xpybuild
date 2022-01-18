@@ -109,9 +109,6 @@ class BaseTarget(Composable):
 
 	
 	def __init__(self, name, dependencies):
-		# normalize specifiers in target names, so that when they're logged we can copy+paste them to a unix shell
-		if xpybuild.buildcontext._EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX: 
-			name = name.replace('$${', '<__xpybuild_dollar_placeholder>').replace('${', '{').replace('<__xpybuild_dollar_placeholder>', '$${')
 		
 		self.__getAttrImpl = {
 			'path': lambda: self.__returnOrRaiseIfNone(self.__path, 'Target path has not yet been resolved by this phase of the build process: %s'%self),
@@ -131,6 +128,9 @@ class BaseTarget(Composable):
 			if '\\' in name:
 				raise BuildException('Invalid target name: backslashes are not permitted: %s'%name)
 		self.__name = str(name)
+		# normalize specifiers in target names, so that when they're logged we can copy+paste them to a unix shell
+		if xpybuild.buildcontext._EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX:  # could be a callable
+			self.__name = self.__name.replace('$${', '<__xpybuild_dollar_placeholder>').replace('${', '{').replace('<__xpybuild_dollar_placeholder>', '$${')
 		self.__path_src = name
 		self.__tags = ['full']
 		self.__priority = 0.0 # default so we can go bigger or smaller
