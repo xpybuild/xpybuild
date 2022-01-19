@@ -92,6 +92,21 @@ else:
 		"""
 		return False
 
+PREFERRED_ENCODING = locale.getpreferredencoding()
+"""
+The operating system's preferred/default encoding for reading/writing the contents of text data in files and 
+process stdout/stderr for the current environment (or machine). 
+
+This returns the same value as Python's ``locale.getpreferredencoding()`` method, but as that method is not thread-safe, 
+this constant must always be used in builds to avoid race conditions when running in parallel. 
+
+The OS preferred encoding should not be confused with Python's 'default' encoding (``sys.getdefaultencoding()``) which 
+is usually not relevant in a build. 
+
+.. versionadded:: 4.0
+"""
+
+
 def defineAtomicTargetGroup(*targets):
 	""" The given targets must all be built before anything which depends on any of those targets.
 	
@@ -115,10 +130,43 @@ requireXpyBuildVersion = requireXpybuildVersion
 Use requireXpyBuildVersion instead.
 """
 
+def registerBuildLoadPostProcessor(fn):
+	""" Add a callback function that will be invoked just after the build files have been parsed and all targets added, 
+	to allow for custom post processing logic to execute before the clean/build. 
+	
+	This is useful for performing global customizations of targets throughout the build, such as adding tags or 
+	additional target options. For example, to override the default retry setting and add a tag to all defined targets 
+	of a particular Python class::
+	
+		def demoPostProcessor(context):
+			for target in context.targets().values():
+				if isinstance(target, MyCustomTarget) or 'FooBar' in target.name: 
+					# Override options for these targets
+					target.option(BaseTarget.Options.failureRetries, 2)
+					
+					# Add additional tags for these targets
+					target.tags('my-post-processed-tag')
+
+		registerBuildLoadPostProcessor(demoPostProcessor)
+
+	:param Callable[xpybuild.buildcontext.BuildInitializationContext] fn: A function that takes a context as its argument.
+	You may wish to use ``BuildInitializationContext`` methods such as `xpybuild.buildcontext.BuildInitializationContext.targets` from your function. 
+	"""
+	from xpybuild.buildcontext import getBuildInitializationContext
+	if not fn: return
+	getBuildInitializationContext()._buildParsePostProcessors.append(fn)
+
 def registerPreBuildCheck(fn):
-	""" Defines a check which will be called after any clean but before any build actions take place.
-	    fn should be a functor that takes a context and raises a BuildException if the check fails. """
-	from buildcontext import getBuildInitializationContext
+	""" Defines a check which will be called after any clean but before any build actions take place, to provide fail-fast 
+	behaviour if something is wrong.
+
+	See also `registerBuildLoadPostProcessor`. 
+	
+	:param Callable[xpybuild.buildcontext.BuildInitializationContext] fn: A function that takes a context as its argument, 
+	and raises a BuildException if the check fails.
+
+	"""
+	from xpybuild.buildcontext import getBuildInitializationContext
 	getBuildInitializationContext().registerPreBuildCheck(fn)
 
 class StringFormatter(object):

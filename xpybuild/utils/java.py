@@ -94,8 +94,8 @@ def create_manifest(path, properties, options):
 		return lines
 
 # Options for javac
-defineOption('javac.options', [])
-defineOption('javac.source', "") # e.g. 1.6
+defineOption('javac.options', []) # e.g. ['--release', '11']
+defineOption('javac.source', "") # e.g. 1.6; in Java 11+, it's often best to add a --release argument to javac.options instead
 defineOption('javac.target', "")
 defineOption('javac.encoding', "ASCII") # best to set this explicitly else its OS dependent
 defineOption('javac.debug', False)
@@ -285,7 +285,7 @@ def javac(output, inputs, classpath, options, logbasename, targetname, workDir):
 	# build up the arguments
 	args = ["-d", output]
 	if options["javac.source"]: args.extend(["-source", options["javac.source"]])
-	if options["javac.target"]: args.extend(["-source", options["javac.target"]])
+	if options["javac.target"]: args.extend(["-target", options["javac.target"]])
 	if options["javac.encoding"]: args.extend(["-encoding", options["javac.encoding"]])
 	if options["javac.debug"]:
 		args.append('-g')

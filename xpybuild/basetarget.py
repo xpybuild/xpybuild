@@ -29,7 +29,9 @@ in your build files, and is also the base class for defining new targets.
 import os, inspect, shutil, re
 
 from xpybuild.buildcommon import *
+import xpybuild.buildcontext
 from xpybuild.buildcontext import getBuildInitializationContext
+import xpybuild.buildcontext
 import xpybuild.utils.fileutils as fileutils
 from xpybuild.utils.flatten import flatten, getStringList
 from xpybuild.utils.buildfilelocation import BuildFileLocation
@@ -39,6 +41,8 @@ from xpybuild.utils.fileutils import openForWrite, normLongPath, mkdir
 import xpybuild.utils.stringutils
 
 import logging
+
+from xpybuild.propertysupport import defineOption
 
 class BaseTarget(Composable):
 	""" The base class for all targets. 
@@ -80,7 +84,7 @@ class BaseTarget(Composable):
 	
 	:ivar str workDir: A unique dedicated directory where this target can write temporary/working files.
 
-	.. rubric:: Arguments for the BaseTest __init__ constructor
+	.. rubric:: Arguments for the BaseTarget __init__ constructor
 
 	@param name: This target instance's unique name, which is the file or 
 		directory path which is created as a result of running this target. 
@@ -93,7 +97,7 @@ class BaseTarget(Composable):
 		strings, `xpybuild.pathsets`` and lists, and may also contain 
 		unexpanded variables.
 		
-	.. rubric:: BaseTest methods
+	.. rubric:: BaseTarget methods
 	"""
 
 	# to allow targets to be used in sets, override hash to ensure it's deterministic;
@@ -123,18 +127,22 @@ class BaseTarget(Composable):
 				raise BuildException('Invalid target name: double slashes are not permitted: %s'%name)
 			if '\\' in name:
 				raise BuildException('Invalid target name: backslashes are not permitted: %s'%name)
-		self.__name = str(name)
+		self.__name = BaseTarget._normalizeTargetName(str(name))
 		self.__path_src = name
-		self.__tags = ['all']
+		self.__tags = ['full']
 		self.__priority = 0.0 # default so we can go bigger or smaller
 		self.log = logging.getLogger(self.__class__.__name__)
+		
+		# put the class first, since it results in better ordering (e.g. for errors)
+		# use a space to delimit these to make it easier to copy to the clipboard by double-clicking
+		self.__stringvalue = f'<{self.type}> {self.name}'
 		
 		init = getBuildInitializationContext()
 		if not init: # doc-test mode
 			self.location = BuildFileLocation(raiseOnError=False)
 		else: 
 			self.location = BuildFileLocation(raiseOnError=True)
-			init.registerTarget(self)
+			init.registerTarget(self) # this can throw
 
 		# should ensure changes to the build file cause a rebuild? probs no need
 		# PathSet will perform all necessary flattening etc
@@ -144,16 +152,17 @@ class BaseTarget(Composable):
 		self.__workDir = None
 		
 		self.__registeredImplicitInputs = []
-
-		# put the class first, since it results in better ordering (e.g. for errors)
-		# use a space to delimit these to make it easier to copy to the clipboard by double-clicking
-		self.__stringvalue = f'<{self.type}> {self.name}'
 		
 		# aliases for pre-3.0
 		self.addHashableImplicitInputOption = self.registerImplicitInputOption
 		self.addHashableImplicitInput = self.registerImplicitInput
 
-		
+	@staticmethod
+	def _normalizeTargetName(name): # non-public method to ensure comparisons between target names are done consistently
+		if xpybuild.buildcontext._EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX: 
+			name = name.replace('$${', '<__xpybuild_dollar_placeholder>').replace('${', '{').replace('<__xpybuild_dollar_placeholder>', '$${')
+		return name
+
 	def __returnOrRaiseIfNone(self, value, exceptionMessage):
 		if value is not None: return value
 		raise Exception(exceptionMessage)
@@ -196,7 +205,13 @@ class BaseTarget(Composable):
 		# if there's no explicit parent, default to ${OUTPUT_DIR} to stop 
 		# people accidentally writing to their source directories
 		if self.__path is not None: return self.__path # cache it for consistency
-		self.__path = context.getFullPath(self.__path_src, "${OUTPUT_DIR}")
+		self.__path = context.getFullPath(self.__path_src, context.getPropertyValue("OUTPUT_DIR"))
+		
+		badchars = '<>:"|?*' # Windows bad characters; it's helpful to stop people using such characters on all OSes too since almost certainly not intended
+		foundbadchars = [c for c in self.__path[2:] if c in badchars] # (nb: ignore first 2 chars of absolute path which will necessarily contain a colon on Windows)
+		if foundbadchars: raise BuildException('Invalid character(s) "%s" found in target name %s'%(''.join(sorted(list(set(foundbadchars)))), self.__path))
+		if self.__path.endswith(('.', ' ')): raise BuildException('Target name must not end in a "." or " "') # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
+		
 		self.log.debug('Resolved target name %s to canonical path %s', self.name, self.path)
 		return self.__path
 
@@ -204,7 +219,7 @@ class BaseTarget(Composable):
 		""".. private:: Internal method for resolving path from name, performing any 
 		required expansion etc. 
 		
-		Do not override this method.
+		Do not override or call this method.
 		
 		@param context: The initialization context, with all properties and options fully defined. 
 		"""
@@ -365,9 +380,9 @@ class BaseTarget(Composable):
 		
 		See also `tag`. 
 		"""
-		self.__tags = list(set(self.__tags) - {'all'})
+		self.__tags = list(set(self.__tags) - {'full'})
 		init = getBuildInitializationContext()
-		init.removeFromTags(self, ['all'])
+		init.removeFromTags(self, ['full'])
 		return self
 	
 	def clearTags(self):
@@ -377,7 +392,7 @@ class BaseTarget(Composable):
 		"""
 		init = getBuildInitializationContext()
 		init.removeFromTags(self, self.__tags)
-		self.__tags = ['all'] if 'all' in self.__tags else []
+		self.__tags = ['full'] if 'full' in self.__tags else []
 		init.registerTags(self, self.__tags)
 		return self
 
@@ -385,27 +400,35 @@ class BaseTarget(Composable):
 		""" Target classes can call this during `run` or `clean` to get the resolved value of a specified option for 
 		this target, with optional checking to give a friendly error message if the value is an empty string or None. 
 		
-		This is a high-levetl alternative to reading directly from `self.options`. 
+		This is a high-level alternative to reading directly from `self.options`. 
+		
+		This method cannot be used while the build files are still being loaded, only during the execution of the targets. 
 		"""
+		if hasattr(key, 'optionName'): key = key.optionName # it's an Option instance
+
 		if key not in self.options: raise Exception('Target tried to access an option key that does not exist: %s'%key)
 		v = self.options[key]
 		if (errorIfNone and v == None) or (errorIfEmptyString and v == ''):
 			raise BuildException('This target requires a value to be specified for option "%s" (see basetarget.option or setGlobalOption)'%key)
 		return v
 
-	def option(self, key: str, value):
+	def option(self, key, value):
 		"""Called by build file authors to configure this target instance with an override for an option value. 
 		
 		This allows target-specific overriding of options. If no override is provided, the value set in 
-		`propertysupport.setGlobalOption` for the whole build is used, or if that was not set then the default 
+		`xpybuild.propertysupport.setGlobalOption` for the whole build is used, or if that was not set then the default 
 		when the option was defined. 
 		
 		Use `self.options` or `getOption` to get resolved option values when implementing a target class. 
 		
-		@param key: The name of a previously-defined option.
+		@param str|xpybuild.propertysupport.Option key: The name of a previously-defined option. Usually this is a string 
+		literal, but you cna also use the `xpybuild.propertysupport.Option` instance if you prefer. 
+		
 		@param value: The value. If the value is a string and contains any property values these will be expanded 
 		before the option value is passed to the target. 
 		"""
+		if hasattr(key, 'optionName'): key = key.optionName # it's an Option instance
+		
 		self.__optionsTargetOverridesUnresolved[key] = value
 		return self
 	
@@ -428,11 +451,11 @@ class BaseTarget(Composable):
 		@param tags: The tag, tags or list of tags to add to the target.
 		
 		>>> BaseTarget('a',[]).tags('abc').getTags()
-		<using test initialization context> <using test initialization context> ['abc', 'all']
+		<using test initialization context> <using test initialization context> ['abc', 'full']
 		>>> BaseTarget('a',[]).tags(['abc', 'def']).getTags()
-		<using test initialization context> <using test initialization context> ['abc', 'def', 'all']
+		<using test initialization context> <using test initialization context> ['abc', 'def', 'full']
 		>>> BaseTarget('a',[]).tags('abc', 'def').tags('ghi').getTags()
-		<using test initialization context> <using test initialization context> <using test initialization context> ['ghi', 'abc', 'def', 'all']
+		<using test initialization context> <using test initialization context> <using test initialization context> ['ghi', 'abc', 'def', 'full']
 		"""
 		taglist = getStringList(list(tags))
 		self.__tags = taglist + self.__tags
@@ -481,10 +504,27 @@ class BaseTarget(Composable):
 		
 		"""
 		# remove chars that are not valid on unix/windows file systems (e.g. colon)
-		x = re.sub(r'[^()+./\w-]','_', name.replace('\\','/').replace('${','_').replace('}','_').rstrip('/'))
+		x = re.sub(r'[^()+./\w-]+','_', name.replace('\\','/').replace('${','_').replace('{','_').replace('}','_').rstrip('/'))
 		if len(x) < 256: x = x.replace('/','.') # avoid deeply nested directories in general
 		return x
 
+	class Options:
+		""" Options for customizing the behaviour of all targets. To set an option on a specific target call 
+		`xpybuild.basetarget.BaseTarget.option` or to se a global default use `xpybuild.propertysupport.setGlobalOption`. 
+		"""
+	
+		failureRetries = defineOption("Target.failureRetries", 0)
+		"""
+		The "Target.failureRetries" option can be set on any target (or globally), and specifies how many times to retry 
+		the target's build if it fails. The default is 0, which is recommended for normal developer builds. 
+
+		There is an exponentially increasing backoff pause between each attempt - first 15s, then 30s, then 60s etc. 
+		
+		See `xpybuild.buildcommon.registerBuildLoadPostProcessor` which can be used to customize this option for targets based on 
+		user-defined criteria such as target type. 
+		"""
+
+		failureRetriesInitialBackoffSecs = defineOption('Target.failureRetriesInitialBackoffSecs', 15) # undocumented as there should be no reason to change this
 
 targetNameToUniqueId = BaseTarget.targetNameToUniqueId # alias for pre-3.0 projects
 """.. private:: See static method instead.

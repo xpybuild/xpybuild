@@ -15,10 +15,11 @@ def getXpybuildVersion(project):
 _log = logging.getLogger('perfreporter')
 
 class XpybuildPerfReporter(CSVPerformanceReporter):
-	def __init__(self, project, summaryfile, testoutdir):
+	def __init__(self, project, summaryfile, testoutdir, **kwargs):
 		self.XPYBUILD_VERSION = getXpybuildVersion(project)
 
-		super(XpybuildPerfReporter, self).__init__(project, summaryfile or 'performance_output/v'+self.XPYBUILD_VERSION+'/@OUTDIR@_@HOSTNAME@/perf_@DATE@_@TIME@.csv', testoutdir)
+		super(XpybuildPerfReporter, self).__init__(project=project, summaryfile=summaryfile or 'performance_output/v'+self.XPYBUILD_VERSION+'/@OUTDIR@_@HOSTNAME@/perf_@DATE@_@TIME@.csv', 
+			testoutdir=testoutdir, **kwargs)
 		self.unitAliases['ns'] = PerformanceUnit('ns', biggerIsBetter=False)
 		
 		self.disableRecording = ('XPYBUILD_PPROFILE' in os.environ)# or (getattr(self, 'DISABLE_PERF_RECORDING','')=='true')

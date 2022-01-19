@@ -29,6 +29,7 @@ from threading import Lock
 from xpybuild.basetarget import BaseTarget
 from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.fileutils import deleteFile, mkdir, openForWrite, cached_getmtime, toLongPathSafe, cached_stat, isDirPath
+from xpybuild.internal.outputbuffering import outputBufferingManager
 
 import logging
 log = logging.getLogger('scheduler.targetwrapper')
@@ -456,12 +457,46 @@ class TargetWrapper(object):
 		"""
 			Calls the wrapped run method
 		"""
-		implicitInputs = self.__getImplicitInputs(context)
-		if implicitInputs or self.isDirPath:
-			deleteFile(self.__implicitInputsFile)
-
-		self.target.run(context)
+		retries = None
 		
+		retryNumber = 0 # 1=first retry, etc
+		self.target.retriesRemaining = self.target.options['Target.failureRetries'] # default is 0
+		backoffSecs = self.target.options['Target.failureRetriesInitialBackoffSecs']
+		
+		while True:
+			try:
+				implicitInputs = self.__getImplicitInputs(context)
+				if implicitInputs or self.isDirPath:
+					deleteFile(self.__implicitInputsFile)
+
+				self.target.run(context)
+				if retryNumber > 0: self.target.log.warning('Target %s succeeded on retry #%d', self, retryNumber)
+				break
+			except Exception as ex:
+				if self.target.retriesRemaining == 0: 
+					if retryNumber > 0: 
+						self.target.log.warning('Target %s failed even after %d retries', self, retryNumber)
+					raise
+
+				self.target.retriesRemaining -= 1
+				retryNumber += 1
+				
+				# this logic is to prevent CI (e.g. TeamCity) error messages from one retry from causing the whole job to be flagged as a 
+				# failure even if a subsequent retry succeeds
+				buf = outputBufferingManager.resetStdoutBufferForCurrentThread()
+				self.target.log.warning('Target %s failed on attempt #%d, will retry after %d seconds backoff (see .log file for details).', self, retryNumber, backoffSecs)
+				# for now let's just throw away buf - user can look at the .log file to see what happened before the failure if they care 
+				# (can't just re-log it here as that would result in duplication with the .log output)
+
+				time.sleep(backoffSecs)
+				# hopefully after the backoff time enough file handles will have been removed for the clean to succeed 
+				try:
+					self.clean(context)
+				except Exception as ex:
+					self.target.log.error('Failed to cleanup during retry, after initial failure of %s', self)
+					raise
+				backoffSecs *= 2
+				
 		# we expect self.path to NOT be in the fileutils stat cache at this point; 
 		# it's too costly to check this explictly, but unwanted incremental rebuilds 
 		# can be caused if the path does get into the stat cache since it'll have a stale value

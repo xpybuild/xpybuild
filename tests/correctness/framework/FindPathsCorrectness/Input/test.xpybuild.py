@@ -6,6 +6,7 @@ from propertysupport import *
 from buildcommon import *
 from pathsets import *
 from targets.copy import Copy
+import xpybuild.buildcontext
 
 defineOutputDirProperty('OUTPUT_DIR', None)
 
@@ -50,3 +51,7 @@ except Exception as e:
 	import logging
 	logging.getLogger('testing').critical('Got exception as expected from FindPaths: %s'%e)
 
+# Check we can perform it during initialization time - would prefer people didn't do this but found at least 
+# once instance of it happening
+assert FindPaths('${OUTPUT_DIR}/../findpathsroot/', includes=['1/*/*']).resolveWithDestinations(
+	xpybuild.buildcontext.getBuildInitializationContext())

@@ -53,6 +53,7 @@ log = logging.getLogger('xpybuild')
 _TASK_BUILD = 'build'
 _TASK_CLEAN = 'clean'
 _TASK_REBUILD = 'rebuild'
+_TASK_LIST_SEARCH = "search"
 _TASK_LIST_TARGETS = 'listTargets'
 _TASK_LIST_FIND_TARGETS = 'findTargets'
 _TASK_LIST_PROPERTIES = 'listProperties'
@@ -65,6 +66,7 @@ def main(args):
 	
 	try:
 		usage = [
+###############################################################################
 '',
 'eXtensible Python-based Build System %s on Python %s.%s.%s'% (XPYBUILD_VERSION, sys.version_info[0], sys.version_info[1], sys.version_info[2]),
 '',
@@ -74,7 +76,7 @@ def main(args):
 'identifies a single target. ',
 '',
 'Special pseudo-tags:',
-'  all                        Include all targets (default if none are provided)',
+'  full                       Include all targets for a full build (the default)',
 '',
 'Special properties:',
 '  OUTPUT_DIR=output          The main directory output will be written to',
@@ -82,8 +84,10 @@ def main(args):
 '  BUILD_NUMBER=n             Build number string, for reporting and use by build',
 '',
 'Operations: ',
+###############################################################################
+
 '  (if none is specified, the default operation is a normal build)',
-'      --clean                Clean specified targets incl all deps (default=all)',
+'      --clean                Clean specified targets incl all deps',
 '      --rebuild              Clean specified targets incl all deps then build',
 '      --rebuild-ignore-deps  Clean only the specified targets (not deps) then ',
 '        (or --rid)           build those targets and any missing dependencies, ',
@@ -91,9 +95,12 @@ def main(args):
 '                             fast but less correct way to get a quick ',
 '                             incremental build, so use with care. ',
 '',
-' --ft --find-targets <str>   List targets containing the specified substring', 
-' --ti --target-info <str>    Print details including build file location for ',
-'                             targets containing the specified substring',
+'   -s --search <str>         Show info on targets/tags/properties/options ',
+'                             containing the specified substring or regex', 
+# hide these from usage (though they still work), as superceded by the more useful "-s" option
+#' --ft --find-targets <str>   List targets containing the specified substring', 
+#' --ti --target-info <str>    Print details including build file location for ',
+#'                             targets containing the specified substring',
 '      --targets              List available targets and tags (filtered by any ', 
 '                             target or tag names specified on the command line)',
 '      --properties           List properties that can be set and their ',
@@ -111,7 +118,7 @@ def main(args):
 '                             number of CPUs and the XPYBUILD_WORKERS_PER_CPU ',
 '                             environment varable (default is currently 1.0), ',
 '                             with an upper limit for this machine from the ',
-'                             XPYBUILD_WORKERS_PER_CPU variable. ',
+'                             XPYBUILD_MAX_WORKERS variable. ',
 '   -j --workers <number>     Override the number of worker threads to use for ',
 '                             building. Use -j1 for single-threaded. ',
 '                             (ignores any environment variables)',
@@ -162,11 +169,11 @@ def main(args):
 		findTargetsPattern = None
 		format = "default"
 
-		opts,targets = getopt.gnu_getopt(args, "knJh?x:j:l:L:f:F:", 
+		opts,targets = getopt.gnu_getopt(args, "knJh?x:j:l:L:f:F:s:", 
 			["help","exclude=","parallel","workers=","keep-going",
 			"log-level=","logfile=","buildfile=", "dry-run",
 			"targets", 'target-info=', 'ti=', "properties", "options", "clean", "rebuild", "rebuild-ignore-deps", "rid", "ignore-deps", "id",
-			"format=", "timefile=", "ft=", "find-targets=", "depgraph=", 'cpu-stats', 'random-priority', 'profile', 'verify'])
+			"format=", "timefile=", "ft=", "find-targets=", "search=", "depgraph=", 'cpu-stats', 'random-priority', 'profile', 'verify'])
 		
 		for o, a in opts: # option arguments
 			o = o.strip('-')
@@ -185,6 +192,9 @@ def main(args):
 			elif o in ['target-info', 'ti']:
 				task = _TASK_LIST_TARGET_INFO
 				findTargetsPattern = a
+			elif o in ['search', 's']:
+				task = _TASK_LIST_SEARCH
+				searchPattern = a
 			elif o in ['properties']:
 				task = _TASK_LIST_PROPERTIES
 			elif o in ['options']:
@@ -241,12 +251,14 @@ def main(args):
 			if arg:
 				if '=' in arg:
 					properties[arg.split('=')[0].upper()] = arg.split('=')[1]
+				elif arg=='all': # pre-4.0 alias for all
+					includedTargets.append('full')
 				else:
 					includedTargets.append(arg)
 			
 		# default is all
 		if (not includedTargets) or includedTargets==['']:
-			includedTargets = ['all']
+			includedTargets = ['full']
 		
 	except getopt.error as msg:
 		print(msg)
@@ -258,7 +270,8 @@ def main(args):
 
 	if buildOptions["workers"] < 0: buildOptions["workers"] = 0 # means there's no override
 	
-	outputBufferingDisabled = buildOptions['workers']==1 
+	outputBufferingDisabled = buildOptions['workers']==1 # nb: this also affects the .log handler below
+	
 	# nb: it's possible workers=0 (auto) and will later be set to 1 but doesn't really matter much
 
 	# initialize logging to stdout - minimal output to avoid clutter, but indicate progress
@@ -269,7 +282,9 @@ def main(args):
 	hdlr = hdlr(
 		wrapper, 
 		buildOptions=buildOptions) 
+	# Handler can override wrapper with a preference in either direction
 	if hdlr.bufferingDisabled: wrapper.bufferingDisabled = True
+	if hdlr.bufferingRequired: wrapper.bufferingDisabled = False
 		
 	hdlr.setLevel(logLevel or logging.WARNING)
 	logging.getLogger().addHandler(hdlr)
@@ -282,7 +297,7 @@ def main(args):
 
 	listen_for_stack_signal() # make USR1 print a python stack trace
 
-	allTargets = ('all' in includedTargets) and not excludedTargets
+	allTargets = ('full' in includedTargets) and not excludedTargets
 
 	try:
 		def loadBuildFile():
@@ -383,7 +398,7 @@ def main(args):
 		if findTargetsPattern:
 			findTargetsPattern = findTargetsPattern.lower()
 			# sort matches at start of path first, then anywhere in name, finally anywhere in type
-			# make 'all' into a special case that maps to all *selected* targets 
+			# make 'all'/'full' into a special case that maps to all *selected* targets 
 			# (could be different to 'all' tag if extra args were specified, but this is unlikely and kindof useful)
 			findTargetsList = [t for t in sorted(
 				 init.targets().values() if allTargets else selectedTargets, key=lambda t:(
@@ -391,7 +406,8 @@ def main(args):
 					findTargetsPattern.lower() not in t.name.lower(), 
 					findTargetsPattern.lower() not in t.type.lower(), 
 					t.name
-					)) if findTargetsPattern in t.name.lower() or findTargetsPattern in t.type.lower() or findTargetsPattern == 'all']
+					)) if findTargetsPattern in t.name.lower() or findTargetsPattern in t.type.lower() 
+						or findTargetsPattern == 'full' or findTargetsPattern == 'all']
 
 		if task == _TASK_LIST_PROPERTIES:
 			p = init.getProperties()
@@ -421,7 +437,7 @@ def main(args):
 			print(file=stdout)
 
 			if allTargets:
-				print("%d tags(s) are defined: "%(len(init.tags())), file=stdout)
+				print("%d tag(s) are defined: "%(len(init.tags())), file=stdout)
 				for t in sorted(['   %-15s (%d targets)'%(t, len(init.tags()[t])) for t in init.tags()]):
 					print(t, file=stdout)
 
@@ -435,11 +451,55 @@ def main(args):
 			for t in findTargetsList:
 				# this must be very easy to copy+paste, so don't put anything else on the line at all
 				print('%s'%(t.name), file=stdout)
+
+		elif task == _TASK_LIST_SEARCH:
+			def showPatternMatches(x): # case sensitive is fine (and probably useful)
+				if searchPattern.replace('\\', '/') in x.replace('\\','/'): return True # basic substring check (with path normalization)
+				if '*' in searchPattern or '?' in searchPattern or '[' in searchPattern: # probably a regex
+					if re.search(searchPattern, x): return True
+				return False
+
+			for t in init.targets().values():
+				t._resolveTargetPath(init)
+
+			print('', file=stdout)
+
+			tagMatches = [t for t in init.tags() if showPatternMatches(t)]
+			if tagMatches: 
+				print ('%d matching tags:'%len(tagMatches), file=stdout)
+				for t in sorted(tagMatches):
+					print(t, file=stdout)
+				print('', file=stdout)
+				
+			targetMatches = [t for t in init.targets().values() if showPatternMatches(t.name) or showPatternMatches(t.path)]
+			if targetMatches: 
+				print ('%d matching targets:'%len(targetMatches), file=stdout)
+				for t in sorted(targetMatches, key=lambda t:(t.type+' '+t.name)):
+					print('- %s priority: %s, tags: [%s]\n   output:  %s\n   defined:  %s'%(t, t.getPriority(), ' '.join(sorted(t.getTags())) or 'none', os.path.relpath(t.path), t.location), file=stdout)
+				print('', file=stdout)
+
+			propMatches = {key:value for (key,value) in init.getProperties().items() if showPatternMatches(key)}
+			if propMatches:
+				print('%d matching properties:'%len(propMatches), file=stdout)
+				pad = max(list(map(len, propMatches.keys())))
+				for k in sorted(propMatches.keys()):
+					print(('%'+str(pad)+'s = %s') % (k, propMatches[k]), file=stdout)
+					if init._propertyLocations[k]: # don't do this for built-in property like BUILD_MODE
+						print(('%'+str(pad)+'s   (defined: %s)') % ('', init._propertyLocations[k]), file=stdout)
+					
+			options = init.mergeOptions(None)
+			optionMatches = {key:value for (key,value) in options.items() if showPatternMatches(key)}
+			if optionMatches:
+				print('%d matching options:'%len(optionMatches), file=stdout)
+				pad = max(list(map(len, optionMatches.keys())))
+				for k in sorted(optionMatches.keys()):
+					print(('%'+str(pad)+'s = %s') % (k, optionMatches[k]), file=stdout)
+
 				
 		elif task in [_TASK_BUILD, _TASK_CLEAN, _TASK_REBUILD]:
 			
 			if not logFile:
-				if includedTargets == ['all'] and not excludedTargets:
+				if allTargets:
 					buildtag = None
 				else:
 					buildtag = 'custom'
@@ -451,15 +511,19 @@ def main(args):
 			logdir = os.path.dirname(logFile)
 			if logdir and not os.path.exists(logdir): mkdir(logdir)
 			log.critical('Writing build log to: %s', os.path.abspath(logFile))
-
-			hdlr = logging.FileHandler(logFile, mode='w', encoding='UTF-8')
+			
+			# also buffer the .log file, since it's just a lot harder to read when multiple target lines are all jumbled up; 
+			# we have an undocumented env var for disabling this in case of debugging
+			if os.getenv('XPYBUILD_LOGFILE_OUTPUT_BUFFERING_DISABLED','')=='true': outputBufferingDisabled = True
+			logFileStream = OutputBufferingStreamWrapper(open(logFile, 'w', encoding='UTF-8'), bufferingDisabled=outputBufferingDisabled)
+			hdlr = logging.StreamHandler(logFileStream)
 			hdlr.setFormatter(logging.Formatter('%(asctime)s %(relativeCreated)05d %(levelname)-8s [%(threadName)s %(thread)5d] %(name)-10s - %(message)s', None))
 			hdlr.setLevel(logLevel or logging.INFO)
 			logging.getLogger().addHandler(hdlr)
-			
-			log.info('Using xpybuild %s from %s on Python %s.%s.%s', XPYBUILD_VERSION, os.path.normpath(os.path.dirname(__file__)), sys.version_info[0], sys.version_info[1], sys.version_info[2])
-			log.info('Using build options: %s', buildOptions)
 
+			log.info('Using xpybuild %s from %s on Python %s.%s.%s', XPYBUILD_VERSION, os.path.normpath(os.path.dirname(__file__)), sys.version_info[0], sys.version_info[1], sys.version_info[2])
+			log.info('Using build options: %s (logfile target outputBuffering=%s, stdout target outputBuffering=%s)', buildOptions, not outputBufferingDisabled, not wrapper.bufferingDisabled)
+			
 			try:
 				# sometimes useful to have this info available
 				import socket, getpass
@@ -494,6 +558,9 @@ def main(args):
 			if buildOptions['ignore-deps']:
 				log.warning('The ignore-deps option is enabled: dependency graph will be ignored for all targets that already exist on disk, so correctness is not guaranteed')
 			
+			for (k,v) in sorted(init.getProperties().items()):
+				log.info('Setting property %s=%s', k, v)
+
 			try:
 				DATE_TIME_FORMAT = "%a %Y-%m-%d %H:%M:%S %Z"
 				
@@ -535,7 +602,7 @@ def main(args):
 							log.error("Pre-build check failed: %s", be)
 							return 7
 
-					buildtype = 'incremental' if any(os.path.exists(dir) for dir in init.getOutputDirs()) else 'full'
+					buildtype = 'incremental' if any(os.path.exists(dir) for dir in init.getOutputDirs()) else 'fresh'
 					if not buildOptions['dry-run']:
 						for dir in init.getOutputDirs():
 							log.info('Creating output directory: %s', dir)

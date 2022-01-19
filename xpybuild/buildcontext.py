@@ -43,6 +43,8 @@ import re
 import logging
 log = logging.getLogger('xpybuild')
 
+_EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX = os.getenv('XPYBUILD_EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX','')=='true' # undocumented/unsupported for now
+
 class BaseContext(object):
 	""" Common functionality needed during initialization and build phases. 
 	
@@ -181,11 +183,19 @@ class BaseContext(object):
 		if hasattr(string, 'resolveToString'):
 			string = string.resolveToString(self)
 		if callable(string): string = string(self)
-		assert isinstance(string, str), 'Error in expandPropertyValues: expecting string but argument was of type "%s"'%(string.__class__.__name__)
+		assert isinstance(string, str), 'Error in expandPropertyValues: expecting string but argument was of type "%s" - %s'%(string.__class__.__name__, repr(string))
 		
-		if '$${' in string:
+		if '$${' in string: # tbd whether this kind of escaping is even needed once we have the {{} escaping
 			assert '<escaped_xpybuild_placeholder>' not in string
 			string = string.replace('$${', '<escaped_xpybuild_placeholder>')
+
+		if '{{}' in string: # in case we want a literal "{"
+			assert '<escaped_xpybuild_placeholder2>' not in string
+			string = string.replace('{{}', '<escaped_xpybuild_placeholder2>')
+
+		if _EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX:
+			# This is not super efficient... moving the logic into the following loop would be nicer
+			string = string.replace('${', '{').replace('{', '${') # treat "{" and "${" as the same (probably more efficient doing this replace() call than using regexes)
 
 		isListExpansion = False
 		prefix=""
@@ -205,7 +215,7 @@ class BaseContext(object):
 				raise
 			except Exception:
 				raise BuildException('Incorrectly formatted property string "%s"'%string)
-			v = self.getPropertyValue(propName)
+			v = '{' if propName=='{' else self.getPropertyValue(propName)
 			# every language except python doesn't use Initialcaps for their booleans so this is much more useful behaviour
 			if isinstance(v, bool): v = 'true' if v else 'false' 
 			string = string.replace('${%s}' % propName, v)
@@ -215,10 +225,10 @@ class BaseContext(object):
 			for x in self.expandListPropertyValue(listPropName):
 				x = self.expandPropertyValues(x, expandList=True)
 				for y in x:
-					rv.append((prefix+y+string).replace('<escaped_xpybuild_placeholder>', '${'))
+					rv.append((prefix+y+string).replace('<escaped_xpybuild_placeholder>', '${').replace('<escaped_xpybuild_placeholder2>', '{'))
 			return rv
 		else:
-			string = string.replace('<escaped_xpybuild_placeholder>', '${')
+			string = string.replace('<escaped_xpybuild_placeholder>', '${').replace('<escaped_xpybuild_placeholder2>', '{')
 			if expandList:
 				return [string] if string else []
 			else:
@@ -339,7 +349,11 @@ class BaseContext(object):
 		This can be useful for PathSets and functors, however in any situation 
 		where there is a target, use `xpybuild.basetarget.BaseTarget.options` instead, so that per-target 
 		option overrides are respected. """
-		return self._globalOptions[key]
+		try:
+			return self._globalOptions[key]
+		except KeyError: # purely for the benefit of build initialization context where not all options have been defined yet
+			log.debug('No global value found for option "%s" - falling back to default value from the definition"', key)
+			return self._definedOptions[key]
 
 	def getFullPath(self, path, defaultDir, expandList=False):
 		""" Expands any properties in the specified path, then removes trailing path separators, normalizes it for this 
@@ -446,6 +460,8 @@ class BuildInitializationContext(BaseContext):
 
 		self._propertyOverrides = dict(propertyOverrides)
 		
+		self._propertyLocations = {}
+		
 		self._targetGroups = []
 		self._targetsMap = {} # name:target object
 		self._targetsList = [] # target objects
@@ -454,6 +470,7 @@ class BuildInitializationContext(BaseContext):
 		self._initializationCompleted = False
 		self._envPropertyOverrides = {}
 		self._preBuildCallbacks = []
+		self._buildParsePostProcessors = []
 		self._globalOptions = {}
 
 	@staticmethod
@@ -500,6 +517,16 @@ class BuildInitializationContext(BaseContext):
 		BuildInitializationContext.__buildInitializationContext = self
 		self._rootDir = os.path.abspath(os.path.dirname(buildFile))
 
+		# Definitions for common options used by multiple targets; only define first time round
+		from xpybuild.propertysupport import ExtensionBasedFileEncodingDecider
+		from xpybuild.utils.process import defaultProcessOutputEncodingDecider
+		if 'common.fileEncodingDecider' not in self._definedOptions:
+			BuildInitializationContext._defineOption('common.fileEncodingDecider', ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider())
+			BuildInitializationContext._defineOption('common.processOutputEncodingDecider', defaultProcessOutputEncodingDecider)
+		# make sure this has been imported, since it's used for implementing many targets and defines some options of its own
+		# which must happen before the build phase begins
+		import xpybuild.utils.outputhandler
+
 		try:
 			BuildFileLocation._currentBuildFile = [buildFile]
 			exec(compile(open(buildFile, "rb").read(), buildFile, 'exec'), {})
@@ -515,7 +542,7 @@ class BuildInitializationContext(BaseContext):
 		except Exception as e:
 			log.exception('Failed to load build file: ')
 			# wrap in buildexception to avoid printing same stack trace twice
-			raise BuildException('Failed to load build file', causedBy=True)
+			raise BuildException('Failed to load build file due to unexpected error', causedBy=True)
 			
 		if time.time()-startTime > 1: # make sure it doesn't go undetected if this is taking a while
 			log.critical('Loaded build files in %0.1f seconds', (time.time()-startTime))
@@ -527,20 +554,11 @@ class BuildInitializationContext(BaseContext):
 		for p in ['OUTPUT_DIR', 'BUILD_MODE', 'BUILD_NUMBER', 'BUILD_WORK_DIR', 'LOG_FILE']:
 			self.getPropertyValue(p) 
 
-		# make sure this has been imported, since it's used for implementing many targets and defines some options of its own
-		# which must happen before hte build phase begins
-		import xpybuild.utils.outputhandler
+		for cb in self._buildParsePostProcessors:
+			cb(self)
 
 		BuildInitializationContext.__buildInitializationContext = 'build phase'
 		self._initializationCompleted = True
-		
-		# Definitions for common options used by multiple targets; only define first time round
-		from xpybuild.propertysupport import ExtensionBasedFileEncodingDecider
-		from xpybuild.utils.process import defaultProcessOutputEncodingDecider
-		if 'common.fileEncodingDecider' not in self._definedOptions:
-			BuildInitializationContext._defineOption('common.fileEncodingDecider', ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider())
-			BuildInitializationContext._defineOption('common.processOutputEncodingDecider', defaultProcessOutputEncodingDecider)
-
 		
 		# all the valid ones will have been popped already
 		if self._propertyOverrides:
@@ -570,7 +588,7 @@ class BuildInitializationContext(BaseContext):
 				self._envPropertyOverrides[k] = v
 
 	
-	def defineProperty(self, name, default, coerceToValidValue=None, debug=False):
+	def defineProperty(self, name, default, coerceToValidValue=None, debug=False, location=None):
 		"""
 		.. private:: For internal use only. 
 
@@ -587,8 +605,15 @@ class BuildInitializationContext(BaseContext):
 		@param coerceToValidValue: None, or a function to validate and/or convert the input string to a value of the right 
 		type
 		@param debug: if True log at DEBUG else log at INFO
+		@param location: A formatFileLocation string identifying the location in the .py or properties file where this was defined
+		@returns: The resolved property value. 
+
 		"""
 		self._initializationCheck()
+		
+		if not location: 
+			location = BuildFileLocation()
+			location = location.getLineString() if location.buildFile else None
 		
 		# enforce naming convention
 		if name.upper() != name:
@@ -613,14 +638,14 @@ class BuildInitializationContext(BaseContext):
 			value = coerceToValidValue(value)
 			
 		self._properties[name] = value
+		self._propertyLocations[name] = location
 		
 		# remove if still present, so we can tell if user tries to set any undef'd properties
 		self._propertyOverrides.pop(name, None) 
 		
 		if debug:
 			log.debug('Setting property %s=%s', name, value)
-		else:
-			log.info('Setting property %s=%s', name, value)
+		# nb: the full property list gets logged later, once the .log file is initialized, by main.py
 		
 		return value
 	
@@ -750,7 +775,7 @@ class BuildInitializationContext(BaseContext):
 		Called internally from L{propertysupport.defineOption} and does not 
 		need to be called directly
 		"""
-		if name in BuildInitializationContext._definedOptions and BuildInitializationContext._definedOptions[name] != default:
+		if name in BuildInitializationContext._definedOptions and BuildInitializationContext._definedOptions[name] != default and 'doctest' not in sys.argv[0]:
 			raise BuildException('Cannot define option "%s" more than once'%name)
 
 		BuildInitializationContext._definedOptions[name] = default

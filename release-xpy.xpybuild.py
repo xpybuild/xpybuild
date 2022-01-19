@@ -35,7 +35,7 @@ requireXpybuildVersion('3.0')
 try:
 	import sphinx
 except ImportError:
-	raise Exception('Cannot build the xpybuild release as sphinx documentation library is not installed into this Python installation: %s (see .travis.yml for details of how to install)'%sys.executable)
+	raise Exception('Cannot build the xpybuild release as sphinx documentation library is not installed into this Python installation: %s (see .github/workflows for details of how to install)'%sys.executable)
 
 defineOutputDirProperty('OUTPUT_DIR', '_build_output')
 with open('xpybuild/XPYBUILD_VERSION') as f: defineStringProperty('VERSION', f.read().strip())
@@ -43,6 +43,7 @@ with open('xpybuild/XPYBUILD_VERSION') as f: defineStringProperty('VERSION', f.r
 CustomCommand('${OUTPUT_DIR}/docs/', 
 	command=[ 
 		sys.executable,
+		'-Wignore', # since we get some FutureWarnings from Sphinx in some versions
 		'-m', 'sphinx',
 		'-M', 'html',
 		PathSet('./docs/'), # source dir

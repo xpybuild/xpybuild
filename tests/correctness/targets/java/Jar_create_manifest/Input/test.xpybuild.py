@@ -56,10 +56,11 @@ def getoutput(context):
 
 WriteFile('${OUTPUT_DIR}/output.txt', getoutput, encoding='utf-8')
 
+defineStringProperty('TITLE', 'title')
 
 # also useful to test with the jar target since the jar executable munges it further
 Jar('${OUTPUT_DIR}/test.jar', [], [], manifest={
-	'Implementation-Title':'My title ',
+	'Implementation-Title':'My ${TITLE} ',
 	' Main-Class ':' my.main ',
 	'Header-2':' value 2 ',
 	'Header-3':' value 3 '+'x'*150+'_',

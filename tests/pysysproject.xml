@@ -2,39 +2,37 @@
 
 <pysysproject>
 
-	<requires-pysys>1.5.0</requires-pysys>
-	<requires-python>3.6</requires-python>
+	<requires-pysys>2.0</requires-pysys>
 	
-	<property root="testRootDir"/>
-	<property environment="env"/>
-	<property osfamily="osfamily"/>
+	<!-- 	<requires-python>3.7</requires-python> -->
 
-	
 	<property name="XPYBUILD_ROOT" value="${env.XPYBUILD_ROOT}" default="${testRootDir}/.."/>
-	<property name="XPYBUILD" value="${XPYBUILD_ROOT}/xpybuild.py" />
+	<property name="XPYBUILD" value="${XPYBUILD_ROOT}/xpybuild.py" pathMustExist="true"/>
+	<property name="appHome" value="${XPYBUILD_ROOT}"/>
 
-	<!-- 
-	Controls whether tests will abort as a fail as soon as an assert, process, or wait operation
-	completes with errors. The default value as specified below will be used when the abortOnError 
-	parameter to the function is not specified. 
-	-->
-	<property name="defaultAbortOnError" value="true"/>	
-	<property name="defaultIgnoreExitStatus" value="false"/>
 	<property name="defaultEnvironsTempDir" value="self.output"/>
-	<property name="supportMultipleModesPerRun" value="true"/>
 
 	<!-- Custom test framework extensions, if needed -->
-	<path value="./test_framework" relative="true" />
-
-
-  	<property name="pythonCoverageDir" value="coverage-python"/>
-	<collect-test-output pattern=".coverage*" outputDir="${pythonCoverageDir}" outputPattern="@FILENAME@_@TESTID@_@UNIQUE@"/>
+	<pythonpath value="./test_framework"/>
 
 	<writers>
-		<writer classname="TravisCIWriter" module="pysys.writer.ci"></writer>
-		<writer classname="JUnitXMLResultsWriter" module="pysys.writer">
-			<property name="outputDir" value="${testRootDir}/pysys-junit-report"/>
+		<writer classname="pysys.writer.testoutput.TestOutputArchiveWriter">
+			<property name="destDir" value="__pysys_output_archives/"/>
+			<property name="maxTotalSizeMB" value="1024.0"/>
 		</writer>
+		
+		<writer classname="pysys.writer.outcomes.JUnitXMLResultsWriter">
+			<property name="outputDir" value="__pysys_junit_xml"/>
+		</writer>
+		
+		<!-- Code coverage for .py files -->
+		<writer classname="pysys.writer.coverage.PythonCoverageWriter">
+			<property name="destDir" value="__coverage_python.${outDirName}"/>
+			<property name="pythonCoverageArgs" value="--rcfile=${testRootDir}/test_framework/python.coveragerc"/>
+		</writer>
+		
+		<writer classname="pysys.writer.ci.GitHubActionsCIWriter"></writer>
+		<writer classname="pysys.writer.ci.TravisCIWriter"></writer>
 
 		<writer classname="ConsoleSummaryResultsWriter" module="pysys.writer">
 			<property name="showOutputDir" value="true"/>
@@ -49,16 +47,21 @@
 		<default-file-encoding pattern="*.xml"  encoding="utf-8"/>
 		<default-file-encoding pattern="*.json" encoding="utf-8"/>
 		<default-file-encoding pattern="*.yaml" encoding="utf-8"/>
-	</default-file-encodings>	
-	
-	<formatters>
-		<formatter classname="ColorLogFormatter" module="pysys.utils.logutils" 
-			name="stdout" messagefmt="%(asctime)s %(levelname)-5s %(message)s" datefmt="%H:%M:%S">
-		</formatter>
+	</default-file-encodings>
+
+
+	<pysysdirconfig>
 		
-		<formatter classname="BaseLogFormatter" module="pysys.utils.logutils" 
-			name="runlog" messagefmt="%(asctime)s %(levelname)-5s %(message)s" datefmt=""/>
-	</formatters>
+		<maker-template name="xpybuild" description="a test that runs xpybuild" 
+			copy="./_pysys_templates/xpybuild/*" />
+
+			<!-- Special option that auto-detects based on presence of an Input/ dir -->
+			<input-dir>!Input_dir_if_present_else_testDir!</input-dir>
+	</pysysdirconfig>
+	
+	<!-- Add project-specific text to be appended to the "pysys run -h". -->
+	<project-help>
+	</project-help>
 
 	<performance-reporter classname="xpybuild.customperfreporter.XpybuildPerfReporter"/>
 	

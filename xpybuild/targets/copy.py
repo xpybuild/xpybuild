@@ -58,7 +58,7 @@ class Copy(BaseTarget):
 	in the source should result in the creation of symbolic links 
 	in the destination. 
 	"""
-	def __init__(self, dest, src, mode=None, implicitDependencies=None):
+	def __init__(self, dest, src, implicitDependencies=None):
 		"""
 		@param dest: the output directory (ending with a "/") or file. Never 
 		specify a dest directory that is also written to by another 
@@ -83,19 +83,23 @@ class Copy(BaseTarget):
 		dependency resolution then such errors can be easily detected 
 		before they cause a problem). 
 		
-		@param mode: unix permissions to set with chmod on the destination files. 
-		If not specified, mode is simply copied from source file. 
+		To create new empty directories that are not present in the source (mkdir), 
+		you can use this simple trick which utilizes the fact that the current 
+		directory ``.`` definitely exists. It doesn't copy anything from inside 
+		(just copies only its 'existence') and uses a SingletonDestRenameMapper PathSet 
+		to provide the destination::
+		
+			SingletonDestRenameMapper('my-new-dest-directory/', './'),
 		
 		@param implicitDependencies: provides a way to add additional implicit 
 		dependencies that will not be part of src but may affect the 
 		copy process (e.g. filtering in); this is intended for 
 		use by subclasses, do not set this explicitly. 
 		"""
-		if mode: raise Exception(dest)
 		src = PathSet(src)
 		BaseTarget.__init__(self, dest, [src, implicitDependencies])
 		self.src = src
-		self.mode = mode
+		self.mode = None # not yet supported, but may be if it turns out to be useful
 		self.addHashableImplicitInputOption('Copy.symlinks')
 			
 	def run(self, context):
@@ -177,6 +181,7 @@ class Copy(BaseTarget):
 		# shortcut (we want to expand property values to detect changes in 
 		# versions etc that should trigger a rebuild, but just not do any 
 		# globbing/searches here)
+		# This is slightly dodgy in case any object in src uses the "{" char which would map as a property substitution, but fairly unlikely
 		r.append('src: '+context.expandPropertyValues('%s'%self.src))
 		
 		if self.mode: r.append('mode: %s'%self.mode)
@@ -298,6 +303,7 @@ class FilteredCopy(Copy):
 			exceptionsuffix = ''
 			if isinstance(ex, UnicodeDecodeError):
 				exceptionsuffix = ' due to encoding problem; consider setting the "common.fileEncodingDecider" option'
+				exceptionsuffix += '; first bad character is: %r'%ex.object[ex.start:ex.start+10]
 			raise BuildException(f'Failed to perform filtered copy of {src}{exceptionsuffix}',causedBy=True)
 		shutil.copymode(src, dest)
 		assert os.path.exists(dest)

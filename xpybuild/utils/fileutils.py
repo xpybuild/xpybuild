@@ -255,6 +255,10 @@ def parsePropertiesFile(lines, excludeLines=None):
 	Parse the contents of the specified properties file or line list, and return an ordered list 
 	of (key,value,lineno) pairs.
 	
+	If desired, convert this to a dict using::
+	
+		{k:v for (k,v,lineno) in parsePropertiesFile(...)}
+	
 	@param lines: an open file handle or a sequence that can be iterated over to get each line in the file.
 
 	@param excludeLines: a string of list of strings to search for, any KEY containing these strings will be ignored

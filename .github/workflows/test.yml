@@ -1,0 +1,90 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    strategy:
+      # Disable fail fast since it's useful to see test results for all platforms even if some failed
+      fail-fast: false
+      
+      matrix:
+        include:
+          - test-run-id: ubuntu-py3.7
+            os: ubuntu-latest
+            python-version: '3.7'
+            perf-test: true
+
+          - test-run-id: win-py3.10
+            os: windows-latest
+            python-version: '3.10'
+            perf-test: false
+
+    runs-on: ${{matrix.os}}
+    
+    steps:
+      # Install the desired version of Python and PySys
+      - uses: actions/checkout@v2
+
+      # setup-python@v2.3.1
+      - uses: actions/setup-python@f38219332975fe8f9c04cca981d674bf22aea1d3
+        with:
+          python-version: ${{matrix.python-version}}
+          # Enabled caching of dependencies
+          cache: pip
+          cache-dependency-path: tests/pysys-requirements.txt
+      - run: pip install -r tests/pysys-requirements.txt
+
+      # setup-msbuild@v1.1.1 (setting up the environment for Visual Studio)
+      - uses: microsoft/setup-msbuild@ab534842b4bdf384b8aaf93765dc6f721d9f5fab
+        if: runner.os == 'Windows'
+        with:
+          # 16 = 2019
+          vs-version: '[16,17)'
+
+      - name: Test with PySys
+        working-directory: tests/correctness
+        shell: bash
+        id: pysys
+        run: |
+          if [[ "${{ matrix.perf-test }}" = "true" ]]; then 
+            cd ..
+            echo Running ALL tests from `pwd`
+          fi
+          
+          python -m pysys run --ci --outdir=${{matrix.test-run-id}} --exclude skip_ci
+
+      - name: Upload Python code coverage 
+        # codecov@v2.1.0
+        uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b
+        if: steps.pysys.outputs.artifact_PythonCoverageDir
+        with:
+          name: ${{matrix.test-run-id}}
+          #files: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/coverage.xml
+          directory: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}
+
+      # If any tests fail, PySys will return an error code, so we need "if: always()" so the following steps will run
+      
+      - name: Upload performance CSV artifacts
+        # upload-artifact@v2.3.1
+        uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2
+        # Only do this if some performance results were generated
+        if: always() && steps.pysys.outputs.artifact_CSVPerformanceReport
+
+        with:
+          name: pysys_performance_${{matrix.test-run-id}}
+          path: ${{ steps.pysys.outputs.artifact_CSVPerformanceReport }}
+
+      - name: Upload archive artifacts for any test failures
+        # upload-artifact@v2.3.1
+        uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2
+        if: always() && steps.pysys.outputs.artifact_TestOutputArchiveDir
+
+        with:
+          name: pysys_output_${{matrix.test-run-id}}
+          path: ${{ steps.pysys.outputs.artifact_TestOutputArchiveDir }}

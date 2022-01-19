@@ -1,0 +1,7 @@
+CopyOutput/
+CopyOutput/mydir/
+CopyOutput/mydir/exclude-dir/
+CopyOutput/mydir/exclude-dir/file.txt
+CopyOutput/mydir/exclude-file
+CopyOutput/mydir/included/
+CopyOutput/mydir/included/file.txt

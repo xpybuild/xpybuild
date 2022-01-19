@@ -50,8 +50,8 @@ class DockerBase(BaseTarget):
 		self.dockerfile = dockerfile
 		self.buildArgs = buildArgs
 		self.dockerArgs = dockerArgs
-		self.stampfile = '${BUILD_WORK_DIR}/targets/docker/.%s' % re.sub(r'[\\/]', '_', imagename)
-		self.depstampfile = '${BUILD_WORK_DIR}/targets/docker/.%s' % re.sub(r'[\\/]', '_', depimage) if depimage else None
+		self.stampfile = '${BUILD_WORK_DIR}/targets/docker/.%s' % re.sub(r'[\\/:]', '_', imagename)
+		self.depstampfile = '${BUILD_WORK_DIR}/targets/docker/.%s' % re.sub(r'[\\/:]', '_', depimage) if depimage else None
 		self.inputs = PathSet(inputs)
 		BaseTarget.__init__(self, self.stampfile, inputs + ([self.depstampfile] if self.depstampfile else []))
 

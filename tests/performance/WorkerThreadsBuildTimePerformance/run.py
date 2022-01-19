@@ -78,4 +78,4 @@ class PySysTest(XpybuildBaseTest):
 
 
 	def validate(self):
-		pass
+		self.addOutcome(PASSED)

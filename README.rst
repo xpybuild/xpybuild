@@ -1,7 +1,7 @@
 xpybuild
 ========
-.. image:: https://travis-ci.com/xpybuild/xpybuild.svg?branch=master
-	:target: https://travis-ci.com/xpybuild/xpybuild
+.. image:: ../../workflows/Tests/badge.svg
+	:target: ../../actions
 
 .. image:: https://codecov.io/gh/xpybuild/xpybuild/branch/master/graph/badge.svg
 	:target: https://codecov.io/gh/xpybuild/xpybuild
@@ -23,32 +23,32 @@ Gradle and SCons, they all have their blind spots, and we wanted to create somet
 
 Xpybuild exists because we value:
 
-	- *fast*, highly parallel builds that scale well, and deliver incremental/no-op builds really fast. For example, a large 
-	  project with 2000+ highly complex C++, C#, Java and packaging output targets can check all dependencies to determine 
-	  whether any incremental rebuilding is required in 2-4 seconds on a typical desktop machine. Many build systems 
-	  just don't scale once you get into the 100s and 1000s of targets, 
-	  leaving busy developers twiddling their thumbs throughout the day. 
-	
-	- *simple* build files that don't overcomplicate basic tasks. Building a basic Java .jar or C++ executable should 
-	  be just a few simple lines of build script, and not require the build file author to burn time 
-	  re-implementing potentially error-prone logic for standard operations like cleaning or up-to-dateness checking. 
-	
-	- *cross-platform* builds without the headaches. Any build system that relies on shell commands (e.g. Make) is always 
-	  going to be prone to subtle behaviour differences between Unix-style systems and Windows; using Python abstracts 
-	  away almost all such differences making it easy to create scripts that work everywhere.
-	  
-	- *clear error messages*, and 'fail-fast' instead of 'silently wrong' behaviour. There's nothing worse than a build script 
-	  that generates different/wrong output to what's expected due to a minor 
-	  typo in a file path or command line argument. Xpybuild is deliberately intolerant of mistakes such as commands 
-	  that actually do nothing due to lack of matching input, and never swallows errors (though you can explicitly 
-	  specify --keep-going when you need to). 
-	  
-	  It also includes a pluggable mechanism for parsing error/warning messages 
-	  from different compilers and reformatting them for common IDEs and CI providers such as Visual Studio and 
-	  Teamcity, and includes the build script location in all errors. The icing on the cake is that since everything 
-	  is written in Python all stack traces are in user-editable Python text files (not hidden away in a Java class) 
-	  so it's easy to add debugging code if you ever need to. 
-	  
+- *fast*, highly parallel builds that scale well, and deliver incremental/no-op builds really fast. For example, a large 
+  project with 2000+ highly complex C++, C#, Java and packaging output targets can check all dependencies to determine 
+  whether any incremental rebuilding is required in 2-4 seconds on a typical desktop machine. Many build systems 
+  just don't scale once you get into the 100s and 1000s of targets, 
+  leaving busy developers twiddling their thumbs throughout the day. 
+
+- *simple* build files that don't overcomplicate basic tasks. Building a basic Java .jar or C++ executable should 
+  be just a few simple lines of build script, and not require the build file author to burn time 
+  re-implementing potentially error-prone logic for standard operations like cleaning or up-to-dateness checking. 
+
+- *cross-platform* builds without the headaches. Any build system that relies on shell commands (e.g. Make) is always 
+  going to be prone to subtle behaviour differences between Unix-style systems and Windows; using Python abstracts 
+  away almost all such differences making it easy to create scripts that work everywhere.
+
+- *clear error messages*, and 'fail-fast' instead of 'silently wrong' behaviour. There's nothing worse than a build script 
+  that generates different/wrong output to what's expected due to a minor 
+  typo in a file path or command line argument. Xpybuild is deliberately intolerant of mistakes such as commands 
+  that actually do nothing due to lack of matching input, and never swallows errors (though you can explicitly 
+  specify --keep-going when you need to).  
+
+It also includes a pluggable mechanism for parsing error/warning messages 
+from different compilers and reformatting them for common IDEs and CI providers such as Visual Studio and 
+Teamcity, and includes the build script location in all errors. The icing on the cake is that since everything 
+is written in Python all stack traces are in user-editable Python text files (not hidden away in a Java class) 
+so it's easy to add debugging code if you ever need to. 
+
 Sample build script
 -------------------
 
@@ -115,9 +115,9 @@ We hope you love using xpybuild!
 
 License
 -------
-Copyright (c) 2013-2019 Ben Spiller and Matthew Johnson
+Copyright (c) 2013-2022 Ben Spiller and Matthew Johnson
 
-Copyright (c) 2013-2019 Software AG, Darmstadt, Germany and/or its licensors
+Copyright (c) 2013-2022 Software AG, Darmstadt, Germany and/or its licensors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

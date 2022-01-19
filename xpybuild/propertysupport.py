@@ -53,11 +53,11 @@ To see a list of the property names and values for the current build and machine
 .. rubric:: Target options
 
 Options provide a way to customize the behaviour of targets either globally throughout the build or for specific 
-targets. For example, the location of the JDK used for compiling Java program is specified by an option (``java.home``), 
-which also other other Java-related targets such as Javadoc generation. 
+targets. For example, location of the JDK used for compiling Java programs, or the default class used for handling 
+output from a custom command (e.g. ``CustomCommand.outputHandlerFactory``). 
 
-Often an option will be set to the value of a property, so that the property setting, reuse and overriding mechanisms 
-can be used. 
+Often an option will be set to the value of a ``${...}`` property, so that the property setting, reuse and overriding 
+mechanisms can be used. 
 
 Information about the defined option names and their value type and default is available in the documentation for the 
 associated targets. To specify the default value for an option globally for all targetsin your build, call 
@@ -89,6 +89,7 @@ import re
 import logging
 import mimetypes
 import typing
+import importlib
 
 __log = logging.getLogger('propertysupport') # cannot call it log cos this gets imported a lot
 
@@ -99,7 +100,6 @@ from xpybuild.utils.buildexceptions import BuildException
 from xpybuild.utils.fileutils import parsePropertiesFile
 from xpybuild.utils.buildfilelocation import BuildFileLocation, formatFileLocation
 from xpybuild.utils.functors import Composable, ComposableWrapper
-from xpybuild.pathsets import PathSet, BasePathSet
 
 
 # All the public methods that build authors are expected to use to interact with properties and options
@@ -114,9 +114,11 @@ def defineStringProperty(name, default):
 
 	@param default: The default value of the propert (can contain other ${...} variables)
 	If set to None, the property must be set on the command line each time
+
+	@returns: The resolved property value. 
 	"""
 	init = BuildInitializationContext.getBuildInitializationContext()
-	if init: init.defineProperty(name, default, lambda v: BuildInitializationContext.getBuildInitializationContext().expandPropertyValues(v))
+	if init: return init.defineProperty(name, default, lambda v: BuildInitializationContext.getBuildInitializationContext().expandPropertyValues(v))
 
 def definePathProperty(name, default, mustExist=False):
 	""" Define a string property that will be converted to an absolute path.
@@ -139,6 +141,8 @@ def definePathProperty(name, default, mustExist=False):
 	@param mustExist: True if it's an error to specify a directory that doesn't
 	exist (will raise a BuildException)
 	
+	@returns: The resolved property value. 
+	
 	"""
 
 	# Expands properties, makes the path absolute, checks that it looks sensible and (if needed) whether the path exists
@@ -157,7 +161,7 @@ def definePathProperty(name, default, mustExist=False):
 		return value
 		
 	init = BuildInitializationContext.getBuildInitializationContext()
-	if init: init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
+	if init: return init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
 
 
 def defineOutputDirProperty(name, default):
@@ -166,8 +170,9 @@ def defineOutputDirProperty(name, default):
 	
 	Equivalent to calling `definePathProperty` then `registerOutputDirProperties`.
 	"""
-	definePathProperty(name, default)
+	x = definePathProperty(name, default)
 	registerOutputDirProperties(name)
+	return x
 
 def registerOutputDirProperties(*propertyNames):
 	""" Registers the specified path property name(s) as being an output directory 
@@ -192,6 +197,8 @@ def defineEnumerationProperty(name, default, enumValues):
 	If set to None, the property must be set on the command line each time
 
 	@param enumValues: A list of valid values for this property (can contain other ${...} variables)
+
+	@returns: The resolved property value. 
 	"""
 
 	# Expands properties, then checks that it's one of the acceptible values
@@ -208,7 +215,7 @@ def defineEnumerationProperty(name, default, enumValues):
 		
 	init = BuildInitializationContext.getBuildInitializationContext()
 	if init:
-		init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
+		return init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
 	
 def defineBooleanProperty(name, default=False):
 	""" Defines a boolean property that will have a True or False value. 
@@ -217,6 +224,8 @@ def defineBooleanProperty(name, default=False):
 
 	@param default: The default value (default = False)
 	If set to None, the property must be set on the command line each time
+
+	@returns: The resolved property value. 
 	"""
 
 	# Expands property values, then converts to a boolean
@@ -230,21 +239,35 @@ def defineBooleanProperty(name, default=False):
 	
 	init = BuildInitializationContext.getBuildInitializationContext()
 	if init:
-		init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
+		return init.defineProperty(name, default, coerceToValidValue=_coerceToValidValue)
 
 def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, conditions=None):
 	"""
-	Defines a set of string properties from a .properties file
+	Defines a set of string properties by reading a .properties file. 
 	
-	@param propertiesFile: The file to include properties from (can include ${...} variables)
+	:param str propertiesFile: The file to include properties from (can include ${...} variables)
 
-	@param prefix: if specified, this prefix will be added to the start of all property names from this file
+	:param str prefix: if specified, this prefix will be added to the start of all property names from this file
 
-	@param excludeLines: a string of list of strings to search for, any KEY containing these strings will be ignored
+	:param list(str) excludeLines: a string of list of strings to search for, any KEY containing these strings will be ignored
 	
-	@param conditions: an optional list of string conditions that can appear in property 
-	keys e.g. "FOO<condition>=bar" where lines with no condition in this list 
-	are ignored. Conditions are typically lowercase. 
+	:param set(str) conditions: 
+	
+		An optional set or list of lower_case string conditions that can appear in property 
+		keys to dyamically filter based on the platform and what kind of build is being performed. 
+		
+		For example ``MY_PROPERTY<windows>=bar``. Each line is only *included* if the condition matches one of the condition 
+		strings passed to this function.
+		
+		For more advanced cases, a Python eval string can be specified, evaluated in a scope that includes the 
+		``conditions`` set, a reference to the ``context`` (for property lookups), the ``IS_WINDOWS`` constant, and the 
+		Python ``import_module`` function for accessing anything else. You cannot use the ``=`` character anywhere in the 
+		eval string (since this is a properties file, after all!), but in most cases using the ``in`` operator is more 
+		useful anyway. For example:: 
+		
+			MY_PROPERTY<      IS_WINDOWS and 'debug' not in conditions  > = windows-release.dll
+			MY_PROPERTY< not (IS_WINDOWS and 'debug' not in conditions) > = everything-else.dll
+			
 	"""
 	if conditions: assert not isinstance(conditions,str), 'conditions parameter must be a list'
 	__log.info('Defining properties from file: %s', propertiesFile)
@@ -261,15 +284,32 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 		for key,value,lineNo in parsePropertiesFile(f, excludeLines=excludeLines):
 			__log.debug('definePropertiesFromFile: expanding %s=%s', key, value)
 			
-			if '<' in key:
-				c = re.search('<([^.]+)>', key)
+			if '<' in key and conditions is not None:
+				c = re.search('<([^>]+)>', key)
 				if not c:
 					raise BuildException('Error processing properties file, malformed <condition> line at %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
 				key = key.replace('<'+c.group(1)+'>', '')
 				if '<' in key: raise BuildException('Error processing properties file, malformed line with multiple <condition> items at %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
-				matches = True if conditions else False
-				if matches:
-					for cond in c.group(1).split(','):
+				
+				condfilters = c.group(1)
+				if '(' in condfilters or any([(' ' in x.strip()) for x in condfilters.split(',')]): # spaces (other than as "," delimiters are a clue this is more than a condition list
+					# treat it as an eval string
+					env = {
+						'importlib':importlib, # in case they want to import anything else
+						'import_module':importlib.import_module,
+						'conditions':set(conditions),
+						'context':context, # allows accessing properties and anything else that's needed
+						'IS_WINDOWS':IS_WINDOWS,
+					}
+					try:
+						matches = bool(eval(condfilters, env))
+					except Exception as e:
+						raise BuildException('Error processing properties file, malformed Python eval string in <condition> line at %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
+					__log.critical('Got: %s, %r', condfilters, eval(condfilters, env))
+					
+				else: # fall back to the quicker and simpler common case
+					matches = True
+					for cond in condfilters.split(','): # the ability to have a comma-separated list with "AND" semantics is undocumented (but is used in at least one place)
 						if cond.strip() not in conditions:
 							matches = False
 							break
@@ -285,7 +325,7 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 			
 			try:
 				value = context.expandPropertyValues(value)
-				context.defineProperty(key, value, debug=True)
+				context.defineProperty(key, value, debug=True, location=formatFileLocation(propertiesFile, lineNo))
 			except BuildException as e:
 				raise BuildException('Error processing properties file %s'%formatFileLocation(propertiesFile, lineNo), causedBy=True)
 	finally:
@@ -372,16 +412,38 @@ def enableEnvironmentPropertyOverrides(prefix):
 		init.enableEnvironmentPropertyOverrides(prefix)
 
 class ExtensionBasedFileEncodingDecider:
-	"""Can be used for the `common.fileEncodingDecider` option which decides what file encoding to use for 
+	"""Can be used for the ``common.fileEncodingDecider`` option which decides what file encoding to use for 
 	reading/writing a text file given its path. 
 	
-	The decider option is called with arguments: (context, path), and returns the name of the encoding to be used for this path. 
-	Additional keyword arguments may be passed to the decider in future. 
+	For example::
+	
+		setGlobalOption("common.fileEncodingDecider", ExtensionBasedFileEncodingDecider({
+			'.foo': 'utf-8', 
+			'.bar': ExtensionBasedFileEncodingDecider.BINARY,
+			}, default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()))
+	
+	This decider is called with arguments ``(context, path)``, and returns the name of the encoding to be 
+	used for this path. Additional keyword arguments may be passed to the decider function in future, so accept additional 
+	``**kwargs`` in the method signature if overriding. 
 	
 	This extension-based decider uses the specified dictionary of extensions to determine which 
 	extension to use, including the special value L{ExtensionBasedFileEncodingDecider.BINARY} 
 	which indicates non-text files. 
 
+	@param extToEncoding: 
+		A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one, 
+		or the constant L{ExtensionBasedFileEncodingDecider.BINARY} which indicates a non-text file (not all targets support binary). 
+		The extensions can contain ${...} properties. 
+		
+		Extensions are matched case insensitively. 
+
+	@param default: Specifies what to do if none of the specified extensions match. 
+		
+		Can be: the name of the default encoding to be used as a string (e.g. ``"utf-8"``), 
+		a decider function to delegate to (such as `ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()`), or ``None`` to defer to the 
+		configured global option (or throw an exception if this is itself the global option). 
+		
+		Recommended values are: 'utf-8', 'ascii' or `xpybuild.buildcommon.PREFERRED_ENCODING`.
 	"""
 	
 	BINARY = '<binary>'
@@ -389,14 +451,6 @@ class ExtensionBasedFileEncodingDecider:
 	should not be opened in text mode. """
 	
 	def __init__(self, extToEncoding={}, default=None): 
-		"""
-		@param defaultEncoding: The name of the default encoding to be used, another decider to delegate to, or None to defer to the configured global option. 
-		Recommended values are: 'utf-8', 'ascii' or locale.getpreferredencoding().
-		
-		@param extToEncoding: A dictionary whose keys are extensions such as '.xml', '.foo.bar.baz' and values specify the encoding to use for each one, 
-		or the constant L{ExtensionBasedFileEncodingDecider.BINARY} which indicates a non-text file (not all targets support binary). 
-		The extensions can contain ${...} properties. 
-		"""
 		self.extToEncodingDict, self.defaultEncoding = dict(extToEncoding), default
 		# enforce starts with a . to prevent mistakes and allow us to potentially optimize the implementation in future
 		for k in extToEncoding: 
@@ -425,10 +479,10 @@ class ExtensionBasedFileEncodingDecider:
 			# (re)build the cache if it doesn't already exist, or if for some unexpected reason the context has changed
 			cache = {}
 			for ext, enc in self.extToEncodingDict.items():
-				cache[context.expandPropertyValues(ext)] = enc or self.defaultEncoding
+				cache[context.expandPropertyValues(ext).lower()] = enc or self.defaultEncoding
 			self.cache = (context, cache)
 		
-		p = os.path.basename(path).split('.')
+		p = os.path.basename(path).lower().split('.')
 		for i in range(1, len(p)): # in case it has an .x.y multi-part extension
 			result = cache.get('.' + '.'.join(p[i:]), None)
 			if result is not None: return result
@@ -446,7 +500,7 @@ class ExtensionBasedFileEncodingDecider:
 	@staticmethod
 	def getDefaultFileEncodingDecider():
 		""" Creates the file encoding decider that is used by default if per-target 
-		or global option is specified. 
+		or global option is not specified. 
 		
 		Currently this supports utf-8 encoding of json/xml/yaml/yml files, 
 		and binary for common non-application/text mime types such as image files 
@@ -461,6 +515,15 @@ class ExtensionBasedFileEncodingDecider:
 			'.json':'utf-8',
 			'.xml':'utf-8',
 			'.yaml':'utf-8', '.yml':'utf-8',
+			
+			# Some of these are probably in the mime types too, but worth adding them explicitly to be sure
+			'.zip':ExtensionBasedFileEncodingDecider.BINARY,
+			'.gz':ExtensionBasedFileEncodingDecider.BINARY,
+			'.bz':ExtensionBasedFileEncodingDecider.BINARY,
+			'.bz2':ExtensionBasedFileEncodingDecider.BINARY,
+			'.xz':ExtensionBasedFileEncodingDecider.BINARY,
+			'.jar':ExtensionBasedFileEncodingDecider.BINARY,
+			'.class':ExtensionBasedFileEncodingDecider.BINARY,
 		}
 		# add binary for known non-text types such as images. Don't do it for application/ as that includes 
 		# text formats such as js and json
@@ -469,26 +532,57 @@ class ExtensionBasedFileEncodingDecider:
 				d[ext] = ExtensionBasedFileEncodingDecider.BINARY
 		return ExtensionBasedFileEncodingDecider(d, default='ascii')
 
+
 ################################################################################
 # Options
 
+class Option:
+	""" Represents an option definition. Options customize the behaviour of one or more targets, for example by 
+	providing default compiler arguments, timeouts, or paths to locally installed tools.  
+	
+	An instance of this class is returned by `defineOption`. To set the value of options in your build, call 
+	`xpybuild.basetarget.BaseTarget.option` or `setGlobalOption`. 
+	
+	""" # this class exists just to make the pydoc look nice via the __repr__
+	def __init__(self, name, default):
+		self.optionName = name # do not rename this - it's used in BaseTarget.option
+		self.default = default
+	def __repr__(self): return f'Option "{self.optionName}" (default: %s)' % ('<lambda>' if "<lambda> at 0x" in repr(self.default) else repr(self.default)) # this string appears in pydoc
+
 def defineOption(name, default):
-	""" Define an option with a default (can be overridden globally using setGlobalOption() or on individual targets).
+	''' Define an option controlling some behaviour of the build. 
 	
-	This method is typically used only when implementing a new kind of target. 
+	A default value is provided, which can be overridden on individual targets, or globally throughout the build 
+	using `setGlobalOption`.
 	
-	Options are not available for ``${...}`` expansion (like properties), but 
-	rather as used for (optionally inheritably) settings that affect the 
-	behaviour of one or more targets. They are accessed using self.options 
-	in any target instance. 
+	This method is typically used only when implementing a new kind of target, and often nested in an ``Options`` class 
+	under the target, e.g.::
+	
+		class MyTarget(BaseTarget):
+			class Options:
+				""" Options for customizing the behaviour of this target. To set an option on a specific target call 
+				`xpybuild.basetarget.BaseTarget.option` or to se a global default use `xpybuild.propertysupport.setGlobalOption`. 
+				"""
+			
+				myOption = defineOption("MyTarget.myOption", 123)
+				"""
+				Configures the XXX. 
+				"""
+	
+	Unlike properties, option values are not accessed by ``${...}`` expansion, but rather using ``self.options`` 
+	from any `xpybuild.basetarget.BaseTarget` subclass implementation. 
 	
 	@param name: The option name, which should usually be in lowerCamelCase, with 
 	a TitleCase prefix specific to this target or group of targets, often 
 	matching the target name, e.g. ``Javac.compilerArgs``. 
 
-	@param default: The default value of the option.
-	"""
+	@param default: The default value of the option. If you need a callable, try to use named functions rather than 
+	lambdas so that the string representation is human-friendly. 
+	
+	:returns: A new instance of `Option`. 
+	'''
 	BuildInitializationContext._defineOption(name, default)
+	return Option(name, default)
 
 def setGlobalOption(key, value):
 	"""
@@ -649,7 +743,7 @@ class joinPaths(Composable):
 		specified separator character. 
 	"""
 	def __init__(self, pathset, pathsep=os.pathsep):
-		self.pathset = pathset if isinstance(pathset, BasePathSet) else PathSet(pathset)
+		self.pathset = pathset if isinstance(pathset, xpybuild.pathsets.BasePathSet) else xpybuild.pathsets.PathSet(pathset)
 		self.pathsep = pathsep
 	def resolveToString(self, context):
 		""" Do property expansion on the inputs and then perform the regex 
@@ -660,3 +754,6 @@ class joinPaths(Composable):
 	def __str__(self):
 		return "joinPaths(%s with %s)"%(self.pathset, self.pathsep)
 
+
+# Defined at bottom of file since not needed in APIs and to avoid circular dependency
+import xpybuild.pathsets

@@ -3,7 +3,7 @@
 # This class is responsible for working out what tasks need to run, and for 
 # scheduling them
 #
-# Copyright (c) 2013 - 2017, 2019 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2019, 2021 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -52,6 +52,9 @@ class BuildScheduler(object):
 		Master controller that takes a list of targets from the build files
 		and a set requested on the command line along with the options and
 		kicks them all off.
+		
+		There is a separate scheduler instance for the clean phase 
+		(if doing a clean or rebuild) and the build phase. 
 	"""
 	
 	def __init__(self, init, targets, options):
@@ -119,7 +122,11 @@ class BuildScheduler(object):
 		
 		self.context._resolveTargetGroups()
 
-		self.pending = list([t.path for t in targets])
+		initContextTargets = init.targets()
+		# The target objects passed in were from the 1st load of the build file, but if this is a rebuild these are 
+		# stale/used objects and we need to use the new ones from init to ensure consistency; otherwise we get assertion 
+		# failures if the path is different
+		self.pending = [initContextTargets[t.name].path for t in targets]
 		self.pending.sort() # ensure a stable order that doesn't depend on hash maps
 		
 		self.options = options
@@ -201,7 +208,10 @@ class BuildScheduler(object):
 					if not errors:
 						# if it's enabled, this is the point we want log statements 
 						# to get buffered for writing to the output at the end of 
-						# this target's execution
+						# this target's execution 
+						# (nb: this is after the initial "*** Building XXXX " log message... but that's 
+						# actually useful in case of hanging targets, and anyway would be non-trivial to fix... the target end 
+						# message is however included atomically with the target)
 						outputBufferingManager.startBufferingForCurrentThread()
 	
 						log.debug('%s: executing run method for target', target.name)
@@ -236,7 +246,9 @@ class BuildScheduler(object):
 			if not self.options["clean"]:
 				self.targetTimes[target.name] = (target.path, duration)
 				
-			log.critical("    %s: done in %.1f seconds", target.name, duration)
+			log.critical("    %s: done in %.1f seconds%s", target.name, duration, 
+				# if we're just building a few targets, it's useful to print the actual (relative) paths of them in case user wants to manually inspect them
+				(' - '+os.path.relpath(target.path)) if len(self.targetwrappers) < 20 else '')
 			return errors
 		finally:
 			outputBufferingManager.endBufferingForCurrentThread()
@@ -309,7 +321,7 @@ class BuildScheduler(object):
 			log.critical(self.progressFormat+"Resolving dependencies for %s", self.index, self.total, targetwrapper)
 
 		if targetwrapper is None:
-			assert False # I'm not sure how we can get here, think it should actually be impossible
+			assert False, 'Internal error - could not find target "%s" (pending=%d)'%(tname, len(pending)) # I'm not sure how we can get here, think it should actually be impossible
 			if not cached_exists(tname):
 				errors.append("Unknown target %s" % tname)
 			else:
