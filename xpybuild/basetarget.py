@@ -29,6 +29,7 @@ in your build files, and is also the base class for defining new targets.
 import os, inspect, shutil, re
 
 from xpybuild.buildcommon import *
+import xpybuild.buildcontext
 from xpybuild.buildcontext import getBuildInitializationContext
 import xpybuild.buildcontext
 import xpybuild.utils.fileutils as fileutils
@@ -109,6 +110,8 @@ class BaseTarget(Composable):
 
 	
 	def __init__(self, name, dependencies):
+		# normalize specifiers in target names, so that when they're logged we can copy+paste them to a unix shell
+		name = BaseTarget._normalizeTargetName(name)
 		
 		self.__getAttrImpl = {
 			'path': lambda: self.__returnOrRaiseIfNone(self.__path, 'Target path has not yet been resolved by this phase of the build process: %s'%self),
@@ -128,9 +131,6 @@ class BaseTarget(Composable):
 			if '\\' in name:
 				raise BuildException('Invalid target name: backslashes are not permitted: %s'%name)
 		self.__name = str(name)
-		# normalize specifiers in target names, so that when they're logged we can copy+paste them to a unix shell
-		if xpybuild.buildcontext._EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX:  # could be a callable
-			self.__name = self.__name.replace('$${', '<__xpybuild_dollar_placeholder>').replace('${', '{').replace('<__xpybuild_dollar_placeholder>', '$${')
 		self.__path_src = name
 		self.__tags = ['full']
 		self.__priority = 0.0 # default so we can go bigger or smaller
@@ -160,7 +160,12 @@ class BaseTarget(Composable):
 		self.addHashableImplicitInputOption = self.registerImplicitInputOption
 		self.addHashableImplicitInput = self.registerImplicitInput
 
-		
+	@staticmethod
+	def _normalizeTargetName(name): # non-public method to ensure comparisons between target names are done consistently
+		if xpybuild.buildcontext._EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX: 
+			name = name.replace('$${', '<__xpybuild_dollar_placeholder>').replace('${', '{').replace('<__xpybuild_dollar_placeholder>', '$${')
+		return name
+
 	def __returnOrRaiseIfNone(self, value, exceptionMessage):
 		if value is not None: return value
 		raise Exception(exceptionMessage)
@@ -203,7 +208,7 @@ class BaseTarget(Composable):
 		# if there's no explicit parent, default to ${OUTPUT_DIR} to stop 
 		# people accidentally writing to their source directories
 		if self.__path is not None: return self.__path # cache it for consistency
-		self.__path = context.getFullPath(self.__path_src, "${OUTPUT_DIR}")
+		self.__path = context.getFullPath(self.__path_src, context.getPropertyValue("OUTPUT_DIR"))
 		
 		badchars = '<>:"|?*' # Windows bad characters; it's helpful to stop people using such characters on all OSes too since almost certainly not intended
 		foundbadchars = [c for c in self.__path[2:] if c in badchars] # (nb: ignore first 2 chars of absolute path which will necessarily contain a colon on Windows)
@@ -502,7 +507,7 @@ class BaseTarget(Composable):
 		
 		"""
 		# remove chars that are not valid on unix/windows file systems (e.g. colon)
-		x = re.sub(r'[^()+./\w-]','_', name.replace('\\','/').replace('${','_').replace('}','_').rstrip('/'))
+		x = re.sub(r'[^()+./\w-]+','_', name.replace('\\','/').replace('${','_').replace('{','_').replace('}','_').rstrip('/'))
 		if len(x) < 256: x = x.replace('/','.') # avoid deeply nested directories in general
 		return x
 

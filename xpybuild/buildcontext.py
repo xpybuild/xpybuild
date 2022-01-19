@@ -194,6 +194,7 @@ class BaseContext(object):
 			string = string.replace('{{}', '<escaped_xpybuild_placeholder2>')
 
 		if _EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX:
+			# This is not super efficient... moving the logic into the following loop would be nicer
 			string = string.replace('${', '{').replace('{', '${') # treat "{" and "${" as the same (probably more efficient doing this replace() call than using regexes)
 
 		isListExpansion = False

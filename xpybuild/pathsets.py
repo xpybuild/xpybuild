@@ -1179,7 +1179,7 @@ class DirGeneratedByTarget(BasePathSet):
 		BasePathSet.__init__(self)
 		assert isinstance(dirTargetName, str)
 		assert dirTargetName.endswith('/')
-		self.__target = dirTargetName
+		self.__target = BaseTarget._normalizeTargetName(dirTargetName)
 		self.__location = BuildFileLocation()
 		
 		if '\\' in dirTargetName: # avoid silly mistakes, and enforce consistency
