@@ -48,6 +48,7 @@ jobs:
           python xpybuild.py --buildfile release-xpy.xpybuild.py
          
       - name: Upload doc as an artifact
+        if: github.event_name == 'release'
         uses: actions/upload-artifact@v2
         with:
           name: docs
