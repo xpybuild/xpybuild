@@ -76,8 +76,8 @@ jobs:
           fail_ci_if_error: true # optional (default = false)
           verbose: true # optional (default = false)
           name: ${{matrix.test-run-id}}
-          #file: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}\coverage.xml
-          directory: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}
+          files: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/coverage.xml
+          #directory: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}
           #version: v0.1.15
         
       # If any tests fail, PySys will return an error code, so we need "if: always()" so the following steps will run
