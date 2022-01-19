@@ -1,5 +1,69 @@
-3.0 - current release
-=====================
+4.0
+===
+
+.. py:currentmodule:: xpybuild
+
+Breaking changes
+----------------
+
+Removed support for Python 3.6, now the minimum version is Python 3.7+. 
+
+Minor breaking changes in this release:
+
+- Target paths can no longer contain filename characters which are prohibited on Windows such as ``<>:"|?*``. 
+  This applies on all operating systems. 
+- The special name ``full`` is now used instead of ``all`` to indicate the default set of targets (minus any 
+  excluded using ``disableInFullBuild``). On the command line it is still permitted to specify ``all`` for 
+  compatibility purposes but it is recommended to switch to ``full`` when possible. 
+- Fixed `xpybuild.propertysupport.ExtensionBasedFileEncodingDecider` to match extensions case insensitively. 
+
+Enhancements
+------------
+
+- Added support for Python 3.10. 
+- Added a ``--search`` / ``-s`` command line option for locating targets/tags/properties/options. The search string 
+  can be a substring match or a regular expression. This is a very convenient way to find out where in the build 
+  something is defined. It is recommended to use this instead of the less powerful ``--target-info`` and 
+  ``--find-target`` options in previous xpybuild releases. 
+- Added a new ``FindPaths`` option `pathsets.FindPaths.Options.globalExcludesFunction` which can be used to globally exclude 
+  certain file patterns throughout the build. By default this excludes files matching ``.nfs*`` (i.e. temporary NFS 
+  files).
+- Added more powerful "conditions" to `propertysupport.definePropertiesFromFile`, allowing for complex Python 
+  expressions that check multiple conditions and properties to be used for dynamically selecting which lines are read 
+  from ``.properties`` files. 
+- Added `basetarget.BaseTarget.Options.failureRetries` option for easily retrying (with backoff) targets which can fail 
+  transiently, e.g. due to flaky servers or interactions with anti-virus software that are outside your control. Like 
+  any option, this can be set either per-target or globally (perhaps through a property) to increase the reliability of 
+  automated build jobs. 
+- Added `buildcommon.registerBuildLoadPostProcessor` to allow adding tags and options across all targets matching a 
+  user defined criteria (e.g. targets of a particular Python class or containing a substring) just after all build 
+  files have been loaded. 
+- `propertysupport.defineOption` now returns a `propertysupport.Option` instance which provides a convenient way to 
+  document your target options. See `basetarget.BaseTarget.Options` for an example of how this looks. 
+- The log lines for each target are now buffered so they can be displayed consecutively in the ``.log`` file 
+  (just as they already are on stdout) in a multi-threaded build. Note that this does not include the initial 
+  ```*** Building targetname``` line (which is emitted as soon as the target begins, to help with debugging hanging 
+  builds) but does include the final ```***``` line that indicates whether the target was successful, as well as all 
+  intermediate log lines. 
+- Property definition methods such as `propertysupport.definePathProperty` now return the (resolved) property value, 
+  to avoid the need to call ``getPropertyValue`` when the value is directly needed in the build file. 
+- Added a ``commands=`` argument to `xpybuild.targets.custom.CustomCommand` 
+  (and `xpybuild.targets.custom.CustomCommandWithCopy`) which allows an output directory to be created by 
+  executing a sequence of multiple commands rather than needing separate targets for each command. 
+- Improved log messages when `xpybuild.targets.custom.CustomCommand` fails, to provide more information about 
+  the output of the failed process. 
+- Added common archive formats such as ``.zip`` and ``.jar`` to the default 
+  `xpybuild.propertysupport.ExtensionBasedFileEncodingDecider`. 
+
+Fixes
+-----
+
+- Fixed a possible AssertionError race condition when executing a ``--rebuild`` with targets whose path changes 
+  between the clean and build phases (for example, due to containing a timestamp or random number). 
+- Fixed the ``javac.target`` option to do the correct thing (was previously setting ``-source`` not ``-target`` (GH-6). 
+
+3.0
+===
 
 Breaking changes
 ----------------
@@ -7,8 +71,19 @@ Breaking changes
 -  Now requires Python 3.6+ instead of Python 2
 -  Added ``output`` and ``buildOptions`` required arguments to the 
    `ConsoleFormatter` base class constructor.
--  FilteredCopy mappers and the WriteFilter target now handle only
-   unicode str objects and not bytes.
+- `xpybuild.targets.copy.FilteredCopy` and `xpybuild.targets.writefile.WriteFile` now use the option 
+  ``common.fileEncodingDecider`` to select which encoding to use for character transformations instead of defaulting 
+  to whatever the local default encoding is. You may need to provide a custom 
+  `xpybuild.propertysupport.ExtensionBasedFileEncodingDecider` instance if you are 
+  filtering text files with unusual extensions::
+  
+		setGlobalOption("common.fileEncodingDecider", ExtensionBasedFileEncodingDecider({
+			'.foo': 'utf-8', 
+			'.bar': ExtensionBasedFileEncodingDecider.BINARY,
+			}, default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()))
+				
+-  Also note that FilteredCopy mappers and the WriteFile targets now 
+   only map with unicode character ``str`` objects and not ``bytes``.
 -  BuildContext.defaultOptions() was removed, as there is no legitimate
    use case for it.
 -  ``tmpdir`` has been removed from the target's ``self.options``;
@@ -96,10 +171,12 @@ Enhancements
 -  Command line now accepts a new option ``--rebuild-ignore-deps`` or ``--rid`` which is equivalent to 
    ``--rebuild --ignore-deps`` and produces a quick way to force a rebuild of a few targets/tags without any of their 
    dependencies getting rebuilt. 
--  `xpybuild.targets.copy.FilteredCopy`, `xpybuild.targets.writefile.WriteFile`: Added option ``common.fileEncodingDecider``
+-  `xpybuild.targets.copy.FilteredCopy`, `xpybuild.targets.writefile.WriteFile`: Added 
+   option ``common.fileEncodingDecider``
    which is used by FilteredCopy and WriteFile to decide what encoding
    to use for reading/writing text files. The default is an
-   ExtensionBasedFileEncodingDecider instance which specifies UTF-8 for
+   `xpybuild.propertysupport.ExtensionBasedFileEncodingDecider` instance 
+   which specifies UTF-8 for
    yaml/json/xml files, binary for some common binary types such as
    images, and 'ascii' for everything else - which means an exception
    will be thrown if any files containing characters outside the 7-bit
