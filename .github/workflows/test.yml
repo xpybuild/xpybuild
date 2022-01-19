@@ -77,7 +77,7 @@ jobs:
           fail_ci_if_error: true # optional (default = false)
           verbose: true # optional (default = false)
           name: ${{matrix.test-run-id}}
-          files: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/**
+          files: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/*
           #directory: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}
           #version: v0.1.15
         
