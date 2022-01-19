@@ -66,6 +66,7 @@ jobs:
         run: |
           echo contents of ${{ steps.pysys.outputs.artifact_PythonCoverageDir }} :
           ls -l ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}
+          ls -l ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/coverage.xml
         
       - name: Upload Python code coverage 
         # codecov@v2.1.0
@@ -76,7 +77,7 @@ jobs:
           fail_ci_if_error: true # optional (default = false)
           verbose: true # optional (default = false)
           name: ${{matrix.test-run-id}}
-          files: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/coverage.xml
+          files: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/**
           #directory: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}
           #version: v0.1.15
         
