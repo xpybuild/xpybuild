@@ -67,8 +67,8 @@ jobs:
           ls -l ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}
           ls -l ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/coverage.xml
           pwd
-          mkdir __coverage_python.win-py3.10
-          cp ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/coverage.xml __coverage_python.win-py3.10/mycov.xml
+          #mkdir __coverage_python.win-py3.10
+          #cp ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/coverage.xml __coverage_python.win-py3.10/mycov.xml
         
       - name: Upload Python code coverage 
         # codecov@v2.1.0
@@ -79,7 +79,7 @@ jobs:
           fail_ci_if_error: true # optional (default = false)
           verbose: true # optional (default = false)
           name: ${{matrix.test-run-id}}
-          files: __coverage_python.win-py3.10/mycov.xml
+          files: tests/__coverage_python.win-py3.10/coverage.xml
           #${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/coverage.xml
           #directory: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}
           #version: v0.1.15
