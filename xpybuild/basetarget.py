@@ -110,9 +110,6 @@ class BaseTarget(Composable):
 
 	
 	def __init__(self, name, dependencies):
-		# normalize specifiers in target names, so that when they're logged we can copy+paste them to a unix shell
-		name = BaseTarget._normalizeTargetName(name)
-		
 		self.__getAttrImpl = {
 			'path': lambda: self.__returnOrRaiseIfNone(self.__path, 'Target path has not yet been resolved by this phase of the build process: %s'%self),
 			'name': lambda: self.__name,
@@ -130,7 +127,7 @@ class BaseTarget(Composable):
 				raise BuildException('Invalid target name: double slashes are not permitted: %s'%name)
 			if '\\' in name:
 				raise BuildException('Invalid target name: backslashes are not permitted: %s'%name)
-		self.__name = str(name)
+		self.__name = BaseTarget._normalizeTargetName(str(name))
 		self.__path_src = name
 		self.__tags = ['full']
 		self.__priority = 0.0 # default so we can go bigger or smaller
