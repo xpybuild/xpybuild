@@ -181,6 +181,7 @@ class Copy(BaseTarget):
 		# shortcut (we want to expand property values to detect changes in 
 		# versions etc that should trigger a rebuild, but just not do any 
 		# globbing/searches here)
+		# This is slightly dodgy in case any object in src uses the "{" char which would map as a property substitution, but fairly unlikely
 		r.append('src: '+context.expandPropertyValues('%s'%self.src))
 		
 		if self.mode: r.append('mode: %s'%self.mode)
