@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.buildcommon &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.buildcommon &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">xpybuild v3.1.dev1</a>
+          <a href="../../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -239,6 +239,21 @@
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="kc">False</span></div>
 
+<span class="n">PREFERRED_ENCODING</span> <span class="o">=</span> <span class="n">locale</span><span class="o">.</span><span class="n">getpreferredencoding</span><span class="p">()</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The operating system&#39;s preferred/default encoding for reading/writing the contents of text data in files and </span>
+<span class="sd">process stdout/stderr for the current environment (or machine). </span>
+
+<span class="sd">This returns the same value as Python&#39;s ``locale.getpreferredencoding()`` method, but as that method is not thread-safe, </span>
+<span class="sd">this constant must always be used in builds to avoid race conditions when running in parallel. </span>
+
+<span class="sd">The OS preferred encoding should not be confused with Python&#39;s &#39;default&#39; encoding (``sys.getdefaultencoding()``) which </span>
+<span class="sd">is usually not relevant in a build. </span>
+
+<span class="sd">.. versionadded:: 4.0</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
 <div class="viewcode-block" id="defineAtomicTargetGroup"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.defineAtomicTargetGroup">[docs]</a><span class="k">def</span> <span class="nf">defineAtomicTargetGroup</span><span class="p">(</span><span class="o">*</span><span class="n">targets</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; The given targets must all be built before anything which depends on any of those targets.</span>
 <span class="sd">	</span>
@@ -262,10 +277,43 @@
 <span class="sd">Use requireXpyBuildVersion instead.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="registerBuildLoadPostProcessor"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.registerBuildLoadPostProcessor">[docs]</a><span class="k">def</span> <span class="nf">registerBuildLoadPostProcessor</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Add a callback function that will be invoked just after the build files have been parsed and all targets added, </span>
+<span class="sd">	to allow for custom post processing logic to execute before the clean/build. </span>
+<span class="sd">	</span>
+<span class="sd">	This is useful for performing global customizations of targets throughout the build, such as adding tags or </span>
+<span class="sd">	additional target options. For example, to override the default retry setting and add a tag to all defined targets </span>
+<span class="sd">	of a particular Python class::</span>
+<span class="sd">	</span>
+<span class="sd">		def demoPostProcessor(context):</span>
+<span class="sd">			for target in context.targets().values():</span>
+<span class="sd">				if isinstance(target, MyCustomTarget) or &#39;FooBar&#39; in target.name: </span>
+<span class="sd">					# Override options for these targets</span>
+<span class="sd">					target.option(BaseTarget.Options.failureRetries, 2)</span>
+<span class="sd">					</span>
+<span class="sd">					# Add additional tags for these targets</span>
+<span class="sd">					target.tags(&#39;my-post-processed-tag&#39;)</span>
+
+<span class="sd">		registerBuildLoadPostProcessor(demoPostProcessor)</span>
+
+<span class="sd">	:param Callable[xpybuild.buildcontext.BuildInitializationContext] fn: A function that takes a context as its argument.</span>
+<span class="sd">	You may wish to use ``BuildInitializationContext`` methods such as `xpybuild.buildcontext.BuildInitializationContext.targets` from your function. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="kn">import</span> <span class="n">getBuildInitializationContext</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">fn</span><span class="p">:</span> <span class="k">return</span>
+	<span class="n">getBuildInitializationContext</span><span class="p">()</span><span class="o">.</span><span class="n">_buildParsePostProcessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="registerPreBuildCheck"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.registerPreBuildCheck">[docs]</a><span class="k">def</span> <span class="nf">registerPreBuildCheck</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot; Defines a check which will be called after any clean but before any build actions take place.</span>
-<span class="sd">	    fn should be a functor that takes a context and raises a BuildException if the check fails. &quot;&quot;&quot;</span>
-	<span class="kn">from</span> <span class="nn">buildcontext</span> <span class="kn">import</span> <span class="n">getBuildInitializationContext</span>
+	<span class="sd">&quot;&quot;&quot; Defines a check which will be called after any clean but before any build actions take place, to provide fail-fast </span>
+<span class="sd">	behaviour if something is wrong.</span>
+
+<span class="sd">	See also `registerBuildLoadPostProcessor`. </span>
+<span class="sd">	</span>
+<span class="sd">	:param Callable[xpybuild.buildcontext.BuildInitializationContext] fn: A function that takes a context as its argument, </span>
+<span class="sd">	and raises a BuildException if the check fails.</span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="kn">import</span> <span class="n">getBuildInitializationContext</span>
 	<span class="n">getBuildInitializationContext</span><span class="p">()</span><span class="o">.</span><span class="n">registerPreBuildCheck</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StringFormatter"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcommon.html#xpybuild.buildcommon.StringFormatter">[docs]</a><span class="k">class</span> <span class="nc">StringFormatter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -359,7 +407,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

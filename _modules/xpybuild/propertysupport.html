@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.propertysupport &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.propertysupport &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">xpybuild v3.1.dev1</a>
+          <a href="../../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -200,11 +200,11 @@
 <span class="sd">.. rubric:: Target options</span>
 
 <span class="sd">Options provide a way to customize the behaviour of targets either globally throughout the build or for specific </span>
-<span class="sd">targets. For example, the location of the JDK used for compiling Java program is specified by an option (``java.home``), </span>
-<span class="sd">which also other other Java-related targets such as Javadoc generation. </span>
+<span class="sd">targets. For example, location of the JDK used for compiling Java programs, or the default class used for handling </span>
+<span class="sd">output from a custom command (e.g. ``CustomCommand.outputHandlerFactory``). </span>
 
-<span class="sd">Often an option will be set to the value of a property, so that the property setting, reuse and overriding mechanisms </span>
-<span class="sd">can be used. </span>
+<span class="sd">Often an option will be set to the value of a ``${...}`` property, so that the property setting, reuse and overriding </span>
+<span class="sd">mechanisms can be used. </span>
 
 <span class="sd">Information about the defined option names and their value type and default is available in the documentation for the </span>
 <span class="sd">associated targets. To specify the default value for an option globally for all targetsin your build, call </span>
@@ -236,6 +236,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">mimetypes</span>
 <span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
 
 <span class="n">__log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;propertysupport&#39;</span><span class="p">)</span> <span class="c1"># cannot call it log cos this gets imported a lot</span>
 
@@ -246,12 +247,11 @@
 <span class="kn">from</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="kn">import</span> <span class="n">parsePropertiesFile</span>
 <span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="kn">import</span> <span class="n">BuildFileLocation</span><span class="p">,</span> <span class="n">formatFileLocation</span>
 <span class="kn">from</span> <span class="nn">xpybuild.utils.functors</span> <span class="kn">import</span> <span class="n">Composable</span><span class="p">,</span> <span class="n">ComposableWrapper</span>
-<span class="kn">from</span> <span class="nn">xpybuild.pathsets</span> <span class="kn">import</span> <span class="n">PathSet</span><span class="p">,</span> <span class="n">BasePathSet</span>
 
 
 <span class="c1"># All the public methods that build authors are expected to use to interact with properties and options</span>
 
-<div class="viewcode-block" id="defineStringProperty"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.defineStringProperty">[docs]</a><span class="k">def</span> <span class="nf">defineStringProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+<div class="viewcode-block" id="defineStringProperty"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.defineStringProperty">[docs]</a><span class="k">def</span> <span class="nf">defineStringProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Define a string property which can be used in ${...} substitution. </span>
 <span class="sd">	</span>
 <span class="sd">	Do not use this generic function for any properties representing a file </span>
@@ -261,11 +261,13 @@
 
 <span class="sd">	@param default: The default value of the propert (can contain other ${...} variables)</span>
 <span class="sd">	If set to None, the property must be set on the command line each time</span>
+
+<span class="sd">	@returns: The resolved property value. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="n">init</span> <span class="o">=</span> <span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">getBuildInitializationContext</span><span class="p">()</span>
-	<span class="k">if</span> <span class="n">init</span><span class="p">:</span> <span class="n">init</span><span class="o">.</span><span class="n">defineProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">getBuildInitializationContext</span><span class="p">()</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">v</span><span class="p">))</span></div>
+	<span class="k">if</span> <span class="n">init</span><span class="p">:</span> <span class="k">return</span> <span class="n">init</span><span class="o">.</span><span class="n">defineProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">getBuildInitializationContext</span><span class="p">()</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">v</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="definePathProperty"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.definePathProperty">[docs]</a><span class="k">def</span> <span class="nf">definePathProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">mustExist</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="definePathProperty"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.definePathProperty">[docs]</a><span class="k">def</span> <span class="nf">definePathProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">mustExist</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Define a string property that will be converted to an absolute path.</span>
 
 <span class="sd">	Path is normalized and any trailing slashes are removed. An error is raised </span>
@@ -286,6 +288,8 @@
 <span class="sd">	@param mustExist: True if it&#39;s an error to specify a directory that doesn&#39;t</span>
 <span class="sd">	exist (will raise a BuildException)</span>
 <span class="sd">	</span>
+<span class="sd">	@returns: The resolved property value. </span>
+<span class="sd">	</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 
 	<span class="c1"># Expands properties, makes the path absolute, checks that it looks sensible and (if needed) whether the path exists</span>
@@ -304,19 +308,20 @@
 		<span class="k">return</span> <span class="n">value</span>
 		
 	<span class="n">init</span> <span class="o">=</span> <span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">getBuildInitializationContext</span><span class="p">()</span>
-	<span class="k">if</span> <span class="n">init</span><span class="p">:</span> <span class="n">init</span><span class="o">.</span><span class="n">defineProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">coerceToValidValue</span><span class="o">=</span><span class="n">_coerceToValidValue</span><span class="p">)</span></div>
+	<span class="k">if</span> <span class="n">init</span><span class="p">:</span> <span class="k">return</span> <span class="n">init</span><span class="o">.</span><span class="n">defineProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">coerceToValidValue</span><span class="o">=</span><span class="n">_coerceToValidValue</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="defineOutputDirProperty"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.defineOutputDirProperty">[docs]</a><span class="k">def</span> <span class="nf">defineOutputDirProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+<div class="viewcode-block" id="defineOutputDirProperty"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.defineOutputDirProperty">[docs]</a><span class="k">def</span> <span class="nf">defineOutputDirProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Define a string property that will also be registered as an output directory (indicating that it will </span>
 <span class="sd">	always be deleted during a clean).  </span>
 <span class="sd">	</span>
 <span class="sd">	Equivalent to calling `definePathProperty` then `registerOutputDirProperties`.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="n">definePathProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
-	<span class="n">registerOutputDirProperties</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+	<span class="n">x</span> <span class="o">=</span> <span class="n">definePathProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+	<span class="n">registerOutputDirProperties</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">x</span></div>
 
-<div class="viewcode-block" id="registerOutputDirProperties"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.registerOutputDirProperties">[docs]</a><span class="k">def</span> <span class="nf">registerOutputDirProperties</span><span class="p">(</span><span class="o">*</span><span class="n">propertyNames</span><span class="p">):</span>
+<div class="viewcode-block" id="registerOutputDirProperties"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.registerOutputDirProperties">[docs]</a><span class="k">def</span> <span class="nf">registerOutputDirProperties</span><span class="p">(</span><span class="o">*</span><span class="n">propertyNames</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Registers the specified path property name(s) as being an output directory </span>
 <span class="sd">	of this build, meaning that they will be created automatically at the </span>
 <span class="sd">	beginning of the build process, and removed during a global clean.</span>
@@ -330,7 +335,7 @@
 			<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">p</span><span class="p">):</span> <span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Only absolute path properties can be used as output dirs: &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">p</span><span class="p">)</span>
 			<span class="n">init</span><span class="o">.</span><span class="n">registerOutputDir</span><span class="p">(</span><span class="n">normpath</span><span class="p">(</span><span class="n">p</span><span class="p">))</span> </div>
 
-<div class="viewcode-block" id="defineEnumerationProperty"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.defineEnumerationProperty">[docs]</a><span class="k">def</span> <span class="nf">defineEnumerationProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">enumValues</span><span class="p">):</span>
+<div class="viewcode-block" id="defineEnumerationProperty"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.defineEnumerationProperty">[docs]</a><span class="k">def</span> <span class="nf">defineEnumerationProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">enumValues</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Defines a property that must take one of the specified values.</span>
 
 <span class="sd">	@param name: The name of the property</span>
@@ -339,6 +344,8 @@
 <span class="sd">	If set to None, the property must be set on the command line each time</span>
 
 <span class="sd">	@param enumValues: A list of valid values for this property (can contain other ${...} variables)</span>
+
+<span class="sd">	@returns: The resolved property value. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 
 	<span class="c1"># Expands properties, then checks that it&#39;s one of the acceptible values</span>
@@ -355,15 +362,17 @@
 		
 	<span class="n">init</span> <span class="o">=</span> <span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">getBuildInitializationContext</span><span class="p">()</span>
 	<span class="k">if</span> <span class="n">init</span><span class="p">:</span>
-		<span class="n">init</span><span class="o">.</span><span class="n">defineProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">coerceToValidValue</span><span class="o">=</span><span class="n">_coerceToValidValue</span><span class="p">)</span></div>
+		<span class="k">return</span> <span class="n">init</span><span class="o">.</span><span class="n">defineProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">coerceToValidValue</span><span class="o">=</span><span class="n">_coerceToValidValue</span><span class="p">)</span></div>
 	
-<div class="viewcode-block" id="defineBooleanProperty"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.defineBooleanProperty">[docs]</a><span class="k">def</span> <span class="nf">defineBooleanProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="defineBooleanProperty"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.defineBooleanProperty">[docs]</a><span class="k">def</span> <span class="nf">defineBooleanProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Defines a boolean property that will have a True or False value. </span>
 <span class="sd">	</span>
 <span class="sd">	@param name: The property name</span>
 
 <span class="sd">	@param default: The default value (default = False)</span>
 <span class="sd">	If set to None, the property must be set on the command line each time</span>
+
+<span class="sd">	@returns: The resolved property value. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 
 	<span class="c1"># Expands property values, then converts to a boolean</span>
@@ -377,21 +386,35 @@
 	
 	<span class="n">init</span> <span class="o">=</span> <span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">getBuildInitializationContext</span><span class="p">()</span>
 	<span class="k">if</span> <span class="n">init</span><span class="p">:</span>
-		<span class="n">init</span><span class="o">.</span><span class="n">defineProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">coerceToValidValue</span><span class="o">=</span><span class="n">_coerceToValidValue</span><span class="p">)</span></div>
+		<span class="k">return</span> <span class="n">init</span><span class="o">.</span><span class="n">defineProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">coerceToValidValue</span><span class="o">=</span><span class="n">_coerceToValidValue</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="definePropertiesFromFile"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.definePropertiesFromFile">[docs]</a><span class="k">def</span> <span class="nf">definePropertiesFromFile</span><span class="p">(</span><span class="n">propertiesFile</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excludeLines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="definePropertiesFromFile"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.definePropertiesFromFile">[docs]</a><span class="k">def</span> <span class="nf">definePropertiesFromFile</span><span class="p">(</span><span class="n">propertiesFile</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excludeLines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">	Defines a set of string properties from a .properties file</span>
+<span class="sd">	Defines a set of string properties by reading a .properties file. </span>
 <span class="sd">	</span>
-<span class="sd">	@param propertiesFile: The file to include properties from (can include ${...} variables)</span>
+<span class="sd">	:param str propertiesFile: The file to include properties from (can include ${...} variables)</span>
 
-<span class="sd">	@param prefix: if specified, this prefix will be added to the start of all property names from this file</span>
+<span class="sd">	:param str prefix: if specified, this prefix will be added to the start of all property names from this file</span>
 
-<span class="sd">	@param excludeLines: a string of list of strings to search for, any KEY containing these strings will be ignored</span>
+<span class="sd">	:param list(str) excludeLines: a string of list of strings to search for, any KEY containing these strings will be ignored</span>
 <span class="sd">	</span>
-<span class="sd">	@param conditions: an optional list of string conditions that can appear in property </span>
-<span class="sd">	keys e.g. &quot;FOO&lt;condition&gt;=bar&quot; where lines with no condition in this list </span>
-<span class="sd">	are ignored. Conditions are typically lowercase. </span>
+<span class="sd">	:param set(str) conditions: </span>
+<span class="sd">	</span>
+<span class="sd">		An optional set or list of lower_case string conditions that can appear in property </span>
+<span class="sd">		keys to dyamically filter based on the platform and what kind of build is being performed. </span>
+<span class="sd">		</span>
+<span class="sd">		For example ``MY_PROPERTY&lt;windows&gt;=bar``. Each line is only *included* if the condition matches one of the condition </span>
+<span class="sd">		strings passed to this function.</span>
+<span class="sd">		</span>
+<span class="sd">		For more advanced cases, a Python eval string can be specified, evaluated in a scope that includes the </span>
+<span class="sd">		``conditions`` set, a reference to the ``context`` (for property lookups), the ``IS_WINDOWS`` constant, and the </span>
+<span class="sd">		Python ``import_module`` function for accessing anything else. You cannot use the ``=`` character anywhere in the </span>
+<span class="sd">		eval string (since this is a properties file, after all!), but in most cases using the ``in`` operator is more </span>
+<span class="sd">		useful anyway. For example:: </span>
+<span class="sd">		</span>
+<span class="sd">			MY_PROPERTY&lt;      IS_WINDOWS and &#39;debug&#39; not in conditions  &gt; = windows-release.dll</span>
+<span class="sd">			MY_PROPERTY&lt; not (IS_WINDOWS and &#39;debug&#39; not in conditions) &gt; = everything-else.dll</span>
+<span class="sd">			</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">if</span> <span class="n">conditions</span><span class="p">:</span> <span class="k">assert</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span><span class="nb">str</span><span class="p">),</span> <span class="s1">&#39;conditions parameter must be a list&#39;</span>
 	<span class="n">__log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Defining properties from file: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">propertiesFile</span><span class="p">)</span>
@@ -408,15 +431,32 @@
 		<span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">lineNo</span> <span class="ow">in</span> <span class="n">parsePropertiesFile</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">excludeLines</span><span class="o">=</span><span class="n">excludeLines</span><span class="p">):</span>
 			<span class="n">__log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;definePropertiesFromFile: expanding </span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 			
-			<span class="k">if</span> <span class="s1">&#39;&lt;&#39;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
-				<span class="n">c</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;&lt;([^.]+)&gt;&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+			<span class="k">if</span> <span class="s1">&#39;&lt;&#39;</span> <span class="ow">in</span> <span class="n">key</span> <span class="ow">and</span> <span class="n">conditions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+				<span class="n">c</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;&lt;([^&gt;]+)&gt;&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 				<span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="p">:</span>
 					<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Error processing properties file, malformed &lt;condition&gt; line at </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">formatFileLocation</span><span class="p">(</span><span class="n">propertiesFile</span><span class="p">,</span> <span class="n">lineNo</span><span class="p">),</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 				<span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span><span class="o">+</span><span class="n">c</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 				<span class="k">if</span> <span class="s1">&#39;&lt;&#39;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span> <span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Error processing properties file, malformed line with multiple &lt;condition&gt; items at </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">formatFileLocation</span><span class="p">(</span><span class="n">propertiesFile</span><span class="p">,</span> <span class="n">lineNo</span><span class="p">),</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-				<span class="n">matches</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">conditions</span> <span class="k">else</span> <span class="kc">False</span>
-				<span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
-					<span class="k">for</span> <span class="n">cond</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">):</span>
+				
+				<span class="n">condfilters</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+				<span class="k">if</span> <span class="s1">&#39;(&#39;</span> <span class="ow">in</span> <span class="n">condfilters</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">([(</span><span class="s1">&#39; &#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">condfilters</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]):</span> <span class="c1"># spaces (other than as &quot;,&quot; delimiters are a clue this is more than a condition list</span>
+					<span class="c1"># treat it as an eval string</span>
+					<span class="n">env</span> <span class="o">=</span> <span class="p">{</span>
+						<span class="s1">&#39;importlib&#39;</span><span class="p">:</span><span class="n">importlib</span><span class="p">,</span> <span class="c1"># in case they want to import anything else</span>
+						<span class="s1">&#39;import_module&#39;</span><span class="p">:</span><span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">,</span>
+						<span class="s1">&#39;conditions&#39;</span><span class="p">:</span><span class="nb">set</span><span class="p">(</span><span class="n">conditions</span><span class="p">),</span>
+						<span class="s1">&#39;context&#39;</span><span class="p">:</span><span class="n">context</span><span class="p">,</span> <span class="c1"># allows accessing properties and anything else that&#39;s needed</span>
+						<span class="s1">&#39;IS_WINDOWS&#39;</span><span class="p">:</span><span class="n">IS_WINDOWS</span><span class="p">,</span>
+					<span class="p">}</span>
+					<span class="k">try</span><span class="p">:</span>
+						<span class="n">matches</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">condfilters</span><span class="p">,</span> <span class="n">env</span><span class="p">))</span>
+					<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+						<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Error processing properties file, malformed Python eval string in &lt;condition&gt; line at </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">formatFileLocation</span><span class="p">(</span><span class="n">propertiesFile</span><span class="p">,</span> <span class="n">lineNo</span><span class="p">),</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+					<span class="n">__log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">&#39;Got: </span><span class="si">%s</span><span class="s1">, </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">condfilters</span><span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">condfilters</span><span class="p">,</span> <span class="n">env</span><span class="p">))</span>
+					
+				<span class="k">else</span><span class="p">:</span> <span class="c1"># fall back to the quicker and simpler common case</span>
+					<span class="n">matches</span> <span class="o">=</span> <span class="kc">True</span>
+					<span class="k">for</span> <span class="n">cond</span> <span class="ow">in</span> <span class="n">condfilters</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">):</span> <span class="c1"># the ability to have a comma-separated list with &quot;AND&quot; semantics is undocumented (but is used in at least one place)</span>
 						<span class="k">if</span> <span class="n">cond</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">:</span>
 							<span class="n">matches</span> <span class="o">=</span> <span class="kc">False</span>
 							<span class="k">break</span>
@@ -432,7 +472,7 @@
 			
 			<span class="k">try</span><span class="p">:</span>
 				<span class="n">value</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-				<span class="n">context</span><span class="o">.</span><span class="n">defineProperty</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+				<span class="n">context</span><span class="o">.</span><span class="n">defineProperty</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">formatFileLocation</span><span class="p">(</span><span class="n">propertiesFile</span><span class="p">,</span> <span class="n">lineNo</span><span class="p">))</span>
 			<span class="k">except</span> <span class="n">BuildException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
 				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Error processing properties file </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">formatFileLocation</span><span class="p">(</span><span class="n">propertiesFile</span><span class="p">,</span> <span class="n">lineNo</span><span class="p">),</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 	<span class="k">finally</span><span class="p">:</span>
@@ -447,7 +487,7 @@
 			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Error processing properties file </span><span class="si">%s</span><span class="s1">: no property key found for &quot;</span><span class="si">%s</span><span class="s1">&quot; matched any of the conditions: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span>
 				<span class="n">propertiesFile</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">conditions</span><span class="p">),</span> <span class="n">causedBy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="getPropertyValue"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.getPropertyValue">[docs]</a><span class="k">def</span> <span class="nf">getPropertyValue</span><span class="p">(</span><span class="n">propertyName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<div class="viewcode-block" id="getPropertyValue"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.getPropertyValue">[docs]</a><span class="k">def</span> <span class="nf">getPropertyValue</span><span class="p">(</span><span class="n">propertyName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
 	<span class="sd">&quot;&quot;&quot; Return the current value of the given property (can only be used during build file parsing).</span>
 <span class="sd">	</span>
 <span class="sd">	Where possible, instead of using this method defer property resolution until </span>
@@ -467,7 +507,7 @@
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">return</span> <span class="n">getPropertyValue</span><span class="p">(</span><span class="n">propertyName</span><span class="p">)</span>
 
-<div class="viewcode-block" id="expandListProperty"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.expandListProperty">[docs]</a><span class="k">def</span> <span class="nf">expandListProperty</span><span class="p">(</span><span class="n">propertyName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="expandListProperty"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.expandListProperty">[docs]</a><span class="k">def</span> <span class="nf">expandListProperty</span><span class="p">(</span><span class="n">propertyName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 	<span class="sd">&quot;&quot;&quot; Utility method for use during build file parsing  property and target definition </span>
 <span class="sd">	that returns a list containing the values of the specified </span>
 <span class="sd">	list property. </span>
@@ -489,7 +529,7 @@
 	<span class="k">assert</span> <span class="n">context</span><span class="p">,</span> <span class="s1">&#39;expandListProperty utility can only be used during build file initialization phase&#39;</span>
 	<span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">expandListPropertyValue</span><span class="p">(</span><span class="n">propertyName</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="enableEnvironmentPropertyOverrides"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.enableEnvironmentPropertyOverrides">[docs]</a><span class="k">def</span> <span class="nf">enableEnvironmentPropertyOverrides</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+<div class="viewcode-block" id="enableEnvironmentPropertyOverrides"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.enableEnvironmentPropertyOverrides">[docs]</a><span class="k">def</span> <span class="nf">enableEnvironmentPropertyOverrides</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Turns on support for value overrides for defined properties from the </span>
 <span class="sd">	environment as well as from the command line. </span>
@@ -518,17 +558,39 @@
 	<span class="k">if</span> <span class="n">init</span><span class="p">:</span>
 		<span class="n">init</span><span class="o">.</span><span class="n">enableEnvironmentPropertyOverrides</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExtensionBasedFileEncodingDecider"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider">[docs]</a><span class="k">class</span> <span class="nc">ExtensionBasedFileEncodingDecider</span><span class="p">:</span>
-	<span class="sd">&quot;&quot;&quot;Can be used for the `common.fileEncodingDecider` option which decides what file encoding to use for </span>
+<div class="viewcode-block" id="ExtensionBasedFileEncodingDecider"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.ExtensionBasedFileEncodingDecider">[docs]</a><span class="k">class</span> <span class="nc">ExtensionBasedFileEncodingDecider</span><span class="p">:</span>
+	<span class="sd">&quot;&quot;&quot;Can be used for the ``common.fileEncodingDecider`` option which decides what file encoding to use for </span>
 <span class="sd">	reading/writing a text file given its path. </span>
 <span class="sd">	</span>
-<span class="sd">	The decider option is called with arguments: (context, path), and returns the name of the encoding to be used for this path. </span>
-<span class="sd">	Additional keyword arguments may be passed to the decider in future. </span>
+<span class="sd">	For example::</span>
+<span class="sd">	</span>
+<span class="sd">		setGlobalOption(&quot;common.fileEncodingDecider&quot;, ExtensionBasedFileEncodingDecider({</span>
+<span class="sd">			&#39;.foo&#39;: &#39;utf-8&#39;, </span>
+<span class="sd">			&#39;.bar&#39;: ExtensionBasedFileEncodingDecider.BINARY,</span>
+<span class="sd">			}, default=ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()))</span>
+<span class="sd">	</span>
+<span class="sd">	This decider is called with arguments ``(context, path)``, and returns the name of the encoding to be </span>
+<span class="sd">	used for this path. Additional keyword arguments may be passed to the decider function in future, so accept additional </span>
+<span class="sd">	``**kwargs`` in the method signature if overriding. </span>
 <span class="sd">	</span>
 <span class="sd">	This extension-based decider uses the specified dictionary of extensions to determine which </span>
 <span class="sd">	extension to use, including the special value L{ExtensionBasedFileEncodingDecider.BINARY} </span>
 <span class="sd">	which indicates non-text files. </span>
 
+<span class="sd">	@param extToEncoding: </span>
+<span class="sd">		A dictionary whose keys are extensions such as &#39;.xml&#39;, &#39;.foo.bar.baz&#39; and values specify the encoding to use for each one, </span>
+<span class="sd">		or the constant L{ExtensionBasedFileEncodingDecider.BINARY} which indicates a non-text file (not all targets support binary). </span>
+<span class="sd">		The extensions can contain ${...} properties. </span>
+<span class="sd">		</span>
+<span class="sd">		Extensions are matched case insensitively. </span>
+
+<span class="sd">	@param default: Specifies what to do if none of the specified extensions match. </span>
+<span class="sd">		</span>
+<span class="sd">		Can be: the name of the default encoding to be used as a string (e.g. ``&quot;utf-8&quot;``), </span>
+<span class="sd">		a decider function to delegate to (such as `ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()`), or ``None`` to defer to the </span>
+<span class="sd">		configured global option (or throw an exception if this is itself the global option). </span>
+<span class="sd">		</span>
+<span class="sd">		Recommended values are: &#39;utf-8&#39;, &#39;ascii&#39; or `xpybuild.buildcommon.PREFERRED_ENCODING`.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	
 	<span class="n">BINARY</span> <span class="o">=</span> <span class="s1">&#39;&lt;binary&gt;&#39;</span>
@@ -536,14 +598,6 @@
 <span class="sd">	should not be opened in text mode. &quot;&quot;&quot;</span>
 	
 	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extToEncoding</span><span class="o">=</span><span class="p">{},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
-		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		@param defaultEncoding: The name of the default encoding to be used, another decider to delegate to, or None to defer to the configured global option. </span>
-<span class="sd">		Recommended values are: &#39;utf-8&#39;, &#39;ascii&#39; or locale.getpreferredencoding().</span>
-<span class="sd">		</span>
-<span class="sd">		@param extToEncoding: A dictionary whose keys are extensions such as &#39;.xml&#39;, &#39;.foo.bar.baz&#39; and values specify the encoding to use for each one, </span>
-<span class="sd">		or the constant L{ExtensionBasedFileEncodingDecider.BINARY} which indicates a non-text file (not all targets support binary). </span>
-<span class="sd">		The extensions can contain ${...} properties. </span>
-<span class="sd">		&quot;&quot;&quot;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">extToEncodingDict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaultEncoding</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">extToEncoding</span><span class="p">),</span> <span class="n">default</span>
 		<span class="c1"># enforce starts with a . to prevent mistakes and allow us to potentially optimize the implementation in future</span>
 		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">extToEncoding</span><span class="p">:</span> 
@@ -556,7 +610,7 @@
 	<span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">):</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">decide</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ExtensionBasedFileEncodingDecider.decide"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.decide">[docs]</a>	<span class="k">def</span> <span class="nf">decide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="ExtensionBasedFileEncodingDecider.decide"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.ExtensionBasedFileEncodingDecider.decide">[docs]</a>	<span class="k">def</span> <span class="nf">decide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Decides what encoding to use for a given path. </span>
 <span class="sd">		</span>
@@ -572,10 +626,10 @@
 			<span class="c1"># (re)build the cache if it doesn&#39;t already exist, or if for some unexpected reason the context has changed</span>
 			<span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
 			<span class="k">for</span> <span class="n">ext</span><span class="p">,</span> <span class="n">enc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">extToEncodingDict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-				<span class="n">cache</span><span class="p">[</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">ext</span><span class="p">)]</span> <span class="o">=</span> <span class="n">enc</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaultEncoding</span>
+				<span class="n">cache</span><span class="p">[</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">enc</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaultEncoding</span>
 			<span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
 		
-		<span class="n">p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
 		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)):</span> <span class="c1"># in case it has an .x.y multi-part extension</span>
 			<span class="n">result</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">:]),</span> <span class="kc">None</span><span class="p">)</span>
 			<span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="n">result</span>
@@ -590,10 +644,10 @@
 		<span class="k">if</span> <span class="n">fallbackDecider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span> <span class="k">return</span> <span class="n">fallbackDecider</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">forfutureuse</span><span class="p">)</span>
 		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;File encoding decider cannot handle path </span><span class="se">\&#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="se">\&#39;</span><span class="s1">: </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 	
-<div class="viewcode-block" id="ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider">[docs]</a>	<span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider">[docs]</a>	<span class="nd">@staticmethod</span>
 	<span class="k">def</span> <span class="nf">getDefaultFileEncodingDecider</span><span class="p">():</span>
 		<span class="sd">&quot;&quot;&quot; Creates the file encoding decider that is used by default if per-target </span>
-<span class="sd">		or global option is specified. </span>
+<span class="sd">		or global option is not specified. </span>
 <span class="sd">		</span>
 <span class="sd">		Currently this supports utf-8 encoding of json/xml/yaml/yml files, </span>
 <span class="sd">		and binary for common non-application/text mime types such as image files </span>
@@ -608,6 +662,15 @@
 			<span class="s1">&#39;.json&#39;</span><span class="p">:</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span>
 			<span class="s1">&#39;.xml&#39;</span><span class="p">:</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span>
 			<span class="s1">&#39;.yaml&#39;</span><span class="p">:</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="s1">&#39;.yml&#39;</span><span class="p">:</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span>
+			
+			<span class="c1"># Some of these are probably in the mime types too, but worth adding them explicitly to be sure</span>
+			<span class="s1">&#39;.zip&#39;</span><span class="p">:</span><span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">BINARY</span><span class="p">,</span>
+			<span class="s1">&#39;.gz&#39;</span><span class="p">:</span><span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">BINARY</span><span class="p">,</span>
+			<span class="s1">&#39;.bz&#39;</span><span class="p">:</span><span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">BINARY</span><span class="p">,</span>
+			<span class="s1">&#39;.bz2&#39;</span><span class="p">:</span><span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">BINARY</span><span class="p">,</span>
+			<span class="s1">&#39;.xz&#39;</span><span class="p">:</span><span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">BINARY</span><span class="p">,</span>
+			<span class="s1">&#39;.jar&#39;</span><span class="p">:</span><span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">BINARY</span><span class="p">,</span>
+			<span class="s1">&#39;.class&#39;</span><span class="p">:</span><span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">BINARY</span><span class="p">,</span>
 		<span class="p">}</span>
 		<span class="c1"># add binary for known non-text types such as images. Don&#39;t do it for application/ as that includes </span>
 		<span class="c1"># text formats such as js and json</span>
@@ -616,28 +679,59 @@
 				<span class="n">d</span><span class="p">[</span><span class="n">ext</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">BINARY</span>
 		<span class="k">return</span> <span class="n">ExtensionBasedFileEncodingDecider</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span></div></div>
 
+
 <span class="c1">################################################################################</span>
 <span class="c1"># Options</span>
 
-<div class="viewcode-block" id="defineOption"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.defineOption">[docs]</a><span class="k">def</span> <span class="nf">defineOption</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot; Define an option with a default (can be overridden globally using setGlobalOption() or on individual targets).</span>
+<div class="viewcode-block" id="Option"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.Option">[docs]</a><span class="k">class</span> <span class="nc">Option</span><span class="p">:</span>
+	<span class="sd">&quot;&quot;&quot; Represents an option definition. Options customize the behaviour of one or more targets, for example by </span>
+<span class="sd">	providing default compiler arguments, timeouts, or paths to locally installed tools.  </span>
 <span class="sd">	</span>
-<span class="sd">	This method is typically used only when implementing a new kind of target. </span>
+<span class="sd">	An instance of this class is returned by `defineOption`. To set the value of options in your build, call </span>
+<span class="sd">	`xpybuild.basetarget.BaseTarget.option` or `setGlobalOption`. </span>
 <span class="sd">	</span>
-<span class="sd">	Options are not available for ``${...}`` expansion (like properties), but </span>
-<span class="sd">	rather as used for (optionally inheritably) settings that affect the </span>
-<span class="sd">	behaviour of one or more targets. They are accessed using self.options </span>
-<span class="sd">	in any target instance. </span>
+<span class="sd">	&quot;&quot;&quot;</span> <span class="c1"># this class exists just to make the pydoc look nice via the __repr__</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">optionName</span> <span class="o">=</span> <span class="n">name</span> <span class="c1"># do not rename this - it&#39;s used in BaseTarget.option</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">default</span>
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Option &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">optionName</span><span class="si">}</span><span class="s1">&quot; (default: %s)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&lt;lambda&gt;&#39;</span> <span class="k">if</span> <span class="s2">&quot;&lt;lambda&gt; at 0x&quot;</span> <span class="ow">in</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">)</span> <span class="k">else</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">))</span> <span class="c1"># this string appears in pydoc</span></div>
+
+<div class="viewcode-block" id="defineOption"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.defineOption">[docs]</a><span class="k">def</span> <span class="nf">defineOption</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39; Define an option controlling some behaviour of the build. </span>
+<span class="sd">	</span>
+<span class="sd">	A default value is provided, which can be overridden on individual targets, or globally throughout the build </span>
+<span class="sd">	using `setGlobalOption`.</span>
+<span class="sd">	</span>
+<span class="sd">	This method is typically used only when implementing a new kind of target, and often nested in an ``Options`` class </span>
+<span class="sd">	under the target, e.g.::</span>
+<span class="sd">	</span>
+<span class="sd">		class MyTarget(BaseTarget):</span>
+<span class="sd">			class Options:</span>
+<span class="sd">				&quot;&quot;&quot; Options for customizing the behaviour of this target. To set an option on a specific target call </span>
+<span class="sd">				`xpybuild.basetarget.BaseTarget.option` or to se a global default use `xpybuild.propertysupport.setGlobalOption`. </span>
+<span class="sd">				&quot;&quot;&quot;</span>
+<span class="sd">			</span>
+<span class="sd">				myOption = defineOption(&quot;MyTarget.myOption&quot;, 123)</span>
+<span class="sd">				&quot;&quot;&quot;</span>
+<span class="sd">				Configures the XXX. </span>
+<span class="sd">				&quot;&quot;&quot;</span>
+<span class="sd">	</span>
+<span class="sd">	Unlike properties, option values are not accessed by ``${...}`` expansion, but rather using ``self.options`` </span>
+<span class="sd">	from any `xpybuild.basetarget.BaseTarget` subclass implementation. </span>
 <span class="sd">	</span>
 <span class="sd">	@param name: The option name, which should usually be in lowerCamelCase, with </span>
 <span class="sd">	a TitleCase prefix specific to this target or group of targets, often </span>
 <span class="sd">	matching the target name, e.g. ``Javac.compilerArgs``. </span>
 
-<span class="sd">	@param default: The default value of the option.</span>
-<span class="sd">	&quot;&quot;&quot;</span>
-	<span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_defineOption</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
+<span class="sd">	@param default: The default value of the option. If you need a callable, try to use named functions rather than </span>
+<span class="sd">	lambdas so that the string representation is human-friendly. </span>
+<span class="sd">	</span>
+<span class="sd">	:returns: A new instance of `Option`. </span>
+<span class="sd">	&#39;&#39;&#39;</span>
+	<span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_defineOption</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">Option</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="setGlobalOption"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.setGlobalOption">[docs]</a><span class="k">def</span> <span class="nf">setGlobalOption</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="setGlobalOption"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.setGlobalOption">[docs]</a><span class="k">def</span> <span class="nf">setGlobalOption</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Globally override the default for an option</span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -650,7 +744,7 @@
 
 <span class="n">make_functor</span> <span class="o">=</span> <span class="n">xpybuild</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">functors</span><span class="o">.</span><span class="n">makeFunctor</span>
 
-<div class="viewcode-block" id="dirname"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.dirname">[docs]</a><span class="k">class</span> <span class="nc">dirname</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
+<div class="viewcode-block" id="dirname"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.dirname">[docs]</a><span class="k">class</span> <span class="nc">dirname</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; A late-binding function which performs property expansion on its argument and then</span>
 <span class="sd">	    removes the file parts of the argument.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -661,7 +755,7 @@
 		<span class="c1"># the input path may be composable</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">arg</span> <span class="o">=</span> <span class="n">path</span>
 		
-<div class="viewcode-block" id="dirname.resolveToString"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.dirname.resolveToString">[docs]</a>	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<div class="viewcode-block" id="dirname.resolveToString"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.dirname.resolveToString">[docs]</a>	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Perform the expansion and dirname on the argument path.</span>
 
 <span class="sd">		@param context: a BuildContext</span>
@@ -700,7 +794,7 @@
 		<span class="k">return</span> <span class="s2">&quot;dirname(&quot;</span><span class="o">+</span><span class="n">arg</span><span class="o">+</span><span class="s2">&quot;)&quot;</span></div>
 
 
-<div class="viewcode-block" id="basename"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.basename">[docs]</a><span class="k">class</span> <span class="nc">basename</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
+<div class="viewcode-block" id="basename"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.basename">[docs]</a><span class="k">class</span> <span class="nc">basename</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; A late-binding function which performs property expansion on its argument and then</span>
 <span class="sd">	    removes the directory parts of the argument.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -711,7 +805,7 @@
 		<span class="c1"># the input path may be composable</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">arg</span> <span class="o">=</span> <span class="n">path</span>
 		
-<div class="viewcode-block" id="basename.resolveToString"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.basename.resolveToString">[docs]</a>	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<div class="viewcode-block" id="basename.resolveToString"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.basename.resolveToString">[docs]</a>	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Perform the expansion and basename on the argument path.</span>
 
 <span class="sd">		@param context: a BuildContext</span>
@@ -749,7 +843,7 @@
 		
 		<span class="k">return</span> <span class="s2">&quot;basename(&quot;</span><span class="o">+</span><span class="n">arg</span><span class="o">+</span><span class="s2">&quot;)&quot;</span></div>
 
-<div class="viewcode-block" id="sub"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.sub">[docs]</a><span class="k">class</span> <span class="nc">sub</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
+<div class="viewcode-block" id="sub"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.sub">[docs]</a><span class="k">class</span> <span class="nc">sub</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; A late-binding function which performs regex substitution.</span>
 <span class="sd">	    The pattern is passed through verbatim, the replacement and the input</span>
 <span class="sd">	    have property expansion performed on them before invoking the regular</span>
@@ -768,7 +862,7 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">pat</span> <span class="o">=</span> <span class="n">pat</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">rep</span> <span class="o">=</span> <span class="n">rep</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span>
-<div class="viewcode-block" id="sub.resolveToString"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.sub.resolveToString">[docs]</a>	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<div class="viewcode-block" id="sub.resolveToString"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.sub.resolveToString">[docs]</a>	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Do property expansion on the inputs and then perform the regex </span>
 <span class="sd">	</span>
 <span class="sd">		@param context: a BuildContext</span>
@@ -790,15 +884,15 @@
 	<span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="s2">&quot;sub(</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rep</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="joinPaths"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.joinPaths">[docs]</a><span class="k">class</span> <span class="nc">joinPaths</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
+<div class="viewcode-block" id="joinPaths"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.joinPaths">[docs]</a><span class="k">class</span> <span class="nc">joinPaths</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; A late-binding function which resolves the specified PathSet and </span>
 <span class="sd">		then joins its contents together to form a string using os.pathsep or a </span>
 <span class="sd">		specified separator character. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathset</span><span class="p">,</span> <span class="n">pathsep</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="p">):</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">pathset</span> <span class="o">=</span> <span class="n">pathset</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pathset</span><span class="p">,</span> <span class="n">BasePathSet</span><span class="p">)</span> <span class="k">else</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">pathset</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">pathset</span> <span class="o">=</span> <span class="n">pathset</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pathset</span><span class="p">,</span> <span class="n">xpybuild</span><span class="o">.</span><span class="n">pathsets</span><span class="o">.</span><span class="n">BasePathSet</span><span class="p">)</span> <span class="k">else</span> <span class="n">xpybuild</span><span class="o">.</span><span class="n">pathsets</span><span class="o">.</span><span class="n">PathSet</span><span class="p">(</span><span class="n">pathset</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">pathsep</span> <span class="o">=</span> <span class="n">pathsep</span>
-<div class="viewcode-block" id="joinPaths.resolveToString"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.propertysupport.joinPaths.resolveToString">[docs]</a>	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<div class="viewcode-block" id="joinPaths.resolveToString"><a class="viewcode-back" href="../../autodocgen/xpybuild.propertysupport.html#xpybuild.basetarget.joinPaths.resolveToString">[docs]</a>	<span class="k">def</span> <span class="nf">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Do property expansion on the inputs and then perform the regex </span>
 <span class="sd">	</span>
 <span class="sd">		@param context: a BuildContext</span>
@@ -807,6 +901,9 @@
 	<span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="s2">&quot;joinPaths(</span><span class="si">%s</span><span class="s2"> with </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pathset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathsep</span><span class="p">)</span></div>
 
+
+<span class="c1"># Defined at bottom of file since not needed in APIs and to avoid circular dependency</span>
+<span class="kn">import</span> <span class="nn">xpybuild.pathsets</span>
 </pre></div>
 
            </div>
@@ -819,7 +916,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

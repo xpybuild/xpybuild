@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.targets.copy &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.targets.copy &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -51,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -131,7 +131,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">xpybuild v3.1.dev1</a>
+          <a href="../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -258,6 +258,14 @@ build errors arising from implicit directory walking during
 the execution phase - if all dir walking happens during 
 dependency resolution then such errors can be easily detected 
 before they cause a problem).</p>
+<p>To create new empty directories that are not present in the source (mkdir), 
+you can use this simple trick which utilizes the fact that the current 
+directory <code class="docutils literal notranslate"><span class="pre">.</span></code> definitely exists. It doesn’t copy anything from inside 
+(just copies only its ‘existence’) and uses a SingletonDestRenameMapper PathSet 
+to provide the destination:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SingletonDestRenameMapper</span><span class="p">(</span><span class="s1">&#39;my-new-dest-directory/&#39;</span><span class="p">,</span> <span class="s1">&#39;./&#39;</span><span class="p">),</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>implicitDependencies</strong> – provides a way to add additional implicit 
@@ -569,7 +577,7 @@ values containing ${…} properties will be expanded out.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

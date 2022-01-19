@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.targets.custom &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.targets.custom &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -51,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -125,7 +125,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">xpybuild v3.1.dev1</a>
+          <a href="../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -249,23 +249,32 @@ thrown unless the pathsep argument is specified.</p>
 <h2>CustomCommand<a class="headerlink" href="#customcommand" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="xpybuild.targets.custom.CustomCommand">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.custom.</code><code class="sig-name descname">CustomCommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">command</span></em>, <em class="sig-param"><span class="n">dependencies</span></em>, <em class="sig-param"><span class="n">cwd</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">redirectStdOutToTarget</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">env</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stdout</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stderr</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#CustomCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.CustomCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.custom.</code><code class="sig-name descname">CustomCommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">command</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dependencies</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">cwd</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">redirectStdOutToTarget</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">env</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stdout</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stderr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">commands</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#CustomCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.CustomCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
-<p>A custom target that builds a single file or directory of content by running a 
-specified command line process.</p>
+<p>A custom target that builds a single file or directory of content by running one or more  
+command line processes.</p>
 <p>The command line <em>must</em> not reference any generated paths unless they are 
 explicitly listed in deps.</p>
 <p>Supported target options include:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">.option(&quot;process.timeout&quot;)</span></code> to control the maximum number of seconds the command can 
-run before being cancelled.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.option(&quot;common.processOutputEncodingDecider&quot;)</span></code> to determine the encoding 
-used for reading stdout/err (see <a class="reference internal" href="xpybuild.utils.process.html#xpybuild.utils.process.defaultProcessOutputEncodingDecider" title="xpybuild.utils.process.defaultProcessOutputEncodingDecider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.process.defaultProcessOutputEncodingDecider</span></code></a>).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.option(&quot;CustomCommand.outputHandlerFactory&quot;)</span></code> to replace the default behaviour 
-for detecting errors (which is just based on zero/non-zero exit code) and logging stdout/err with 
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">.option(&quot;process.timeout&quot;)</span></code> to control the maximum number of seconds the command can </dt><dd><p>run before being cancelled.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">.option(&quot;common.processOutputEncodingDecider&quot;)</span></code> to determine the encoding </dt><dd><p>used for reading stdout/err (see <a class="reference internal" href="xpybuild.utils.process.html#xpybuild.utils.process.defaultProcessOutputEncodingDecider" title="xpybuild.utils.process.defaultProcessOutputEncodingDecider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.process.defaultProcessOutputEncodingDecider</span></code></a>).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">.option(&quot;CustomCommand.outputHandlerFactory&quot;)</span></code> to replace the default behaviour </dt><dd><p>for detecting errors (which is just based on zero/non-zero exit code) and logging stdout/err with 
 a custom <a class="reference internal" href="xpybuild.utils.outputhandler.html#xpybuild.utils.outputhandler.ProcessOutputHandler" title="xpybuild.utils.outputhandler.ProcessOutputHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.utils.outputhandler.ProcessOutputHandler</span></code></a>. The additional 
-options described on <code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessOutputHandler</span></code> can also be used with this target.</p></li>
+options described on <code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessOutputHandler</span></code> can also be used with this target.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </div></blockquote>
 <dl class="field-list simple">
@@ -276,35 +285,65 @@ before target runs.</p></li>
 <li><p><strong>dependencies</strong> – an optional list of dependencies; it is essential that ALL dependencies required by 
 this command and generated by the build processare explicitly listed here, in addition to any 
 files/directories used by this command that might change between builds.</p></li>
-<li><p><strong>command</strong> – <p>a function or a list.</p>
-<p>If command is a list, items may be:</p>
+<li><p><strong>command</strong> (<em>list</em><em>[</em><em>obj</em><em>]</em><em>|Callable-&gt;list</em>) – <dl class="simple">
+<dt>A list of command line arguments to execute one process. </dt><dd><p>(see also the <code class="docutils literal notranslate"><span class="pre">commands</span></code> parameter which can be used to execute multiple processes).</p>
+</dd>
+</dl>
+<p>Alternatively, the list can be constructed dynamically by passing a function 
+with signature <code class="docutils literal notranslate"><span class="pre">(resolvedTargetDirPath:</span> <span class="pre">str,</span> <span class="pre">resolvedDepsList:</span> <span class="pre">list,</span> <span class="pre">context:</span> <span class="pre">xpybuild.buildcontext.BuildContext)</span> <span class="pre">-&gt;</span> <span class="pre">list</span></code> 
+(where <code class="docutils literal notranslate"><span class="pre">resolvedDepsList</span></code> is an ordered, flattened list of resolved paths from <code class="docutils literal notranslate"><span class="pre">deps</span></code>).</p>
+<p>Each argument in the list of arguments may be:</p>
 <blockquote>
 <div><ul>
-<li><p>a string (which will be run through expandPropertyValues prior to execution); 
-must not be used for representing arguments that are paths</p></li>
-<li><p>a <code class="xref py py-obj docutils literal notranslate"><span class="pre">PathSet</span></code> (which must resolve to exactly one path - see <code class="xref py py-obj docutils literal notranslate"><span class="pre">joinPaths</span></code> 
-property functor if multiple paths are required). Any PathSets used in 
+<li><dl class="simple">
+<dt>a string (which will be run through expandPropertyValues prior to execution); </dt><dd><p>must not be used for representing arguments that are paths</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>a <code class="xref py py-obj docutils literal notranslate"><span class="pre">PathSet</span></code> (which must resolve to exactly one path - see <code class="xref py py-obj docutils literal notranslate"><span class="pre">joinPaths</span></code> </dt><dd><p>property functor if multiple paths are required). Any PathSets used in 
 the arguments should usually be explicitly listed in dependencies too, 
-especially if they are generated by another part of this build.</p></li>
-<li><p>a property functor such as joinPaths (useful for constructing 
-Java classpaths), basename, etc</p></li>
+especially if they are generated by another part of this build.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>a property functor such as joinPaths (useful for constructing </dt><dd><p>Java classpaths), basename, etc</p>
+</dd>
+</dl>
+</li>
 <li><p>an arbitrary function taking a single context argument</p></li>
-<li><p><a class="reference internal" href="#xpybuild.targets.custom.CustomCommand.TARGET" title="xpybuild.targets.custom.CustomCommand.TARGET"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomCommand.TARGET</span></code></a> - a special value that is resolved to the 
-output path of this target</p></li>
-<li><p><a class="reference internal" href="#xpybuild.targets.custom.CustomCommand.DEPENDENCIES" title="xpybuild.targets.custom.CustomCommand.DEPENDENCIES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomCommand.DEPENDENCIES</span></code></a> - a special value that is resolved to 
-a list of this target’s dependencies</p></li>
-<li><p>[deprecated] a ResolvePath(path) object, indicating a path that should be 
-resolved and resolved at execution time (this is equivalent 
-to using a PathSet, which is probably a better approach).</p></li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="#xpybuild.targets.custom.CustomCommand.TARGET" title="xpybuild.targets.custom.CustomCommand.TARGET"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomCommand.TARGET</span></code></a> - a special value that is resolved to the </dt><dd><p>output path of this target</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="#xpybuild.targets.custom.CustomCommand.DEPENDENCIES" title="xpybuild.targets.custom.CustomCommand.DEPENDENCIES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomCommand.DEPENDENCIES</span></code></a> - a special value that is resolved to </dt><dd><p>a list of this target’s dependencies</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>[deprecated] a ResolvePath(path) object, indicating a path that should be </dt><dd><p>resolved and resolved at execution time (this is equivalent 
+to using a PathSet, which is probably a better approach).</p>
+</dd>
+</dl>
+</li>
 </ul>
 </div></blockquote>
-<p>If command is a function, must have 
-signature <code class="docutils literal notranslate"><span class="pre">(resolvedTargetDirPath,</span> <span class="pre">resolvedDepsList,</span> <span class="pre">context)</span></code>, and 
-return the command line as a list of strings. resolvedDepsList will be an 
-ordered, flattened list of resolved paths from deps.</p>
 <p>Command lines MUST NOT depend 
 in any way on the current source or output directory, always use 
 a PathSet wrapper around such paths.</p>
+</p></li>
+<li><p><strong>commands</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>obj</em><em>]</em><em>]</em>) – <dl class="simple">
+<dt>A list of commands to run to generate this target, each of which is itself </dt><dd><p>represented as a list of command line arguments (as described above under <code class="docutils literal notranslate"><span class="pre">command</span></code>).</p>
+</dd>
+</dl>
+<p>Note that you must specify either <code class="docutils literal notranslate"><span class="pre">command=</span></code> or <code class="docutils literal notranslate"><span class="pre">commands=</span></code> but not both.</p>
+<p>Commands listed here are executed in sequence. Unless you have multiple commands that need to write to the same 
+large output directory it is usually better to use separate <a class="reference internal" href="#xpybuild.targets.custom.CustomCommand" title="xpybuild.targets.custom.CustomCommand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomCommand</span></code></a> or <a class="reference internal" href="#xpybuild.targets.custom.CustomCommandWithCopy" title="xpybuild.targets.custom.CustomCommandWithCopy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomCommandWithCopy</span></code></a> instances 
+so they can execute in parallel for a faster build.</p>
+<p>This parameter was added in version 4.0.</p>
 </p></li>
 <li><p><strong>cwd</strong> – the working directory to run it from (almost always this should be 
 left blank, meaning use output dir)</p></li>
@@ -317,10 +356,12 @@ containing a list of paths.</p></li>
 and the command is assumed to create the target file itself, but 
 set this to True for commands where the target file contents are 
 generated by the stdout of the command being executed.</p></li>
-<li><p><strong>stdout</strong> – usually a unique name is auto-generated for .out for this target, but 
-use this if required to send output to a specific location.</p></li>
-<li><p><strong>stderr</strong> – usually a unique name is auto-generated for .err for this target, but 
-use this if required to send output to a specific location.</p></li>
+<li><p><strong>stdout</strong> – usually a unique name is auto-generated for this target and suffixed with <code class="docutils literal notranslate"><span class="pre">.out</span></code>, but 
+set this parameter if you need  to send output to a specific location. Ignored if the <code class="docutils literal notranslate"><span class="pre">CustomCommand.outputHandlerFactory</span></code> 
+option is set.</p></li>
+<li><p><strong>stderr</strong> – usually a unique name is auto-generated this target and suffixed with <code class="docutils literal notranslate"><span class="pre">.err</span></code>, but 
+set this parameter if you need to send output to a specific location. Ignored if the <code class="docutils literal notranslate"><span class="pre">CustomCommand.outputHandlerFactory</span></code> 
+option is set.</p></li>
 </ul>
 </dd>
 </dl>
@@ -343,7 +384,7 @@ use this if required to send output to a specific location.</p></li>
 <h2>CustomCommandWithCopy<a class="headerlink" href="#customcommandwithcopy" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="xpybuild.targets.custom.CustomCommandWithCopy">
-<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.custom.</code><code class="sig-name descname">CustomCommandWithCopy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">command</span></em>, <em class="sig-param"><span class="n">dependencies</span></em>, <em class="sig-param"><span class="n">copySrc</span></em>, <em class="sig-param"><span class="n">cwd</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">redirectStdOutToTarget</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">env</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#CustomCommandWithCopy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.CustomCommandWithCopy" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.custom.</code><code class="sig-name descname">CustomCommandWithCopy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">command</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dependencies</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">copySrc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cwd</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">redirectStdOutToTarget</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">env</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">commands</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/custom.html#CustomCommandWithCopy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.custom.CustomCommandWithCopy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xpybuild.targets.custom.CustomCommand" title="xpybuild.targets.custom.CustomCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.targets.custom.CustomCommand</span></code></a>, <a class="reference internal" href="xpybuild.targets.copy.html#xpybuild.targets.copy.Copy" title="xpybuild.targets.copy.Copy"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.targets.copy.Copy</span></code></a></p>
 <p>A custom target that builds a directory of content by running a 
 specified command line process, but unlike the normal CustomCommand 
@@ -356,11 +397,12 @@ in-place modifications on a directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> – the target</p></li>
-<li><p><strong>command</strong> – see CustomCommand for details</p></li>
-<li><p><strong>dependencies</strong> – an explicit list of any dependencies (other than copySrc) 
+<li><p><strong>target</strong> – the target that will be generated by copying and then running the specified commands.</p></li>
+<li><p><strong>command</strong> – see <a class="reference internal" href="#xpybuild.targets.custom.CustomCommand" title="xpybuild.targets.custom.CustomCommand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomCommand</span></code></a> for details</p></li>
+<li><p><strong>commands</strong> – see <a class="reference internal" href="#xpybuild.targets.custom.CustomCommand" title="xpybuild.targets.custom.CustomCommand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomCommand</span></code></a> for details</p></li>
+<li><p><strong>dependencies</strong> – an explicit list of any dependencies other than copySrc)
 that are required by the command, including static resources and 
-other targets generated by the build. This is ESSENTIAL for 
+other targets generated by the build. Specifying this accurately is ESSENTIAL for 
 reliable building.</p></li>
 </ul>
 </dd>
@@ -390,7 +432,7 @@ reliable building.</p></li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

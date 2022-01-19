@@ -20,6 +20,12 @@ IS\_WINDOWS
 .. autodata:: IS_WINDOWS
 
 
+PREFERRED\_ENCODING
+===================
+
+.. autodata:: PREFERRED_ENCODING
+
+
 isDirPath
 =========
 
@@ -62,6 +68,12 @@ requireXpybuildVersion
 ======================
 
 .. autofunction:: requireXpybuildVersion
+
+
+registerBuildLoadPostProcessor
+==============================
+
+.. autofunction:: registerBuildLoadPostProcessor
 
 
 registerPreBuildCheck

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.pathsets &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.pathsets &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -51,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -124,7 +124,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">xpybuild v3.1.dev1</a>
+          <a href="../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -420,17 +420,24 @@ copy all empty directories as well as all files, use:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FindPaths</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="s1">&#39;**/&#39;</span><span class="p">])</span><span class="o">.</span> 
 </pre></div>
 </div>
+<p>In addition, global (non-overridable) excludes may be specified by setting the 
+<a class="reference internal" href="#xpybuild.pathsets.FindPaths.Options.globalExcludesFunction" title="xpybuild.pathsets.FindPaths.Options.globalExcludesFunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FindPaths.Options.globalExcludesFunction</span></code></a> option.</p>
 <p>Destination paths (where needed) are generated from the path underneath the
 base dir.</p>
 <p>FindPaths will return file or directory symlinks (with <code class="docutils literal notranslate"><span class="pre">/</span></code> suffix if directory), 
 but will not recurse into directory symlinks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>dir</strong> – May be a simple string, or a DirGeneratedByTarget to glob under a 
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir</strong> – The base directory to search (relative or absolute, may contain ${…} variables). 
+May be a simple string, or a <a class="reference internal" href="#xpybuild.pathsets.DirGeneratedByTarget" title="xpybuild.pathsets.DirGeneratedByTarget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DirGeneratedByTarget</span></code></a> to glob under a 
 directory generated as part of the build. To find paths from a set of 
-targets use dir=TargetsWithinDir (though only use this when that dynamism 
-is required, as this will be slower than statically listing the targets 
-individually or using TargetsWithTag).</p>
+targets use <a class="reference internal" href="#xpybuild.pathsets.TargetsWithinDir" title="xpybuild.pathsets.TargetsWithinDir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TargetsWithinDir</span></code></a> (though only use this when that dynamism 
+is truly required, as this will be slower than statically listing the targets 
+individually or using TargetsWithTag).</p></li>
+<li><p><strong>includes</strong> – a list of glob patterns for the files to include (excluding all others)</p></li>
+<li><p><strong>excludes</strong> – a list of glob patterns to exclude after processing any includes.</p></li>
+</ul>
 </dd>
 </dl>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;a/b/c&#39;</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;*.x&#39;</span><span class="p">,</span> <span class="s1">&#39;y/**/z/foo.*&#39;</span><span class="p">],</span> <span class="n">excludes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">,</span> <span class="s1">&#39;**/y&#39;</span><span class="p">]))</span>
@@ -453,17 +460,39 @@ individually or using TargetsWithTag).</p>
 <span class="gr">xpybuild.utils.buildexceptions.BuildException</span>:
 </pre></div>
 </div>
+<dl class="py class">
+<dt id="xpybuild.pathsets.FindPaths.Options">
+<em class="property">class </em><code class="sig-name descname">Options</code><a class="reference internal" href="../_modules/xpybuild/pathsets.html#FindPaths.Options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.FindPaths.Options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Options for customizing the behaviour of this type of PathSet. Can be configured with 
+<a class="reference internal" href="xpybuild.propertysupport.html#xpybuild.propertysupport.setGlobalOption" title="xpybuild.propertysupport.setGlobalOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.propertysupport.setGlobalOption</span></code></a>.</p>
+<dl class="py method">
+<dt id="xpybuild.pathsets.FindPaths.Options.defaultGlobalExcludesFunction">
+<em class="property">static </em><code class="sig-name descname">defaultGlobalExcludesFunction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#FindPaths.Options.defaultGlobalExcludesFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.FindPaths.Options.defaultGlobalExcludesFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>The default function used for the <a class="reference internal" href="#xpybuild.pathsets.FindPaths.Options.globalExcludesFunction" title="xpybuild.pathsets.FindPaths.Options.globalExcludesFunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FindPaths.Options.globalExcludesFunction</span></code></a> option.</p>
+<p>The current implementation excludes temporary NFS (Network File System) files matching the pattern “.nfs[0-9]”.</p>
+<p>This function must be very fast to execute as it’s highly performance-critical for the dependency checking and 
+build process, so simple string operations should be used instead of regular expressions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dir</strong> – base directory to search (relative or absolute, may contain ${…} variables). 
-May be a simple string, or a DirGeneratedByTarget to glob under a 
-directory generated as part of the build.</p></li>
-<li><p><strong>includes</strong> – a list of glob patterns for the files to include (excluding all others)</p></li>
-<li><p><strong>excludes</strong> – a list of glob patterns to exclude after processing any includes.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – A base file/directory name (without path).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if this file or directory should be excluded.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="xpybuild.pathsets.FindPaths.Options.globalExcludesFunction">
+<code class="sig-name descname">globalExcludesFunction</code><em class="property"> = Option &quot;FindPaths.globalExcludesFunction&quot; (default: &lt;function FindPaths.Options.defaultGlobalExcludesFunction&gt;)</em><a class="headerlink" href="#xpybuild.pathsets.FindPaths.Options.globalExcludesFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Global (non-overridable) excludes may be specified by setting this option to a
+function that accepts a full path and returns True if it should be ignored.</p>
+<p>Needs to be as fast as possible.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py method">
 <dt id="xpybuild.pathsets.FindPaths.resolveWithDestinations">
 <code class="sig-name descname">resolveWithDestinations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/pathsets.html#FindPaths.resolveWithDestinations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.pathsets.FindPaths.resolveWithDestinations" title="Permalink to this definition">¶</a></dt>
@@ -857,7 +886,7 @@ paths must end with an explicit ‘/’.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

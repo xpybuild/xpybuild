@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.propertysupport &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.propertysupport &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -51,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -89,6 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="xpybuild.pathsets.html">xpybuild.pathsets</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">xpybuild.propertysupport</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#extensionbasedfileencodingdecider">ExtensionBasedFileEncodingDecider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#option">Option</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dirname">dirname</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#basename">basename</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#sub">sub</a></li>
@@ -126,7 +127,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">xpybuild v3.1.dev1</a>
+          <a href="../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -208,7 +209,7 @@ and the type is indicated where they are defined:</p>
 <td><p>Defines a boolean property that will have a True or False value.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#xpybuild.propertysupport.definePropertiesFromFile" title="xpybuild.propertysupport.definePropertiesFromFile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">definePropertiesFromFile</span></code></a>(propertiesFile[, …])</p></td>
-<td><p>Defines a set of string properties from a .properties file</p></td>
+<td><p>Defines a set of string properties by reading a .properties file.</p></td>
 </tr>
 </tbody>
 </table>
@@ -224,10 +225,10 @@ during the initialization phase while reading the build files which can be achie
 </div>
 <p class="rubric">Target options</p>
 <p>Options provide a way to customize the behaviour of targets either globally throughout the build or for specific 
-targets. For example, the location of the JDK used for compiling Java program is specified by an option (<code class="docutils literal notranslate"><span class="pre">java.home</span></code>), 
-which also other other Java-related targets such as Javadoc generation.</p>
-<p>Often an option will be set to the value of a property, so that the property setting, reuse and overriding mechanisms 
-can be used.</p>
+targets. For example, location of the JDK used for compiling Java programs, or the default class used for handling 
+output from a custom command (e.g. <code class="docutils literal notranslate"><span class="pre">CustomCommand.outputHandlerFactory</span></code>).</p>
+<p>Often an option will be set to the value of a <code class="docutils literal notranslate"><span class="pre">${...}</span></code> property, so that the property setting, reuse and overriding 
+mechanisms can be used.</p>
 <p>Information about the defined option names and their value type and default is available in the documentation for the 
 associated targets. To specify the default value for an option globally for all targetsin your build, call 
 <a class="reference internal" href="#xpybuild.propertysupport.setGlobalOption" title="xpybuild.propertysupport.setGlobalOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setGlobalOption()</span></code></a> from one of the build files. To override an option for an individual target ion your build file, call 
@@ -268,21 +269,37 @@ functors are provided in-the-box:</p>
 <dt id="xpybuild.propertysupport.ExtensionBasedFileEncodingDecider">
 <em class="property">class </em><code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">ExtensionBasedFileEncodingDecider</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">extToEncoding</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#ExtensionBasedFileEncodingDecider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Can be used for the <code class="xref py py-obj docutils literal notranslate"><span class="pre">common.fileEncodingDecider</span></code> option which decides what file encoding to use for 
+<p>Can be used for the <code class="docutils literal notranslate"><span class="pre">common.fileEncodingDecider</span></code> option which decides what file encoding to use for 
 reading/writing a text file given its path.</p>
-<p>The decider option is called with arguments: (context, path), and returns the name of the encoding to be used for this path. 
-Additional keyword arguments may be passed to the decider in future.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">setGlobalOption</span><span class="p">(</span><span class="s2">&quot;common.fileEncodingDecider&quot;</span><span class="p">,</span> <span class="n">ExtensionBasedFileEncodingDecider</span><span class="p">({</span>
+        <span class="s1">&#39;.foo&#39;</span><span class="p">:</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> 
+        <span class="s1">&#39;.bar&#39;</span><span class="p">:</span> <span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">BINARY</span><span class="p">,</span>
+        <span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">getDefaultFileEncodingDecider</span><span class="p">()))</span>
+</pre></div>
+</div>
+<p>This decider is called with arguments <code class="docutils literal notranslate"><span class="pre">(context,</span> <span class="pre">path)</span></code>, and returns the name of the encoding to be 
+used for this path. Additional keyword arguments may be passed to the decider function in future, so accept additional 
+<code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the method signature if overriding.</p>
 <p>This extension-based decider uses the specified dictionary of extensions to determine which 
 extension to use, including the special value <a class="reference internal" href="#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.BINARY" title="xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.BINARY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionBasedFileEncodingDecider.BINARY</span></code></a> 
 which indicates non-text files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>defaultEncoding</strong> – The name of the default encoding to be used, another decider to delegate to, or None to defer to the configured global option. 
-Recommended values are: ‘utf-8’, ‘ascii’ or locale.getpreferredencoding().</p></li>
-<li><p><strong>extToEncoding</strong> – A dictionary whose keys are extensions such as ‘.xml’, ‘.foo.bar.baz’ and values specify the encoding to use for each one, 
+<li><p><strong>extToEncoding</strong> – <blockquote>
+<div><p>A dictionary whose keys are extensions such as ‘.xml’, ‘.foo.bar.baz’ and values specify the encoding to use for each one, 
 or the constant <a class="reference internal" href="#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.BINARY" title="xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.BINARY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionBasedFileEncodingDecider.BINARY</span></code></a> which indicates a non-text file (not all targets support binary). 
-The extensions can contain ${…} properties.</p></li>
+The extensions can contain ${…} properties.</p>
+</div></blockquote>
+<p>Extensions are matched case insensitively.</p>
+</p></li>
+<li><p><strong>default</strong> – <p>Specifies what to do if none of the specified extensions match.</p>
+<p>Can be: the name of the default encoding to be used as a string (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;utf-8&quot;</span></code>), 
+a decider function to delegate to (such as <a class="reference internal" href="#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider" title="xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider()</span></code></a>), or <code class="docutils literal notranslate"><span class="pre">None</span></code> to defer to the 
+configured global option (or throw an exception if this is itself the global option).</p>
+<p>Recommended values are: ‘utf-8’, ‘ascii’ or <a class="reference internal" href="xpybuild.buildcommon.html#xpybuild.buildcommon.PREFERRED_ENCODING" title="xpybuild.buildcommon.PREFERRED_ENCODING"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcommon.PREFERRED_ENCODING</span></code></a>.</p>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -315,7 +332,7 @@ should not be opened in text mode.</p>
 <dt id="xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider">
 <em class="property">static </em><code class="sig-name descname">getDefaultFileEncodingDecider</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates the file encoding decider that is used by default if per-target 
-or global option is specified.</p>
+or global option is not specified.</p>
 <p>Currently this supports utf-8 encoding of json/xml/yaml/yml files, 
 and binary for common non-application/text mime types such as image files 
 (based on the mime settings of the current machine).</p>
@@ -324,6 +341,19 @@ use <code class="xref py py-obj docutils literal notranslate"><span class="pre">
 the encodings precisely and ensure identical behaviour across machines.</p>
 </dd></dl>
 
+</dd></dl>
+
+</div>
+<div class="section" id="option">
+<h2>Option<a class="headerlink" href="#option" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="xpybuild.propertysupport.Option">
+<em class="property">class </em><code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">Option</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#Option"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.Option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents an option definition. Options customize the behaviour of one or more targets, for example by 
+providing default compiler arguments, timeouts, or paths to locally installed tools.</p>
+<p>An instance of this class is returned by <a class="reference internal" href="#xpybuild.propertysupport.defineOption" title="xpybuild.propertysupport.defineOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">defineOption</span></code></a>. To set the value of options in your build, call 
+<a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.option" title="xpybuild.basetarget.BaseTarget.option"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget.option</span></code></a> or <a class="reference internal" href="#xpybuild.propertysupport.setGlobalOption" title="xpybuild.propertysupport.setGlobalOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setGlobalOption</span></code></a>.</p>
 </dd></dl>
 
 </div>
@@ -508,6 +538,9 @@ system path, or a boolean/enumeration.</p>
 If set to None, the property must be set on the command line each time</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resolved property value.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -534,6 +567,9 @@ If set to None, the property must be set on the command line each time</p></li>
 <li><p><strong>mustExist</strong> – True if it’s an error to specify a directory that doesn’t
 exist (will raise a BuildException)</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resolved property value.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -577,6 +613,9 @@ If set to None, the property must be set on the command line each time</p></li>
 <li><p><strong>enumValues</strong> – A list of valid values for this property (can contain other ${…} variables)</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resolved property value.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -595,6 +634,9 @@ If set to None, the property must be set on the command line each time</p></li>
 If set to None, the property must be set on the command line each time</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resolved property value.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -604,16 +646,27 @@ If set to None, the property must be set on the command line each time</p></li>
 <dl class="py function">
 <dt id="xpybuild.propertysupport.definePropertiesFromFile">
 <code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">definePropertiesFromFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propertiesFile</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">excludeLines</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">conditions</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#definePropertiesFromFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.definePropertiesFromFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines a set of string properties from a .properties file</p>
+<dd><p>Defines a set of string properties by reading a .properties file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>propertiesFile</strong> – The file to include properties from (can include ${…} variables)</p></li>
-<li><p><strong>prefix</strong> – if specified, this prefix will be added to the start of all property names from this file</p></li>
-<li><p><strong>excludeLines</strong> – a string of list of strings to search for, any KEY containing these strings will be ignored</p></li>
-<li><p><strong>conditions</strong> – an optional list of string conditions that can appear in property 
-keys e.g. “FOO&lt;condition&gt;=bar” where lines with no condition in this list 
-are ignored. Conditions are typically lowercase.</p></li>
+<li><p><strong>propertiesFile</strong> (<em>str</em>) – The file to include properties from (can include ${…} variables)</p></li>
+<li><p><strong>prefix</strong> (<em>str</em>) – if specified, this prefix will be added to the start of all property names from this file</p></li>
+<li><p><strong>excludeLines</strong> (<em>list</em><em>(</em><em>str</em><em>)</em>) – a string of list of strings to search for, any KEY containing these strings will be ignored</p></li>
+<li><p><strong>conditions</strong> (<em>set</em><em>(</em><em>str</em><em>)</em>) – <p>An optional set or list of lower_case string conditions that can appear in property 
+keys to dyamically filter based on the platform and what kind of build is being performed.</p>
+<p>For example <code class="docutils literal notranslate"><span class="pre">MY_PROPERTY&lt;windows&gt;=bar</span></code>. Each line is only <em>included</em> if the condition matches one of the condition 
+strings passed to this function.</p>
+<p>For more advanced cases, a Python eval string can be specified, evaluated in a scope that includes the 
+<code class="docutils literal notranslate"><span class="pre">conditions</span></code> set, a reference to the <code class="docutils literal notranslate"><span class="pre">context</span></code> (for property lookups), the <code class="docutils literal notranslate"><span class="pre">IS_WINDOWS</span></code> constant, and the 
+Python <code class="docutils literal notranslate"><span class="pre">import_module</span></code> function for accessing anything else. You cannot use the <code class="docutils literal notranslate"><span class="pre">=</span></code> character anywhere in the 
+eval string (since this is a properties file, after all!), but in most cases using the <code class="docutils literal notranslate"><span class="pre">in</span></code> operator is more 
+useful anyway. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MY_PROPERTY</span><span class="o">&lt;</span>      <span class="n">IS_WINDOWS</span> <span class="ow">and</span> <span class="s1">&#39;debug&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">conditions</span>  <span class="o">&gt;</span> <span class="o">=</span> <span class="n">windows</span><span class="o">-</span><span class="n">release</span><span class="o">.</span><span class="n">dll</span>
+<span class="n">MY_PROPERTY</span><span class="o">&lt;</span> <span class="ow">not</span> <span class="p">(</span><span class="n">IS_WINDOWS</span> <span class="ow">and</span> <span class="s1">&#39;debug&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">=</span> <span class="n">everything</span><span class="o">-</span><span class="k">else</span><span class="o">.</span><span class="n">dll</span>
+</pre></div>
+</div>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -685,20 +738,37 @@ property was able to be set implicitly from the environment).</p>
 <dl class="py function">
 <dt id="xpybuild.propertysupport.defineOption">
 <code class="sig-prename descclassname">xpybuild.propertysupport.</code><code class="sig-name descname">defineOption</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/propertysupport.html#defineOption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.propertysupport.defineOption" title="Permalink to this definition">¶</a></dt>
-<dd><p>Define an option with a default (can be overridden globally using setGlobalOption() or on individual targets).</p>
-<p>This method is typically used only when implementing a new kind of target.</p>
-<p>Options are not available for <code class="docutils literal notranslate"><span class="pre">${...}</span></code> expansion (like properties), but 
-rather as used for (optionally inheritably) settings that affect the 
-behaviour of one or more targets. They are accessed using self.options 
-in any target instance.</p>
+<dd><p>Define an option controlling some behaviour of the build.</p>
+<p>A default value is provided, which can be overridden on individual targets, or globally throughout the build 
+using <a class="reference internal" href="#xpybuild.propertysupport.setGlobalOption" title="xpybuild.propertysupport.setGlobalOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setGlobalOption</span></code></a>.</p>
+<p>This method is typically used only when implementing a new kind of target, and often nested in an <code class="docutils literal notranslate"><span class="pre">Options</span></code> class 
+under the target, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyTarget</span><span class="p">(</span><span class="n">BaseTarget</span><span class="p">):</span>
+        <span class="k">class</span> <span class="nc">Options</span><span class="p">:</span>
+                <span class="sd">&quot;&quot;&quot; Options for customizing the behaviour of this target. To set an option on a specific target call </span>
+<span class="sd">                `xpybuild.basetarget.BaseTarget.option` or to se a global default use `xpybuild.propertysupport.setGlobalOption`. </span>
+<span class="sd">                &quot;&quot;&quot;</span>
+
+                <span class="n">myOption</span> <span class="o">=</span> <span class="n">defineOption</span><span class="p">(</span><span class="s2">&quot;MyTarget.myOption&quot;</span><span class="p">,</span> <span class="mi">123</span><span class="p">)</span>
+                <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Configures the XXX. </span>
+<span class="sd">                &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>Unlike properties, option values are not accessed by <code class="docutils literal notranslate"><span class="pre">${...}</span></code> expansion, but rather using <code class="docutils literal notranslate"><span class="pre">self.options</span></code> 
+from any <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a> subclass implementation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> – The option name, which should usually be in lowerCamelCase, with 
 a TitleCase prefix specific to this target or group of targets, often 
 matching the target name, e.g. <code class="docutils literal notranslate"><span class="pre">Javac.compilerArgs</span></code>.</p></li>
-<li><p><strong>default</strong> – The default value of the option.</p></li>
+<li><p><strong>default</strong> – The default value of the option. If you need a callable, try to use named functions rather than 
+lambdas so that the string representation is human-friendly.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new instance of <a class="reference internal" href="#xpybuild.propertysupport.Option" title="xpybuild.propertysupport.Option"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Option</span></code></a>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -735,7 +805,7 @@ matching the target name, e.g. <code class="docutils literal notranslate"><span 
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

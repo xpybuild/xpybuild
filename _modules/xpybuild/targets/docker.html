@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.targets.docker &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.targets.docker &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../../../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">xpybuild v3.1.dev1</a>
+          <a href="../../../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -197,8 +197,8 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">dockerfile</span> <span class="o">=</span> <span class="n">dockerfile</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">buildArgs</span> <span class="o">=</span> <span class="n">buildArgs</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">dockerArgs</span> <span class="o">=</span> <span class="n">dockerArgs</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">stampfile</span> <span class="o">=</span> <span class="s1">&#39;$</span><span class="si">{BUILD_WORK_DIR}</span><span class="s1">/targets/docker/.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[</span><span class="se">\\</span><span class="s1">/]&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">imagename</span><span class="p">)</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">depstampfile</span> <span class="o">=</span> <span class="s1">&#39;$</span><span class="si">{BUILD_WORK_DIR}</span><span class="s1">/targets/docker/.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[</span><span class="se">\\</span><span class="s1">/]&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">depimage</span><span class="p">)</span> <span class="k">if</span> <span class="n">depimage</span> <span class="k">else</span> <span class="kc">None</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">stampfile</span> <span class="o">=</span> <span class="s1">&#39;$</span><span class="si">{BUILD_WORK_DIR}</span><span class="s1">/targets/docker/.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[</span><span class="se">\\</span><span class="s1">/:]&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">imagename</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">depstampfile</span> <span class="o">=</span> <span class="s1">&#39;$</span><span class="si">{BUILD_WORK_DIR}</span><span class="s1">/targets/docker/.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[</span><span class="se">\\</span><span class="s1">/:]&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">depimage</span><span class="p">)</span> <span class="k">if</span> <span class="n">depimage</span> <span class="k">else</span> <span class="kc">None</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">PathSet</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
 		<span class="n">BaseTarget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stampfile</span><span class="p">,</span> <span class="n">inputs</span> <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">depstampfile</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">depstampfile</span> <span class="k">else</span> <span class="p">[]))</span>
 
@@ -285,7 +285,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

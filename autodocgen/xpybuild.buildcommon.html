@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.buildcommon &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.buildcommon &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -51,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -87,6 +87,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">xpybuild.buildcommon</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xpybuild-version">XPYBUILD_VERSION</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#is-windows">IS_WINDOWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preferred-encoding">PREFERRED_ENCODING</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#isdirpath">isDirPath</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#stringformatter">StringFormatter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#filenamestringformatter">FilenameStringFormatter</a></li>
@@ -94,6 +95,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#iswindows">isWindows</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#defineatomictargetgroup">defineAtomicTargetGroup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#requirexpybuildversion">requireXpybuildVersion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#registerbuildloadpostprocessor">registerBuildLoadPostProcessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#registerprebuildcheck">registerPreBuildCheck</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#enablelegacyxpybuildmodulenames">enableLegacyXpybuildModuleNames</a></li>
 </ul>
@@ -120,7 +122,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">xpybuild v3.1.dev1</a>
+          <a href="../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -180,7 +182,7 @@ functionality for adding prefixes/suffixes to paths such as <a class="reference 
 <h2>XPYBUILD_VERSION<a class="headerlink" href="#xpybuild-version" title="Permalink to this headline">¶</a></h2>
 <dl class="py data">
 <dt id="xpybuild.buildcommon.XPYBUILD_VERSION">
-<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">XPYBUILD_VERSION</code><em class="property">: str</em><em class="property"> = '3.1.dev1'</em><a class="headerlink" href="#xpybuild.buildcommon.XPYBUILD_VERSION" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">XPYBUILD_VERSION</code><em class="property">: str</em><em class="property"> = '4.0'</em><a class="headerlink" href="#xpybuild.buildcommon.XPYBUILD_VERSION" title="Permalink to this definition">¶</a></dt>
 <dd><p>The current xpybuild version.</p>
 </dd></dl>
 
@@ -191,6 +193,23 @@ functionality for adding prefixes/suffixes to paths such as <a class="reference 
 <dt id="xpybuild.buildcommon.IS_WINDOWS">
 <code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">IS_WINDOWS</code><em class="property">: bool</em><em class="property"> = False</em><a class="headerlink" href="#xpybuild.buildcommon.IS_WINDOWS" title="Permalink to this definition">¶</a></dt>
 <dd><p>A boolean that specifies whether this is Windows or some other operating system.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="preferred-encoding">
+<h2>PREFERRED_ENCODING<a class="headerlink" href="#preferred-encoding" title="Permalink to this headline">¶</a></h2>
+<dl class="py data">
+<dt id="xpybuild.buildcommon.PREFERRED_ENCODING">
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">PREFERRED_ENCODING</code><em class="property"> = 'UTF-8'</em><a class="headerlink" href="#xpybuild.buildcommon.PREFERRED_ENCODING" title="Permalink to this definition">¶</a></dt>
+<dd><p>The operating system’s preferred/default encoding for reading/writing the contents of text data in files and 
+process stdout/stderr for the current environment (or machine).</p>
+<p>This returns the same value as Python’s <code class="docutils literal notranslate"><span class="pre">locale.getpreferredencoding()</span></code> method, but as that method is not thread-safe, 
+this constant must always be used in builds to avoid race conditions when running in parallel.</p>
+<p>The OS preferred encoding should not be confused with Python’s ‘default’ encoding (<code class="docutils literal notranslate"><span class="pre">sys.getdefaultencoding()</span></code>) which 
+is usually not relevant in a build.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 4.0.</span></p>
+</div>
 </dd></dl>
 
 </div>
@@ -277,13 +296,51 @@ not using python import statements.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="registerbuildloadpostprocessor">
+<h2>registerBuildLoadPostProcessor<a class="headerlink" href="#registerbuildloadpostprocessor" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="xpybuild.buildcommon.registerBuildLoadPostProcessor">
+<code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">registerBuildLoadPostProcessor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#registerBuildLoadPostProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.registerBuildLoadPostProcessor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback function that will be invoked just after the build files have been parsed and all targets added, 
+to allow for custom post processing logic to execute before the clean/build.</p>
+<p>This is useful for performing global customizations of targets throughout the build, such as adding tags or 
+additional target options. For example, to override the default retry setting and add a tag to all defined targets 
+of a particular Python class:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">demoPostProcessor</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">targets</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">MyCustomTarget</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;FooBar&#39;</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> 
+                        <span class="c1"># Override options for these targets</span>
+                        <span class="n">target</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="n">BaseTarget</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">failureRetries</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+                        <span class="c1"># Add additional tags for these targets</span>
+                        <span class="n">target</span><span class="o">.</span><span class="n">tags</span><span class="p">(</span><span class="s1">&#39;my-post-processed-tag&#39;</span><span class="p">)</span>
+
+<span class="n">registerBuildLoadPostProcessor</span><span class="p">(</span><span class="n">demoPostProcessor</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fn</strong> (<em>Callable</em><em>[</em><a class="reference internal" href="xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext" title="xpybuild.buildcontext.BuildInitializationContext"><em>xpybuild.buildcontext.BuildInitializationContext</em></a><em>]</em>) – A function that takes a context as its argument.
+You may wish to use <code class="docutils literal notranslate"><span class="pre">BuildInitializationContext</span></code> methods such as <a class="reference internal" href="xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.targets" title="xpybuild.buildcontext.BuildInitializationContext.targets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.buildcontext.BuildInitializationContext.targets</span></code></a> from your function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 <div class="section" id="registerprebuildcheck">
 <h2>registerPreBuildCheck<a class="headerlink" href="#registerprebuildcheck" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="xpybuild.buildcommon.registerPreBuildCheck">
 <code class="sig-prename descclassname">xpybuild.buildcommon.</code><code class="sig-name descname">registerPreBuildCheck</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/buildcommon.html#registerPreBuildCheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.buildcommon.registerPreBuildCheck" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines a check which will be called after any clean but before any build actions take place.
-fn should be a functor that takes a context and raises a BuildException if the check fails.</p>
+<dd><p>Defines a check which will be called after any clean but before any build actions take place, to provide fail-fast 
+behaviour if something is wrong.</p>
+<p>See also <a class="reference internal" href="#xpybuild.buildcommon.registerBuildLoadPostProcessor" title="xpybuild.buildcommon.registerBuildLoadPostProcessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">registerBuildLoadPostProcessor</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fn</strong> (<em>Callable</em><em>[</em><a class="reference internal" href="xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext" title="xpybuild.buildcontext.BuildInitializationContext"><em>xpybuild.buildcontext.BuildInitializationContext</em></a><em>]</em>) – A function that takes a context as its argument, 
+and raises a BuildException if the check fails.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -319,7 +376,7 @@ fn should be a functor that takes a context and raises a BuildException if the c
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

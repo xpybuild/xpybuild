@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.basetarget &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.basetarget &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">xpybuild v3.1.dev1</a>
+          <a href="../../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -176,7 +176,9 @@
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">xpybuild.buildcontext</span>
 <span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="kn">import</span> <span class="n">getBuildInitializationContext</span>
+<span class="kn">import</span> <span class="nn">xpybuild.buildcontext</span>
 <span class="kn">import</span> <span class="nn">xpybuild.utils.fileutils</span> <span class="k">as</span> <span class="nn">fileutils</span>
 <span class="kn">from</span> <span class="nn">xpybuild.utils.flatten</span> <span class="kn">import</span> <span class="n">flatten</span><span class="p">,</span> <span class="n">getStringList</span>
 <span class="kn">from</span> <span class="nn">xpybuild.utils.buildfilelocation</span> <span class="kn">import</span> <span class="n">BuildFileLocation</span>
@@ -186,6 +188,8 @@
 <span class="kn">import</span> <span class="nn">xpybuild.utils.stringutils</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="kn">import</span> <span class="n">defineOption</span>
 
 <div class="viewcode-block" id="BaseTarget"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget">[docs]</a><span class="k">class</span> <span class="nc">BaseTarget</span><span class="p">(</span><span class="n">Composable</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; The base class for all targets. </span>
@@ -270,9 +274,9 @@
 				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Invalid target name: double slashes are not permitted: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">name</span><span class="p">)</span>
 			<span class="k">if</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
 				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Invalid target name: backslashes are not permitted: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">name</span><span class="p">)</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="n">BaseTarget</span><span class="o">.</span><span class="n">_normalizeTargetName</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__path_src</span> <span class="o">=</span> <span class="n">name</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">__tags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__tags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;full&#39;</span><span class="p">]</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__priority</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="c1"># default so we can go bigger or smaller</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 		
@@ -300,7 +304,12 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">addHashableImplicitInputOption</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registerImplicitInputOption</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">addHashableImplicitInput</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registerImplicitInput</span>
 
-		
+	<span class="nd">@staticmethod</span>
+	<span class="k">def</span> <span class="nf">_normalizeTargetName</span><span class="p">(</span><span class="n">name</span><span class="p">):</span> <span class="c1"># non-public method to ensure comparisons between target names are done consistently</span>
+		<span class="k">if</span> <span class="n">xpybuild</span><span class="o">.</span><span class="n">buildcontext</span><span class="o">.</span><span class="n">_EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX</span><span class="p">:</span> 
+			<span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;$${&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;__xpybuild_dollar_placeholder&gt;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;${&#39;</span><span class="p">,</span> <span class="s1">&#39;{&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;__xpybuild_dollar_placeholder&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;$${&#39;</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">name</span>
+
 	<span class="k">def</span> <span class="nf">__returnOrRaiseIfNone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exceptionMessage</span><span class="p">):</span>
 		<span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="n">value</span>
 		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">exceptionMessage</span><span class="p">)</span>
@@ -343,7 +352,13 @@
 		<span class="c1"># if there&#39;s no explicit parent, default to ${OUTPUT_DIR} to stop </span>
 		<span class="c1"># people accidentally writing to their source directories</span>
 		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span> <span class="c1"># cache it for consistency</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">__path</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__path_src</span><span class="p">,</span> <span class="s2">&quot;$</span><span class="si">{OUTPUT_DIR}</span><span class="s2">&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__path</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__path_src</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s2">&quot;OUTPUT_DIR&quot;</span><span class="p">))</span>
+		
+		<span class="n">badchars</span> <span class="o">=</span> <span class="s1">&#39;&lt;&gt;:&quot;|?*&#39;</span> <span class="c1"># Windows bad characters; it&#39;s helpful to stop people using such characters on all OSes too since almost certainly not intended</span>
+		<span class="n">foundbadchars</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">badchars</span><span class="p">]</span> <span class="c1"># (nb: ignore first 2 chars of absolute path which will necessarily contain a colon on Windows)</span>
+		<span class="k">if</span> <span class="n">foundbadchars</span><span class="p">:</span> <span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Invalid character(s) &quot;</span><span class="si">%s</span><span class="s1">&quot; found in target name </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">foundbadchars</span><span class="p">)))),</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="p">))</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)):</span> <span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Target name must not end in a &quot;.&quot; or &quot; &quot;&#39;</span><span class="p">)</span> <span class="c1"># https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file</span>
+		
 		<span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Resolved target name </span><span class="si">%s</span><span class="s1"> to canonical path </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span>
 
@@ -351,7 +366,7 @@
 		<span class="sd">&quot;&quot;&quot;.. private:: Internal method for resolving path from name, performing any </span>
 <span class="sd">		required expansion etc. </span>
 <span class="sd">		</span>
-<span class="sd">		Do not override this method.</span>
+<span class="sd">		Do not override or call this method.</span>
 <span class="sd">		</span>
 <span class="sd">		@param context: The initialization context, with all properties and options fully defined. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
@@ -512,9 +527,9 @@
 <span class="sd">		</span>
 <span class="sd">		See also `tag`. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">__tags</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__tags</span><span class="p">)</span> <span class="o">-</span> <span class="p">{</span><span class="s1">&#39;all&#39;</span><span class="p">})</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__tags</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__tags</span><span class="p">)</span> <span class="o">-</span> <span class="p">{</span><span class="s1">&#39;full&#39;</span><span class="p">})</span>
 		<span class="n">init</span> <span class="o">=</span> <span class="n">getBuildInitializationContext</span><span class="p">()</span>
-		<span class="n">init</span><span class="o">.</span><span class="n">removeFromTags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">])</span>
+		<span class="n">init</span><span class="o">.</span><span class="n">removeFromTags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;full&#39;</span><span class="p">])</span>
 		<span class="k">return</span> <span class="bp">self</span></div>
 	
 <div class="viewcode-block" id="BaseTarget.clearTags"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.clearTags">[docs]</a>	<span class="k">def</span> <span class="nf">clearTags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -524,7 +539,7 @@
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="n">init</span> <span class="o">=</span> <span class="n">getBuildInitializationContext</span><span class="p">()</span>
 		<span class="n">init</span><span class="o">.</span><span class="n">removeFromTags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tags</span><span class="p">)</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">__tags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;all&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tags</span> <span class="k">else</span> <span class="p">[]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__tags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;full&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;full&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tags</span> <span class="k">else</span> <span class="p">[]</span>
 		<span class="n">init</span><span class="o">.</span><span class="n">registerTags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tags</span><span class="p">)</span>
 		<span class="k">return</span> <span class="bp">self</span></div>
 
@@ -532,27 +547,35 @@
 		<span class="sd">&quot;&quot;&quot; Target classes can call this during `run` or `clean` to get the resolved value of a specified option for </span>
 <span class="sd">		this target, with optional checking to give a friendly error message if the value is an empty string or None. </span>
 <span class="sd">		</span>
-<span class="sd">		This is a high-levetl alternative to reading directly from `self.options`. </span>
+<span class="sd">		This is a high-level alternative to reading directly from `self.options`. </span>
+<span class="sd">		</span>
+<span class="sd">		This method cannot be used while the build files are still being loaded, only during the execution of the targets. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39;optionName&#39;</span><span class="p">):</span> <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">optionName</span> <span class="c1"># it&#39;s an Option instance</span>
+
 		<span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Target tried to access an option key that does not exist: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">key</span><span class="p">)</span>
 		<span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 		<span class="k">if</span> <span class="p">(</span><span class="n">errorIfNone</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">==</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">errorIfEmptyString</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
 			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;This target requires a value to be specified for option &quot;</span><span class="si">%s</span><span class="s1">&quot; (see basetarget.option or setGlobalOption)&#39;</span><span class="o">%</span><span class="n">key</span><span class="p">)</span>
 		<span class="k">return</span> <span class="n">v</span></div>
 
-<div class="viewcode-block" id="BaseTarget.option"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.option">[docs]</a>	<span class="k">def</span> <span class="nf">option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseTarget.option"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.option">[docs]</a>	<span class="k">def</span> <span class="nf">option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;Called by build file authors to configure this target instance with an override for an option value. </span>
 <span class="sd">		</span>
 <span class="sd">		This allows target-specific overriding of options. If no override is provided, the value set in </span>
-<span class="sd">		`propertysupport.setGlobalOption` for the whole build is used, or if that was not set then the default </span>
+<span class="sd">		`xpybuild.propertysupport.setGlobalOption` for the whole build is used, or if that was not set then the default </span>
 <span class="sd">		when the option was defined. </span>
 <span class="sd">		</span>
 <span class="sd">		Use `self.options` or `getOption` to get resolved option values when implementing a target class. </span>
 <span class="sd">		</span>
-<span class="sd">		@param key: The name of a previously-defined option.</span>
+<span class="sd">		@param str|xpybuild.propertysupport.Option key: The name of a previously-defined option. Usually this is a string </span>
+<span class="sd">		literal, but you cna also use the `xpybuild.propertysupport.Option` instance if you prefer. </span>
+<span class="sd">		</span>
 <span class="sd">		@param value: The value. If the value is a string and contains any property values these will be expanded </span>
 <span class="sd">		before the option value is passed to the target. </span>
 <span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39;optionName&#39;</span><span class="p">):</span> <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">optionName</span> <span class="c1"># it&#39;s an Option instance</span>
+		
 		<span class="bp">self</span><span class="o">.</span><span class="n">__optionsTargetOverridesUnresolved</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 		<span class="k">return</span> <span class="bp">self</span></div>
 	
@@ -575,11 +598,11 @@
 <span class="sd">		@param tags: The tag, tags or list of tags to add to the target.</span>
 <span class="sd">		</span>
 <span class="sd">		&gt;&gt;&gt; BaseTarget(&#39;a&#39;,[]).tags(&#39;abc&#39;).getTags()</span>
-<span class="sd">		&lt;using test initialization context&gt; &lt;using test initialization context&gt; [&#39;abc&#39;, &#39;all&#39;]</span>
+<span class="sd">		&lt;using test initialization context&gt; &lt;using test initialization context&gt; [&#39;abc&#39;, &#39;full&#39;]</span>
 <span class="sd">		&gt;&gt;&gt; BaseTarget(&#39;a&#39;,[]).tags([&#39;abc&#39;, &#39;def&#39;]).getTags()</span>
-<span class="sd">		&lt;using test initialization context&gt; &lt;using test initialization context&gt; [&#39;abc&#39;, &#39;def&#39;, &#39;all&#39;]</span>
+<span class="sd">		&lt;using test initialization context&gt; &lt;using test initialization context&gt; [&#39;abc&#39;, &#39;def&#39;, &#39;full&#39;]</span>
 <span class="sd">		&gt;&gt;&gt; BaseTarget(&#39;a&#39;,[]).tags(&#39;abc&#39;, &#39;def&#39;).tags(&#39;ghi&#39;).getTags()</span>
-<span class="sd">		&lt;using test initialization context&gt; &lt;using test initialization context&gt; &lt;using test initialization context&gt; [&#39;ghi&#39;, &#39;abc&#39;, &#39;def&#39;, &#39;all&#39;]</span>
+<span class="sd">		&lt;using test initialization context&gt; &lt;using test initialization context&gt; &lt;using test initialization context&gt; [&#39;ghi&#39;, &#39;abc&#39;, &#39;def&#39;, &#39;full&#39;]</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="n">taglist</span> <span class="o">=</span> <span class="n">getStringList</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">tags</span><span class="p">))</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__tags</span> <span class="o">=</span> <span class="n">taglist</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tags</span>
@@ -628,10 +651,27 @@
 <span class="sd">		</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="c1"># remove chars that are not valid on unix/windows file systems (e.g. colon)</span>
-		<span class="n">x</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^()+./\w-]&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;${&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
+		<span class="n">x</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^()+./\w-]+&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;${&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
 		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">256</span><span class="p">:</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="c1"># avoid deeply nested directories in general</span>
-		<span class="k">return</span> <span class="n">x</span></div></div>
+		<span class="k">return</span> <span class="n">x</span></div>
 
+<div class="viewcode-block" id="BaseTarget.Options"><a class="viewcode-back" href="../../autodocgen/xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget.Options">[docs]</a>	<span class="k">class</span> <span class="nc">Options</span><span class="p">:</span>
+		<span class="sd">&quot;&quot;&quot; Options for customizing the behaviour of all targets. To set an option on a specific target call </span>
+<span class="sd">		`xpybuild.basetarget.BaseTarget.option` or to se a global default use `xpybuild.propertysupport.setGlobalOption`. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+	
+		<span class="n">failureRetries</span> <span class="o">=</span> <span class="n">defineOption</span><span class="p">(</span><span class="s2">&quot;Target.failureRetries&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		The &quot;Target.failureRetries&quot; option can be set on any target (or globally), and specifies how many times to retry </span>
+<span class="sd">		the target&#39;s build if it fails. The default is 0, which is recommended for normal developer builds. </span>
+
+<span class="sd">		There is an exponentially increasing backoff pause between each attempt - first 15s, then 30s, then 60s etc. </span>
+<span class="sd">		</span>
+<span class="sd">		See `xpybuild.buildcommon.registerBuildLoadPostProcessor` which can be used to customize this option for targets based on </span>
+<span class="sd">		user-defined criteria such as target type. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="n">failureRetriesInitialBackoffSecs</span> <span class="o">=</span> <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;Target.failureRetriesInitialBackoffSecs&#39;</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span> <span class="c1"># undocumented as there should be no reason to change this</span></div></div>
 
 <span class="n">targetNameToUniqueId</span> <span class="o">=</span> <span class="n">BaseTarget</span><span class="o">.</span><span class="n">targetNameToUniqueId</span> <span class="c1"># alias for pre-3.0 projects</span>
 <span class="sd">&quot;&quot;&quot;.. private:: See static method instead.</span>
@@ -653,7 +693,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

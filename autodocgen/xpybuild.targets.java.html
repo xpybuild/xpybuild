@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.targets.java &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.targets.java &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -51,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -125,7 +125,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">xpybuild v3.1.dev1</a>
+          <a href="../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -217,7 +217,7 @@ is found in the original manifest.mf file already.</p></li>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Compile Java classes to a directory (without creating a <code class="docutils literal notranslate"><span class="pre">.jar</span></code>).</p>
 <p>Example usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Jar</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{OUTPUT_DIR}</span><span class="s1">/myapp.jar&#39;</span><span class="p">,</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Javac</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{OUTPUT_DIR}</span><span class="s1">/myclasses/&#39;</span><span class="p">,</span> 
         <span class="c1"># FindPaths walks a directory tree, supporting complex ant-style globbing patterns for include/exclude</span>
         <span class="nb">compile</span><span class="o">=</span><span class="p">[</span>
                 <span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;./src/&#39;</span><span class="p">,</span> <span class="n">excludes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;**/VersionConstants.java&#39;</span><span class="p">]),</span> 
@@ -226,14 +226,7 @@ is found in the original manifest.mf file already.</p></li>
 
         <span class="c1"># DirBasedPathSet statically lists dependent paths under a directory</span>
         <span class="n">classpath</span><span class="o">=</span><span class="p">[</span><span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{MY_DEPENDENT_LIBRARY_DIR}</span><span class="s1">/&#39;</span><span class="p">,</span> <span class="s1">&#39;mydep-api.jar&#39;</span><span class="p">,</span> <span class="s1">&#39;mydep-core.jar&#39;</span><span class="p">)],</span>
-
-        <span class="c1"># Specify Jar-specific key/values for the MANIFEST.MF (in addition to any set globally via options)</span>
-        <span class="n">manifest</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Implementation-Title&#39;</span><span class="p">:</span><span class="s1">&#39;My Amazing Java Application&#39;</span><span class="p">},</span> 
-
-        <span class="n">package</span><span class="o">=</span><span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;resources/&#39;</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="s1">&#39;**/*.properties&#39;</span><span class="p">),</span>
 <span class="p">)</span>
-
-<span class="n">setGlobalOption</span><span class="p">(</span><span class="s1">&#39;jar.manifest.defaults&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Implementation-Version&#39;</span><span class="p">:</span> <span class="s1">&#39;$</span><span class="si">{APP_VERSION}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;Implementation-Vendor&#39;</span><span class="p">:</span> <span class="s1">&#39;My Company&#39;</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>The following options can be set with <code class="docutils literal notranslate"><span class="pre">Javac(...).option(key,</span> <span class="pre">value)</span></code> 
@@ -270,6 +263,26 @@ or <a class="reference internal" href="xpybuild.propertysupport.html#xpybuild.pr
 <em class="property">class </em><code class="sig-prename descclassname">xpybuild.targets.java.</code><code class="sig-name descname">Jar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">jar</span></em>, <em class="sig-param"><span class="n">compile</span></em>, <em class="sig-param"><span class="n">classpath</span></em>, <em class="sig-param"><span class="n">manifest</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">package</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">preserveManifestFormatting</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xpybuild/targets/java.html#Jar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpybuild.targets.java.Jar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="xpybuild.basetarget.html#xpybuild.basetarget.BaseTarget" title="xpybuild.basetarget.BaseTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">xpybuild.basetarget.BaseTarget</span></code></a></p>
 <p>Create a jar, first compiling some Java classes, then packing it all up as a <code class="docutils literal notranslate"><span class="pre">.jar</span></code>.</p>
+<p>Example usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Javac</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{OUTPUT_DIR}</span><span class="s1">/myapp.jar&#39;</span><span class="p">,</span> 
+        <span class="c1"># FindPaths walks a directory tree, supporting complex ant-style globbing patterns for include/exclude</span>
+        <span class="nb">compile</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;./src/&#39;</span><span class="p">,</span> <span class="n">excludes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;**/VersionConstants.java&#39;</span><span class="p">]),</span> 
+                <span class="s1">&#39;$</span><span class="si">{BUILD_WORK_DIR}</span><span class="s1">/filtered-java-src/VersionConstants.java&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+
+        <span class="c1"># DirBasedPathSet statically lists dependent paths under a directory</span>
+        <span class="n">classpath</span><span class="o">=</span><span class="p">[</span><span class="n">DirBasedPathSet</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{MY_DEPENDENT_LIBRARY_DIR}</span><span class="s1">/&#39;</span><span class="p">,</span> <span class="s1">&#39;mydep-api.jar&#39;</span><span class="p">,</span> <span class="s1">&#39;mydep-core.jar&#39;</span><span class="p">)],</span>
+
+        <span class="c1"># Specify Jar-specific key/values for the MANIFEST.MF (in addition to any set globally via options)</span>
+        <span class="n">manifest</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Implementation-Title&#39;</span><span class="p">:</span><span class="s1">&#39;My Amazing Java Application&#39;</span><span class="p">},</span> 
+
+        <span class="n">package</span><span class="o">=</span><span class="n">FindPaths</span><span class="p">(</span><span class="s1">&#39;resources/&#39;</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="s1">&#39;**/*.properties&#39;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">setGlobalOption</span><span class="p">(</span><span class="s1">&#39;jar.manifest.defaults&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Implementation-Version&#39;</span><span class="p">:</span> <span class="s1">&#39;$</span><span class="si">{APP_VERSION}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;Implementation-Vendor&#39;</span><span class="p">:</span> <span class="s1">&#39;My Company&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
 <p>In addition to the options listed on the <a class="reference internal" href="#xpybuild.targets.java.Javac" title="xpybuild.targets.java.Javac"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Javac</span></code></a> target, the following options can be set when 
 creating a Jar, using <code class="docutils literal notranslate"><span class="pre">Jar(...).option(key,</span> <span class="pre">value)</span></code> or <a class="reference internal" href="xpybuild.propertysupport.html#xpybuild.propertysupport.setGlobalOption" title="xpybuild.propertysupport.setGlobalOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpybuild.propertysupport.setGlobalOption()</span></code></a>:</p>
 <blockquote>
@@ -360,7 +373,7 @@ up the Javadoc generation.</p></li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

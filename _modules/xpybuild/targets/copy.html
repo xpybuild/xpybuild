@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.targets.copy &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.targets.copy &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../../../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">xpybuild v3.1.dev1</a>
+          <a href="../../../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -230,6 +230,14 @@
 <span class="sd">		dependency resolution then such errors can be easily detected </span>
 <span class="sd">		before they cause a problem). </span>
 <span class="sd">		</span>
+<span class="sd">		To create new empty directories that are not present in the source (mkdir), </span>
+<span class="sd">		you can use this simple trick which utilizes the fact that the current </span>
+<span class="sd">		directory ``.`` definitely exists. It doesn&#39;t copy anything from inside </span>
+<span class="sd">		(just copies only its &#39;existence&#39;) and uses a SingletonDestRenameMapper PathSet </span>
+<span class="sd">		to provide the destination::</span>
+<span class="sd">		</span>
+<span class="sd">			SingletonDestRenameMapper(&#39;my-new-dest-directory/&#39;, &#39;./&#39;),</span>
+<span class="sd">		</span>
 <span class="sd">		@param implicitDependencies: provides a way to add additional implicit </span>
 <span class="sd">		dependencies that will not be part of src but may affect the </span>
 <span class="sd">		copy process (e.g. filtering in); this is intended for </span>
@@ -320,6 +328,7 @@
 		<span class="c1"># shortcut (we want to expand property values to detect changes in </span>
 		<span class="c1"># versions etc that should trigger a rebuild, but just not do any </span>
 		<span class="c1"># globbing/searches here)</span>
+		<span class="c1"># This is slightly dodgy in case any object in src uses the &quot;{&quot; char which would map as a property substitution, but fairly unlikely</span>
 		<span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;src: &#39;</span><span class="o">+</span><span class="n">context</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">))</span>
 		
 		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;mode: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
@@ -441,6 +450,7 @@
 			<span class="n">exceptionsuffix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 			<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="ne">UnicodeDecodeError</span><span class="p">):</span>
 				<span class="n">exceptionsuffix</span> <span class="o">=</span> <span class="s1">&#39; due to encoding problem; consider setting the &quot;common.fileEncodingDecider&quot; option&#39;</span>
+				<span class="n">exceptionsuffix</span> <span class="o">+=</span> <span class="s1">&#39;; first bad character is: </span><span class="si">%r</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">ex</span><span class="o">.</span><span class="n">object</span><span class="p">[</span><span class="n">ex</span><span class="o">.</span><span class="n">start</span><span class="p">:</span><span class="n">ex</span><span class="o">.</span><span class="n">start</span><span class="o">+</span><span class="mi">10</span><span class="p">]</span>
 			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Failed to perform filtered copy of </span><span class="si">{</span><span class="n">src</span><span class="si">}{</span><span class="n">exceptionsuffix</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">causedBy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 		<span class="n">shutil</span><span class="o">.</span><span class="n">copymode</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
 		<span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span></div>
@@ -637,7 +647,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

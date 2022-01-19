@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.pathsets &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.pathsets &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">xpybuild v3.1.dev1</a>
+          <a href="../../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -272,6 +272,7 @@
 <span class="kn">from</span> <span class="nn">xpybuild.utils.buildexceptions</span> <span class="kn">import</span> <span class="n">BuildException</span>
 <span class="kn">from</span> <span class="nn">xpybuild.buildcommon</span> <span class="kn">import</span> <span class="n">isDirPath</span><span class="p">,</span> <span class="n">normpath</span><span class="p">,</span> <span class="n">IS_WINDOWS</span>
 <span class="kn">from</span> <span class="nn">xpybuild.buildcontext</span> <span class="kn">import</span> <span class="n">BaseContext</span><span class="p">,</span> <span class="n">getBuildInitializationContext</span>
+<span class="kn">import</span> <span class="nn">xpybuild.propertysupport</span> <span class="k">as</span> <span class="nn">propertysupport</span>
 
 <span class="c1"># don&#39;t define a &#39;log&#39; variable here or targets will use it by mistake when importing this file</span>
 
@@ -598,7 +599,6 @@
 			<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span> <span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nb">dir</span><span class="p">):]</span> <span class="p">)</span> <span class="p">)</span>
 		<span class="k">return</span> <span class="n">result</span></div>
 		
-
 <div class="viewcode-block" id="FindPaths"><a class="viewcode-back" href="../../autodocgen/xpybuild.pathsets.html#xpybuild.pathsets.FindPaths">[docs]</a><span class="k">class</span> <span class="nc">FindPaths</span><span class="p">(</span><span class="n">BasePathSet</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; A lazily-evaluated PathSet that uses ``*`` and ``**`` (ant-style) globbing </span>
 <span class="sd">	to dynamically discover files (and optionally directories) under a common </span>
@@ -627,6 +627,9 @@
 <span class="sd">	copy all empty directories as well as all files, use:: </span>
 
 <span class="sd">		FindPaths(..., includes=[&#39;**&#39;, &#39;**/&#39;]). </span>
+<span class="sd">	</span>
+<span class="sd">	In addition, global (non-overridable) excludes may be specified by setting the </span>
+<span class="sd">	`FindPaths.Options.globalExcludesFunction` option. </span>
 
 <span class="sd">	Destination paths (where needed) are generated from the path underneath the</span>
 <span class="sd">	base dir.</span>
@@ -634,11 +637,16 @@
 <span class="sd">	FindPaths will return file or directory symlinks (with ``/`` suffix if directory), </span>
 <span class="sd">	but will not recurse into directory symlinks. </span>
 <span class="sd">	</span>
-<span class="sd">	@param dir: May be a simple string, or a DirGeneratedByTarget to glob under a </span>
+<span class="sd">	@param dir: The base directory to search (relative or absolute, may contain ${...} variables). </span>
+<span class="sd">	May be a simple string, or a `DirGeneratedByTarget` to glob under a </span>
 <span class="sd">	directory generated as part of the build. To find paths from a set of </span>
-<span class="sd">	targets use dir=TargetsWithinDir (though only use this when that dynamism </span>
-<span class="sd">	is required, as this will be slower than statically listing the targets </span>
+<span class="sd">	targets use `TargetsWithinDir` (though only use this when that dynamism </span>
+<span class="sd">	is truly required, as this will be slower than statically listing the targets </span>
 <span class="sd">	individually or using TargetsWithTag). </span>
+
+<span class="sd">	@param includes: a list of glob patterns for the files to include (excluding all others)</span>
+
+<span class="sd">	@param excludes: a list of glob patterns to exclude after processing any includes.</span>
 
 <span class="sd">	&gt;&gt;&gt; str(FindPaths(&#39;a/b/c&#39;, includes=[&#39;*.x&#39;, &#39;y/**/z/foo.*&#39;], excludes=[&#39;xx&#39;, &#39;**/y&#39;]))</span>
 <span class="sd">	&#39;FindPaths(&quot;a/b/c&quot;, includes=[&quot;*.x&quot;, &quot;y/**/z/foo.*&quot;], excludes=[&quot;xx&quot;, &quot;**/y&quot;])&#39;</span>
@@ -661,17 +669,8 @@
 	<span class="n">_skipDependenciesExistenceCheck</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># since we only return items we&#39;ve found on disk, no need to check them again</span>
 	
 	<span class="n">_shortcutUptodateCheck</span> <span class="o">=</span> <span class="n">IS_WINDOWS</span> <span class="c1"># on Windows os.scandir can efficiently get the stat results without an extra call</span>
-	
+
 	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		@param dir: base directory to search (relative or absolute, may contain ${...} variables). </span>
-<span class="sd">		May be a simple string, or a DirGeneratedByTarget to glob under a </span>
-<span class="sd">		directory generated as part of the build. </span>
-
-<span class="sd">		@param includes: a list of glob patterns for the files to include (excluding all others)</span>
-
-<span class="sd">		@param excludes: a list of glob patterns to exclude after processing any includes.</span>
-<span class="sd">		&quot;&quot;&quot;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__dir</span> <span class="o">=</span> <span class="nb">dir</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">includes</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">includes</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">excludes</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">excludes</span><span class="p">)</span>
@@ -701,6 +700,34 @@
 	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
 		<span class="sd">&quot;&quot;&quot; Return a string including this class name and the basedir and include/exclude patterns with which it was created. &quot;&quot;&quot;</span>
 		<span class="k">return</span> <span class="p">(</span><span class="s1">&#39;FindPaths(</span><span class="si">%s</span><span class="s1">, includes=</span><span class="si">%s</span><span class="s1">, excludes=</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">__dir</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dir</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dir</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">includes</span> <span class="ow">or</span> <span class="p">[],</span> <span class="bp">self</span><span class="o">.</span><span class="n">excludes</span> <span class="ow">or</span> <span class="p">[]))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+	
+<div class="viewcode-block" id="FindPaths.Options"><a class="viewcode-back" href="../../autodocgen/xpybuild.pathsets.html#xpybuild.pathsets.FindPaths.Options">[docs]</a>	<span class="k">class</span> <span class="nc">Options</span><span class="p">:</span>
+		<span class="sd">&quot;&quot;&quot; Options for customizing the behaviour of this type of PathSet. Can be configured with </span>
+<span class="sd">		`xpybuild.propertysupport.setGlobalOption`. </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FindPaths.Options.defaultGlobalExcludesFunction"><a class="viewcode-back" href="../../autodocgen/xpybuild.pathsets.html#xpybuild.pathsets.FindPaths.Options.defaultGlobalExcludesFunction">[docs]</a>		<span class="nd">@staticmethod</span>
+		<span class="k">def</span> <span class="nf">defaultGlobalExcludesFunction</span><span class="p">(</span><span class="n">name</span><span class="p">):</span> 
+			<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">			The default function used for the `FindPaths.Options.globalExcludesFunction` option. </span>
+<span class="sd">			</span>
+<span class="sd">			The current implementation excludes temporary NFS (Network File System) files matching the pattern &quot;.nfs[0-9]&quot;. </span>
+<span class="sd">			</span>
+<span class="sd">			This function must be very fast to execute as it&#39;s highly performance-critical for the dependency checking and </span>
+<span class="sd">			build process, so simple string operations should be used instead of regular expressions. </span>
+<span class="sd">			</span>
+<span class="sd">			:param str name: A base file/directory name (without path). </span>
+<span class="sd">			:return: True if this file or directory should be excluded. </span>
+<span class="sd">			&quot;&quot;&quot;</span>
+			<span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s1">&#39;.nfs&#39;</span><span class="p">,</span> <span class="p">))</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[.]nfs[0-9]&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
+
+		<span class="n">globalExcludesFunction</span> <span class="o">=</span> <span class="n">propertysupport</span><span class="o">.</span><span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;FindPaths.globalExcludesFunction&#39;</span><span class="p">,</span> <span class="n">defaultGlobalExcludesFunction</span><span class="o">.</span><span class="vm">__func__</span><span class="p">)</span> 
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Global (non-overridable) excludes may be specified by setting this option to a</span>
+<span class="sd">		function that accepts a full path and returns True if it should be ignored. </span>
+<span class="sd">		</span>
+<span class="sd">		Needs to be as fast as possible. </span>
+<span class="sd">		&quot;&quot;&quot;</span></div>
 	
 	<span class="k">def</span> <span class="nf">_resolveUnderlyingDependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
 		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dir</span><span class="p">,</span> <span class="n">BaseTarget</span><span class="p">):</span>
@@ -737,6 +764,8 @@
 <span class="sd">		destinations outside the specified root directory). </span>
 <span class="sd">		</span>
 <span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">globalExcludesFunction</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getGlobalOption</span><span class="p">(</span><span class="s1">&#39;FindPaths.globalExcludesFunction&#39;</span><span class="p">)</span>
+		
 		<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;FindPaths&#39;</span><span class="p">)</span>
 		<span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;FindPaths resolve starting for: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lock</span><span class="p">:</span>
@@ -796,18 +825,22 @@
 						<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">includes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 							<span class="bp">self</span><span class="o">.</span><span class="n">includes</span><span class="o">.</span><span class="n">removeUnmatchableDirectories</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">)</span>
 						
-						<span class="c1"># optimization: if there&#39;s an exclude starting with this dir and ending with &#39;/**&#39; or &#39;/*&#39;, don&#39;t navigate to it</span>
-						<span class="c1"># we deliberately match only against filename patterns (not dir patterns) since </span>
-						<span class="c1"># empty dirs are handled in the later loop not through this mechanism, so it&#39;s just files that matter</span>
-						<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excludes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dirs</span> <span class="o">!=</span> <span class="p">[]:</span>
-							<span class="c1"># nb: both dirs and the result of getPathMatches will have no trailing slashes</span>
-							<span class="bp">self</span><span class="o">.</span><span class="n">__removeNamesFromList</span><span class="p">(</span><span class="n">dirs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">excludes</span><span class="o">.</span><span class="n">getPathMatches</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filenames</span><span class="o">=</span><span class="n">dirs</span><span class="p">))</span>
+						<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dirs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+							<span class="c1"># optimization: if there&#39;s an exclude starting with this dir and ending with &#39;/**&#39; or &#39;/*&#39;, don&#39;t navigate to it</span>
+							<span class="c1"># we deliberately match only against filename patterns (not dir patterns) since </span>
+							<span class="c1"># empty dirs are handled in the later loop not through this mechanism, so it&#39;s just files that matter</span>
+							<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excludes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+								<span class="c1"># nb: both dirs and the result of getPathMatches will have no trailing slashes</span>
+								<span class="bp">self</span><span class="o">.</span><span class="n">__removeNamesFromList</span><span class="p">(</span><span class="n">dirs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">excludes</span><span class="o">.</span><span class="n">getPathMatches</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filenames</span><span class="o">=</span><span class="n">dirs</span><span class="p">))</span>
 
-						<span class="c1"># any other subdirs will need to be walked to</span>
-						<span class="k">for</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
-							<span class="k">if</span> <span class="n">symlinks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">symlinks</span><span class="p">:</span> <span class="k">continue</span> <span class="c1"># don&#39;t recursive into symlinks (messes up copying)</span>
-							<span class="n">pathsToWalk</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">longdir</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="o">+</span><span class="nb">dir</span><span class="p">)</span>
-						<span class="nb">dir</span> <span class="o">=</span> <span class="kc">None</span>
+							<span class="c1"># any other subdirs will need to be walked to</span>
+							<span class="k">for</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+								<span class="k">if</span> <span class="n">symlinks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">symlinks</span><span class="p">:</span> <span class="k">continue</span> <span class="c1"># don&#39;t recursive into symlinks (messes up copying)</span>
+								
+								<span class="k">if</span> <span class="n">globalExcludesFunction</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span> <span class="k">continue</span>
+								
+								<span class="n">pathsToWalk</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">longdir</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="o">+</span><span class="nb">dir</span><span class="p">)</span>
+							<span class="nb">dir</span> <span class="o">=</span> <span class="kc">None</span>
 						
 						<span class="c1"># now find which files and empty dirs match</span>
 						<span class="n">matchedemptydirs</span> <span class="o">=</span> <span class="n">dirs</span>
@@ -823,6 +856,7 @@
 							<span class="bp">self</span><span class="o">.</span><span class="n">__removeNamesFromList</span><span class="p">(</span><span class="n">matchedemptydirs</span><span class="p">,</span> <span class="n">exdirs</span><span class="p">)</span>
 							
 						<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+							<span class="k">if</span> <span class="n">globalExcludesFunction</span><span class="p">(</span><span class="n">p</span><span class="p">):</span> <span class="k">continue</span>
 							<span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">root</span><span class="o">+</span><span class="n">p</span><span class="p">)</span>
 						<span class="k">if</span> <span class="n">_shortcutUptodateCheck</span><span class="p">:</span>
 							<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
@@ -833,6 +867,7 @@
 									<span class="n">newestTimestamp</span><span class="p">,</span> <span class="n">newestFile</span> <span class="o">=</span> <span class="n">thisTimestamp</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dir</span><span class="p">)</span><span class="o">+</span><span class="n">root</span><span class="o">+</span><span class="n">p</span>
 							
 						<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">matchedemptydirs</span><span class="p">:</span>
+							<span class="k">if</span> <span class="n">globalExcludesFunction</span><span class="p">(</span><span class="n">p</span><span class="p">):</span> <span class="k">continue</span>
 							<span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">root</span><span class="o">+</span><span class="n">p</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>					
 				
 				<span class="c1">#end while</span>
@@ -866,7 +901,6 @@
 			
 			<span class="bp">self</span><span class="o">.</span><span class="n">__cached</span> <span class="o">=</span> <span class="n">result</span>
 			<span class="k">return</span> <span class="n">result</span></div></div>
-
 
 <div class="viewcode-block" id="TargetsWithTag"><a class="viewcode-back" href="../../autodocgen/xpybuild.pathsets.html#xpybuild.pathsets.TargetsWithTag">[docs]</a><span class="k">class</span> <span class="nc">TargetsWithTag</span><span class="p">(</span><span class="n">BasePathSet</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
@@ -1292,7 +1326,7 @@
 		<span class="n">BasePathSet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 		<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dirTargetName</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
 		<span class="k">assert</span> <span class="n">dirTargetName</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">__target</span> <span class="o">=</span> <span class="n">dirTargetName</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__target</span> <span class="o">=</span> <span class="n">BaseTarget</span><span class="o">.</span><span class="n">_normalizeTargetName</span><span class="p">(</span><span class="n">dirTargetName</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">__location</span> <span class="o">=</span> <span class="n">BuildFileLocation</span><span class="p">()</span>
 		
 		<span class="k">if</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">dirTargetName</span><span class="p">:</span> <span class="c1"># avoid silly mistakes, and enforce consistency</span>
@@ -1334,7 +1368,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

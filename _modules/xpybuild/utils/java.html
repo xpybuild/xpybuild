@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.utils.java &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.utils.java &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../../../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">xpybuild v3.1.dev1</a>
+          <a href="../../../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -241,8 +241,8 @@
 		<span class="k">return</span> <span class="n">lines</span></div>
 
 <span class="c1"># Options for javac</span>
-<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.options&#39;</span><span class="p">,</span> <span class="p">[])</span>
-<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.source&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="c1"># e.g. 1.6</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.options&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="c1"># e.g. [&#39;--release&#39;, &#39;11&#39;]</span>
+<span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.source&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="c1"># e.g. 1.6; in Java 11+, it&#39;s often best to add a --release argument to javac.options instead</span>
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.target&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.encoding&#39;</span><span class="p">,</span> <span class="s2">&quot;ASCII&quot;</span><span class="p">)</span> <span class="c1"># best to set this explicitly else its OS dependent</span>
 <span class="n">defineOption</span><span class="p">(</span><span class="s1">&#39;javac.debug&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -432,7 +432,7 @@
 	<span class="c1"># build up the arguments</span>
 	<span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">]</span>
 	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.source&quot;</span><span class="p">]:</span> <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-source&quot;</span><span class="p">,</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.source&quot;</span><span class="p">]])</span>
-	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.target&quot;</span><span class="p">]:</span> <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-source&quot;</span><span class="p">,</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.target&quot;</span><span class="p">]])</span>
+	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.target&quot;</span><span class="p">]:</span> <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-target&quot;</span><span class="p">,</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.target&quot;</span><span class="p">]])</span>
 	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.encoding&quot;</span><span class="p">]:</span> <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-encoding&quot;</span><span class="p">,</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.encoding&quot;</span><span class="p">]])</span>
 	<span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;javac.debug&quot;</span><span class="p">]:</span>
 		<span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-g&#39;</span><span class="p">)</span>
@@ -628,7 +628,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

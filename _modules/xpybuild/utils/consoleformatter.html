@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.utils.consoleformatter &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.utils.consoleformatter &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../../../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">xpybuild v3.1.dev1</a>
+          <a href="../../../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -207,6 +207,7 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">fmt</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">()</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">bufferingDisabled</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># can be set to True to prevent it for handlers for which it&#39;s not appropriate</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">bufferingRequired</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># can be set to True to require it for handlers where it&#39;s essential for correctness (when a target is retried) e.g. TeamCity CI</span>
 		<span class="n">_outputFormattersInUse</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 		
 	<span class="k">def</span> <span class="nf">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
@@ -311,7 +312,7 @@
 	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">buildOptions</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 		<span class="n">ConsoleFormatter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">buildOptions</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 		
-		<span class="bp">self</span><span class="o">.</span><span class="n">bufferingDisabled</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># useful to let teamcity know as soon as there is an error</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">bufferingRequired</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># need buffering so that we can stop errors being written out if the target subsequently succeeds on retry</span>
 		
 	<span class="nd">@staticmethod</span>
 	<span class="k">def</span> <span class="nf">teamcityEscape</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
@@ -446,7 +447,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xpybuild.buildcontext &mdash; xpybuild v3.1.dev1 3.1.dev1 documentation</title>
+  <title>xpybuild.buildcontext &mdash; xpybuild v4.0 4.0 documentation</title>
   
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> xpybuild v3.1.dev1
+            <a href="../../index.html" class="icon icon-home"> xpybuild v4.0
           
 
           
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">xpybuild v3.1.dev1</a>
+          <a href="../../index.html">xpybuild v4.0</a>
         
       </nav>
 
@@ -189,6 +189,8 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;xpybuild&#39;</span><span class="p">)</span>
+
+<span class="n">_EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;XPYBUILD_EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">==</span><span class="s1">&#39;true&#39;</span> <span class="c1"># undocumented/unsupported for now</span>
 
 <div class="viewcode-block" id="BaseContext"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext">[docs]</a><span class="k">class</span> <span class="nc">BaseContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot; Common functionality needed during initialization and build phases. </span>
@@ -328,11 +330,19 @@
 		<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="s1">&#39;resolveToString&#39;</span><span class="p">):</span>
 			<span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">resolveToString</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 		<span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">string</span><span class="p">):</span> <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-		<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s1">&#39;Error in expandPropertyValues: expecting string but argument was of type &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+		<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s1">&#39;Error in expandPropertyValues: expecting string but argument was of type &quot;</span><span class="si">%s</span><span class="s1">&quot; - </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
 		
-		<span class="k">if</span> <span class="s1">&#39;$${&#39;</span> <span class="ow">in</span> <span class="n">string</span><span class="p">:</span>
+		<span class="k">if</span> <span class="s1">&#39;$${&#39;</span> <span class="ow">in</span> <span class="n">string</span><span class="p">:</span> <span class="c1"># tbd whether this kind of escaping is even needed once we have the {{} escaping</span>
 			<span class="k">assert</span> <span class="s1">&#39;&lt;escaped_xpybuild_placeholder&gt;&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">string</span>
 			<span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;$${&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;escaped_xpybuild_placeholder&gt;&#39;</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="s1">&#39;{{}&#39;</span> <span class="ow">in</span> <span class="n">string</span><span class="p">:</span> <span class="c1"># in case we want a literal &quot;{&quot;</span>
+			<span class="k">assert</span> <span class="s1">&#39;&lt;escaped_xpybuild_placeholder2&gt;&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">string</span>
+			<span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;{{}&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;escaped_xpybuild_placeholder2&gt;&#39;</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="n">_EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX</span><span class="p">:</span>
+			<span class="c1"># This is not super efficient... moving the logic into the following loop would be nicer</span>
+			<span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;${&#39;</span><span class="p">,</span> <span class="s1">&#39;{&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">,</span> <span class="s1">&#39;${&#39;</span><span class="p">)</span> <span class="c1"># treat &quot;{&quot; and &quot;${&quot; as the same (probably more efficient doing this replace() call than using regexes)</span>
 
 		<span class="n">isListExpansion</span> <span class="o">=</span> <span class="kc">False</span>
 		<span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -352,7 +362,7 @@
 				<span class="k">raise</span>
 			<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
 				<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Incorrectly formatted property string &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">string</span><span class="p">)</span>
-			<span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="n">propName</span><span class="p">)</span>
+			<span class="n">v</span> <span class="o">=</span> <span class="s1">&#39;{&#39;</span> <span class="k">if</span> <span class="n">propName</span><span class="o">==</span><span class="s1">&#39;{&#39;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="n">propName</span><span class="p">)</span>
 			<span class="c1"># every language except python doesn&#39;t use Initialcaps for their booleans so this is much more useful behaviour</span>
 			<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span> <span class="n">v</span> <span class="o">=</span> <span class="s1">&#39;true&#39;</span> <span class="k">if</span> <span class="n">v</span> <span class="k">else</span> <span class="s1">&#39;false&#39;</span> 
 			<span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;${</span><span class="si">%s</span><span class="s1">}&#39;</span> <span class="o">%</span> <span class="n">propName</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
@@ -362,10 +372,10 @@
 			<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">expandListPropertyValue</span><span class="p">(</span><span class="n">listPropName</span><span class="p">):</span>
 				<span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expandPropertyValues</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 				<span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
-					<span class="n">rv</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">prefix</span><span class="o">+</span><span class="n">y</span><span class="o">+</span><span class="n">string</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;escaped_xpybuild_placeholder&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;${&#39;</span><span class="p">))</span>
+					<span class="n">rv</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">prefix</span><span class="o">+</span><span class="n">y</span><span class="o">+</span><span class="n">string</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;escaped_xpybuild_placeholder&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;${&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;escaped_xpybuild_placeholder2&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;{&#39;</span><span class="p">))</span>
 			<span class="k">return</span> <span class="n">rv</span>
 		<span class="k">else</span><span class="p">:</span>
-			<span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;escaped_xpybuild_placeholder&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;${&#39;</span><span class="p">)</span>
+			<span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;escaped_xpybuild_placeholder&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;${&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;escaped_xpybuild_placeholder2&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;{&#39;</span><span class="p">)</span>
 			<span class="k">if</span> <span class="n">expandList</span><span class="p">:</span>
 				<span class="k">return</span> <span class="p">[</span><span class="n">string</span><span class="p">]</span> <span class="k">if</span> <span class="n">string</span> <span class="k">else</span> <span class="p">[]</span>
 			<span class="k">else</span><span class="p">:</span>
@@ -486,7 +496,11 @@
 <span class="sd">		This can be useful for PathSets and functors, however in any situation </span>
 <span class="sd">		where there is a target, use `xpybuild.basetarget.BaseTarget.options` instead, so that per-target </span>
 <span class="sd">		option overrides are respected. &quot;&quot;&quot;</span>
-		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_globalOptions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_globalOptions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+		<span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span> <span class="c1"># purely for the benefit of build initialization context where not all options have been defined yet</span>
+			<span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;No global value found for option &quot;</span><span class="si">%s</span><span class="s1">&quot; - falling back to default value from the definition&quot;&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+			<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definedOptions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="BaseContext.getFullPath"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BaseContext.getFullPath">[docs]</a>	<span class="k">def</span> <span class="nf">getFullPath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">defaultDir</span><span class="p">,</span> <span class="n">expandList</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot; Expands any properties in the specified path, then removes trailing path separators, normalizes it for this </span>
@@ -593,6 +607,8 @@
 
 		<span class="bp">self</span><span class="o">.</span><span class="n">_propertyOverrides</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">propertyOverrides</span><span class="p">)</span>
 		
+		<span class="bp">self</span><span class="o">.</span><span class="n">_propertyLocations</span> <span class="o">=</span> <span class="p">{}</span>
+		
 		<span class="bp">self</span><span class="o">.</span><span class="n">_targetGroups</span> <span class="o">=</span> <span class="p">[]</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_targetsMap</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># name:target object</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_targetsList</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># target objects</span>
@@ -601,6 +617,7 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">_initializationCompleted</span> <span class="o">=</span> <span class="kc">False</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_envPropertyOverrides</span> <span class="o">=</span> <span class="p">{}</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_preBuildCallbacks</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_buildParsePostProcessors</span> <span class="o">=</span> <span class="p">[]</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_globalOptions</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="BuildInitializationContext.getBuildInitializationContext"><a class="viewcode-back" href="../../autodocgen/xpybuild.buildcontext.html#xpybuild.buildcontext.BuildInitializationContext.getBuildInitializationContext">[docs]</a>	<span class="nd">@staticmethod</span>
@@ -647,6 +664,16 @@
 		<span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">__buildInitializationContext</span> <span class="o">=</span> <span class="bp">self</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_rootDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">buildFile</span><span class="p">))</span>
 
+		<span class="c1"># Definitions for common options used by multiple targets; only define first time round</span>
+		<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="kn">import</span> <span class="n">ExtensionBasedFileEncodingDecider</span>
+		<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="kn">import</span> <span class="n">defaultProcessOutputEncodingDecider</span>
+		<span class="k">if</span> <span class="s1">&#39;common.fileEncodingDecider&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definedOptions</span><span class="p">:</span>
+			<span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_defineOption</span><span class="p">(</span><span class="s1">&#39;common.fileEncodingDecider&#39;</span><span class="p">,</span> <span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">getDefaultFileEncodingDecider</span><span class="p">())</span>
+			<span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_defineOption</span><span class="p">(</span><span class="s1">&#39;common.processOutputEncodingDecider&#39;</span><span class="p">,</span> <span class="n">defaultProcessOutputEncodingDecider</span><span class="p">)</span>
+		<span class="c1"># make sure this has been imported, since it&#39;s used for implementing many targets and defines some options of its own</span>
+		<span class="c1"># which must happen before the build phase begins</span>
+		<span class="kn">import</span> <span class="nn">xpybuild.utils.outputhandler</span>
+
 		<span class="k">try</span><span class="p">:</span>
 			<span class="n">BuildFileLocation</span><span class="o">.</span><span class="n">_currentBuildFile</span> <span class="o">=</span> <span class="p">[</span><span class="n">buildFile</span><span class="p">]</span>
 			<span class="n">exec</span><span class="p">(</span><span class="nb">compile</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">buildFile</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">buildFile</span><span class="p">,</span> <span class="s1">&#39;exec&#39;</span><span class="p">),</span> <span class="p">{})</span>
@@ -674,20 +701,11 @@
 		<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;OUTPUT_DIR&#39;</span><span class="p">,</span> <span class="s1">&#39;BUILD_MODE&#39;</span><span class="p">,</span> <span class="s1">&#39;BUILD_NUMBER&#39;</span><span class="p">,</span> <span class="s1">&#39;BUILD_WORK_DIR&#39;</span><span class="p">,</span> <span class="s1">&#39;LOG_FILE&#39;</span><span class="p">]:</span>
 			<span class="bp">self</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> 
 
-		<span class="c1"># make sure this has been imported, since it&#39;s used for implementing many targets and defines some options of its own</span>
-		<span class="c1"># which must happen before hte build phase begins</span>
-		<span class="kn">import</span> <span class="nn">xpybuild.utils.outputhandler</span>
+		<span class="k">for</span> <span class="n">cb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buildParsePostProcessors</span><span class="p">:</span>
+			<span class="n">cb</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 		<span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">__buildInitializationContext</span> <span class="o">=</span> <span class="s1">&#39;build phase&#39;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_initializationCompleted</span> <span class="o">=</span> <span class="kc">True</span>
-		
-		<span class="c1"># Definitions for common options used by multiple targets; only define first time round</span>
-		<span class="kn">from</span> <span class="nn">xpybuild.propertysupport</span> <span class="kn">import</span> <span class="n">ExtensionBasedFileEncodingDecider</span>
-		<span class="kn">from</span> <span class="nn">xpybuild.utils.process</span> <span class="kn">import</span> <span class="n">defaultProcessOutputEncodingDecider</span>
-		<span class="k">if</span> <span class="s1">&#39;common.fileEncodingDecider&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definedOptions</span><span class="p">:</span>
-			<span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_defineOption</span><span class="p">(</span><span class="s1">&#39;common.fileEncodingDecider&#39;</span><span class="p">,</span> <span class="n">ExtensionBasedFileEncodingDecider</span><span class="o">.</span><span class="n">getDefaultFileEncodingDecider</span><span class="p">())</span>
-			<span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_defineOption</span><span class="p">(</span><span class="s1">&#39;common.processOutputEncodingDecider&#39;</span><span class="p">,</span> <span class="n">defaultProcessOutputEncodingDecider</span><span class="p">)</span>
-
 		
 		<span class="c1"># all the valid ones will have been popped already</span>
 		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_propertyOverrides</span><span class="p">:</span>
@@ -717,7 +735,7 @@
 				<span class="bp">self</span><span class="o">.</span><span class="n">_envPropertyOverrides</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 	
-	<span class="k">def</span> <span class="nf">defineProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">coerceToValidValue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">defineProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">coerceToValidValue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		.. private:: For internal use only. </span>
 
@@ -734,8 +752,15 @@
 <span class="sd">		@param coerceToValidValue: None, or a function to validate and/or convert the input string to a value of the right </span>
 <span class="sd">		type</span>
 <span class="sd">		@param debug: if True log at DEBUG else log at INFO</span>
+<span class="sd">		@param location: A formatFileLocation string identifying the location in the .py or properties file where this was defined</span>
+<span class="sd">		@returns: The resolved property value. </span>
+
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_initializationCheck</span><span class="p">()</span>
+		
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">location</span><span class="p">:</span> 
+			<span class="n">location</span> <span class="o">=</span> <span class="n">BuildFileLocation</span><span class="p">()</span>
+			<span class="n">location</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">getLineString</span><span class="p">()</span> <span class="k">if</span> <span class="n">location</span><span class="o">.</span><span class="n">buildFile</span> <span class="k">else</span> <span class="kc">None</span>
 		
 		<span class="c1"># enforce naming convention</span>
 		<span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="n">name</span><span class="p">:</span>
@@ -760,14 +785,14 @@
 			<span class="n">value</span> <span class="o">=</span> <span class="n">coerceToValidValue</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 			
 		<span class="bp">self</span><span class="o">.</span><span class="n">_properties</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_propertyLocations</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span>
 		
 		<span class="c1"># remove if still present, so we can tell if user tries to set any undef&#39;d properties</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_propertyOverrides</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> 
 		
 		<span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
 			<span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Setting property </span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-		<span class="k">else</span><span class="p">:</span>
-			<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Setting property </span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+		<span class="c1"># nb: the full property list gets logged later, once the .log file is initialized, by main.py</span>
 		
 		<span class="k">return</span> <span class="n">value</span>
 	
@@ -897,7 +922,7 @@
 <span class="sd">		Called internally from L{propertysupport.defineOption} and does not </span>
 <span class="sd">		need to be called directly</span>
 <span class="sd">		&quot;&quot;&quot;</span>
-		<span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_definedOptions</span> <span class="ow">and</span> <span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_definedOptions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">!=</span> <span class="n">default</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_definedOptions</span> <span class="ow">and</span> <span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_definedOptions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">!=</span> <span class="n">default</span> <span class="ow">and</span> <span class="s1">&#39;doctest&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
 			<span class="k">raise</span> <span class="n">BuildException</span><span class="p">(</span><span class="s1">&#39;Cannot define option &quot;</span><span class="si">%s</span><span class="s1">&quot; more than once&#39;</span><span class="o">%</span><span class="n">name</span><span class="p">)</span>
 
 		<span class="n">BuildInitializationContext</span><span class="o">.</span><span class="n">_definedOptions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">default</span>
@@ -1052,7 +1077,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Ben Spiller and Matthew Johnson
+        &copy; Copyright 2019-2021, Ben Spiller and Matthew Johnson
 
     </p>
   </div>
