@@ -377,7 +377,7 @@ class Jar(BaseTarget):
 		# for now, don't bother factoring global jar.manifest.defaults option 
 		# in here (it'll almost never change anyway)
 		return super(Jar, self).getHashableImplicitInputs(context) + [
-			'manifest = '+(context.expandPropertyValues(self.manifest) if isinstance(self.manifest,str) else 
+			'manifest = '+(context.expandPropertyValues(str(self.manifest)) if not isinstance(self.manifest,dict) else 
 				str({context.expandPropertyValues(k):context.expandPropertyValues(v) for k,v in self.manifest.items()})),
 			'classpath = '+context.expandPropertyValues(str(self.classpath)), # because classpath destinations affect manifest
 			]+(['preserveManifestFormatting = true'] if self.preserveManifestFormatting else [])\
