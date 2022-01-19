@@ -59,9 +59,15 @@ jobs:
           
           python -m pysys run --ci --outdir=${{matrix.test-run-id}} --exclude skip_ci
           
+
+      - name: Print locations
+        working-directory: tests/correctness
+        shell: bash
+        id: pysys
+        run: |
           echo contents of ${{ steps.pysys.outputs.artifact_PythonCoverageDir }} :
           ls -l ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}
-
+        
       - name: Upload Python code coverage 
         # codecov@v2.1.0
         #uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b
@@ -71,7 +77,8 @@ jobs:
           fail_ci_if_error: true # optional (default = false)
           verbose: true # optional (default = false)
           name: ${{matrix.test-run-id}}
-          file: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}\\coverage.xml
+          #file: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}\coverage.xml
+          directory: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}
           #version: v0.1.15
         
       # If any tests fail, PySys will return an error code, so we need "if: always()" so the following steps will run
