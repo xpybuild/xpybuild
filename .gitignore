@@ -1,3 +1,7 @@
+# Top-level files
+*.lnk
+*.bat
+
 # PySys Output directories
 Output/
 pysys-junit-report/
@@ -7,6 +11,7 @@ performance_output/
 # xpybuild release output
 _build_output/
 docs/autodocgen/
+build*.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
