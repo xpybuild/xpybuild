@@ -63,7 +63,6 @@ jobs:
       - name: Print locations
         working-directory: tests/correctness
         shell: bash
-        id: pysys
         run: |
           echo contents of ${{ steps.pysys.outputs.artifact_PythonCoverageDir }} :
           ls -l ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}
