@@ -792,7 +792,10 @@ class BuildInitializationContext(BaseContext):
 		if not key in BuildInitializationContext._definedOptions:
 			raise BuildException("Cannot specify value for option that has not been defined \"%s\"" % key)
 		if key in self._globalOptions:
-			log.warn("Resetting global option %s to %s at %s", key, value, BuildFileLocation().getLineString())
+			# for a like-to-like comparison, need to expand any properties (empirically one of them seems to be non-expanded)
+			if self._recursiveExpandProperties(value) != self._recursiveExpandProperties(self._globalOptions[key]):
+				log.warn("Resetting global option %s to %s at %s; old value was %s", key, self._recursiveExpandProperties(value), BuildFileLocation().getLineString(), 
+					self._recursiveExpandProperties(self._globalOptions[key]))
 		else:
 			log.info("Setting global option %s to %s at %s", key, value, BuildFileLocation().getLineString())
 		self._globalOptions[key] = value
