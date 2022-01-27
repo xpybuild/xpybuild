@@ -62,6 +62,8 @@ Fixes
   between the clean and build phases (for example, due to containing a timestamp or random number). 
 - Fixed the ``javac.target`` option to do the correct thing (was previously setting ``-source`` not ``-target`` (GH-6). 
 
+NB: There was a re-release of 4.0 on 2022-01-27 shortly after the initial release to fix a couple of minor issues.
+
 3.0
 ===
 
