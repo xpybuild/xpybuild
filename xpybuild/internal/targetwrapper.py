@@ -460,7 +460,7 @@ class TargetWrapper(object):
 		retries = None
 		
 		retryNumber = 0 # 1=first retry, etc
-		self.target.retriesRemaining = self.target.options['Target.failureRetries'] # default is 0
+		self.target.retriesRemaining = int(self.target.options['Target.failureRetries']) # default is 0
 		backoffSecs = self.target.options['Target.failureRetriesInitialBackoffSecs']
 		
 		while True:
