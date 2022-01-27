@@ -47,6 +47,7 @@ from xpybuild.utils.stringutils import formatTimePeriod
 import xpybuild.utils.progress # needed to create the entry in _handlers
 
 from xpybuild.internal.outputbuffering import OutputBufferingStreamWrapper, outputBufferingManager
+from xpybuild.basetarget import BaseTarget
 
 log = logging.getLogger('xpybuild')
 
@@ -188,13 +189,13 @@ def main(args):
 				task = _TASK_LIST_TARGETS
 			elif o in ['find-targets', 'ft']:
 				task = _TASK_LIST_FIND_TARGETS
-				findTargetsPattern = a
+				findTargetsPattern = BaseTarget._normalizeTargetName(a)
 			elif o in ['target-info', 'ti']:
 				task = _TASK_LIST_TARGET_INFO
-				findTargetsPattern = a
+				findTargetsPattern = BaseTarget._normalizeTargetName(a)
 			elif o in ['search', 's']:
 				task = _TASK_LIST_SEARCH
-				searchPattern = a
+				searchPattern = BaseTarget._normalizeTargetName(a)
 			elif o in ['properties']:
 				task = _TASK_LIST_PROPERTIES
 			elif o in ['options']:
@@ -254,7 +255,7 @@ def main(args):
 				elif arg=='all': # pre-4.0 alias for all
 					includedTargets.append('full')
 				else:
-					includedTargets.append(arg)
+					includedTargets.append(BaseTarget._normalizeTargetName(arg))
 			
 		# default is all
 		if (not includedTargets) or includedTargets==['']:

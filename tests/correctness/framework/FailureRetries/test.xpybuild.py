@@ -22,5 +22,7 @@ class MyTarget(BaseTarget):
 		self.log.error('Error logged by target')
 		raise Exception('Simulated target failure')
 
-MyTarget('${OUTPUT_DIR}/mytarget/', []).option(BaseTarget.Options.failureRetries, 2)
+# Use a string since that's what it would be if set by a property
+MyTarget('${OUTPUT_DIR}/mytarget/', []).option(BaseTarget.Options.failureRetries, '2')
+
 setGlobalOption('Target.failureRetriesInitialBackoffSecs', 1.0)

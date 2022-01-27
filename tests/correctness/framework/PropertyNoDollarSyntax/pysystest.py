@@ -20,7 +20,12 @@ from xpybuild.xpybuild_basetest import XpybuildBaseTest
 
 class PySysTest(XpybuildBaseTest):
 	def execute(self):
-		self.xpybuild(stdouterr='xpybuild', args=[], env={'XPYBUILD_EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX':'true'})
+		self.xpybuild(stdouterr='xpybuild', args=[
+			'full', 
+			'${OUTPUT_DIR}/mysrc1/',
+			'{OUTPUT_DIR}/mysrc1/',
+			'${OUTPUT_DIR}/mysrc.*2/'
+		], env={'XPYBUILD_EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX':'true'})
 		self.xpybuild(stdouterr='properties', args=['--properties'], env={'XPYBUILD_EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX':'true'})
 		self.xpybuild(stdouterr='targets', args=['--targets'], env={'XPYBUILD_EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX':'true'})
 		self.xpybuild(stdouterr='options', args=['--options'], env={'XPYBUILD_EXPERIMENTAL_NO_DOLLAR_PROPERTY_SYNTAX':'true'})
