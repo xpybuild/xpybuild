@@ -65,8 +65,8 @@ jobs:
         if: steps.pysys.outputs.artifact_PythonCoverageDir
         with:
           name: ${{matrix.test-run-id}}
-          files: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/coverage.xml
-          #directory: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}
+          #files: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}/coverage.xml
+          directory: ${{ steps.pysys.outputs.artifact_PythonCoverageDir }}
 
       # If any tests fail, PySys will return an error code, so we need "if: always()" so the following steps will run
       
