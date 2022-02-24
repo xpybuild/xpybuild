@@ -902,7 +902,8 @@ class BuildContext(BaseContext):
 		
 		if hasattr(target, 'name'):
 			return target.name in self.init.targets()
-		target = str(target)
+		import xpybuild.basetarget
+		target = xpybuild.basetarget.BaseTarget._normalizeTargetName(str(target))
 		return target in self.init.targets() or target in self.__targetPaths
 
 # as of v3.0 this is not documented and retained only for compatibility - better to use static singleton method
