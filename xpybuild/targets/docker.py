@@ -1,6 +1,6 @@
 # xpyBuild - eXtensible Python-based Build System
 #
-# Copyright (c) 2013 - 2018 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2018, 2022 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -50,10 +50,18 @@ class DockerBase(BaseTarget):
 		self.dockerfile = dockerfile
 		self.buildArgs = buildArgs
 		self.dockerArgs = dockerArgs
-		self.stampfile = '${BUILD_WORK_DIR}/targets/docker/.%s' % re.sub(r'[\\/:]', '_', imagename)
-		self.depstampfile = '${BUILD_WORK_DIR}/targets/docker/.%s' % re.sub(r'[\\/:]', '_', depimage) if depimage else None
+		self.stampfile = '${BUILD_WORK_DIR}/targets/docker/.%s' % self.imageNameToFileName(imagename)
+		self.depstampfile = '${BUILD_WORK_DIR}/targets/docker/.%s' % self.imageNameToFileName(depimage) if depimage else None
 		self.inputs = PathSet(inputs)
 		BaseTarget.__init__(self, self.stampfile, inputs + ([self.depstampfile] if self.depstampfile else []))
+
+	@staticmethod
+	def imageNameToFileName(imageName):
+		"""
+		Replaces special characters such as ``:`` and ``/`` that often occur in docker image names with ``_`` to 
+		generate a string that can be used (on all operating systems) as a valid file name. 
+		"""
+		return re.sub(r'[\\/:]', '_', imageName)
 
 	def clean(self, context):
 		BaseTarget.clean(self, context)
