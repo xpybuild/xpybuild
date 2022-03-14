@@ -17,12 +17,12 @@ jobs:
         include:
           - test-run-id: ubuntu-py3.7
             os: ubuntu-latest
-            python-version: '3.7'
+            python-version: "3.7"
             perf-test: true
 
           - test-run-id: win-py3.10
             os: windows-latest
-            python-version: '3.10'
+            python-version: "3.10"
             perf-test: false
 
     runs-on: ${{matrix.os}}
@@ -45,7 +45,7 @@ jobs:
         if: runner.os == 'Windows'
         with:
           # 16 = 2019
-          vs-version: '[16,17)'
+          vs-version: "[16,17)"
 
       - name: Test with PySys
         working-directory: tests/correctness
