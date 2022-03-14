@@ -31,8 +31,7 @@ jobs:
       # Install the desired version of Python and PySys
       - uses: actions/checkout@v2
 
-      # setup-python@v2.3.1
-      - uses: actions/setup-python@f38219332975fe8f9c04cca981d674bf22aea1d3
+      - uses: actions/setup-python@v2
         with:
           python-version: ${{matrix.python-version}}
           # Enabled caching of dependencies
