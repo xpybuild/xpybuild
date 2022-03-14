@@ -31,7 +31,8 @@ jobs:
       # Install the desired version of Python and PySys
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v2
+      # setup-python@v2.3.1
+      - uses: actions/setup-python@f38219332975fe8f9c04cca981d674bf22aea1d3
         with:
           python-version: ${{matrix.python-version}}
           # Enabled caching of dependencies
@@ -39,8 +40,8 @@ jobs:
           cache-dependency-path: tests/pysys-requirements.txt
       - run: pip install -r tests/pysys-requirements.txt
 
-      # setup-msbuild@v1.1.1 (setting up the environment for Visual Studio)
-      - uses: microsoft/setup-msbuild@ab534842b4bdf384b8aaf93765dc6f721d9f5fab
+      # (setting up the environment for Visual Studio)
+      - uses: microsoft/setup-msbuild@v1.1
         if: runner.os == 'Windows'
         with:
           # 16 = 2019
