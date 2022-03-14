@@ -44,7 +44,7 @@ jobs:
         if: runner.os == 'Windows'
         with:
           # 16 = 2019
-          vs-version: "[16,17)"
+          vs-version: '[16,17)'
 
       - name: Test with PySys
         working-directory: tests/correctness
