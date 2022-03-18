@@ -421,7 +421,7 @@ class DirBasedPathSet(BasePathSet):
 
 	def _resolveUnderlyingDependencies(self, context):
 		if isinstance(self.__dir, BaseTarget):
-			return [self.__dir.resolveToString(context), self] 
+			return [(self.__dir.resolveToString(context), self)] 
 		elif isinstance(self.__dir, BasePathSet):
 			return self.__dir._resolveUnderlyingDependencies(context)
 		else:
@@ -584,7 +584,7 @@ class FindPaths(BasePathSet):
 	
 	def _resolveUnderlyingDependencies(self, context):
 		if isinstance(self.__dir, BaseTarget):
-			return [self.__dir.resolveToString(context), self] 
+			return [(self.__dir.resolveToString(context), self)]
 		elif isinstance(self.__dir, BasePathSet): 
 			return self.__dir._resolveUnderlyingDependencies(context)
 		else:

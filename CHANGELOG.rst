@@ -4,7 +4,8 @@
 Fixes
 -----
 
-- TODO
+- Fixed `xpybuild.pathsets.FindPaths` and `xpybuild.pathsets.DirBasedPathSet` to be able to accept a target as its 
+  first parameter. 
 
 Enhancements
 ------------
