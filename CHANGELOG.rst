@@ -9,7 +9,7 @@ Fixes
 Enhancements
 ------------
 
-- TODO
+- Added support for ``.tar.xz`` archives to `xpybuild.targets.archive.Unpack`. 
 
 4.0
 ===

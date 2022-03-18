@@ -148,7 +148,7 @@ def _getfilename(info):
 
 class Unpack(BaseTarget):
 	""" Target that creates a new directory containing the unpacked contents 
-	of one or more archives of one of these types: ``.zip .jar .war .tar.gz .tar.bz2 .tar``.
+	of one or more archives of one of these types: ``.zip .jar .war .tar.xz .tar.gz .tar.bz2 .tar``.
 	
 	The parent directory will be created if it doesn't exist already. 
 	"""
@@ -190,7 +190,7 @@ class Unpack(BaseTarget):
 	def __openArchive(self, path):
 		if path.lower().endswith('.zip') or path.lower().endswith('.jar') or path.lower().endswith('.war'):
 			return zipfile.ZipFile(path, 'r')
-		if path.lower().endswith('.tar.gz') or path.lower().endswith('.tar.bz2') or path.lower().endswith('.tar'):
+		if path.lower().endswith('.tar.xz') or path.lower().endswith('.tar.gz') or path.lower().endswith('.tar.bz2') or path.lower().endswith('.tar'):
 			return tarfile.open(path, 'r')
 		raise BuildException('Unsupported archive type: %s'%path)
 	
