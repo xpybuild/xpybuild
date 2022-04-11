@@ -15,4 +15,4 @@ class PySysTest(XpybuildBaseTest):
 		self.xpybuild(stdouterr='mytest', args=['INPUT_DIR='+self.input])
 
 	def validate(self):
-		self.assertGrep('build-output/unpacked/mydir/hi.txt', expr=r"Hello world")
+		self.assertGrep('build-output/unpacked/mydir/Hi.txt', expr=r"Hello world")
