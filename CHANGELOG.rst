@@ -4,6 +4,8 @@
 Fixes
 -----
 
+- Fixed bug where errors logged during the "clean" phase between failure retries would be logged at ERROR potentially 
+  causing the whole build to appear failed to CI/orchestration environments that check for errors. 
 - Fixed `xpybuild.pathsets.FindPaths` and `xpybuild.pathsets.DirBasedPathSet` to be able to accept a target as its 
   first parameter. 
 
@@ -11,6 +13,9 @@ Enhancements
 ------------
 
 - Added support for ``.tar.xz`` archives to `xpybuild.targets.archive.Unpack`. 
+- Added `xpybuild.utils.outputhandler.ProcessOutputHandler.Options.downgradeErrorsToWarnings` option for errors that 
+  should be logged but not as errors - since error level log messages can be treated as fatal errors by some 
+  CI/orchestration environments even if the job succeeds. 
 
 4.0
 ===

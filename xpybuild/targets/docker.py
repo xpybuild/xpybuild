@@ -68,11 +68,13 @@ class DockerBase(BaseTarget):
 		args = [ self.getOption('docker.path') ]
 		environs = { 'DOCKER_HOST' : self.getOption('docker.host') } if self.getOption('docker.host') else {}
 		args.extend(['rmi', context.expandPropertyValues(self.imagename)])
-		try:
-			call(args, outputHandler=self.getOption('docker.outputHandlerFactory')('docker-rmi', treatStdErrAsErrors=False, options=self.options), timeout=self.getOption('process.timeout'), env=environs)
-		except Exception as e:
-			logger = logging.getLogger('DockerBase')
-			logger.info('Exception cleaning Docker target: %s' % e)
+		
+		# Allow warning/info logs but do not let failure of RMI cleanup break the build
+		rmiOptions = dict(self.options)
+		rmiOptions[ProcessOutputHandler.Options.ignoreReturnCode] = True
+		rmiOptions[ProcessOutputHandler.Options.downgradeErrorsToWarnings] = True
+		
+		call(args, outputHandler=self.getOption('docker.outputHandlerFactory')('docker-rmi', treatStdErrAsErrors=False, options=rmiOptions), timeout=self.getOption('process.timeout'), env=environs)
 	
 	def run(self, context):
 		args = [ self.getOption('docker.path') ]

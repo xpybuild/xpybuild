@@ -481,6 +481,16 @@ class TargetWrapper(object):
 				self.target.retriesRemaining -= 1
 				retryNumber += 1
 				
+				time.sleep(backoffSecs)
+				
+				self.target.log.info('Target %s failed on attempt #%d, will now clean before retry', self, retryNumber)
+				# hopefully after the backoff time enough file handles will have been removed for the clean to succeed 
+				try:
+					self.clean(context)
+				except Exception as ex:
+					self.target.log.error('Failed to cleanup during retry, after initial failure of %s', self)
+					raise
+
 				# this logic is to prevent CI (e.g. TeamCity) error messages from one retry from causing the whole job to be flagged as a 
 				# failure even if a subsequent retry succeeds
 				buf = outputBufferingManager.resetStdoutBufferForCurrentThread()
@@ -488,13 +498,6 @@ class TargetWrapper(object):
 				# for now let's just throw away buf - user can look at the .log file to see what happened before the failure if they care 
 				# (can't just re-log it here as that would result in duplication with the .log output)
 
-				time.sleep(backoffSecs)
-				# hopefully after the backoff time enough file handles will have been removed for the clean to succeed 
-				try:
-					self.clean(context)
-				except Exception as ex:
-					self.target.log.error('Failed to cleanup during retry, after initial failure of %s', self)
-					raise
 				backoffSecs *= 2
 				
 		# we expect self.path to NOT be in the fileutils stat cache at this point; 

@@ -21,6 +21,12 @@ class MyTarget(BaseTarget):
 		
 		self.log.error('Error logged by target')
 		raise Exception('Simulated target failure')
+	
+	def clean(self, context):
+		BaseTarget.clean(self, context)
+		logging.getLogger('foo').error('This is an error logged during clean')
+		logging.getLogger('foo').warning('This is a warning logged during clean')
+
 
 # Use a string since that's what it would be if set by a property
 MyTarget('${OUTPUT_DIR}/mytarget/', []).option(BaseTarget.Options.failureRetries, '2')

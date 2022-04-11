@@ -95,22 +95,19 @@ class ProcessOutputHandler(object):
 	class Options: # may rework how we handle docstrings for options in a future release
 		"""
 		This class may be renamed or removed, please do not use it directly. 
-		"""
-		
-		ignoreReturnCode = 'ProcessOutputHandler.ignoreReturnCode'
-		""" If True, non-zero return codes 
-		are not treated as errors. 
-	
+
 		>>> h = ProcessOutputHandler.create('myhandler', options={ProcessOutputHandler.Options.ignoreReturnCode:True})
 		>>> h.handleLine(u'some message')
 		>>> h.handleEnd(5)
-	
-		"""
-		
-		regexIgnore = 'ProcessOutputHandler.regexIgnore'
-		""" Optional regular expression; any 
-		lines matching this will not be treated as errors, or warnings, or logged. 
-	
+
+		>>> h = ProcessOutputHandler.create('myhandler', options={ProcessOutputHandler.Options.downgradeErrorsToWarnings:True})
+		>>> h.handleLine(u'error: this error should be logged as a warning not an error')
+		>>> len(h.getErrors())
+		0
+		>>> len(h.getWarnings())
+		1
+		>>> h.handleEnd(0)
+
 		>>> h = ProcessOutputHandler.create('myhandler', options={ProcessOutputHandler.Options.regexIgnore:'(.*ignorable.*|foobar)'})
 		>>> h.handleLine(u'error: an ignorable error')
 		>>> h.handleLine(u'error: another error')
@@ -122,7 +119,24 @@ class ProcessOutputHandler(object):
 	
 		>>> len(h.getWarnings())
 		2
-	
+
+		"""
+		
+		# NB: The docstrings do not get executed during testing if pushed down to the individual fields below
+		
+		ignoreReturnCode = 'ProcessOutputHandler.ignoreReturnCode'
+		""" If True, non-zero return codes 
+		are not treated as errors. 
+		"""
+
+		downgradeErrorsToWarnings = 'ProcessOutputHandler.downgradeErrorsToWarnings'
+		""" If True, log lines detected as errors will instead be logged and treated as warnings. 
+		
+		.. versionadded:: Added in xpybuild v4.1. 
+		"""
+		
+		regexIgnore = 'ProcessOutputHandler.regexIgnore'
+		""" Optional regular expression; any lines matching this will not be logged at all (or considered as errors/warnings). 
 		"""
 	
 		factory = 'ProcessOutputHandler.factory'
@@ -163,6 +177,7 @@ class ProcessOutputHandler(object):
 		self._ignoreReturnCode = self.options.get(ProcessOutputHandler.Options.ignoreReturnCode, False)
 		self._regexIgnore = self.options.get(ProcessOutputHandler.Options.regexIgnore, None)
 		if self._regexIgnore: self._regexIgnore = re.compile(self._regexIgnore)
+		self._downgradeErrorsToWarnings = self.options.get(ProcessOutputHandler.Options.downgradeErrorsToWarnings, False)
 		assert not kwargs, 'Unexpected keyword argument to ProcessOutputHandler: %s'%kwargs.keys()
 	
 	@staticmethod
@@ -186,6 +201,7 @@ class ProcessOutputHandler(object):
 			cls = options[ProcessOutputHandler.Options.factory]
 		else:
 			cls = ProcessOutputHandler
+		assert options.get(ProcessOutputHandler.Options.ignoreReturnCode, True), [self._ignoreReturnCode, self.options]
 		return cls(name, options=options, **kwargs)
 	
 	def handleLine(self, line:str, isstderr=False):
@@ -274,7 +290,8 @@ class ProcessOutputHandler(object):
 		
 		assert isinstance(line, str), 'ProcessOutputHandler does not accept bytes - caller must decode bytes to a character str (e.g. l.decode(defaultProcessOutputEncodingDecider(...)))'
 		
-		if (isstderr and self._treatStdErrAsErrors) or re.search(r'error[\s]*([A-Z]+\d+)?:', line, flags=re.IGNORECASE): return logging.ERROR
+		if (isstderr and self._treatStdErrAsErrors) or re.search(r'error[\s]*([A-Z]+\d+)?:', line, flags=re.IGNORECASE): 
+			return logging.WARNING if self._downgradeErrorsToWarnings else logging.ERROR
 		if re.search('warning[\s]*([A-Z]+\d+)?:', line, flags=re.IGNORECASE): return logging.WARNING
 		return logging.INFO # default log level
 	
