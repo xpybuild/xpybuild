@@ -41,9 +41,9 @@ jobs:
 
       - uses: microsoft/setup-msbuild@ab534842b4bdf384b8aaf93765dc6f721d9f5fab
         if: runner.os == 'Windows'
-        with:
+        #with:
           # 16 = 2019
-          vs-version: '[16,17)'
+          #vs-version: '[16,17)'
           
       # (setting up the environment for Visual Studio)
       #- uses: microsoft/setup-msbuild@v1.1
