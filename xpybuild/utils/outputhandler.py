@@ -201,7 +201,6 @@ class ProcessOutputHandler(object):
 			cls = options[ProcessOutputHandler.Options.factory]
 		else:
 			cls = ProcessOutputHandler
-		assert options.get(ProcessOutputHandler.Options.ignoreReturnCode, True), [self._ignoreReturnCode, self.options]
 		return cls(name, options=options, **kwargs)
 	
 	def handleLine(self, line:str, isstderr=False):
