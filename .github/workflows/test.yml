@@ -39,18 +39,13 @@ jobs:
           cache-dependency-path: tests/pysys-requirements.txt
       - run: pip install -r tests/pysys-requirements.txt
 
-      - uses: microsoft/setup-msbuild@ab534842b4bdf384b8aaf93765dc6f721d9f5fab
+       (setting up the environment for Visual Studio)
+      - uses: microsoft/setup-msbuild@v1.1
         if: runner.os == 'Windows'
-        #with:
-          # 16 = 2019
-          #vs-version: '[16,17)'
-          
-      # (setting up the environment for Visual Studio)
-      #- uses: microsoft/setup-msbuild@v1.1
-      #  if: runner.os == 'Windows'
-      #  with:
-      #    # 16 = 2019
-      #    vs-version: '[16,17)'
+        # Have to use whatever VS version is installed on this OS version, so no point in restricting it
+        #  with:
+        #    # 16 = 2019
+        #    vs-version: '[16,17)'
 
       - name: Test with PySys
         working-directory: tests/correctness
