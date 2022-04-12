@@ -39,7 +39,7 @@ jobs:
           cache-dependency-path: tests/pysys-requirements.txt
       - run: pip install -r tests/pysys-requirements.txt
 
-       (setting up the environment for Visual Studio)
+      # Set up the environment for Visual Studio
       - uses: microsoft/setup-msbuild@v1.1
         if: runner.os == 'Windows'
         # Have to use whatever VS version is installed on this OS version, so no point in restricting it
