@@ -1,4 +1,4 @@
-import os, glob, logging
+import os, glob, logging, shutil
 from xpybuild.propertysupport import *
 from xpybuild.buildcommon import *
 from xpybuild.pathsets import *
@@ -8,11 +8,14 @@ log = logging.getLogger('xpybuild.tests.native_config')
 
 # some basic defaults for recent default compilers for running our testcases with
 if IS_WINDOWS:
-	VSROOT=r'c:\Program Files (x86)\Microsoft Visual Studio *'
-	if glob.glob(VSROOT):
-		VSROOT = sorted(glob.glob(VSROOT))[-1] # pick the latest one
+	__vspatterns=[r'c:\Program Files (x86)\Microsoft Visual Studio *', r'C:\Program Files\Microsoft Visual Studio\*\Enterprise']
+	__vsfound = sorted(glob.glob(__vspatterns[0]))+sorted(glob.glob(__vspatterns[1]))
+	log.critical('Found these VS installations: %s', __vsfound)
+	log.critical('msbuild is in: %s', shutil.which('msbuild.exe'))
+	if __vsfound:
+		VSROOT = __vsfound[-1] # pick the latest one
 	else:
-		raise Exception('Cannot find Visual Studio installed in: %s'%VSROOT)
+		raise Exception('Cannot find Visual Studio installed in: %s'%__vspatterns)
 	
 	setGlobalOption('native.include', [
 		VSROOT+r"\VC\ATLMFC\INCLUDE", 
