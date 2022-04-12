@@ -21,7 +21,7 @@ if IS_WINDOWS:
 	])
 	if not os.path.exists(r"C:\Program Files (x86)\Windows Kits\10"):
 		log.warning('WARN - Cannot find expected Windows Kits, got: %s'%sorted(glob.glob(r"C:\Program Files (x86)\Windows Kits\*")))
-	if not os.path.exists(r"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.10240.0\ucrtx"):
+	if not os.path.exists(r"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.10240.0\ucrt"):
 		log.warning('WARN - Cannot find expected Windows Kits UCRT, got: %s'%sorted(glob.glob(r"C:\Program Files (x86)\Windows Kits\10\Lib\*\*")))
 	setGlobalOption('native.libpaths', [
 		VSROOT+r"\VC\ATLMFC\LIB\amd64", 
