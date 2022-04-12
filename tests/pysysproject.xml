@@ -2,7 +2,7 @@
 
 <pysysproject>
 
-	<requires-pysys>2.0</requires-pysys>
+	<requires-pysys>2.1</requires-pysys>
 	
 	<!-- 	<requires-python>3.7</requires-python> -->
 

@@ -1,7 +1,7 @@
 # These Python packages are installed automatically by the python-version GitHub action
 
 wheel
-pysys==2.0
+pysys==2.1
 
 # A known good version of coverage in case this ever breaks is 4.5.4
 coverage
