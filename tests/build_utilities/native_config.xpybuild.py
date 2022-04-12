@@ -11,7 +11,8 @@ if IS_WINDOWS:
 	__vspatterns=[r'c:\Program Files (x86)\Microsoft Visual Studio *', r'C:\Program Files\Microsoft Visual Studio\*\Enterprise']
 	__vsfound = sorted(glob.glob(__vspatterns[0]))+sorted(glob.glob(__vspatterns[1]))
 	log.critical('Found these VS installations: %s', __vsfound)
-	log.critical('msbuild is in: %s', shutil.which('msbuild.exe'))
+	log.critical('msbuild is here on PATH: %s', shutil.which('msbuild.exe'))
+	
 	if __vsfound:
 		VSROOT = __vsfound[-1] # pick the latest one
 	else:
@@ -38,7 +39,8 @@ if IS_WINDOWS:
 		VSROOT+r"\Common7\Tools", 
 		r"c:\Windows\Microsoft.NET\Framework\v3.5",
 	])
-		
+	
+	# If we wanted to support VS 2022 we'd need to update this path
 	setGlobalOption('native.compilers', VisualStudio(VSROOT+r'\VC\bin\amd64'))
 	setGlobalOption('native.cxx.flags', ['/EHa', '/GR', '/O2', '/Ox', '/Ot', '/MD', '/nologo'])
 	
