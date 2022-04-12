@@ -8,7 +8,7 @@ log = logging.getLogger('xpybuild.tests.native_config')
 
 # some basic defaults for recent default compilers for running our testcases with
 if IS_WINDOWS:
-	__vspatterns=[r'c:\Program Files (x86)\Microsoft Visual Studio *', r'C:\Program Files\Microsoft Visual Studio\*\Enterprise']
+	__vspatterns=[r'c:\Program Files (x86)\Microsoft Visual Studio 1*', r'C:\Program Files\Microsoft Visual Studio\*\Enterprise']
 	__vsfound = sorted(glob.glob(__vspatterns[0]))+sorted(glob.glob(__vspatterns[1]))
 	log.critical('Found these VS installations: %s', __vsfound)
 	log.critical('msbuild is here on PATH: %s', shutil.which('msbuild.exe'))
