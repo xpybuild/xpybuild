@@ -16,6 +16,8 @@ Enhancements
 - Added `xpybuild.utils.outputhandler.ProcessOutputHandler.Options.downgradeErrorsToWarnings` option for errors that 
   should be logged but not as errors - since error level log messages can be treated as fatal errors by some 
   CI/orchestration environments even if the job succeeds. 
+- Added support for reading by filename (rather than just by file handle) and ``asDict`` argument to 
+  `xpybuild.utils.fileutils.parsePropertiesFiles`. 
 
 4.0
 ===

@@ -250,18 +250,19 @@ def deleteFile(path, allowRetry=True):
 				else:
 					raise OSError("Unable to delete file %s: %s" % (path, e))
 
-def parsePropertiesFile(lines, excludeLines=None):
+def parsePropertiesFile(lines, excludeLines=None, asDict=False):
 	""" 
 	Parse the contents of the specified properties file or line list, and return an ordered list 
-	of (key,value,lineno) pairs.
+	of (key,value,lineno) pairs, or as a dict.
 	
-	If desired, convert this to a dict using::
 	
-		{k:v for (k,v,lineno) in parsePropertiesFile(...)}
-	
-	@param lines: an open file handle or a sequence that can be iterated over to get each line in the file.
+	:param lines: an open file handle, filename, or a sequence that can be iterated over to get each line in the file.
 
-	@param excludeLines: a string of list of strings to search for, any KEY containing these strings will be ignored
+	:param list[str] excludeLines: a list of strings to search for, any KEY containing these strings will be ignored
+	
+	:param bool asDict: Return a dict instead of a list. 
+	
+	..  versionchanged:: Added support for reading from a filename, and the "asDict" parameter. 
 	
 	>>> parsePropertiesFile(['a','b=c',' z  =  x', 'a=d #foo', '#g=h'])
 	[('b', 'c', 2), ('z', 'x', 3), ('a', 'd', 4)]
@@ -274,6 +275,10 @@ def parsePropertiesFile(lines, excludeLines=None):
 	result = []
 	
 	lineNo = 0
+	
+	if isinstance(lines, str):
+		with open(lines, encoding='utf-8') as f:
+			lines = f.readlines()
 	
 	for line in lines:
 		lineNo += 1
@@ -296,6 +301,7 @@ def parsePropertiesFile(lines, excludeLines=None):
 		value = value.replace('\\\\','\\')
 		
 		result.append((key,value, lineNo))
+	if asDict: return {k:v for (k,v,lineno) in result}
 	return result
 
 if os.sep == '\\':
