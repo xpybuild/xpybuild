@@ -360,7 +360,7 @@ def getProperty(propertyName):
 	"""
 	return getPropertyValue(propertyName)
 
-def expandListProperty(propertyName) -> list[str]:
+def expandListProperty(propertyName) -> typing.List[str]:
 	""" Utility method for use during build file parsing  property and target definition 
 	that returns a list containing the values of the specified 
 	list property. 

@@ -24,7 +24,7 @@ Utility functions for normalizing and flattening deeply nested lists.
 import types
 import typing
 
-def flatten(input) -> list:
+def flatten(input) -> typing.List:
 	"""Return the input flattened to an array.
 	
 	input: any variable composed of lists/generators/tuples, strings, lambda functions or other 
@@ -66,7 +66,7 @@ def flatten(input) -> list:
 	else:
 		return [input]
 		
-def getStringList(stringOrListOfStrings) -> list[str]:
+def getStringList(stringOrListOfStrings) -> typing.List[str]:
 	""" Return a list of strings, either identical to the input (if it's already a list), or with the input wrapped in 
 	a new sequence (if it's a string), or an empty sequence (if its None). 
 	
