@@ -425,7 +425,7 @@ class BaseTarget(Composable):
 		literal, but you cna also use the `xpybuild.propertysupport.Option` instance if you prefer. 
 		
 		@param value: The value. If the value is a string and contains any property values these will be expanded 
-		before the option value is passed to the target. 
+		before the option value is passed to the target. Use ``${{}`` to escape any literal ``{`` characters. 
 		"""
 		if hasattr(key, 'optionName'): key = key.optionName # it's an Option instance
 		

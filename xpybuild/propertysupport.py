@@ -578,6 +578,7 @@ def defineOption(name, default):
 
 	@param default: The default value of the option. If you need a callable, try to use named functions rather than 
 	lambdas so that the string representation is human-friendly. 
+	If a string is provided, any properties will be expanded (use ``${{}`` to escape any literal ``{`` characters). 
 	
 	:returns: A new instance of `Option`. 
 	'''
@@ -586,7 +587,11 @@ def defineOption(name, default):
 
 def setGlobalOption(key, value):
 	"""
-		Globally override the default for an option
+	Globally override the default for an option throughout this build.
+	
+	:param obj value: If a string is provided, any properties will be expanded (use ``${{}`` to escape any literal ``{`` 
+	characters). 
+
 	"""
 	init = BuildInitializationContext.getBuildInitializationContext()
 	if init:
