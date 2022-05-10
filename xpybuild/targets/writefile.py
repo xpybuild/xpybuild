@@ -28,7 +28,7 @@ from xpybuild.basetarget import BaseTarget
 from xpybuild.utils.fileutils import mkdir, openForWrite, normLongPath
 
 class WriteFile(BaseTarget):
-	""" Target for writing out a text or binary file with the specifiwed dynamically generated (or hardcoded) contents. 
+	""" Target for writing out a text or binary file with the specified dynamically generated (or hardcoded) contents. 
 	
 	The file will only be updated if its contents have changed. 
 	"""
