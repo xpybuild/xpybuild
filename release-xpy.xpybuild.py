@@ -62,7 +62,7 @@ CustomCommand('${OUTPUT_DIR}/docs/',
 		'CustomCommand.outputHandlerFactory', ProcessOutputHandler
 	).option(
 		# workaround for https://github.com/readthedocs/sphinx_rtd_theme/issues/739
-		'ProcessOutputHandler.regexIgnore', '.*(RemovedInSphinx30Warning| [{][{] super[(][)] [}][}]).*'
+		'ProcessOutputHandler.regexIgnore', '.*(RemovedInSphinx30Warning| [${{}][${{}] super[(][)] [}][}]).*'
 	)
 
 Zip('${OUTPUT_DIR}/xpybuild_${VERSION}_docs.zip', [
