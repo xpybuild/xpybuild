@@ -8,6 +8,8 @@ Fixes
   causing the whole build to appear failed to CI/orchestration environments that check for errors. 
 - Fixed `xpybuild.pathsets.FindPaths` and `xpybuild.pathsets.DirBasedPathSet` to be able to accept a target as its 
   first parameter. 
+- Fixed the non-default console formatters (e.g. ``-F teamcity``) to print the full message including exception stack 
+  traces, without which it is often hard to debug build failures. 
 
 Enhancements
 ------------

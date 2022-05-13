@@ -16,7 +16,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-# $Id: ConsoleFormatters.py 301527 2017-02-06 15:31:43Z matj $
+# $Id: consoleformatter.py 397881 2022-01-20 17:40:49Z bsp $
 #
 
 """
@@ -184,11 +184,11 @@ class TeamcityHandler(ConsoleFormatter):
 		if record.getMessage().startswith("##teamcity"):
 			self.output.write("%s\n" % record.getMessage())
 		elif record.levelno == logging.ERROR:
-			self.output.write("##teamcity[message text='%s' status='ERROR']\n" % TeamcityHandler.teamcityEscape(record.getMessage()))
+			self.output.write("##teamcity[message text='%s' status='ERROR']\n" % TeamcityHandler.teamcityEscape(self.fmt.format(record)))
 		elif record.levelno == logging.CRITICAL and record.getMessage().startswith("***"):
-			self.output.write("##teamcity[progressMessage '%s']\n" % TeamcityHandler.teamcityEscape(record.getMessage()))
+			self.output.write("##teamcity[progressMessage '%s']\n" % TeamcityHandler.teamcityEscape(self.fmt.format(record)))
 		else:
-			self.output.write("##teamcity[message text='%s']\n" % TeamcityHandler.teamcityEscape(record.getMessage()))
+			self.output.write("##teamcity[message text='%s']\n" % TeamcityHandler.teamcityEscape(self.fmt.format(record)))
 		self.output.flush()
 	
 	def publishArtifact(self, logger, displayName, path):
@@ -222,9 +222,9 @@ class MakeConsoleFormatter(ConsoleFormatter):
 			location = "%s:%s" % (record.pathname, record.lineno or 0)
 
 		if category:
-			self.output.write("%s: %s: %s\n" % (location, category, record.getMessage()))
+			self.output.write("%s: %s: %s\n" % (location, category, self.fmt.format(record)))
 		else:
-			self.output.write("%s\n" % record.getMessage())
+			self.output.write("%s\n" % self.fmt.format(record))
 
 		self.output.flush()
 
@@ -249,9 +249,6 @@ class VisualStudioConsoleFormatter(ConsoleFormatter):
 
 	"""
 	output = None
-	def __init__(self, output, **kwargs):
-		ConsoleFormatter.__init__(self, output, **kwargs)
-		self.fmt = logging.Formatter()
 	def handle(self, record):
 		if record.levelno == logging.ERROR:
 			category = 'error'
