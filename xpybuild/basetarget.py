@@ -367,7 +367,7 @@ class BaseTarget(Composable):
 	def getTags(self): 
 		""" .. private:: Not exposed publically as there is no public use case for this. 
 		
-		@returns: The list of tags associated with this target. """
+		:returns: The list of tags associated with this target. """
 		return self.__tags
 
 	def disableInFullBuild(self):
@@ -379,6 +379,9 @@ class BaseTarget(Composable):
 		of installers. 
 		
 		See also `tag`. 
+
+		:return: Returns the same target instance it was called on, to permit fluent calling. 
+
 		"""
 		self.__tags = list(set(self.__tags) - {'full'})
 		init = getBuildInitializationContext()
@@ -389,6 +392,8 @@ class BaseTarget(Composable):
 		"""Called by build file authors to removes all tags other than ``all`` from this target.
 		
 		See `tag`. 
+
+		:return: Returns the same target instance it was called on, to permit fluent calling. 
 		"""
 		init = getBuildInitializationContext()
 		init.removeFromTags(self, self.__tags)
@@ -426,6 +431,8 @@ class BaseTarget(Composable):
 		
 		@param value: The value. If the value is a string and contains any property values these will be expanded 
 		before the option value is passed to the target. Use ``${{}`` to escape any literal ``{`` characters. 
+		
+		:return: Returns the same target instance it was called on, to permit fluent calling. 
 		"""
 		if hasattr(key, 'optionName'): key = key.optionName # it's an Option instance
 		
@@ -450,6 +457,8 @@ class BaseTarget(Composable):
 
 		@param tags: The tag, tags or list of tags to add to the target.
 		
+		:return: Returns the same target instance it was called on, to permit fluent calling. 
+
 		>>> BaseTarget('a',[]).tags('abc').getTags()
 		<using test initialization context> <using test initialization context> ['abc', 'full']
 		>>> BaseTarget('a',[]).tags(['abc', 'def']).getTags()
@@ -472,6 +481,8 @@ class BaseTarget(Composable):
 
 		@param priority: a float representing the priority. Higher numbers will be built
 			first where possible. Cannot be negative. 
+
+		:return: Returns the same target instance it was called on, to permit fluent calling. 
 		"""
 		if priority < 0.0:
 			raise BuildException('Target priority cannot be set to a lower number than 0.0')
