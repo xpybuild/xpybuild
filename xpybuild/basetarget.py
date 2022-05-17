@@ -291,8 +291,12 @@ class BaseTarget(Composable):
 		  
 				self.registerImplicitInputOption(lambda optionKey: optionKey.startswith(('java.', 'javac.')))
 		
+		:return: Returns the same target instance it was called on, to permit fluent calling from build files. 
+
 		"""
 		self.registerImplicitInput(lambda context: self.__getMatchingOptions(context, optionKey))
+		
+		return self
 
 	def __getMatchingOptions(self, context, optionKey):
 		if callable(optionKey):
@@ -330,9 +334,12 @@ class BaseTarget(Composable):
 				- a callable to be invoked during up-to-dateness checking, that accepts a 
 				  context parameter and returns a string or list of strings; 
 				  any ``None`` items in the list are ignored. 
+		
+		:return: Returns the same target instance it was called on, to permit fluent calling from build files. 
 		"""
 		assert isinstance(item, str) or callable(item)
 		self.__registeredImplicitInputs.append(item)
+		return self
 	
 	def getHashableImplicitInputs(self, context):
 		"""(deprecated) Target classes can implement this to add the string line(s) as 'implicit inputs' of this target. 
