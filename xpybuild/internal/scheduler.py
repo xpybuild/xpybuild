@@ -248,7 +248,7 @@ class BuildScheduler(object):
 				
 			log.critical("    %s: done in %.1f seconds%s", target.name, duration, 
 				# if we're just building a few targets, it's useful to print the actual (relative) paths of them in case user wants to manually inspect them
-				(' - '+os.path.relpath(target.path)) if len(self.targetwrappers) < 20 else '')
+				(' - '+os.path.relpath(target.path)) if self.total < 20 else '')
 			return errors
 		finally:
 			outputBufferingManager.endBufferingForCurrentThread()

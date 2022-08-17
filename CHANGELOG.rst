@@ -10,6 +10,7 @@ Fixes
   first parameter. 
 - Fixed the non-default console formatters (e.g. ``-F teamcity``) to print the full message including exception stack 
   traces, without which it is often hard to debug build failures. 
+- Fixed the logging of the resolved paths to targets when doing a build with a small number (<20) of targets. 
 
 Enhancements
 ------------
