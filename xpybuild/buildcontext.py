@@ -197,42 +197,45 @@ class BaseContext(object):
 			# This is not super efficient... moving the logic into the following loop would be nicer
 			string = string.replace('${', '{').replace('{', '${') # treat "{" and "${" as the same (probably more efficient doing this replace() call than using regexes)
 
-		isListExpansion = False
-		prefix=""
-		listPropName=None
-		while '${' in string:
-			try:
-				start = string.index('${')
-				propName = string[ start+2 : string.index('}', start) ]
-				if expandList and propName.endswith('[]'):
-					if isListExpansion: raise BuildException("Cannot expand as a list a string containing multiple list variables")
-					isListExpansion = True
-					prefix=string[:start]
-					listPropName=propName
-					string=string[string.index('}', start)+1:]
-					continue
-			except BuildException:
-				raise
-			except Exception:
-				raise BuildException('Incorrectly formatted property string "%s"'%string)
-			v = '{' if propName=='{' else self.getPropertyValue(propName)
-			# every language except python doesn't use Initialcaps for their booleans so this is much more useful behaviour
-			if isinstance(v, bool): v = 'true' if v else 'false' 
-			string = string.replace('${%s}' % propName, v)
+		try:
+			isListExpansion = False
+			prefix=""
+			listPropName=None
+			while '${' in string:
+				try:
+					start = string.index('${')
+					propName = string[ start+2 : string.index('}', start) ]
+					if expandList and propName.endswith('[]'):
+						if isListExpansion: raise BuildException("Cannot expand as a list a string containing multiple list variables")
+						isListExpansion = True
+						prefix=string[:start]
+						listPropName=propName
+						string=string[string.index('}', start)+1:]
+						continue
+				except BuildException:
+					raise
+				except Exception:
+					raise BuildException('Incorrectly formatted property string "%s"'%string)
+				v = '{' if propName=='{' else self.getPropertyValue(propName)
+				# every language except python doesn't use Initialcaps for their booleans so this is much more useful behaviour
+				if isinstance(v, bool): v = 'true' if v else 'false' 
+				string = string.replace('${%s}' % propName, v)
 
-		if isListExpansion:
-			rv = []
-			for x in self.expandListPropertyValue(listPropName):
-				x = self.expandPropertyValues(x, expandList=True)
-				for y in x:
-					rv.append((prefix+y+string).replace('<escaped_xpybuild_placeholder>', '${').replace('<escaped_xpybuild_placeholder2>', '{'))
-			return rv
-		else:
-			string = string.replace('<escaped_xpybuild_placeholder>', '${').replace('<escaped_xpybuild_placeholder2>', '{')
-			if expandList:
-				return [string] if string else []
+			if isListExpansion:
+				rv = []
+				for x in self.expandListPropertyValue(listPropName):
+					x = self.expandPropertyValues(x, expandList=True)
+					for y in x:
+						rv.append((prefix+y+string).replace('<escaped_xpybuild_placeholder>', '${').replace('<escaped_xpybuild_placeholder2>', '{'))
+				return rv
 			else:
-				return string
+				string = string.replace('<escaped_xpybuild_placeholder>', '${').replace('<escaped_xpybuild_placeholder2>', '{')
+				if expandList:
+					return [string] if string else []
+				else:
+					return string
+		except BuildException as ex:
+			raise BuildException('Cannot expand property string "%s": %s'%(string, ex), causedBy=ex)
 
 	def expandListPropertyValue(self, propertyName):
 		""" Get the list represented by the specified property or raise a 
