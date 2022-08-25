@@ -368,7 +368,12 @@ class TargetWrapper(object):
 						# the end is usually more informative than beginning
 						if len(added) > maxdifflines: added = ['...']+added[len(added)-maxdifflines:] 
 						if len(removed) > maxdifflines: removed = ['...']+removed[len(removed)-maxdifflines:]
-						if not added and not removed: added = ['N/A']
+						if not added and not removed: 
+							if sorted(latestImplicitInputs) == sorted(implicitInputs):
+								added = ['same lines, but different order:']
+							else:
+								added = ['same unique lines, but different contents of non-unique lines:']
+							added = added+list(difflib.unified_diff(latestImplicitInputs, implicitInputs, n=2))[4:maxdifflines]
 						self.__logUptodate('Up-to-date check: %s must be rebuilt because implicit inputs file has changed: "%s"\n\t%s\n', self.name, self.__implicitInputsFile, 
 							'\n\t'.join(
 								['previous build had %d lines, current build has %d lines'%(len(latestImplicitInputs), len(implicitInputs))]+removed+added
