@@ -70,7 +70,10 @@ class Copy(BaseTarget):
 		@param src: the input, which may be any combination of strings, PathSets and 
 		lists of these. If these PathSets include mapping information, this 
 		will be used to define where (under the dest directory) each 
-		file is copied. 
+		file is copied. If you know the names you need to copy, provide them explicitly 
+		using a string or an `xpybuild.pathsets.DirBasedPathSet`. If you need wildcard 
+		searching then use `xpybuild.pathsets.FindPaths` (which also has options for 
+		globally excluding certain paths). 
 		
 		Note that only src files will be copied, any directory in the 
 		src list will be created but its contents will not be copied 
