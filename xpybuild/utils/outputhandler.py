@@ -218,7 +218,7 @@ class ProcessOutputHandler(object):
 		@param isstderr: if stdout/err are segregated then this can be used as a 
 		hint to indicate the source of the line. 
 		"""
-		self._lastLine = line # in case it helps us give an error message
+		if line: self._lastLine = line # in case it helps us give an error message, keep track of the last (non-empty) line
 		
 		if self._regexIgnore is not None and self._regexIgnore.match(line): return
 		
@@ -350,10 +350,11 @@ class ProcessOutputHandler(object):
 	def getLastOutputLine(self): return self._preprocessLine(self._lastLine)
 	
 class StdoutRedirector(ProcessOutputHandler):
-	""" Redirects stdout to a file verbatim and reports errors on stderr """
+	""" Redirects stdout to a file verbatim, and passes stderr lines to the inherited output handler logic.
+	
+	:param file fd: A binary-mode writable file descriptor.
+	"""
 	def __init__(self, name, fd, **kwargs):
-		""" 
-		fd is a binary-mode writable file descriptor """
 		ProcessOutputHandler.__init__(self, name, True, **kwargs)
 		self.fd = fd
 	
@@ -361,6 +362,9 @@ class StdoutRedirector(ProcessOutputHandler):
 		if isstderr:
 			ProcessOutputHandler.handleLine(self, line, isstderr)
 		else:
+			# still useful to record this, in case of an error
+			if line: self._lastLine = line # in case it helps us give an error message, keep track of the last (non-empty) line
+			
 			self.fd.write((line+os.linesep).encode("UTF-8"))
 	
 	def handleEnd(self, returnCode=None):
