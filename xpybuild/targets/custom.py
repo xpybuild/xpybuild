@@ -142,7 +142,7 @@ class CustomCommand(BaseTarget):
 			- a property functor such as joinPaths (useful for constructing 
 				Java classpaths), basename, etc
 			
-			- an arbitrary function taking a single context argument
+			- an arbitrary function taking a single context argument, e.g. ``lambda ctx.getGlobalOption("foo")``
 			
 			- `CustomCommand.TARGET` - a special value that is resolved to the 
 				output path of this target
