@@ -322,6 +322,7 @@ class CustomCommand(BaseTarget):
 						process = subprocess.Popen(cmd, 
 							stderr=fe, 
 							stdout=fo,
+							stdin=subprocess.DEVNULL,
 							cwd=cwd, 
 							env=env)
 
