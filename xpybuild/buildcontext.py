@@ -168,15 +168,15 @@ class BaseContext(object):
 		>>> BaseContext({'A':'b'}).expandPropertyValues('${UNDEFINED_PROPERTY}')
 		Traceback (most recent call last):
 		...
-		xpybuild.utils.buildexceptions.BuildException: Property "UNDEFINED_PROPERTY" is not defined
+		xpybuild.utils.buildexceptions.BuildException: Cannot expand property string "${UNDEFINED_PROPERTY}": Property "UNDEFINED_PROPERTY" is not defined
 		>>> BaseContext({'A':'b'}).expandPropertyValues('${A')
 		Traceback (most recent call last):
 		...
-		xpybuild.utils.buildexceptions.BuildException: Incorrectly formatted property string "${A"
+		xpybuild.utils.buildexceptions.BuildException: Cannot expand property string "${A": Incorrectly formatted property string "${A"
 		>>> BaseContext({'A[]':'a, b'}).expandPropertyValues('${A[]}${A[]}', expandList=True)
 		Traceback (most recent call last):
 		...
-		xpybuild.utils.buildexceptions.BuildException: Cannot expand as a list a string containing multiple list variables
+		xpybuild.utils.buildexceptions.BuildException: Cannot expand property string "${A[]}": Cannot expand as a list a string containing multiple list variables
 		
 		"""
 		if not string: return [] if expandList else string
