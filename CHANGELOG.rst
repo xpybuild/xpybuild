@@ -23,6 +23,8 @@ Enhancements
   CI/orchestration environments even if the job succeeds. 
 - Added support for reading by filename (rather than just by file handle) and ``asDict`` argument to 
   `xpybuild.utils.fileutils.parsePropertiesFiles`. 
+- When processes are started by `xpybuild.utils.process.call` stdin from the parent process is no longer passed in. 
+  This avoids unwanted differences between build running interactively and those running in automated CI jobs. 
 
 4.0
 ===

@@ -194,9 +194,9 @@ def call(args, env=None, cwd=None, outputHandler=None, outputEncoding=None, time
 		log.info('%s environment overrides: %s', processName, ', '.join(sorted(['%s=%s'%(k, env[k]) for k in env])))
 	try:
 		if cwd:
-			process = subprocess.Popen(args, env=environs, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd)
+			process = subprocess.Popen(args, env=environs, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.DEVNULL, cwd=cwd)
 		else:
-			process = subprocess.Popen(args, env=environs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			process = subprocess.Popen(args, env=environs, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.DEVNULL)
 	except Exception as e:
 		raise EnvironmentError('Cannot start process "%s": %s'%(args[0], e))
 
