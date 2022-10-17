@@ -12,5 +12,5 @@ class PySysTest(XpybuildBaseTest):
 		self.assertGrep(file='xpybuild.log', expr=".*modified-file.txt verification error: Modification date of target dependency .+src-file.txt is [0-9.]+s after the target's start time", abortOnError=False)
 
 		# should still complete each target
-		self.assertGrep(file='xpybuild.log', expr="/modified-file.txt: done in .+ seconds")
+		self.assertGrep(file='xpybuild.log', expr="/modified-file.txt done in .+ seconds")
 		self.assertGrep(file='xpybuild.log', expr="XPYBUILD FAILED: 2 error")
