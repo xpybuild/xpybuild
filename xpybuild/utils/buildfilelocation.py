@@ -22,7 +22,8 @@ Support for identifying the location of the ``XXX.xpybuild.py`` file currently b
 
 import traceback, inspect, os, sys
 
-__FILE_LOCATION_FORMAT = os.getenv('XPYBUILD_LOCATION_FORMAT', '%s:%d') # can be overridden e.g. to '%s +%d' for vim
+__FILE_LOCATION_FORMAT = os.getenv('XPYBUILD_LOCATION_FORMAT', 
+	'%s:%d' if os.getenv('TERM_PROGRAM')=='vscode' else '%s +%d') # vim format by default (+easy to copy filename to clipboard) or vscode if detected
 def formatFileLocation(path: str, lineNumber: int) -> str: 
 	""" Formats a file and a line number for output. 
 	
