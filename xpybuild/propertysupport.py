@@ -589,6 +589,8 @@ def setGlobalOption(key, value):
 	"""
 	Globally override the default for an option throughout this build.
 	
+	To set an option value for a specific target use `xpybuild.basetarget.BaseTarget.option`. 
+	
 	:param obj value: If a string is provided, any properties will be expanded (use ``${{}`` to escape any literal ``{`` 
 	characters). 
 
