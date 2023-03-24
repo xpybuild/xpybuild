@@ -1,7 +1,7 @@
 # buildfilelocation - Class for getting and holding info on the filename and 
 # line of a build file elemnet
 #
-# Copyright (c) 2013 - 2017 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2013 - 2017, 2023 Software AG, Darmstadt, Germany and/or its licensors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-# $Id: buildfilelocation.py 301527 2017-02-06 15:31:43Z matj $
-#
 
 """
 Support for identifying the location of the ``XXX.xpybuild.py`` file currently being parsed. 
@@ -24,12 +22,14 @@ Support for identifying the location of the ``XXX.xpybuild.py`` file currently b
 
 import traceback, inspect, os, sys
 
-
+__FILE_LOCATION_FORMAT = os.getenv('XPYBUILD_LOCATION_FORMAT', '%s:%d') # can be overridden e.g. to '%s +%d' for vim
 def formatFileLocation(path: str, lineNumber: int) -> str: 
 	""" Formats a file and a line number for output. 
 	
-	Uses a format that works in vim and is easy to adapt for other editors. """
-	return '"%s" +%d' % (os.path.normpath(path), lineNumber)
+	Uses a format that works in vscode and is easy to adapt for other editors. """
+	path = os.path.normpath(path)
+	if ' ' in path: path = '"%s"'%path
+	return __FILE_LOCATION_FORMAT%(path, lineNumber)
 
 class BuildFileLocation(object):
 	""" Represents information about a location in the user's build file.

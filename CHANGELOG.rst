@@ -25,7 +25,10 @@ Enhancements
   `xpybuild.utils.fileutils.parsePropertiesFiles`. 
 - When processes are started by `xpybuild.utils.process.call` stdin from the parent process is no longer passed in. 
   This avoids unwanted differences between build running interactively and those running in automated CI jobs. 
-
+- Added ``XPYBUILD_LOCATION_FORMAT`` environment variable for customizing how xpybuild logs file path and line number.
+  The default is now "%s:%d" which works well in VSCode. Set the environment variable to "%s +%d" for previous 
+  behaviour (which works for vim). 
+  
 4.0
 ===
 
