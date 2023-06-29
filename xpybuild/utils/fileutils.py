@@ -262,14 +262,15 @@ def parsePropertiesFile(lines, excludeLines=None, asDict=False):
 	
 	:param bool asDict: Return a dict instead of a list. 
 	
-	..  versionchanged:: Added support for reading from a filename, and the "asDict" parameter. 
+	..  versionchanged 4.1:: Fixed bug in which lines containing a ``#`` part-way through the line were truncated. Removed support for "//" comments. 
+	..  versionchanged 4.1:: Added support for reading from a filename, and the "asDict" parameter. 
 	
 	>>> parsePropertiesFile(['a','b=c',' z  =  x', 'a=d #foo', '#g=h'])
-	[('b', 'c', 2), ('z', 'x', 3), ('a', 'd', 4)]
-	>>> parsePropertiesFile(['a=b','c=d#foo','XfooX=e', 'f=h'], excludeLines='foo')
-	[('a', 'b', 1), ('c', 'd', 2), ('f', 'h', 4)]
-	>>> parsePropertiesFile(['a=b','c=d#foo','XfooX=e', 'f=h'], excludeLines=['foo','h'])
-	[('a', 'b', 1), ('c', 'd', 2), ('f', 'h', 4)]
+	[('b', 'c', 2), ('z', 'x', 3), ('a', 'd #foo', 4)]
+	>>> parsePropertiesFile(['a=b','c=d# bar','XfooX=e', 'f=h'], excludeLines='foo')
+	[('a', 'b', 1), ('c', 'd# bar', 2), ('f', 'h', 4)]
+	>>> parsePropertiesFile(['a=b','c=d# bar','XfooX=e', 'f=h'], excludeLines=['foo','h'])
+	[('a', 'b', 1), ('c', 'd# bar', 2), ('f', 'h', 4)]
 	"""
 	excludeLines = getStringList(excludeLines)
 	result = []
@@ -283,10 +284,8 @@ def parsePropertiesFile(lines, excludeLines=None, asDict=False):
 	for line in lines:
 		lineNo += 1
 		
-		if '#' in line:
-			line = line[:line.find('#')].strip()
 		line = line.strip()
-		if not line or line.startswith('#') or line.startswith('//') or not '=' in line:
+		if not line or line.startswith(('#', '!')) or not '=' in line:
 			continue
 
 		key = line[:line.find('=')].strip()

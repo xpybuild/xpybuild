@@ -14,6 +14,11 @@ Fixes
 - Fixed `xpybuild.utils.outputhandler.StdoutRedirector` to record the last non-empty stdout log line in case of errors 
   and no stderr. 
 
+Breaking changes
+----------------
+
+- Removed support for mid-line ``#`` comments when reading properties files, and for ``//`` comments, neither of which 
+  is not part of the standard file format. This affects `xpybuild.utils.fileutils.parsePropertiesFiles`. 
 Enhancements
 ------------
 
