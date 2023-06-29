@@ -275,7 +275,7 @@ def definePropertiesFromFile(propertiesFile, prefix=None, excludeLines=None, con
 	
 	propertiesFile = context.getFullPath(propertiesFile, BuildFileLocation(raiseOnError=True).buildDir)
 	try:
-		f = open(propertiesFile, 'r') 
+		f = open(propertiesFile, 'r', encoding='utf-8')
 	except Exception as e:
 		raise BuildException('Failed to open properties file "%s"'%(propertiesFile), causedBy=True)
 	missingKeysFound = set()

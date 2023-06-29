@@ -19,6 +19,9 @@ Breaking changes
 
 - Removed support for mid-line ``#`` comments when reading properties files, and for ``//`` comments, neither of which 
   is not part of the standard file format. This affects `xpybuild.utils.fileutils.parsePropertiesFiles`. 
+- `propertysupport.definePropertiesFromFile` now reads ``.properties`` files in UTF-8 instead of OS default encoding. 
+
+
 Enhancements
 ------------
 
