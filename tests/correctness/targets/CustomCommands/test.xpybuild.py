@@ -20,6 +20,6 @@ CustomCommand('${OUTPUT_DIR}/cmd-output/', commands=[
 		lambda path, deps, context: makeShellCommand('echo Stdout rocks'),
 		makeShellCommand('echo All done now!'),
 	],
-	env=os.environ,
+	env={'MY_ENV_VAR': 'MY_VALUE'},
 	)
 

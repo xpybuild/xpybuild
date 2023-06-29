@@ -222,6 +222,10 @@ class CustomCommand(BaseTarget):
 		
 		if stdout and redirectStdOutToTarget:
 			raise BuildException('Cannot set both redirectStdOutToTarget and stdout')
+			
+		self.registerImplicitInput(lambda context: flatten(self._resolveCommands(context)))
+		self.registerImplicitInput(lambda context: ['%s=%s'%(k, os.path.normcase(v) if v and '\\' in v else v) 
+			for k,v in self._resolveEnv(context).items()]) # env often contains paths, and Windows randomizes the case of drive letters so do some normalization to avoid spurious rebuilds
 
 	def _resolveItem(self, x, context):
 		if x == self.DEPENDENCIES: return self.deps.resolve(context)
@@ -254,9 +258,16 @@ class CustomCommand(BaseTarget):
 			
 			resolved.append(c)
 		return resolved
-	
-	def getHashableImplicitInputs(self, context):
-		return super(CustomCommand, self).getHashableImplicitInputs(context) + flatten(self._resolveCommands(context))
+
+	def _resolveEnv(self, context):
+		env = self.env or {}
+		if env:
+			if callable(env):
+				env = env(context)
+			else:
+				env = {k: None if None == env[k] else self._resolveItem(env[k], context) for k in env}
+			env = {k:v for k,v in env.items() if v is None or os.getenv(k)!=v}
+		return env
 
 	def run(self, context):
 		if self.cwd: self.cwd = context.getFullPath(self.cwd, self.baseDir)
@@ -284,15 +295,10 @@ class CustomCommand(BaseTarget):
 			stdoutPath = context.getFullPath(self.path if self.redirectStdOutToTarget else (self.stdout or logbasename+'.out'), defaultDir='${BUILD_WORK_DIR}/CustomCommandOutput/')
 			stderrPath = context.getFullPath(self.stderr or logbasename+'.err', defaultDir='${BUILD_WORK_DIR}/CustomCommandOutput/')
 			
-			self.log.info('Building %s by executing command%s: %s', self.name, cmdDisplaySuffix, ''.join(['\n\t"%s"'%x for x in cmd]))
+			self.log.info('Building %s by executing command%s: %s', self.name, cmdDisplaySuffix, ''.join(['\n\t"%s"'%context.stripSecrets(x) for x in cmd]))
 			if self.cwd and cmdindex==1: self.log.info('    building %s from working directory: %s', self.name, self.cwd) # only print if overridden
-			env = self.env or {}
-			if env:
-				if callable(env):
-					env = env(context)
-				else:
-					env = {k: None if None == env[k] else self._resolveItem(env[k], context) for k in env}
-				if cmdindex==1: self.log.info('   environment overrides for %s are: %s', self.name, ''.join(['\n\t"%s=%s"'%(k, env[k]) for k in env]))
+			env = self._resolveEnv(context)
+			if env and cmdindex==1: self.log.info('   environment overrides for %s are: %s', self.name, ''.join(['\n\t%s = "%s"'%(k, context.stripSecrets(env[k])) for k in env]))
 			for k in os.environ:
 				if k not in env: env[k] = os.getenv(k)
 

@@ -13,6 +13,7 @@ Fixes
 - Fixed the logging of the resolved paths to targets when doing a build with a small number (<20) of targets. 
 - Fixed `xpybuild.utils.outputhandler.StdoutRedirector` to record the last non-empty stdout log line in case of errors 
   and no stderr. 
+- Fixed CustomCommand to rebuild when the environment variable overrides change. 
 
 Breaking changes
 ----------------
@@ -35,7 +36,15 @@ Enhancements
   This avoids unwanted differences between build running interactively and those running in automated CI jobs. 
 - Added ``XPYBUILD_LOCATION_FORMAT`` environment variable for customizing how xpybuild prints file path and line number.
   The default is "%s +%d" (vim syntax), or "%s:%d" if the environment variable ``TERM_PROGRAM=vscode`` is set. 
-  
+- Added stripping of secrets from on-disk files. 
+  Added `xpybuild.buildcontext.BuildInitializationContext.stripSecrets()` which can be called before logging or writing 
+  a string to disk that could contain passwords or other sensitive data. Secrets are identified as any property 
+  who name contains ``_PASSWORD``, ``_TOKEN`` or ``_CREDENTIAL``. The property names that are recognized as secrets 
+  can be customized by setting the global option ``common.secretPropertyNamesRegex``. In the xpybuild framework secrets 
+  are automatically removed from startup logging of properties and for any data passed to the 
+  `xpybuild.basetarget.BaseTarget.registerImplicitInput` (which is used by CustomCommand). You may also wish to 
+  explicitly call ``stripSecrets`` in custom targets that log or write potentially sensitive strings to disk. 
+
 4.0
 ===
 

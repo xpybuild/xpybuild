@@ -560,7 +560,7 @@ def main(args):
 				log.warning('The ignore-deps option is enabled: dependency graph will be ignored for all targets that already exist on disk, so correctness is not guaranteed')
 			
 			for (k,v) in sorted(init.getProperties().items()):
-				log.info('Setting property %s=%s', k, v)
+				log.info('Setting property %s=%s', k, init.stripSecrets(v))
 
 			try:
 				DATE_TIME_FORMAT = "%a %Y-%m-%d %H:%M:%S %Z"

@@ -257,6 +257,8 @@ class BaseContext(object):
 		really necessary (e.g. for keyword substitution) - in almost all cases it is better to simply specify the 
 		required properties explicitly to `getPropertyValue` or `expandPropertyValues`. 
 		
+		Note that some properties may contain secrets, so should not be written to disk. 
+		
 		>>> BaseContext({'A':'b'}).getProperties()
 		{'A': 'b'}
 		"""
@@ -424,7 +426,7 @@ class BaseContext(object):
 			if isdir and not path.endswith(os.path.sep): path = path+os.path.sep
 				
 			return path
-			
+
 class BuildInitializationContext(BaseContext):
 	"""
 	Provides context used only during the initialization phase of the build. 
@@ -526,6 +528,9 @@ class BuildInitializationContext(BaseContext):
 		if 'common.fileEncodingDecider' not in self._definedOptions:
 			BuildInitializationContext._defineOption('common.fileEncodingDecider', ExtensionBasedFileEncodingDecider.getDefaultFileEncodingDecider())
 			BuildInitializationContext._defineOption('common.processOutputEncodingDecider', defaultProcessOutputEncodingDecider)
+			
+			BuildInitializationContext._defineOption('common.secretPropertyNamesRegex', '.*(_PASSWORD|_TOKEN|_CREDENTIAL).*')
+			
 		# make sure this has been imported, since it's used for implementing many targets and defines some options of its own
 		# which must happen before the build phase begins
 		import xpybuild.utils.outputhandler
@@ -557,6 +562,17 @@ class BuildInitializationContext(BaseContext):
 		for p in ['OUTPUT_DIR', 'BUILD_MODE', 'BUILD_NUMBER', 'BUILD_WORK_DIR', 'LOG_FILE']:
 			self.getPropertyValue(p) 
 
+		secrets = set()
+		propRegex = re.compile(self.getGlobalOption('common.secretPropertyNamesRegex'))
+		for k,v in self.getProperties().items():
+			if propRegex.match(k) and isinstance(v, str) and len(v)>3: # ignore empty and really short secrets - won't be genuine, and false positives are likely
+				secrets.add(v)
+		(log.info if secrets else log.debug)('Found properties containing %d secrets', len(secrets))
+		if secrets: 
+			self.__secretsRegex = re.compile('(%s)'%'|'.join(re.escape(s) for s in secrets))
+		else:
+			self.__secretsRegex = None
+
 		for cb in self._buildParsePostProcessors:
 			cb(self)
 
@@ -566,7 +582,19 @@ class BuildInitializationContext(BaseContext):
 		# all the valid ones will have been popped already
 		if self._propertyOverrides:
 			raise BuildException('Cannot specify value for undefined build property/properties: %s'%(', '.join(self._propertyOverrides.keys())))
-	
+
+	def stripSecrets(self, text):
+		"""
+		Replaces any secrets found in the specified string with a placeholder. 
+		
+		Secrets are identified by being set in a property whose name matches the ``common.secretPropertyNamesRegex`` option. 
+		For example by default any property containing ``_PASSWORD``, ``_TOKEN`` or ``_CREDENTIAL`` is treated as containing a secret. 
+		
+		:param str text: A text string that could contain secrets. Maybe be None, or a string. 
+		"""
+		if self.__secretsRegex is None or not text: return text
+		return self.__secretsRegex.sub('<secret>', text)
+
 	def _finalizeGlobalOptions(self): # internal method called at end of build initialization phase
 		# use this proxy to make it unmodifiable so we can pass it around (most targets don't need to override any options)
 		self._globalOptions = types.MappingProxyType(self._mergeListOfOptionDicts([
@@ -849,7 +877,9 @@ class BuildContext(BaseContext):
 			('(%s)'%'|'.join( re.escape(o+os.sep) for o in outputDirs)) 
 			if len(outputDirs) > 1 else re.escape(outputDirs[0]+os.sep), 
 			flags=re.IGNORECASE if IS_WINDOWS else 0)
-
+		
+		self.stripSecrets = self.init.stripSecrets
+		
 	def isPathWithinOutputDir(self, path) -> bool:
 		""" Returns True if the specified path is a descendent of any of 
 		this build's output directories. 

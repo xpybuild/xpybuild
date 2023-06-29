@@ -27,6 +27,7 @@ in your build files, and is also the base class for defining new targets.
 """
 
 import os, inspect, shutil, re
+import hashlib
 
 from xpybuild.buildcommon import *
 import xpybuild.buildcontext
@@ -285,6 +286,8 @@ class BaseTarget(Composable):
 		Call this from the target's constructor, for each option that this target is affected by, 
 		or with a callable that dynamically selects from the defined options, e.g. based on a prefix. 
 		
+		Any known secrets contained in the option value will be replaced with a hash value before writing to disk. 
+		
 		@param optionKey: the name of an option (as a string), 
 			or a callable that accepts an optionKey and dynamically decides which options to include, 
 			returning True if it should be included. For example::
@@ -325,6 +328,8 @@ class BaseTarget(Composable):
 		
 		Call this from the target's constructor. 
 
+		Any known secrets contained in the option value will be replaced with a hash value before writing to disk. 
+
 		@param item: The item to be added to the implicit inputs. 
 		
 			This can be either:
@@ -354,6 +359,12 @@ class BaseTarget(Composable):
 		"""
 		if self.__registeredImplicitInputs:
 			result = []
+			
+			def handleSecrets(x):
+				y = context.stripSecrets(x)
+				if x==y: return x
+				return f'{y} (hash before secret stripping={hashlib.md5(x.encode("utf-8")).hexdigest()})' # to ensure it changes if the secret changes; we don't care about collision so MD5 is sufficient
+			
 			for x in self.__registeredImplicitInputs:
 				if x is None: continue
 				if callable(x) and not hasattr(x, 'resolveToString'): # if we aren't delegating to expandPropertyValues to resolve this
@@ -361,13 +372,13 @@ class BaseTarget(Composable):
 					if x is None: 
 						continue
 					elif isinstance(x, str):
-						result.append(x)
+						result.append(handleSecrets(x))
 					else: # assume it's a list or other iterable
 						for y in x:
 							if y is not None:
-								result.append(y)
+								result.append(handleSecrets(y))
 				else:
-					result.append(context.expandPropertyValues(x))
+					result.append(handleSecrets(context.expandPropertyValues(x)))
 			return result
 		return []
 	
