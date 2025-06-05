@@ -72,7 +72,7 @@ jobs:
       
       - name: Upload performance CSV artifacts
         # upload-artifact@v2.3.1
-        uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2
+        uses: actions/upload-artifact@6027e3dd177782cd8ab9af838c04fd81a07f1d47
         # Only do this if some performance results were generated
         if: always() && steps.pysys.outputs.artifact_CSVPerformanceReport
 
@@ -82,7 +82,7 @@ jobs:
 
       - name: Upload archive artifacts for any test failures
         # upload-artifact@v2.3.1
-        uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2
+        uses: actions/upload-artifact@6027e3dd177782cd8ab9af838c04fd81a07f1d47
         if: always() && steps.pysys.outputs.artifact_TestOutputArchiveDir
 
         with:
