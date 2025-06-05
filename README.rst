@@ -3,7 +3,7 @@ xpybuild
 .. image:: ../../workflows/Tests/badge.svg
 	:target: ../../actions
 
-.. image:: https://codecov.io/gh/xpybuild/xpybuild/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/xpybuild/xpybuild/branch/main/graph/badge.svg
 	:target: https://codecov.io/gh/xpybuild/xpybuild
 
 Documentation: https://xpybuild.github.io/xpybuild/

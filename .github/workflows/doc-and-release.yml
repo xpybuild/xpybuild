@@ -9,10 +9,10 @@ on:
 
   # Also, on every commit to the main branch, build the HTML documentation using Sphinx to make sure it's not broken
   push:
-    branches: [ master, release ]
+    branches: [ main, release ]
   
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 
 jobs:
