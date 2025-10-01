@@ -4,7 +4,7 @@
 
 	<requires-pysys>2.1</requires-pysys>
 	
-	<!-- 	<requires-python>3.7</requires-python> -->
+	<!-- 	<requires-python>3.14</requires-python> -->
 
 	<property name="XPYBUILD_ROOT" value="${env.XPYBUILD_ROOT}" default="${testRootDir}/.."/>
 	<property name="XPYBUILD" value="${XPYBUILD_ROOT}/xpybuild.py" pathMustExist="true"/>

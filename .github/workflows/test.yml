@@ -15,15 +15,15 @@ jobs:
       
       matrix:
         include:
-          - test-run-id: ubuntu-py3.7
+          - test-run-id: ubuntu-py3.10
             os: ubuntu-latest
-            python-version: "3.7"
+            python-version: "3.10"
             perf-test: true
 
-          - test-run-id: win-py3.10
-            # Use 2019 not windows-latest/2022 since we need Visual Studio 2019
-            os: windows-2019
-            python-version: "3.10"
+          - test-run-id: win-py3.14
+            # Uses to use 2019 not windows-latest/2022 since we need Visual Studio 2019
+            os: windows-latest
+            python-version: "3.14"
             perf-test: false
 
     runs-on: ${{matrix.os}}
@@ -43,9 +43,9 @@ jobs:
       # Set up the environment for Visual Studio
       - uses: microsoft/setup-msbuild@v1.1
         if: runner.os == 'Windows'
-        with:
+        #with:
            # 16 = 2019 (NB: not available on win-2022+)
-           vs-version: '[16,17)'
+           #vs-version: '[16,17)'
 
       - name: Test with PySys
         working-directory: tests/correctness
