@@ -6,7 +6,7 @@
 version: 2
 updates:
   - package-ecosystem: "pip" 
-    directory: "tests/pysys-requirements.txt"
+    directory: "/tests" # /pysys-requirements.txt
     schedule:
       interval: "monthly"
 
