@@ -49,12 +49,15 @@ jobs:
         if: runner.os == 'Windows'
         run:
           cl.exe /?
+          which cl.exe
 
       - name: Test with PySys
         working-directory: tests/correctness
         shell: bash
         id: pysys
         run: |
+          which cl.exe
+          
           if [[ "${{ matrix.perf-test }}" = "true" ]]; then 
             cd ..
             echo Running ALL tests from `pwd`
