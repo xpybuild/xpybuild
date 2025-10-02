@@ -32,8 +32,6 @@ project = f'xpybuild v{release}'
 
 # -- General configuration ---------------------------------------------------
 
-sys.path.append(DOC_SOURCE_DIR+'/ext') # temporary measure to get sphinx_autodocgen
-
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
@@ -102,11 +100,22 @@ def process_docstring_fixEpydocIndentation(app, what, name, obj, options, lines)
 	
 		i+=1
 
+	# Sphinx v2 used to require us to use "~." syntax for class instance vars; this looks wrong in the more recent sphinx versions 
+	# so until we know all downstream users of PySys have upgraded Sphinx, keep the docstrings the same and dynamically pre-process them
+	# To check this, see any class with instance variables e.g. Process
+	for i, l in enumerate(lines):
+		if ':ivar ' in l and ' ~.' in l:
+			lines[i] = l.replace(' ~.', ' ')
+
+
+# Since we already add headings for autodoc entries, stop Sphinx from creating duplicate ones underneath
+toc_object_entries = False
+
 #autosummary_generate = True
 
 import xpybuild
-autodocgen_config = {
-	'modules':[xpybuild],
+autodocgen_config = { # Configuration format is defined by sphinx_autodocgen.AutoDocGen.Config
+	'modules':['xpybuild'],
 	'generated_source_dir': DOC_SOURCE_DIR+'/autodocgen/',
 	'skip_module_regex': '(xpybuild[.]internal.*|.*[.]__)', # if module matches this then it and any of its submodules will be skipped
 	'write_documented_items_output_file': XPYBUILD_ROOT_DIR+'/_build_output/docs/autodocgen_documented_items.txt',
@@ -117,6 +126,7 @@ autodocgen_config = {
 
 def setup(app):
 	app.connect("autodoc-skip-member", autodoc_skip_member)
+
 	app.connect('autodoc-process-docstring', process_docstring_fixEpydocIndentation)
 
 	def supportGitHubPages(app, exception):
@@ -142,7 +152,7 @@ exclude_patterns = []
 html_theme = 'sphinx_rtd_theme' # read-the-docs theme looks better than the default "classic" one but has bugs e.g. no table wrapping
 
 html_theme_options = {
-    'display_version': True,
+    #'display_version': True,
     #'prev_next_buttons_location': 'bottom',
     #'style_external_links': False,
     #'vcs_pageview_mode': '',
@@ -161,7 +171,7 @@ html_theme_options = {
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-html_context = {'css_files': [
+html_css_files = [
 	# Workaround for RTD 0.4.3 bug https://github.com/readthedocs/sphinx_rtd_theme/issues/117
-	'_static/theme_overrides.css',  # override wide tables in RTD theme
-]}
+	'theme_overrides.css',  # override wide tables in RTD theme
+]

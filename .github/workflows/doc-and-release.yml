@@ -40,7 +40,7 @@ jobs:
         id: deps
         run: |
           # Peg these versions so we only upgrade when we want to
-          pip install docutils==0.16 sphinx==3.0.1 sphinx-epytext==0.0.4 sphinx_rtd_theme==0.4.3 sphinx-autodocgen==1.2 jinja2==3.0.3
+          pip install docs/sphinx-requirements.txt
 
       - name: Build
         shell: bash
