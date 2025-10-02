@@ -76,7 +76,7 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
 		logger.debug(f'conf.py: ALREADY Skipping member: {name}')
 		return None
 
-	if obj.__doc__ and '.. private:: ' in obj.__doc__: 
+	if obj.__doc__ and ':meta private: ' in obj.__doc__: 
 		logger.info(f'conf.py: skipping private member: {obj}')
 		return True
 		
@@ -111,9 +111,9 @@ def process_docstring_fixEpydocIndentation(app, what, name, obj, options, lines)
 # Since we already add headings for autodoc entries, stop Sphinx from creating duplicate ones underneath
 toc_object_entries = False
 
-#autosummary_generate = True
+autosummary_generate = True
+autosummary_generate_overwrite = False
 
-import xpybuild
 autodocgen_config = [{ # Configuration format is defined by sphinx_autodocgen.AutoDocGen.Config
 	'modules':['xpybuild'],
 	'generated_source_dir': DOC_SOURCE_DIR+'/autodocgen/',

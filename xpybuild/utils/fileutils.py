@@ -495,17 +495,17 @@ def cached_isdir(path):
 
 # for compatibility with pre-3.0
 getstat = cached_stat
-""" .. private:: Use cached_ function instead. """
+""" :meta private: Use cached_ function instead. """
 getmtime = cached_getmtime
-""" .. private:: Use cached_ function instead. """
+""" :meta private: Use cached_ function instead. """
 getsize = cached_getsize
-""" .. private:: Use cached_ function instead. """
+""" :meta private: Use cached_ function instead. """
 exists = cached_exists
-""" .. private:: Use cached_ function instead. """
+""" :meta private: Use cached_ function instead. """
 isfile = cached_isfile
-""" .. private:: Use cached_ function instead. """
+""" :meta private: Use cached_ function instead. """
 isdir = cached_isdir
-""" .. private:: Use cached_ function instead. """
+""" :meta private: Use cached_ function instead. """
 
 def _getStatCacheSize():
 	"""
@@ -516,7 +516,7 @@ def _getStatCacheSize():
 def resetStatCache():
 	""" Resets cached stat data.
 	
-	.. private:: For internal use only. 
+	:meta private: For internal use only. 
 
 	 """
 	__statcache.clear()
