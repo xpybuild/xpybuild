@@ -6,14 +6,23 @@
 version: 2
 updates:
   - package-ecosystem: "pip" 
-    directories: 
-      - "/tests" # /pysys-requirements.txt
-      - "/docs"
+    directory: "/tests" # /pysys-requirements.txt
+    schedule:
+      interval: "monthly"
+    groups:
+      pypi-test-updates:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "pip" 
+    directory: "/docs"
     schedule:
       interval: "monthly"
 
     groups:
-      pypi-updates:
+      sphinx-updates:
         applies-to: version-updates
         update-types:
           - "minor"
