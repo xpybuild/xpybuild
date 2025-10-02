@@ -28,7 +28,7 @@ Breaking changes
 Enhancements
 ------------
 
-- Added suppor for Python 3.14
+- Added support for Python 3.13
 - Added support for ``.tar.xz`` archives to `xpybuild.targets.archive.Unpack`. 
 - Added `xpybuild.utils.outputhandler.ProcessOutputHandler.Options.downgradeErrorsToWarnings` option for errors that 
   should be logged but not as errors - since error level log messages can be treated as fatal errors by some 
