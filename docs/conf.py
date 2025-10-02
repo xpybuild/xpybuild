@@ -40,7 +40,7 @@ extensions = [
 	'sphinx.ext.autosummary',
 	'sphinx.ext.viewcode',
 	'sphinx_epytext',
-	'sphinx_autodocgen',
+	'sphinxcontrib_autodocgen',
 ]
 
 default_role = 'py:obj' # So that `xxx` is converted to a Python reference. Use ``xxx`` for monospaced non-links.
