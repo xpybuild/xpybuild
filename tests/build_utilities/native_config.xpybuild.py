@@ -41,7 +41,12 @@ if IS_WINDOWS:
 	])
 	
 	# If we wanted to support VS 2022 we'd need to update this path
-	setGlobalOption('native.compilers', VisualStudio(VSROOT+r'\VC\bin\amd64'))
+	vsBin = VSROOT+r'\VC\bin\amd64'
+	if not os.path.exists(vsBin+'\\cl.exe'):
+		foundcl = shutil.which('cl.exe')
+		if foundcl: vsBin = os.path.dirname(vsBin)
+
+	setGlobalOption('native.compilers', VisualStudio(vsBin))
 	setGlobalOption('native.cxx.flags', ['/EHa', '/GR', '/O2', '/Ox', '/Ot', '/MD', '/nologo'])
 	
 else:
