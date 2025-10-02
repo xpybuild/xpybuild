@@ -40,7 +40,7 @@ jobs:
         id: deps
         run: |
           # Peg these versions so we only upgrade when we want to
-          pip install docs/sphinx-requirements.txt
+          pip install -r docs/sphinx-requirements.txt
 
       - name: Build
         shell: bash
