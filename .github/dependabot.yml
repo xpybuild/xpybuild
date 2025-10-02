@@ -9,9 +9,20 @@ updates:
     directory: "/tests" # /pysys-requirements.txt
     schedule:
       interval: "monthly"
+    groups:
+      pypi-test-updates:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "pip" 
+    directory: "/docs"
+    schedule:
+      interval: "monthly"
 
     groups:
-      pypi-updates:
+      sphinx-updates:
         applies-to: version-updates
         update-types:
           - "minor"

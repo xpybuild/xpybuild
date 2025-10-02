@@ -125,7 +125,7 @@ def requireXpybuildVersion(version: str):
 
 requireXpyBuildVersion = requireXpybuildVersion
 """ 
-.. private:: Old name for compatibility. 
+:meta private: Old name for compatibility. 
 
 Use requireXpyBuildVersion instead.
 """
@@ -245,6 +245,6 @@ isDirPath = xpybuild.utils.fileutils.isDirPath
 
 normpath = xpybuild.utils.fileutils.normPath
 """
-.. private:: This is deprecated in favour of fileutils.normPath and hidden from documentation to avoid polluting the docs. 
+:meta private: This is deprecated in favour of fileutils.normPath and hidden from documentation to avoid polluting the docs. 
 
 """

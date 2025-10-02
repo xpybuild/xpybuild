@@ -500,7 +500,7 @@ class BuildInitializationContext(BaseContext):
 
 	def initializeFromBuildFile(self, buildFile, isRealBuild=True):
 		"""
-		.. private:: For internal use only. 
+		:meta private: For internal use only. 
 
 		Load the specified build file, which is the initialization phase during which properties are defined and 
 		the build file target definitions will register themselves with this object. 
@@ -590,6 +590,9 @@ class BuildInitializationContext(BaseContext):
 	def stripSecrets(self, text):
 		"""
 		Replaces any secrets found within the specified string with a placeholder. 
+
+		This should be called before logging anything that could contain a property with a password or other secret. 
+		Note that we do NOT strip secrets from debug-level messages or from running the `--properties` command. 
 		
 		The set of secret strings to replace is identified by searching for the value of properties whose name matches the ``common.secretPropertyNamesRegex`` option. 
 		For example by default any property containing ``_PASSWORD``, ``_TOKEN`` or ``_CREDENTIAL`` is treated as containing a secret. 
@@ -598,7 +601,7 @@ class BuildInitializationContext(BaseContext):
 		
 		:param str text: A text string that could contain secrets. Maybe be None, or a string. 
 		"""
-		if self.__secretsRegex is None or not text: return text
+		if self.__secretsRegex is None or not text or not isinstance(text, str): return text
 		return self.__secretsRegex.sub('<secret>', text)
 
 	def _finalizeGlobalOptions(self): # internal method called at end of build initialization phase
@@ -627,7 +630,7 @@ class BuildInitializationContext(BaseContext):
 	
 	def defineProperty(self, name, default, coerceToValidValue=None, debug=False, location=None):
 		"""
-		.. private:: For internal use only. 
+		:meta private: For internal use only. 
 
 		Defines a user-settable property, specifying a default value and 
 		an optional method to validate values specified by the user. 
@@ -688,7 +691,7 @@ class BuildInitializationContext(BaseContext):
 	
 	def registerOutputDir(self, outputDir):
 		"""
-		.. private:: For internal use only. 
+		:meta private: For internal use only. 
 		
 		Registers that the specified directory should be created before the 
 		build starts.
@@ -703,7 +706,7 @@ class BuildInitializationContext(BaseContext):
 	
 	def registerTarget(self, target):
 		"""
-		.. private:: For internal use only. 
+		:meta private: For internal use only. 
 
 		Registers the target with the context.
 
@@ -721,7 +724,7 @@ class BuildInitializationContext(BaseContext):
 
 	def registerTags(self, target, taglist):
 		"""
-		.. private:: For internal use only. 
+		:meta private: For internal use only. 
 
 		Registers tags and their matching targets with the context.
 
@@ -734,7 +737,7 @@ class BuildInitializationContext(BaseContext):
 
 	def removeFromTags(self, target, taglist):
 		"""
-		.. private:: For internal use only. 
+		:meta private: For internal use only. 
 
 		Removes a target from a set of tags
 
@@ -759,7 +762,7 @@ class BuildInitializationContext(BaseContext):
 
 	def registerPreBuildCheck(self, fn):
 		"""
-		.. private:: For internal use only. 
+		:meta private: For internal use only. 
 
 		Register a functor to be called before builds.
 		
@@ -768,7 +771,7 @@ class BuildInitializationContext(BaseContext):
 
 	def getPreBuildCallbacks(self):
 		"""
-		.. private:: For internal use only. 
+		:meta private: For internal use only. 
 
 		Return the list of pre-build callback functors """
 		return self._preBuildCallbacks
@@ -805,7 +808,7 @@ class BuildInitializationContext(BaseContext):
 	@staticmethod
 	def _defineOption(name, default):
 		""" 
-		.. private:: For internal use only. 
+		:meta private: For internal use only. 
 		
 		Register an available option and specify its default value.
 
@@ -819,7 +822,7 @@ class BuildInitializationContext(BaseContext):
 	
 	def setGlobalOption(self, key, value):
 		"""
-		.. private:: For internal use only. 
+		:meta private: For internal use only. 
 
 		 Set a global value for an option
 
@@ -839,7 +842,7 @@ class BuildInitializationContext(BaseContext):
 
 	def defineAtomicTargetGroup(self, targets):
 		"""
-		.. private:: For internal use only. 
+		:meta private: For internal use only. 
 
 		The given targets must all be built before anything which depends on any of those targets """
 		targets = set(targets)
@@ -948,7 +951,7 @@ class BuildContext(BaseContext):
 # as of v3.0 this is not documented and retained only for compatibility - better to use static singleton method
 getBuildInitializationContext = BuildInitializationContext.getBuildInitializationContext
 """
-.. private:: Removed from public API
+:meta private: Removed from public API
 
 Use `BuildInitializationContext.getBuildInitializationContext` instead. 
 """

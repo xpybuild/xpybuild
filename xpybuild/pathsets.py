@@ -299,7 +299,7 @@ NULL_PATH_SET = __SimplePathSet()
 """
 A singleton PathSet containing no items. 
 
-.. private:: Not public API. 
+:meta private: Not public API. 
 """
 
 def PathSet(*items):
