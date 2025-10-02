@@ -473,7 +473,8 @@ class BuildInitializationContext(BaseContext):
 		self._tags = {} # tagName:list of targets
 		self._outputDirs = set()
 		self._initializationCompleted = False
-		self._envPropertyOverrides = {}
+		self._envPropertyOverrides = {} # property values read from env vars with a prefix specifying they can "potentially" be used (if present)
+		self.__envPropertyOverridesLogMessages = [] # accumulates log messages about overrides until we've completed initialization and can strip the secrets
 		self._preBuildCallbacks = []
 		self._buildParsePostProcessors = []
 		self._globalOptions = {}
@@ -572,6 +573,9 @@ class BuildInitializationContext(BaseContext):
 			self.__secretsRegex = re.compile('(%s)'%'|'.join(re.escape(s) for s in secrets))
 		else:
 			self.__secretsRegex = None
+		for nameAndValue in self.__envPropertyOverridesLogMessages:
+			log.critical('Overriding property value from environment: %s', self.stripSecrets(nameAndValue))
+		del self.__envPropertyOverridesLogMessages
 
 		for cb in self._buildParsePostProcessors:
 			cb(self)
@@ -585,10 +589,12 @@ class BuildInitializationContext(BaseContext):
 
 	def stripSecrets(self, text):
 		"""
-		Replaces any secrets found in the specified string with a placeholder. 
+		Replaces any secrets found within the specified string with a placeholder. 
 		
-		Secrets are identified by being set in a property whose name matches the ``common.secretPropertyNamesRegex`` option. 
+		The set of secret strings to replace is identified by searching for the value of properties whose name matches the ``common.secretPropertyNamesRegex`` option. 
 		For example by default any property containing ``_PASSWORD``, ``_TOKEN`` or ``_CREDENTIAL`` is treated as containing a secret. 
+
+		This function cannot be called until after initialization is complete and all properties have been loaded.
 		
 		:param str text: A text string that could contain secrets. Maybe be None, or a string. 
 		"""
@@ -656,7 +662,7 @@ class BuildInitializationContext(BaseContext):
 		value = self._propertyOverrides.get(name)
 		if value==None and name in self._envPropertyOverrides: 
 			value = self._envPropertyOverrides.get(name)
-			log.critical('Overriding property value from environment: %s=%s', name, value)
+			self.__envPropertyOverridesLogMessages.append(f'{name}={value}') # stripSecrets will be called when init is finished
 		if value==None: value = default 
 
 		if value == None:

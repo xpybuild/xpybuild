@@ -13,6 +13,10 @@ defineOutputDirProperty('INPUT_DIR', None)
 defineStringProperty('MY_PASSWORD', 'hiddentext1')
 defineStringProperty('MY_PROPERTY_THAT_CONTAINS_A_PWD', 'prefix-${MY_PASSWORD}')
 
+print (enableEnvironmentPropertyOverrides('XPYTEST_'))
+defineStringProperty('MY_CUSTOM_PWD_ENV', '')
+defineStringProperty('MY_CUSTOM_PWD_EMPTY_ENV', 'abc')
+
 defineOption('myOption', '${MY_PASSWORD}')
 
 setGlobalOption('common.secretPropertyNamesRegex', '.*(_PASSWORD|_TOKEN|_CREDENTIAL|MY_CUSTOM_PWD).*')

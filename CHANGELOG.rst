@@ -14,6 +14,7 @@ Fixes
 - Fixed `xpybuild.utils.outputhandler.StdoutRedirector` to record the last non-empty stdout log line in case of errors 
   and no stderr. 
 - Fixed CustomCommand to rebuild when the environment variable overrides change. 
+- Fixed stripping of secrets logged when using `enableEnvironmentPropertyOverrides`.
 
 Breaking changes
 ----------------
