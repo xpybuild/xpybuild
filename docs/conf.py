@@ -114,7 +114,7 @@ toc_object_entries = False
 #autosummary_generate = True
 
 import xpybuild
-autodocgen_config = { # Configuration format is defined by sphinx_autodocgen.AutoDocGen.Config
+autodocgen_config = [{ # Configuration format is defined by sphinx_autodocgen.AutoDocGen.Config
 	'modules':['xpybuild'],
 	'generated_source_dir': DOC_SOURCE_DIR+'/autodocgen/',
 	'skip_module_regex': '(xpybuild[.]internal.*|.*[.]__)', # if module matches this then it and any of its submodules will be skipped
@@ -122,7 +122,7 @@ autodocgen_config = { # Configuration format is defined by sphinx_autodocgen.Aut
 	'autodoc_options_decider': {
 		'xpybuild.utils.outputhandler.ProcessOutputHandler': {'members':True, 'private-members':True},
 	},
-}
+}]
 
 def setup(app):
 	app.connect("autodoc-skip-member", autodoc_skip_member)
