@@ -41,11 +41,16 @@ jobs:
       - run: pip install -r tests/pysys-requirements.txt
 
       # Set up the environment for Visual Studio
-      - uses: microsoft/setup-msbuild@v1.1
+      - uses: microsoft/setup-msbuild@v1.3
         if: runner.os == 'Windows'
         #with:
            # 16 = 2019 (NB: not available on win-2022+)
            #vs-version: '[16,17)'
+      - shell: cmd
+        if: runner.os == 'Windows'
+        run:
+          vcvarsall.bat
+          cl.exe /?
 
       - name: Test with PySys
         working-directory: tests/correctness
