@@ -8,8 +8,9 @@ log = logging.getLogger('xpybuild.tests.native_config')
 
 # some basic defaults for recent default compilers for running our testcases with
 if IS_WINDOWS:
-	# A more standard approach would be to execute vswhere.exe (from its well-known location) - but this still doesn't
-	# give us the cl.exe
+	# A more standard approach would be to execute vswhere.exe (from its well-known location) the vars env script, 
+	# and then extract what we need from the output. Or we could get PySys to pass these values through from the environment, 
+	# but then we're not testing xpybuild so thoroughly. 
 	__vspatterns=[r'c:\Program Files (x86)\Microsoft Visual Studio 1*', r'C:\Program Files\Microsoft Visual Studio\*\Enterprise']
 	__vsfound = sorted(glob.glob(__vspatterns[0]))+sorted(glob.glob(__vspatterns[1]))
 	log.critical('Found these VS installations: %s', __vsfound)
