@@ -26,18 +26,29 @@ if IS_WINDOWS:
 		log.warning('Cannot find any path matching: %s', pattern)
 		return pattern.replace('*', '[missing]')
 
+	msvcDir = findLatest(VSROOT+r'\VC\Tools\MSVC\*')
+	if not os.path.exists(msvcDir) and os.path.exists(VSROOT+r'\VC\INCLUDE'):
+		msvcDir = VSROOT+r'\VC' # fallback for older VS versions like 2019
+	ucrtIncludeDir = os.path.dirname(findLatest(r"C:\Program Files (x86)\Windows Kits\10\Include\*\ucrt"))
+
 	setGlobalOption('native.include', [
-		VSROOT+r"\VC\ATLMFC\INCLUDE", 
-		VSROOT+r"\VC\INCLUDE", 
-		findLatest(r"C:\Program Files (x86)\Windows Kits\10\Include\*\ucrt"),
+		msvcDir+r"\ATLMFC\INCLUDE", 
+		msvcDir+r"\INCLUDE", 
+		ucrtIncludeDir+r"\ucrt",
+		ucrtIncludeDir+r"\shared",
+		ucrtIncludeDir+r"\um",
+		ucrtIncludeDir+r"\winrt",
+		ucrtIncludeDir+r"\cppwinrt"
 	])
+
+
 	if not os.path.exists(r"C:\Program Files (x86)\Windows Kits\10"):
 		log.warning('WARN - Cannot find expected Windows Kits, got: %s'%sorted(glob.glob(r"C:\Program Files (x86)\Windows Kits\*")))
 	#if not os.path.exists(r"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.10240.0\ucrt"):
 	#	log.warning('WARN - Cannot find expected Windows Kits UCRT, got: %s'%sorted(glob.glob(r"C:\Program Files (x86)\Windows Kits\10\Lib\*\*")))
 	setGlobalOption('native.libpaths', [
-		VSROOT+r"\VC\ATLMFC\LIB\amd64", 
-		VSROOT+r"\VC\LIB\amd64", 
+		msvcDir+r"\VC\ATLMFC\LIB\amd64", 
+		msvcDir+r"\VC\LIB\amd64", 
 		findLatest(r"C:\Program Files (x86)\Windows Kits\10\Lib\*\ucrt\x64"),
 		findLatest(r"C:\Program Files (x86)\Windows Kits\10\Lib\*\um\x64"),
 	])
@@ -48,9 +59,9 @@ if IS_WINDOWS:
 		findLatest(r"c:\Windows\Microsoft.NET\Framework\v*"), # was 3.5
 	])
 	
-	toolsBin = VSROOT+r'\VC\bin\amd64' # used for old VS versions like 2019
+	toolsBin = msvcDir+r'\bin\amd64' # used for old VS versions like 2019
 	if not os.path.exists(toolsBin+'\\cl.exe'):
-		toolsBin = findLatest(VSROOT+r'\VC\Tools\MSVC\*\bin\Hostx64\x64')
+		toolsBin = msvcDir+r'\bin\Hostx64\x64'
 	setGlobalOption('native.compilers', VisualStudio(toolsBin))
 	setGlobalOption('native.cxx.flags', ['/EHa', '/GR', '/O2', '/Ox', '/Ot', '/MD', '/nologo'])
 	
