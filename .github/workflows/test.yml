@@ -47,8 +47,9 @@ jobs:
 
       - shell: cmd
         if: runner.os == 'Windows'
-        run:
+        run: |
           cl.exe /?
+          echo RUNNING WHICH
           which cl.exe
 
       - name: Test with PySys
