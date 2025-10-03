@@ -41,24 +41,17 @@ jobs:
       - run: pip install -r tests/pysys-requirements.txt
 
       # Set up the environment for Visual Studio
-      - name: Add Visual Studio tools to path
-        uses: ilammy/msvc-dev-cmd@v1.13.0
-        if: runner.os == 'Windows'
+      #- name: Add Visual Studio tools to path
+      #  uses: ilammy/msvc-dev-cmd@v1.13.0
+      #  if: runner.os == 'Windows'
 
-      - shell: cmd
-        if: runner.os == 'Windows'
-        run: |
-          cl.exe /?
-          echo RUNNING WHICH
-          which cl.exe
 
       - name: Test with PySys
         working-directory: tests/correctness
         shell: bash
         id: pysys
         run: |
-          which cl.exe
-          
+         
           if [[ "${{ matrix.perf-test }}" = "true" ]]; then 
             cd ..
             echo Running ALL tests from `pwd`
