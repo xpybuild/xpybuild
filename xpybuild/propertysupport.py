@@ -626,10 +626,10 @@ class dirname(Composable):
 		'dirname(path/${foo})'
 		>>> str(dirname("path/${foo}/bar/"))
 		'dirname(path/${foo})'
-		>>> dirname("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'/path/base'})).replace(os.sep,'/')
-		'/path'
-		>>> dirname("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'/path/base/'})).replace(os.sep,'/')
-		'/path'
+		>>> dirname("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'//path/base'})).replace(os.sep,'/')
+		'//path'
+		>>> dirname("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'//path/base/'})).replace(os.sep,'/')
+		'//path'
 		>>> str("${OUTPUT_DIR}/"+dirname("${INPUT}"))
 		'${OUTPUT_DIR}/+dirname(${INPUT})'
 		>>> ("${OUTPUT_DIR}"+dirname("${INPUT}")).resolveToString(xpybuild.buildcontext.BaseContext({'OUTPUT_DIR':'/target', 'INPUT':'/libs/foo'})).replace(os.sep,'/')
@@ -676,9 +676,9 @@ class basename(Composable):
 		'basename(bar)'
 		>>> str(basename("path/${foo}/bar/"))
 		'basename(bar)'
-		>>> basename("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'/path/base'}))
+		>>> basename("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'//path/base'}))
 		'base'
-		>>> basename("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'/path/base/'}))
+		>>> basename("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'//path/base/'}))
 		'base'
 		>>> str("${OUTPUT_DIR}/"+basename("${INPUT}"))
 		'${OUTPUT_DIR}/+basename(${INPUT})'
