@@ -47,11 +47,14 @@ if IS_WINDOWS:
 	#if not os.path.exists(r"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.10240.0\ucrt"):
 	#	log.warning('WARN - Cannot find expected Windows Kits UCRT, got: %s'%sorted(glob.glob(r"C:\Program Files (x86)\Windows Kits\10\Lib\*\*")))
 	setGlobalOption('native.libpaths', [
-		msvcDir+r"\VC\ATLMFC\LIB\amd64", 
-		msvcDir+r"\VC\LIB\amd64", 
+		msvcDir+r"\lib\amd64", # modern
+		msvcDir+r"\ATLMFC\lib\amd64", # just guessing
+		VSROOT+r"\VC\ATLMFC\LIB\amd64", # old
+		VSROOT+r"\VC\LIB\amd64", 
 		findLatest(r"C:\Program Files (x86)\Windows Kits\10\Lib\*\ucrt\x64"),
 		findLatest(r"C:\Program Files (x86)\Windows Kits\10\Lib\*\um\x64"),
 	])
+
 	setGlobalOption('native.cxx.path', [
 		VSROOT+r"\Common7\IDE",
 		VSROOT+r"\VC\BIN\amd64", 
