@@ -49,7 +49,7 @@ if IS_WINDOWS:
 	])
 	
 	toolsBin = VSROOT+r'\VC\bin\amd64' # used for old VS versions like 2019
-	if not os.path.exists(toolsBin):
+	if not os.path.exists(toolsBin+'\\cl.exe'):
 		toolsBin = findLatest(VSROOT+r'\VC\Tools\MSVC\*\bin\Hostx64\x64')
 	setGlobalOption('native.compilers', VisualStudio(toolsBin))
 	setGlobalOption('native.cxx.flags', ['/EHa', '/GR', '/O2', '/Ox', '/Ot', '/MD', '/nologo'])
