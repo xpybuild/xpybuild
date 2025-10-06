@@ -673,26 +673,33 @@ class basename(Composable):
 
 		@param context: a BuildContext
 
+		>>> ABS_PATH_PREFIX = '/' if os.name != 'nt' else 'C:/'
 		>>> str(basename("path/"))
 		'basename(path)'
 		>>> str(basename("path/${foo}/bar"))
 		'basename(bar)'
 		>>> str(basename("path/${foo}/bar/"))
 		'basename(bar)'
-		>>> basename("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'//path/base'}))
-		'base'
 		>>> str("${OUTPUT_DIR}/"+basename("${INPUT}"))
 		'${OUTPUT_DIR}/+basename(${INPUT})'
 		>>> ("${OUTPUT_DIR}/"+basename("${INPUT}")).resolveToString(xpybuild.buildcontext.BaseContext({'OUTPUT_DIR':'/target', 'INPUT':'/libs/foo'}))
 		'${OUTPUT_DIR}/foo'
 		>>> str(basename("${A}"+basename("${B}")))
 		'basename(${A}+basename(${B}))'
+		>>> basename("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'//path/base/'}))
+		'base'
+		>>> basename("${A}"+basename("${B}")).resolveToString(xpybuild.buildcontext.BaseContext({'A':ABS_PATH_PREFIX+'foo/bar-', 'B':ABS_PATH_PREFIX+'baz/quux'}))
+		'bar-quux'
+		>>> basename("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':ABS_PATH_PREFIX+'path/base'}))
+		'base'
 		"""
-		# Hard to make this work on Python 3.13+ in a cross-platform way due to isabs change:
+		# Hard to make this work on Python 3.13+ in a cross-platform way due to isabs() change:
 		# >>> basename("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'//path/base/'}))
 		# 'base'
 		# >>> basename("${A}"+basename("${B}")).resolveToString(xpybuild.buildcontext.BaseContext({'A':'//foo/bar-', 'B':'//baz/quux'}))
 		# 'bar-quux'
+		# >>> basename("${PATH}").resolveToString(xpybuild.buildcontext.BaseContext({'PATH':'//path/base'}))
+		# 'base'
 
 		return os.path.basename(context.getFullPath(self.arg, "${OUTPUT_DIR}").rstrip(os.path.sep))
 	
