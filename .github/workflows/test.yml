@@ -6,6 +6,9 @@ on:
 
   pull_request:
     branches: [ main ]
+    
+  schedule:
+      - cron: '25 0 1 */2 *' # run on the default branch once every 2 months (25mins past the hour to avoid peak load)
 
 jobs:
   test:
