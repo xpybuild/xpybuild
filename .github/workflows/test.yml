@@ -46,12 +46,6 @@ jobs:
           cache-dependency-path: tests/pysys-requirements.txt
       - run: pip install -r tests/pysys-requirements.txt
 
-      # Set up the environment for Visual Studio
-      #- name: Add Visual Studio tools to path
-      #  uses: ilammy/msvc-dev-cmd@v1.13.0
-      #  if: runner.os == 'Windows'
-
-
       - name: Test with PySys
         working-directory: tests/correctness
         shell: bash
