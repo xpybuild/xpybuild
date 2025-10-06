@@ -7,6 +7,8 @@ on:
   pull_request:
     branches: [ main ]
     
+  workflow_dispatch: # also allow manually invoking this
+
   schedule:
       - cron: '25 0 1 */2 *' # run on the default branch once every 2 months (25mins past the hour to avoid peak load)
 
@@ -18,13 +20,14 @@ jobs:
       
       matrix:
         include:
+          # oldest supported version
           - test-run-id: ubuntu-py3.10
             os: ubuntu-latest
             python-version: "3.10"
             perf-test: true
 
+          # newest supported version
           - test-run-id: win-py3.13
-            # Uses to use 2019 not windows-latest/2022 since we need Visual Studio 2019
             os: windows-latest
             python-version: "3.13"
             perf-test: false
