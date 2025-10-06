@@ -105,6 +105,7 @@ class BaseContext(object):
 			# these until they are needed in case build wants to override them
 			
 			# nb: each item here corresponds to a getPropertyValue() call in initializeFromBuildFile
+			# (if we get errors in Doctests here, it may be because 
 			if name=='OUTPUT_DIR':
 				outputDir = getBuildInitializationContext().defineProperty('OUTPUT_DIR', getBuildInitializationContext()._rootDir+'/'+'buildoutput')
 				getBuildInitializationContext().registerOutputDir(outputDir)
@@ -379,8 +380,8 @@ class BaseContext(object):
 
 		>>> BaseContext({'DEF':'output', 'EL':'element'}).getFullPath('path/${EL}', '${DEF}').replace('\\\\','/')
 		'output/path/element'
-		>>> BaseContext({'DEF':'output', 'EL':'element'}).getFullPath('/path/${EL}', '${DEF}').replace('\\\\','/')
-		'/path/element'
+		>>> BaseContext({'DEF':'output', 'EL':'element'}).getFullPath('//path/${EL}', '${DEF}').replace('\\\\','/')
+		'//path/element'
 		>>> BaseContext({'DEF':'output/', 'EL':'element'}).getFullPath('path/${EL}', '${DEF}').replace('\\\\','/')
 		'output/path/element'
 		>>> BaseContext({'DEF':'output/', 'EL':'element'}).getFullPath('path/../path/${EL}', '${DEF}').replace('\\\\','/')

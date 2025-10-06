@@ -439,6 +439,8 @@ defineOption('visualstudio.outputHandlerFactory', VisualStudioProcessOutputHandl
 class VisualStudio(Compiler, Linker, Depends, Archiver, ToolChain):
 	"""
 	A ToolChain representing using Visual Studio compilers et al
+
+	:param vsbin: The directory containing `cl.exe`, `link.exe` etc
 	"""
 	def __init__(self, vsbin):
 		self.vsbin = vsbin
