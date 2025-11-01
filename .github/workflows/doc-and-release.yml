@@ -50,7 +50,7 @@ jobs:
          
       - name: Upload doc as an artifact
         if: github.event_name == 'release'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: docs
           path: _build_output/docs/html/*
