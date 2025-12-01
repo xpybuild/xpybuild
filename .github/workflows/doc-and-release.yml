@@ -57,7 +57,7 @@ jobs:
 
       - name: Upload to gh-pages
         if: github.event_name == 'release'
-        uses: JamesIves/github-pages-deploy-action@6c2d9db40f9296374acc17b90404b6e8864128c8 # 2022-02 4.7.3
+        uses: JamesIves/github-pages-deploy-action@4a3abc783e1a24aeb44c16e869ad83caf6b4cc23 # 2022-02 4.7.4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
@@ -66,7 +66,7 @@ jobs:
       - name: Upload to GitHub Release
         if: github.event_name == 'release'
         id: upload-release-asset 
-        uses: svenstaro/upload-release-action@81c65b7cd4de9b2570615ce3aad67a41de5b1a13 # 2020-12 v2.11.2
+        uses: svenstaro/upload-release-action@6b7fa9f267e90b50a19fef07b3596790bb941741 # 2020-12 v2.11.3
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
